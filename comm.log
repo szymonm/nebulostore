@@ -1,0 +1,2058 @@
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033731F5D321F944B3EADEDB2F2C2A0A20403
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+151  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+156  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+157  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+169  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+169  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033731F5D321F944B3EADEDB2F2C2A0A20403
+989  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+1033 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+1034 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+1035 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250337ECEEC75D9CA4BA4B01A987B9D6EEDE004
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1277 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250330A48768FB07649E2B0A8C01346AA05CE03
+18   [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+151  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+156  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+156  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+165  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+165  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250330A48768FB07649E2B0A8C01346AA05CE03
+830  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+907  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+908  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+909  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250338D2B8F20EBF547168B1BF4C704C315CF04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033973C9491526E4398A0F8B420FAC5963A03
+21   [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+155  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+160  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+160  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+168  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+169  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033973C9491526E4398A0F8B420FAC5963A03
+819  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+853  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+854  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+855  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033441B22E1AA164E7289D4A42EAF2E71A304
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1031 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033F9B214769E1E49C8BCC591DF11E4608303
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+129  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033F9B214769E1E49C8BCC591DF11E4608303
+824  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+876  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+877  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+878  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250330667A8B5A47E499E9F448B4CA33A485504
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1096 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503348E268C121F645CF8758885057C1C33403
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+128  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503348E268C121F645CF8758885057C1C33403
+855  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+927  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+928  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+929  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033B515EF7E12C748CABF32FD2448E6179104
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+966  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+1103 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+3966 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+6968 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sending a Discovery Message
+6974 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+6983 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+6984 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033025D3CDAD3D64CCD82BFC95FF7ED9C1304
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+7009 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+7010 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+7010 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033BEDC85FF1EF243AEBE648CEF51FCA5B804
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+7010 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+9923 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+9923 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+9926 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250339B946CFBBB5F44A0A679A152AD2F7A2C03
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+126  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+131  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+131  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+145  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+145  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250339B946CFBBB5F44A0A679A152AD2F7A2C03
+852  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+930  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+931  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+932  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033E3EAC2810D3543A0AF9AB7F07425C85804
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1103 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+1104 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+1105 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1107 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033B15B8B2C84074B418964CCFD9A60AC4D03
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+130  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+135  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+135  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+148  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+148  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033B15B8B2C84074B418964CCFD9A60AC4D03
+931  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+987  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+989  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+989  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033BA32D9737A00409681D697536D758A8F04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+995  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+1176 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+1177 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+1178 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1179 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+3995 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+6996 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sending a Discovery Message
+7002 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+7002 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+7003 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033BA90B0B9E7374C2186DBF3AE3C16CDBD04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+7033 [Executor - 3] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+7033 [Executor - 3] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+7033 [Executor - 3] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033DA5236A230844097958FF61785E0F44904
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+7033 [Executor - 3] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+7044 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+10044 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+13044 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sending a Discovery Message
+13050 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+13051 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+13052 [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250333BE506AE364541C88904FE04B960D6B504
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+13082 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+13082 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+13082 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033DA5236A230844097958FF61785E0F44904
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+13083 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403, jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033CFD32829A8B840F4A3A4F5239DD2EC6C03
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+127  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+132  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+132  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+140  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+141  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033CFD32829A8B840F4A3A4F5239DD2EC6C03
+846  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+895  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+896  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+896  [Thread-5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033CE1072A34A874D04A6D1AA3FF4A6A28704
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1061 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+1061 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+4772 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+4775 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033919E11DEB57A4F81820FBF3B8489209503
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+147  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+162  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+162  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+178  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+178  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033919E11DEB57A4F81820FBF3B8489209503
+997  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+1034 [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+1035 [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+1035 [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033DEE9B662613E4E59881AC01A808A8E3904
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1246 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+1247 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+14998 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+15001 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250330165FC27D7044E79B1A28CE75492057903
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+131  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+135  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+136  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+144  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+144  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250330165FC27D7044E79B1A28CE75492057903
+900  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+946  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+947  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+947  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033AB458076220A49A9852EA5AE56B9064504
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1139 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+1140 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+1141 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1142 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033371A8BFC37334E6984A28A52318AB7A803
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+129  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033371A8BFC37334E6984A28A52318AB7A803
+788  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+885  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+886  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+887  [Thread-6] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250330A8AED88B2DC4610A92AB33818E9B97804
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1046 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403  ]
+1079 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033D0021E414771457B96D3F10D518B043403]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503382F048F1BC174D5F881C948017E5E8EA03
+20   [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+440  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+445  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+445  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+454  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+454  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503382F048F1BC174D5F881C948017E5E8EA03
+1945 [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+1982 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+2051 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+2052 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+2053 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033FDF7630D0CE34433A5F6EEB730F607F104
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+2245 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E5047205032503313B8EBE0113E47A2A2D2FDFD2C7A404C03  ]
+2246 [Executor - 4] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E5047205032503313B8EBE0113E47A2A2D2FDFD2C7A404C03]
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250331B144DF0C8104382910CC4E1141125EC03
+16   [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+142  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+147  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+147  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+169  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+169  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250331B144DF0C8104382910CC4E1141125EC03
+913  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+940  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+994  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+995  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+995  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033C5DA395D2FDB4C4FAE2DB409D9DA853E04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1016 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+4016 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+7017 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sending a Discovery Message
+7024 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+7024 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+7025 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033BFF5086FA37B4E04B9748F7314F9715A04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+7030 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+10030 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+13031 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sending a Discovery Message
+13037 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+13038 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+13039 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033B4168B709C114E99B975E9BA3829490704
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+13067 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+16067 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Sleeping for :3000
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503322E09748E61F4DE48832ACAACF0EF62003
+3    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+132  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+137  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+138  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+146  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+147  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503322E09748E61F4DE48832ACAACF0EF62003
+883  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+886  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+947  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+948  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+948  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250334FADCF9F8AEE4F5590E4F6869AD6FAE704
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033DA02794FECB24EE79BC8B494A3EB9DBC03
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+132  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+137  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+137  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+146  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+146  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033DA02794FECB24EE79BC8B494A3EB9DBC03
+789  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+844  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+855  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+855  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+855  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E5047205032503353230ABBD4244DF6B0ECE1375961CCFD04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+13771 [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250337CBC35833498447596A5875D86BB482E03
+31   [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+318  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+324  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+324  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+339  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+339  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250337CBC35833498447596A5875D86BB482E03
+1828 [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+1860 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+1965 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+1966 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+1966 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033D7FE698624944DED90FBA4857506986804
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+10417 [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033F717249FF9ED4C8AB244AE2941307A0103
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+131  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+136  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+136  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+145  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+145  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033F717249FF9ED4C8AB244AE2941307A0103
+909  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+946  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+979  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+979  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+980  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033DABF49808D8C4D489B01DE285C4636E004
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+985  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+7967 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+7968 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+7984 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+7986 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+13494 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033D8831419A4E044F3B03EF964119C262803
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+139  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+139  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+149  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+149  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033D8831419A4E044F3B03EF964119C262803
+877  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+950  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+966  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+974  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+975  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+975  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250332E08BDB0879F418CB518BD3B4D6F0F4C04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1187 [Executor - 1] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+1188 [Executor - 1] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1189 [Executor - 1] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1190 [Executor - 1] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1217 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033BDE3CF5B001943038B34C97F28FA750803
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+123  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+128  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+129  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+137  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+137  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033BDE3CF5B001943038B34C97F28FA750803
+752  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+785  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+803  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+808  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+808  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+809  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E5047205032503313CE594760EE4393BAFDB9491937D6E604
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033DCD3A7B6387A472BA12DF2B8696949CE03
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+132  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+137  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+137  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+147  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+147  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033DCD3A7B6387A472BA12DF2B8696949CE03
+820  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+841  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+898  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+899  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+899  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250334A0D46B64E1943989713D1E4304F986D04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+903  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+997  [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+997  [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1001 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1002 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1024 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033A41ACF8F053B4E8B812BDF0B14408E4B03
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+152  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+158  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+158  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+167  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+168  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033A41ACF8F053B4E8B812BDF0B14408E4B03
+892  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+933  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+956  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+960  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+960  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+961  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033452410FC4145431A929AF753783A1F8E04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033E19035F8A84A46B4B116CB40ACC5C0AC03
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+129  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+136  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+136  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+149  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+149  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033E19035F8A84A46B4B116CB40ACC5C0AC03
+857  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+897  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+932  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+936  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+936  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+936  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033F62AFE054877465D90FEABCCC662394A04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1123 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+1124 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1125 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1127 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1172 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+16111 [Thread-8] ERROR pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - [Ljava.lang.StackTraceElement;@191e4c
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503352261C7A01F34E4C9861ADCD71298CE803
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+136  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+141  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+141  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+150  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+150  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503352261C7A01F34E4C9861ADCD71298CE803
+838  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+908  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+922  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+931  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+931  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+932  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033E3F1359DFEAE491C8BB19BB2202DC4E204
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033C955DE7CB2B0478F8B57A7E686F9CFD303
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+133  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+141  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+141  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+151  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+151  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033C955DE7CB2B0478F8B57A7E686F9CFD303
+895  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+933  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+970  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+970  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+971  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033D674FC37DA774EFD9B5BED6F342DCC7804
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+973  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+1157 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+1157 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1159 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1160 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1203 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+12623 [Thread-8] ERROR pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - [Ljava.lang.StackTraceElement;@1a220e6
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033C7583BA69E9444BE8139932E13FE67D403
+1    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+141  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+141  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+150  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+151  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033C7583BA69E9444BE8139932E13FE67D403
+942  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+982  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+1013 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+1022 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+1022 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+1023 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E5047205032503350D15C24D88642BEA837EA616DE9039B04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1210 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+1210 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1211 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1213 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1233 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+14694 [Thread-8] ERROR pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - [Ljava.lang.StackTraceElement;@d306dd
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250332092BFFD98934649AD35ED4FE9813AC703
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+138  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+144  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+152  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+152  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E504720503250332092BFFD98934649AD35ED4FE9813AC703
+967  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+1018 [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+1034 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+1041 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+1042 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+1042 [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E504720503250335130D84048654064BAEAB90333210BA104
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1240 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+1241 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1242 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1244 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1258 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033D1FDEF8B314A4F348616AF1E1BF801F403
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+127  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+132  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+133  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+147  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+147  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033D1FDEF8B314A4F348616AF1E1BF801F403
+886  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+940  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+947  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+949  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+949  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+950  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E5047205032503376BAD02590FD453DB5BDB5206C2C532F04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1169 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+1169 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1170 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1172 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1199 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+14757 [Thread-8] ERROR pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - [Ljava.lang.StackTraceElement;@528780
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033A029CFF61EEE4F11BB0CBED6C204D3FF03
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+128  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+134  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+135  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E50472050325033A029CFF61EEE4F11BB0CBED6C204D3FF03
+868  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+918  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+921  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+929  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+929  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+930  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E5047205032503393BF02E61A4341FBB3D7F05D3AC7F8ED04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1059 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+1120 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1122 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1123 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1153 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+12316 [Thread-8] ERROR pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - java.net.SocketTimeoutException: Connection (resolution) timeout
+0    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503301AABA3228054E3DA09EF2A9CFDE787703
+2    [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Retrieving the Network Configurator
+139  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Network Configurator retrieved
+143  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Local configuration found
+145  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Loading found configuration
+153  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Configuration loaded
+153  [main] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - PeerID: urn:jxta:uuid-59616261646162614E5047205032503301AABA3228054E3DA09EF2A9CFDE787703
+914  [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Starting ServerSocket
+947  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Running!
+985  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing advertisement
+985  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - Publishing the following advertisement with lifetime :120000 expiration :120000
+986  [Thread-7] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.PeriodicWorker  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:PipeAdvertisement>
+<jxta:PipeAdvertisement xml:space="default" xmlns:jxta="http://jxta.org">
+	<Id>
+		urn:jxta:uuid-59616261646162614E50472050325033893DA55ABFB44BD18BDC91D3AD479D9C04
+	</Id>
+	<Type>
+		JxtaUnicast
+	</Type>
+	<Name>
+		Nebulostore discovery
+	</Name>
+</jxta:PipeAdvertisement>
+
+1008 [Thread-6] DEBUG pl.edu.uw.mimuw.nebulostore.communication.jxta.SocketServer  - Waiting for connections
+1215 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  -  [  Got a Discovery Response [1 elements]  from peer : jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003  ]
+1248 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1249 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxta:MIA>
+<jxta:MIA xml:space="default" xmlns:jxta="http://jxta.org">
+	<MSID>
+		urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000010206
+	</MSID>
+	<Desc>
+		Default Network PeerGroup reference implementation
+	</Desc>
+	<Comp>
+		<Efmt>
+			JDK1.4.1
+		</Efmt>
+		<Bind>
+			V2.0 Ref Impl
+		</Bind>
+	</Comp>
+	<Code>
+		net.jxta.impl.peergroup.ShadowPeerGroup
+	</Code>
+	<PURI>
+		http://jxta-jxse.dev.java.net/download/jxta.jar
+	</PURI>
+	<Prov>
+		sun.com
+	</Prov>
+	<Parm>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000100106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000E0106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000060106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000070106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000080106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000050306
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000020106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000030106
+		</Svc>
+		<Svc>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000040106
+		</Svc>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE000000110106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000F0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000D0106
+		</Proto>
+		<Proto>
+			urn:jxta:uuid-DEADBEEFDEAFBABAFEEDBABE0000000B0106
+		</Proto>
+	</Parm>
+</jxta:MIA>
+
+1251 [Executor - 5] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - known peers: [jxta://uuid-59616261646162614E50472050325033EC19CBF4BFAD4D139215EFB3073B1A8003]
+1297 [Thread-8] INFO  pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Processing MsgCommSendData
+12901 [Thread-8] ERROR pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer  - Exception: 
+java.net.SocketTimeoutException: Connection (resolution) timeout
+	at net.jxta.socket.JxtaSocket.connect(JxtaSocket.java:641)
+	at net.jxta.socket.JxtaSocket.<init>(JxtaSocket.java:466)
+	at pl.edu.uw.mimuw.nebulostore.communication.jxta.JXTAPeer.processMessage(JXTAPeer.java:210)
+	at pl.edu.uw.mimuw.nebulostore.appcore.Module.run(Module.java:23)
+	at java.lang.Thread.run(Thread.java:636)
