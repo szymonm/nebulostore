@@ -3,7 +3,7 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/home/marcin/eclipse_workspace/NebuloCommunicationModule/jar/RunCommunicationModule.jar">
+        <jar destfile="./jar/RunCommunicationModule.jar">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
                 <attribute name="Rsrc-Main-Class" value="pl.edu.uw.mimuw.nebulostore.communication.tests.RunPeer"/>
@@ -11,15 +11,13 @@
                 <attribute name="Rsrc-Class-Path" value="./ bcprov-jdk14.jar javax.servlet.jar jxta.jar jxtach.jar org.mortbay.jetty.jar junit.jar org.hamcrest.core_1.1.0.v20090501071000.jar log4j-1.2.16.jar"/>
             </manifest>
             <zipfileset src="jar-in-jar-loader.zip"/>
-            <fileset dir="/home/marcin/eclipse_workspace/NebuloCommunicationModule/bin"/>
-            <zipfileset dir="/home/marcin/eclipse_workspace/NebuloCommunicationModule/lib" includes="bcprov-jdk14.jar"/>
-            <zipfileset dir="/home/marcin/eclipse_workspace/NebuloCommunicationModule/lib" includes="javax.servlet.jar"/>
-            <zipfileset dir="/home/marcin/eclipse_workspace/NebuloCommunicationModule/lib" includes="jxta.jar"/>
-            <zipfileset dir="/home/marcin/eclipse_workspace/NebuloCommunicationModule/lib" includes="jxtach.jar"/>
-            <zipfileset dir="/home/marcin/eclipse_workspace/NebuloCommunicationModule/lib" includes="org.mortbay.jetty.jar"/>
-            <zipfileset dir="/home/marcin/eclipse-indigo/plugins/org.junit_4.8.2.v4_8_2_v20110321-1705" includes="junit.jar"/>
-            <zipfileset dir="/home/marcin/eclipse-indigo/plugins" includes="org.hamcrest.core_1.1.0.v20090501071000.jar"/>
-            <zipfileset dir="/home/marcin/eclipse_workspace/NebuloCommunicationModule/lib" includes="log4j-1.2.16.jar"/>
+            <fileset dir="./bin"/>
+            <zipfileset dir="./lib" includes="bcprov-jdk14.jar"/>
+            <zipfileset dir="./lib" includes="javax.servlet.jar"/>
+            <zipfileset dir="./lib" includes="jxta.jar"/>
+            <zipfileset dir="./lib" includes="jxtach.jar"/>
+            <zipfileset dir="./lib" includes="org.mortbay.jetty.jar"/>
+            <zipfileset dir="./lib" includes="log4j-1.2.16.jar"/>
         </jar>
         <copy file="./log4j.xml" todir="./jar/"/>
     </target>
