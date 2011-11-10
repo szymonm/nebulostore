@@ -1,7 +1,6 @@
 package pl.edu.uw.mimuw.nebulostore.communication;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -31,7 +30,7 @@ public class CommunicationPeer extends Module  {
 		super(null, outQueue);
 		
 		// TODO MBW: bad design - overwriting the queue in Module superclass
-		this.inQueue = mergedInQueue;
+		inQueue_ = mergedInQueue;
 		
 		// TODO MBW: Reading configuration
 		
@@ -53,7 +52,7 @@ public class CommunicationPeer extends Module  {
 	public void processMessage(Message msg) {
 		
 		if (msg instanceof MsgCommPeerFound) {
-			outQueue.add(msg);			
+			outQueue_.add(msg);			
 		}
 		
 		if (msg instanceof MsgCommSendData) {

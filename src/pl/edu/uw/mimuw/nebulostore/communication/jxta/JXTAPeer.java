@@ -281,7 +281,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
         {
         	knownPeers.add(""+ev.getSource());            
             logger.info("known peers: " + knownPeers);      
-            outQueue.add(new MsgCommPeerFound(""+ev.getSource()));        	
+            outQueue_.add(new MsgCommPeerFound(""+ev.getSource()));        	
         }
         
 
