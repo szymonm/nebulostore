@@ -1,5 +1,7 @@
 package pl.edu.uw.mimuw.nebulostore.dispatcher.tests;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -11,8 +13,6 @@ import pl.edu.uw.mimuw.nebulostore.appcore.Message;
 import pl.edu.uw.mimuw.nebulostore.appcore.Module;
 import pl.edu.uw.mimuw.nebulostore.appcore.messages.JobEndedMessage;
 import pl.edu.uw.mimuw.nebulostore.dispatcher.Dispatcher;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Dispatcher test class.
@@ -43,9 +43,8 @@ public class DispatcherTest {
 
   /**
    * Adds two messages with the same ID to dispatcher and checks if the same
-   * thread handles both of them (via static variable).
-   * Then send a JobEndMessage and verify that it was not forwarded to the
-   * worker thread.
+   * thread handles both of them (via static variable). Then send a
+   * JobEndMessage and verify that it was not forwarded to the worker thread.
    */
   @Test
   public void testHandlerExists() {
@@ -54,9 +53,11 @@ public class DispatcherTest {
      */
     class DummyModule extends Module {
       private int nMsgs_;
+
       DummyModule() {
         nMsgs_ = 0;
       }
+
       @Override
       public void processMessage(Message message) {
         staticCounter_++;
@@ -64,6 +65,7 @@ public class DispatcherTest {
         // Check if we are the only message receiver.
         assertTrue(staticCounter_ == nMsgs_);
       }
+
       @Override
       public void run() {
         try {
@@ -75,12 +77,12 @@ public class DispatcherTest {
     }
     /**
      * Dummy message.
-     *
      */
     class DummyMessage extends Message {
       public DummyMessage() {
         super("1");
       }
+
       @Override
       public Module getHandler() {
         return new DummyModule();

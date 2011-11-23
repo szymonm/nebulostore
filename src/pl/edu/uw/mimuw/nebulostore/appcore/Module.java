@@ -4,7 +4,6 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * Base class for all modules.
- *
  */
 public abstract class Module implements IModule, Runnable {
 
@@ -14,8 +13,7 @@ public abstract class Module implements IModule, Runnable {
   public Module() {
   }
 
-  public Module(BlockingQueue<Message> inQueue,
-                BlockingQueue<Message> outQueue) {
+  public Module(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
     outQueue_ = outQueue;
     inQueue_ = inQueue;
   }
@@ -34,7 +32,7 @@ public abstract class Module implements IModule, Runnable {
       try {
         processMessage(inQueue_.take());
       } catch (InterruptedException e) {
-        break;
+
       }
     }
   }

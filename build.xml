@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project NebuloCommunicationModule with Jar-in-Jar Loader">
-    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
-    <!--ANT 1.7 is required                                        -->
-    <target name="create_run_jar">
-        <jar destfile="./jar/RunCommunicationModule.jar">
+<project default="comm_pingpongexample" name="Create Runnable Jar for Project NebuloCommunicationModule with Jar-in-Jar Loader">
+
+    <target name="comm_pingpongexample">
+        <mkdir dir="./jar/resources"/>
+        <jar destfile="./jar/PingPongExample.jar">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="pl.edu.uw.mimuw.nebulostore.communication.tests.RunPeer"/>
+                <attribute name="Rsrc-Main-Class" value="pl.edu.uw.mimuw.nebulostore.communication.tests.RunPingPong"/>
                 <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ bcprov-jdk14.jar javax.servlet.jar jxta.jar jxtach.jar org.mortbay.jetty.jar junit.jar org.hamcrest.core_1.1.0.v20090501071000.jar log4j-1.2.16.jar"/>
+                <attribute name="Rsrc-Class-Path" value="./ bcprov-jdk14.jar javax.servlet.jar jxta.jar jxtach.jar org.mortbay.jetty.jar junit.jar log4j-1.2.16.jar spring-2.5.6.jar"/>
             </manifest>
             <zipfileset src="jar-in-jar-loader.zip"/>
             <fileset dir="./bin"/>
@@ -18,7 +18,13 @@
             <zipfileset dir="./lib" includes="jxtach.jar"/>
             <zipfileset dir="./lib" includes="org.mortbay.jetty.jar"/>
             <zipfileset dir="./lib" includes="log4j-1.2.16.jar"/>
+            <zipfileset dir="./lib" includes="spring-2.5.6.jar"/>
         </jar>
         <copy file="./log4j.xml" todir="./jar/"/>
+        <copy file="./resources/comm-spring-conf.xml" todir="./jar/resources"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="./jar"/>
     </target>
 </project>

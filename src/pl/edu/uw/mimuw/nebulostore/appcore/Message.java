@@ -2,9 +2,8 @@ package pl.edu.uw.mimuw.nebulostore.appcore;
 
 /**
  * Base class for messages.
- *
  */
-public abstract class Message extends net.jxta.endpoint.Message {
+public abstract class Message {
 
   public Message() {
     msgId_ = "temp";
@@ -26,8 +25,6 @@ public abstract class Message extends net.jxta.endpoint.Message {
   public String getId() {
     return msgId_;
   }
-
-  private static final long serialVersionUID = 110048388908555817L;
 
   /*
    * To be used in merging queues mechanism

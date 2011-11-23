@@ -5,10 +5,13 @@ import pl.edu.uw.mimuw.nebulostore.communication.address.CommAddress;
 /**
  * @author Marcin Walas
  */
-public class MsgCommPeerFound extends CommMessage {
+public class DiscoveryMessage extends CommMessage {
 
-  public MsgCommPeerFound(CommAddress sourceAddress, CommAddress destAddress) {
+  private static final long serialVersionUID = 840036305899527524L;
+
+  public DiscoveryMessage(CommAddress sourceAddress, CommAddress destAddress) {
     super(sourceAddress, destAddress);
 
   }
+
 }

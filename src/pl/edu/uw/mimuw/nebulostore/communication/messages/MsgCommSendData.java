@@ -1,15 +1,16 @@
 package pl.edu.uw.mimuw.nebulostore.communication.messages;
 
-import pl.edu.uw.mimuw.nebulostore.appcore.Message;
+/**
+ * @author Marcin Walas
+ */
+public class MsgCommSendData extends CommMessage {
 
-public class MsgCommSendData extends Message {
+  public String address_;
+  public String data_;
 
-	public String address;
-	public String data;
-	
-	public MsgCommSendData(String address, String data)
-	{
-		this.address = address;
-		this.data = data;
-	}
+  public MsgCommSendData(String address, String data) {
+    super(null, null);
+    this.address_ = address;
+    this.data_ = data;
+  }
 }
