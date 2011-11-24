@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="lib/org.mortbay.jetty.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="/home/marcin/5ROK/praca/nebulostore/repo/newrepo/nebulostore/branches/NebuloCommunicationModule/lib/je-4.0.71.jar"/>
+	<classpathentry kind="lib" path="lib/je-4.0.71.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
