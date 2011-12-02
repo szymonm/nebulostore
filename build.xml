@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="comm_pingpongexample" name="Create Runnable Jar for Project NebuloCommunicationModule with Jar-in-Jar Loader">
+
+    <target name="comm_pingpongexample">
+        <mkdir dir="./jar/resources"/>
+        <jar destfile="./jar/PingPongExample.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="org.nebulostore.communication.tests.RunPingPong"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ bcprov-jdk14.jar javax.servlet.jar jxta.jar jxtach.jar org.mortbay.jetty.jar junit.jar log4j-1.2.16.jar spring-2.5.6.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="./bin"/>
+            <zipfileset dir="./lib" includes="bcprov-jdk14.jar"/>
+            <zipfileset dir="./lib" includes="javax.servlet.jar"/>
+            <zipfileset dir="./lib" includes="jxta.jar"/>
+            <zipfileset dir="./lib" includes="jxtach.jar"/>
+            <zipfileset dir="./lib" includes="org.mortbay.jetty.jar"/>
+            <zipfileset dir="./lib" includes="log4j-1.2.16.jar"/>
+            <zipfileset dir="./lib" includes="spring-2.5.6.jar"/>
+        </jar>
+        <copy file="./log4j.xml" todir="./jar/"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="./jar"/>
+    </target>
+</project>
