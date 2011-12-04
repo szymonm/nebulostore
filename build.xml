@@ -1,29 +1,78 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="comm_pingpongexample" name="Create Runnable Jar for Project NebuloCommunicationModule with Jar-in-Jar Loader">
+<project name="Nebulostore" default="run-pingpong" basedir=".">
 
-    <target name="comm_pingpongexample">
-        <mkdir dir="./jar/resources"/>
-        <jar destfile="./jar/PingPongExample.jar">
-            <manifest>
-                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="org.nebulostore.communication.tests.RunPingPong"/>
-                <attribute name="Class-Path" value="."/>
-                <attribute name="Rsrc-Class-Path" value="./ bcprov-jdk14.jar javax.servlet.jar jxta.jar jxtach.jar org.mortbay.jetty.jar junit.jar log4j-1.2.16.jar spring-2.5.6.jar"/>
-            </manifest>
-            <zipfileset src="jar-in-jar-loader.zip"/>
-            <fileset dir="./bin"/>
-            <zipfileset dir="./lib" includes="bcprov-jdk14.jar"/>
-            <zipfileset dir="./lib" includes="javax.servlet.jar"/>
-            <zipfileset dir="./lib" includes="jxta.jar"/>
-            <zipfileset dir="./lib" includes="jxtach.jar"/>
-            <zipfileset dir="./lib" includes="org.mortbay.jetty.jar"/>
-            <zipfileset dir="./lib" includes="log4j-1.2.16.jar"/>
-            <zipfileset dir="./lib" includes="spring-2.5.6.jar"/>
-        </jar>
-        <copy file="./log4j.xml" todir="./jar/"/>
-    </target>
+  <property name="src.dir" value="src" />
 
-    <target name="clean">
-        <delete dir="./jar"/>
-    </target>
+  <property name="build.dir" value="build" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="jar.dir" value="${build.dir}/jar" />
+
+  <property name="lib.dir" value="lib" />
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar" />
+  </path>
+
+  <property name="main-class" value="org.nebulostore.communication.tests.RunPingPong" />
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+  </target>
+
+  <target name="jar" depends="compile">
+    <pathconvert property="libs.project" pathsep=" ">
+      <mapper>
+        <chainedmapper>
+
+          <!-- remove absolute path -->
+          <flattenmapper />
+
+          <!-- add lib/ prefix -->
+          <globmapper from="*" to="lib/*" />
+        </chainedmapper>
+      </mapper>
+
+      <path>
+
+        <!-- lib.home contains all jar files, in several subdirectories -->
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar" />
+        </fileset>
+      </path>
+    </pathconvert>
+
+    <mkdir dir="${jar.dir}" />
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}" filesetmanifest="merge">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}" />
+        <attribute name="Class-Path" value="${libs.project}" />
+      </manifest>
+    </jar>
+    <copy todir="${jar.dir}/lib">
+      <fileset dir="${lib.dir}" />
+    </copy>
+
+    <copy file="./log4j.xml" todir="${jar.dir}" />
+  </target>
+
+  <target name="jar-pingpong">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.tests.RunPingPong" />
+    </antcall>
+  </target>
+
+  <target name="run-pingpong" depends="jar-pingpong">
+    <java fork="true" classname="org.nebulostore.communication.tests.RunPingPong">
+      <classpath>
+        <path location="${jar.dir}/${ant.project.name}.jar" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="main" depends="clean,run-pingpong" />
 </project>
