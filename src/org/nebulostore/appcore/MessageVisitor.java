@@ -1,6 +1,8 @@
 package org.nebulostore.appcore;
 
-import org.nebulostore.appcore.messages.JobEndedMessage;
+import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.dispatcher.messages.JobEndedMessage;
+import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
 /**
  *
@@ -10,6 +12,7 @@ import org.nebulostore.appcore.messages.JobEndedMessage;
  *
  */
 public abstract class MessageVisitor {
-  public void visit(JobEndedMessage message) { }
-  public void visit(Message message) { }
+  public void visit(Message message) throws NebuloException { }
+  public void visit(JobEndedMessage message) throws NebuloException { }
+  public void visit(KillDispatcherMessage message) throws NebuloException { }
 }

@@ -2,10 +2,14 @@ package org.nebulostore.appcore;
 
 import java.util.concurrent.BlockingQueue;
 
+import org.nebulostore.appcore.exceptions.KillModuleException;
+import org.nebulostore.appcore.exceptions.NebuloException;
+
 /**
  * Base class for all modules.
+ * Module is an object that is runnable and communicates via in/out queues.
  */
-public abstract class Module implements IModule, Runnable {
+public abstract class Module implements Runnable {
 
   protected BlockingQueue<Message> inQueue_;
   protected BlockingQueue<Message> outQueue_;
@@ -31,9 +35,14 @@ public abstract class Module implements IModule, Runnable {
     while (true) {
       try {
         processMessage(inQueue_.take());
-      } catch (InterruptedException e) {
-
+      } catch (InterruptedException exception) {
+        // TODO: Log interrupt?
+      } catch (KillModuleException exception) {
+        break;
+      } catch (NebuloException exception) {
       }
     }
   }
+
+  protected void processMessage(Message message) throws NebuloException { }
 }

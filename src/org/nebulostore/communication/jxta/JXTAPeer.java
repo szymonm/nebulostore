@@ -166,7 +166,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.nebulostore.appcore.IModule#processMessage(org
    * .nebulostore.appcore.Message)
@@ -175,7 +175,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   private static final int PAYLOAD_SIZE = 1024;
 
   @Override
-  public void processMessage(Message msg) {
+  protected void processMessage(Message msg) {
 
     if (msg instanceof CommMessage) {
       logger_.debug("message forwarded to MessengerService");

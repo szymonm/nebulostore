@@ -77,7 +77,7 @@ public class MessengerService extends Module {
   }
 
   @Override
-  public void processMessage(Message msg) {
+  protected void processMessage(Message msg) {
     try {
       logger_.info("Message to be sent over network!");
       BlockingWireOutputPipe p = new BlockingWireOutputPipe(peerGroup_,

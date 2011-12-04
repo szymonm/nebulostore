@@ -1,23 +1,25 @@
 package org.nebulostore.appcore;
 
+import org.nebulostore.appcore.exceptions.NebuloException;
+
 /**
  * Base class for messages.
  */
 public abstract class Message {
 
   public Message() {
-    msgId_ = "temp";
+    msgId_ = "unnamed_message";
   }
 
   public Message(String msgID) {
     msgId_ = msgID;
   }
 
-  public void accept(MessageVisitor visitor) {
+  public void accept(MessageVisitor visitor) throws NebuloException {
     visitor.visit(this);
   }
 
-  public Module getHandler() throws Exception {
+  public JobModule getHandler() throws Exception {
     // TODO(bolek): Change it into a more specific exception type.
     throw new Exception("This is not an initializing message!");
   }

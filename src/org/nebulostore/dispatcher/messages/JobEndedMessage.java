@@ -1,7 +1,8 @@
-package org.nebulostore.appcore.messages;
+package org.nebulostore.dispatcher.messages;
 
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
  * Worker thread sends this message to dispatcher before it dies to
@@ -12,7 +13,7 @@ public class JobEndedMessage extends Message {
   public JobEndedMessage(String msgID) {
     super(msgID);
   }
-  public void visit(MessageVisitor visitor) {
+  public void accept(MessageVisitor visitor) throws NebuloException {
     visitor.visit(this);
   }
 }

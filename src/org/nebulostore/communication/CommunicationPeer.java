@@ -47,7 +47,7 @@ public class CommunicationPeer extends Module {
   }
 
   @Override
-  public void processMessage(Message msg) {
+  protected void processMessage(Message msg) {
 
     if (msg instanceof MsgCommPeerFound) {
       outQueue_.add(msg);

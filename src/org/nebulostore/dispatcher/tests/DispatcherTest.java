@@ -1,7 +1,5 @@
 package org.nebulostore.dispatcher.tests;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -9,10 +7,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.Module;
-import org.nebulostore.appcore.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.Dispatcher;
+import org.nebulostore.dispatcher.messages.JobEndedMessage;
+import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Dispatcher test class.
@@ -37,8 +38,6 @@ public class DispatcherTest {
 
   @After
   public void tearDown() throws Exception {
-    thread_.interrupt();
-    thread_.join();
   }
 
   /**
@@ -51,14 +50,13 @@ public class DispatcherTest {
     /**
      * Simple module that counts messages.
      */
-    class DummyModule extends Module {
+    class DummyModule extends JobModule {
       private int nMsgs_;
 
       DummyModule() {
         nMsgs_ = 0;
       }
 
-      @Override
       public void processMessage(Message message) {
         staticCounter_++;
         nMsgs_++;
@@ -84,7 +82,7 @@ public class DispatcherTest {
       }
 
       @Override
-      public Module getHandler() {
+      public JobModule getHandler() {
         return new DummyModule();
       }
     }
@@ -93,7 +91,10 @@ public class DispatcherTest {
     inQueue_.add(new DummyMessage());
     inQueue_.add(new DummyMessage());
     inQueue_.add(new JobEndedMessage("1"));
-    dispatcher_.die();
+    inQueue_.add(new KillDispatcherMessage());
+    try {
+      thread_.join();
+    } catch (Exception exception) { }
     // Verify that only two messages were handled by a worker thread.
     assertTrue(staticCounter_ == 2);
   }

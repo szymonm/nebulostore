@@ -31,7 +31,7 @@ public class Replicator extends Module {
   }
 
   @Override
-  public void processMessage(Message msg) {
+  protected void processMessage(Message msg) {
     // TODO(SZM) should Replicator handle any messages?
   }
 

@@ -16,10 +16,4 @@ public class JXTAChPeer extends Module {
     // TODO Auto-generated constructor stub
   }
 
-  @Override
-  public void processMessage(Message msg) {
-    // TODO Auto-generated method stub
-
-  }
-
 }

@@ -5,10 +5,14 @@ import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Module;
-import org.nebulostore.appcore.messages.JobEndedMessage;
+import org.nebulostore.appcore.exceptions.KillModuleException;
+import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.dispatcher.messages.JobEndedMessage;
+import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
 /**
  * Dispatcher.
@@ -37,6 +41,22 @@ public class Dispatcher extends Module {
     }
 
     /*
+     * End dispatcher.
+     */
+    @Override
+    public void visit(KillDispatcherMessage message) throws NebuloException {
+      Thread[] threads = workersThreads_.values().toArray(new Thread[0]);
+      for (int i = 0; i < threads.length; ++i) {
+        try {
+          threads[i].join();
+        } catch (InterruptedException e) {
+          continue;
+        }
+      }
+      throw new KillModuleException();
+    }
+
+    /*
      * General behavior - forwarding messages.
      */
     @Override
@@ -45,11 +65,12 @@ public class Dispatcher extends Module {
       if (!workersQueues_.containsKey(jobId)) {
         // Spawn a new thread to handle the message.
         try {
-          Module handler = message.getHandler();
+          JobModule handler = message.getHandler();
           BlockingQueue<Message> newInQueue = new LinkedBlockingQueue<Message>();
           handler.setInQueue(newInQueue);
-          // TODO(bolek): Is outQueue needed?
           handler.setOutQueue(inQueue_);
+          // Network queue is dispatcher's out queue.
+          handler.setNetworkQueue(outQueue_);
           workersQueues_.put(jobId, newInQueue);
           Thread newThread = new Thread(handler);
           workersThreads_.put(jobId, newThread);
@@ -66,7 +87,8 @@ public class Dispatcher extends Module {
   /**
    *
    * @param inQueue Input message queue.
-   * @param outQueue Output message queue (usually other module's input queue).
+   * @param outQueue Output message queue, which is also later passed to newly
+   *                 created tasks (usually network's inQueue).
    */
   public Dispatcher(BlockingQueue<Message> inQueue,
                     BlockingQueue<Message> outQueue) {
@@ -77,22 +99,9 @@ public class Dispatcher extends Module {
   }
 
   @Override
-  public void processMessage(Message message) {
+  protected void processMessage(Message message) throws NebuloException {
     // Handling logic lies inside our visitor class.
     message.accept(visitor_);
-  }
-
-  // TODO(bolek): This will later be invoked by an API call.
-  // (Now useful for testing purposes.)
-  // Wait for all sub-threads to end.
-  public void die() {
-    Thread[] threads = workersThreads_.values().toArray(new Thread[0]);
-    for (int i = 0; i < threads.length; ++i) {
-      try {
-        threads[i].join();
-      } catch (Exception e) {
-      }
-    }
   }
 
   private Map<String, BlockingQueue<Message>> workersQueues_;
