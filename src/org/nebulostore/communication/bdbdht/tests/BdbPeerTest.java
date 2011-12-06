@@ -1,5 +1,7 @@
-package org.nebulostore.communication.tests;
+package org.nebulostore.communication.bdbdht.tests;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -12,20 +14,13 @@ import org.nebulostore.communication.messages.MsgCommPeerFound;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
 
-/**
- * @author Marcin Walas
- */
-public class RunPingPong {
-
-  /**
-   * @param args
-   */
+public class BdbPeerTest {
 
   public static void main(String[] args) {
 
     DOMConfigurator.configure("resources/conf/log4j.xml");
 
-    Logger logger = Logger.getLogger(RunPingPong.class);
+    Logger logger = Logger.getLogger(BdbPeerTest.class);
 
     BlockingQueue<Message> inQueue = new LinkedBlockingQueue<Message>();
     BlockingQueue<Message> outQueue = new LinkedBlockingQueue<Message>();
@@ -38,7 +33,11 @@ public class RunPingPong {
       e1.printStackTrace();
       System.exit(-1);
     }
+
     new Thread(communicationPeer).start();
+
+    int peerNum = Integer.parseInt(args[0]);
+    List<Integer> foundPeers = new LinkedList<Integer>();
 
     while (true) {
 
@@ -52,29 +51,22 @@ public class RunPingPong {
 
       if (msg != null) {
         if (msg instanceof MsgCommPeerFound) {
-          logger.info("peer found!");
+          logger.info("peer found, getting its number...");
           inQueue.add(new PingMessage(((MsgCommPeerFound) msg)
-              .getSourceAddress(), 0));
+              .getSourceAddress(), peerNum));
         }
 
         if (msg instanceof PingMessage) {
-
           PingMessage ping = (PingMessage) msg;
           logger.info("ping message received: " + ping.getNumber());
-          inQueue.add(new PongMessage(ping.getSourceAddress(),
-              ping.getNumber() + 1));
-        }
-        if (msg instanceof PongMessage) {
-
-          PongMessage pong = (PongMessage) msg;
-          logger.info("pong message received: " + pong.getNumber());
-          inQueue.add(new PingMessage(pong.getSourceAddress(),
-              pong.getNumber() + 1));
+          if (!foundPeers.contains(ping.getNumber())) {
+            foundPeers.add(ping.getNumber());
+          }
+          inQueue.add(new PongMessage(ping.getSourceAddress(), peerNum));
         }
 
       }
 
     }
-
   }
 }

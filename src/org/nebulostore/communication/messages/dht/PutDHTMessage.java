@@ -4,14 +4,13 @@ import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
 
 /**
- * @author marcin
+ * @author Marcin Walas
  */
-public class ValueDHTMessage extends OutDHTMessage {
-
+public class PutDHTMessage extends InDHTMessage {
   private final KeyDHT key_;
   private final ValueDHT value_;
 
-  public ValueDHTMessage(KeyDHT key, ValueDHT value) {
+  public PutDHTMessage(KeyDHT key, ValueDHT value) {
     key_ = key;
     value_ = value;
   }
@@ -23,5 +22,4 @@ public class ValueDHTMessage extends OutDHTMessage {
   public ValueDHT getValue() {
     return value_;
   }
-
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<bdb-peer>
+  <sleepycat>
+    <storage-path>/tmp/</storage-path>
+  </sleepycat>
+</bdb-peer>

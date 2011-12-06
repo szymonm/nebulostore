@@ -1,13 +1,10 @@
 package org.nebulostore.communication.exceptions;
 
+import org.nebulostore.appcore.exceptions.NebuloException;
+
 /**
  * @author marcin
  */
-public class CommException extends Exception {
-
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1170763745206736454L;
+public class CommException extends NebuloException {
 
 }

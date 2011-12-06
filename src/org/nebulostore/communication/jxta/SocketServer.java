@@ -18,7 +18,6 @@ import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaServerSocket;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * @author Marcin Walas
@@ -27,12 +26,11 @@ public class SocketServer implements Runnable {
 
   public final static String SOCKETIDSTR = "urn:jxta:cbid-"
       + "59616261646162614E5047205032503393B5C2F6CA7A41FBB0F890173088E79404";
-  private transient PeerGroup netPeerGroup_ = null;
+  private transient PeerGroup netPeerGroup_;
 
   private static Logger logger_ = Logger.getLogger(SocketServer.class);
 
   public SocketServer(PeerGroup netPeerGroup) {
-    DOMConfigurator.configure("log4j.xml");
     this.netPeerGroup_ = netPeerGroup;
   }
 

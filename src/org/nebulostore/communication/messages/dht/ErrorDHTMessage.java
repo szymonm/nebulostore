@@ -1,17 +1,15 @@
 package org.nebulostore.communication.messages.dht;
 
 import org.nebulostore.communication.exceptions.CommException;
-import org.nebulostore.communication.messages.CommMessage;
 
 /**
  * @author marcin
  */
-public class ErrorDHTMessage extends CommMessage {
+public class ErrorDHTMessage extends OutDHTMessage {
 
   private final CommException exception_;
 
   public ErrorDHTMessage(CommException exception) {
-    super(null, null);
     exception_ = exception;
   }
 

@@ -8,6 +8,8 @@
   <property name="jar.dir" value="${build.dir}/jar" />
 
   <property name="lib.dir" value="lib" />
+  <property name="resources.dir" value="resources" />
+
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="**/*.jar" />
@@ -57,7 +59,9 @@
       <fileset dir="${lib.dir}" />
     </copy>
 
-    <copy file="./log4j.xml" todir="${jar.dir}" />
+    <copy todir="${jar.dir}">
+      <fileset dir="${resources.dir}" />
+    </copy>
   </target>
 
   <target name="jar-pingpong">
@@ -65,6 +69,13 @@
       <param name="main-class" value="org.nebulostore.communication.tests.RunPingPong" />
     </antcall>
   </target>
+
+  <target name="jar-bdbtest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.bdbdht.tests.BdbPeerTest" />
+    </antcall>
+  </target>
+
 
   <target name="run-pingpong" depends="jar-pingpong">
     <java fork="true" classname="org.nebulostore.communication.tests.RunPingPong">

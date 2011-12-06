@@ -1,25 +1,25 @@
 #!/bin/bash
 
+BUILD_DIR="build"
 JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
 PEERS_NUM=3
-TEST_RUN_TIME=200
+TEST_RUN_TIME=20
 
-rm -rf ./jar/*
+rm -rf $BUILD_DIR
 
-ant jar-pingpong
+ant $1
 
 
 echo "Building done. Copying..."
 
 for i in `seq 1 $PEERS_NUM`
 do
-    path="./$JAR_DIR/$i"
-    rm -rf $path
+    path="./$JAR_DIR/$i"    
     mkdir $path
     cp ./$JAR_DIR/*.jar ./$JAR_DIR/$i/
     cp -r ./$JAR_DIR/lib ./$JAR_DIR/$i/
-    cp ./log4j.xml ./$JAR_DIR/$i/
+    cp -r resources ./$JAR_DIR/$i/
 done
 
 echo "Copying done. Running..."
@@ -27,8 +27,8 @@ echo "Copying done. Running..."
 for i in `seq 1 $PEERS_NUM`
 do
     cd ./$JAR_DIR/$i
-    java -jar $JAR &
-    echo "java -jar $JAR"
+    java -jar $JAR $i&
+    echo "java -jar $JAR $i"
     cd ../../../
 done
 
