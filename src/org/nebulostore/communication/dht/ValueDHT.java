@@ -42,7 +42,7 @@ public class ValueDHT implements Serializable {
     return serialized;
   }
 
-  static public ValueDHT build(String serialized) {
+  public static ValueDHT build(String serialized) {
 
     byte[] data = null;
     try {

@@ -44,6 +44,8 @@ public final class Peer {
       networkThread.join();
       dispatcherThread.join();
     } catch (InterruptedException e) {
+      // TODO(bolek): Log it?
+      return;
     }
   }
 }

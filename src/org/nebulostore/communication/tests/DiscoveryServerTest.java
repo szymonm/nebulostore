@@ -1,8 +1,8 @@
 package org.nebulostore.communication.tests;
 
-import static org.junit.Assert.fail;
-
 import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author Marcin Walas

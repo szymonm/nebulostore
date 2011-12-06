@@ -33,8 +33,8 @@ public class MessengerService extends Module {
 
   private final PeerDiscoveryService resolverThread_;
 
-  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-"
-      + "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
+  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-" +
+      "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
 
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
 

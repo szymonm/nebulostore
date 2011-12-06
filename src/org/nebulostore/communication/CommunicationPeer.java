@@ -14,7 +14,7 @@ import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.communication.jxtach.JXTAChPeer;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.communication.messages.MsgCommPeerFound;
+import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.InDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
@@ -70,7 +70,7 @@ public class CommunicationPeer extends Module {
   protected void processMessage(Message msg) {
     logger_.debug("process message got");
 
-    if (msg instanceof MsgCommPeerFound) {
+    if (msg instanceof CommPeerFoundMessage) {
       outQueue_.add(msg);
     }
 

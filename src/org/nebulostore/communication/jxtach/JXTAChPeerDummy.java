@@ -1,6 +1,5 @@
 /*
- * Dummy implementation of JXTAChPeer contract
- * 
+ * Dummy implementation of JXTAChPeer contract.
  */
 
 package org.nebulostore.communication.jxtach;

@@ -10,11 +10,17 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
-import org.nebulostore.communication.messages.MsgCommPeerFound;
+import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
 
-public class BdbPeerTest {
+/**
+ * @author marcin
+ */
+public final class BdbPeerTest {
+
+  private BdbPeerTest() {
+  }
 
   public static void main(String[] args) {
 
@@ -50,9 +56,9 @@ public class BdbPeerTest {
       }
 
       if (msg != null) {
-        if (msg instanceof MsgCommPeerFound) {
+        if (msg instanceof CommPeerFoundMessage) {
           logger.info("peer found, getting its number...");
-          inQueue.add(new PingMessage(((MsgCommPeerFound) msg)
+          inQueue.add(new PingMessage(((CommPeerFoundMessage) msg)
               .getSourceAddress(), peerNum));
         }
 
@@ -64,9 +70,7 @@ public class BdbPeerTest {
           }
           inQueue.add(new PongMessage(ping.getSourceAddress(), peerNum));
         }
-
       }
-
     }
   }
 }

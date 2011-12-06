@@ -36,10 +36,13 @@ public abstract class Module implements Runnable {
       try {
         processMessage(inQueue_.take());
       } catch (InterruptedException exception) {
-        // TODO: Log interrupt?
+        // TODO(bolek): Log interrupt?
+        continue;
       } catch (KillModuleException exception) {
         break;
       } catch (NebuloException exception) {
+        // TODO(bolek): Log it?
+        break;
       }
     }
   }

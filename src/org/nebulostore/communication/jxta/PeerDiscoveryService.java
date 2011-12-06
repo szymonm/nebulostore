@@ -35,8 +35,8 @@ class PeerDiscoveryService implements Runnable {
         PipeAdvertisement pipeAdv = MessengerService.getPipeAdvertisement();
 
         // publish the advertisement with a lifetime of 2 mintutes
-        logger_.info("Publishing the following advertisement with lifetime :"
-            + lifetime_ + " expiration :" + expiration_);
+        logger_.info("Publishing the following advertisement with lifetime :" +
+            lifetime_ + " expiration :" + expiration_);
         logger_.info(pipeAdv.toString());
         discovery_.publish(pipeAdv, lifetime_, expiration_);
         discovery_.remotePublish(pipeAdv, expiration_);

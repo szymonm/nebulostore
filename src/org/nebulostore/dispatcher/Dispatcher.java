@@ -60,7 +60,7 @@ public class Dispatcher extends Module {
      * General behavior - forwarding messages.
      */
     @Override
-    public void visit(Message message) {
+    public void visit(Message message) throws NebuloException {
       String jobId = message.getId();
       if (!workersQueues_.containsKey(jobId)) {
         // Spawn a new thread to handle the message.
@@ -75,8 +75,9 @@ public class Dispatcher extends Module {
           Thread newThread = new Thread(handler);
           workersThreads_.put(jobId, newThread);
           newThread.start();
-        } catch (Exception e) {
-          // TODO(bolek): Log it or better throw again.
+        } catch (NebuloException exception) {
+          // TODO(bolek): Better log it here than deeper in run().
+          throw exception;
         }
       }
       // Delegate message to a waiting worker thread.

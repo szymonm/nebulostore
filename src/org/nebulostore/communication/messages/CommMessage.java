@@ -8,7 +8,6 @@ import org.nebulostore.communication.address.CommAddress;
 /**
  * Created as a base class for all messages that are being sent over
  * communication layer.
- * 
  * @author Marcin Walas
  */
 public abstract class CommMessage extends Message implements Serializable {

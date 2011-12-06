@@ -2,6 +2,9 @@ package org.nebulostore.communication.messages.dht;
 
 import org.nebulostore.appcore.Message;
 
-abstract public class DHTMessage extends Message {
+/**
+ * @author marcin
+ */
+public abstract class DHTMessage extends Message {
 
 }

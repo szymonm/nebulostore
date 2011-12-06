@@ -19,9 +19,9 @@ public abstract class Message {
     visitor.visit(this);
   }
 
-  public JobModule getHandler() throws Exception {
+  public JobModule getHandler() throws NebuloException {
     // TODO(bolek): Change it into a more specific exception type.
-    throw new Exception("This is not an initializing message!");
+    throw new NebuloException("This is not an initializing message!");
   }
 
   public String getId() {

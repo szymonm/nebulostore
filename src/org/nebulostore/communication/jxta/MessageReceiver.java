@@ -55,8 +55,7 @@ class MessageReceiver implements Runnable {
       // TODO Auto-generated catch block
       e2.printStackTrace();
     }
-    logger_.info("message after decoding: "
-        + msg.getMessageElement("serialized").toString());
+    logger_.info("message after decoding: " + msg.getMessageElement("serialized").toString());
     ByteArrayInputStream baos = new ByteArrayInputStream(data);
     ObjectInputStream ois = null;
     try {

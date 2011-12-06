@@ -5,9 +5,9 @@ import org.nebulostore.communication.address.CommAddress;
 /**
  * @author Marcin Walas
  */
-public class MsgCommPeerFound extends CommMessage {
+public class CommPeerFoundMessage extends CommMessage {
 
-  public MsgCommPeerFound(CommAddress sourceAddress, CommAddress destAddress) {
+  public CommPeerFoundMessage(CommAddress sourceAddress, CommAddress destAddress) {
     super(sourceAddress, destAddress);
 
   }

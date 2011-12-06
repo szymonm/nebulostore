@@ -8,19 +8,20 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
-import org.nebulostore.communication.messages.MsgCommPeerFound;
+import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
 
 /**
  * @author Marcin Walas
  */
-public class RunPingPong {
+public final class RunPingPong {
+
+  private RunPingPong() { }
 
   /**
    * @param args
    */
-
   public static void main(String[] args) {
 
     DOMConfigurator.configure("resources/conf/log4j.xml");
@@ -51,9 +52,9 @@ public class RunPingPong {
       }
 
       if (msg != null) {
-        if (msg instanceof MsgCommPeerFound) {
+        if (msg instanceof CommPeerFoundMessage) {
           logger.info("peer found!");
-          inQueue.add(new PingMessage(((MsgCommPeerFound) msg)
+          inQueue.add(new PingMessage(((CommPeerFoundMessage) msg)
               .getSourceAddress(), 0));
         }
 
@@ -71,10 +72,8 @@ public class RunPingPong {
           inQueue.add(new PingMessage(pong.getSourceAddress(),
               pong.getNumber() + 1));
         }
-
       }
-
     }
-
   }
+
 }

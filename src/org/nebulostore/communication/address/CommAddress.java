@@ -25,8 +25,8 @@ public class CommAddress implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    return (o instanceof CommAddress)
-        && (peerId_.hashCode() == ((CommAddress) o).peerId_.hashCode());
+    return (o instanceof CommAddress) &&
+        (peerId_.hashCode() == ((CommAddress) o).peerId_.hashCode());
   }
 
 }

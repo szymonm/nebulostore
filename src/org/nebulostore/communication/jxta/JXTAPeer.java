@@ -38,8 +38,8 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.communication.messages.MsgCommPeerFound;
-import org.nebulostore.communication.messages.MsgCommSendData;
+import org.nebulostore.communication.messages.CommPeerFoundMessage;
+import org.nebulostore.communication.messages.CommSendDataMessage;
 
 /**
  * @author Marcin Walas
@@ -184,7 +184,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     }
 
     // TODO(MBW) : DEPRECATED - Remove this
-    if (msg instanceof MsgCommSendData) {
+    if (msg instanceof CommSendDataMessage) {
       try {
 
         logger_.info("Processing MsgCommSendData");
@@ -196,8 +196,8 @@ public class JXTAPeer extends Module implements DiscoveryListener {
         try {
           socket = new JxtaSocket(networkManager_.getNetPeerGroup(),
               // no specific peerid
-              PeerID.create(new URI("urn:"
-                  + ((MsgCommSendData) msg).address_.replace("//", ""))),
+              PeerID.create(new URI("urn:" +
+                  ((CommSendDataMessage) msg).address_.replace("//", ""))),
               SocketServer.createSocketAdvertisement(),
               // connection timeout: 5 seconds
               5000,
@@ -254,7 +254,6 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   /*
    * (non-Javadoc)
-   * 
    * @see
    * net.jxta.discovery.DiscoveryListener#discoveryEvent(net.jxta.discovery.
    * DiscoveryEvent)
@@ -265,8 +264,8 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     DiscoveryResponseMsg res = ev.getResponse();
 
     // let's get the responding peer's advertisement
-    logger_.info(" [  Got a Discovery Response [" + res.getResponseCount()
-        + " elements]  from peer : " + ev.getSource() + "  ]");
+    logger_.info(" [  Got a Discovery Response [" + res.getResponseCount() +
+        " elements]  from peer : " + ev.getSource() + "  ]");
 
     if (!knownPeers_.contains("" + ev.getSource())) {
       knownPeers_.add("" + ev.getSource());
@@ -274,11 +273,8 @@ public class JXTAPeer extends Module implements DiscoveryListener {
       logger_.info("peer added!");
 
       try {
-        String str = "urn:" + ("" + ev.getSource()).replace("//", "");
-        outQueue_
-            .add(new MsgCommPeerFound(new CommAddress(PeerID.create(new URI(
-                "urn:" + ("" + ev.getSource()).replace("//", "")))),
-                getPeerAddress()));
+        outQueue_.add(new CommPeerFoundMessage(new CommAddress(PeerID.create(new URI(
+            "urn:" + ("" + ev.getSource()).replace("//", "")))), getPeerAddress()));
       } catch (URISyntaxException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

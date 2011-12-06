@@ -69,7 +69,8 @@ public class DispatcherTest {
         try {
           processMessage(inQueue_.take());
           processMessage(inQueue_.take());
-        } catch (InterruptedException e) {
+        } catch (InterruptedException exception) {
+          return;
         }
       }
     }
@@ -94,7 +95,9 @@ public class DispatcherTest {
     inQueue_.add(new KillDispatcherMessage());
     try {
       thread_.join();
-    } catch (Exception exception) { }
+    } catch (InterruptedException exception) {
+      assertTrue(false);
+    }
     // Verify that only two messages were handled by a worker thread.
     assertTrue(staticCounter_ == 2);
   }
