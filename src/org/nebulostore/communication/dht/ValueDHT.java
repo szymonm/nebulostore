@@ -15,7 +15,12 @@ import net.jxta.impl.util.Base64;
 
 public class ValueDHT implements Serializable {
 
+  // TODO: Do not use Object here.
   private final Object value_;
+
+  public Object getValue() {
+    return value_;
+  }
 
   public ValueDHT(Object v) {
     value_ = v;

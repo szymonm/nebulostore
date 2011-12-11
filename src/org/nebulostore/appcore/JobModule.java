@@ -12,4 +12,6 @@ public class JobModule extends Module {
   public void setNetworkQueue(BlockingQueue<Message> networkQueue) {
     networkQueue_ = networkQueue;
   }
+
+  protected String taskId_;
 }

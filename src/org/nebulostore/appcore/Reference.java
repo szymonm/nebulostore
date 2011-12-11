@@ -1,28 +1,26 @@
-package org.nebulostore.replicator;
+package org.nebulostore.appcore;
 
-import java.io.Serializable;
-
-import org.nebulostore.appcore.ObjectId;
-import org.nebulostore.appcore.TransportLayerAddress;
+import org.nebulostore.communication.address.CommAddress;
 
 /**
  * @author szymonmatejczyk
  */
-public class DirectoryEntry implements Serializable {
+public class Reference extends DirectoryEntry {
 
   /**
    * Temporal field for debugging.
    */
   public String title_;
   public ObjectId objectKey_;
-  public TransportLayerAddress objectPhysicalAddress_;
+  /* Addresses of replicas of object objectKey_. */
+  public CommAddress[] objectPhysicalAddresses_;
 
-  public DirectoryEntry(String title, ObjectId objectId,
-    TransportLayerAddress objectPhysicalAddress) {
+  public Reference(String title, ObjectId objectId,
+    CommAddress[] objectPhysicalAddress) {
     super();
     title_ = title;
     objectKey_ = objectId;
-    objectPhysicalAddress_ = objectPhysicalAddress;
+    objectPhysicalAddresses_ = objectPhysicalAddress;
   }
 
   @Override
@@ -30,8 +28,8 @@ public class DirectoryEntry implements Serializable {
     final int prime = 31;
     int result;
     result = prime + ((objectKey_ == null) ? 0 : objectKey_.hashCode());
-    result =
-        prime * result + ((objectPhysicalAddress_ == null) ? 0 : objectPhysicalAddress_.hashCode());
+    result = prime * result +
+        ((objectPhysicalAddresses_ == null) ? 0 : objectPhysicalAddresses_.hashCode());
     result = prime * result + ((title_ == null) ? 0 : title_.hashCode());
     return result;
   }
@@ -44,16 +42,16 @@ public class DirectoryEntry implements Serializable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    DirectoryEntry other = (DirectoryEntry) obj;
+    Reference other = (Reference) obj;
     if (objectKey_ == null) {
       if (other.objectKey_ != null)
         return false;
     } else if (!objectKey_.equals(other.objectKey_))
       return false;
-    if (objectPhysicalAddress_ == null) {
-      if (other.objectPhysicalAddress_ != null)
+    if (objectPhysicalAddresses_ == null) {
+      if (other.objectPhysicalAddresses_ != null)
         return false;
-    } else if (!objectPhysicalAddress_.equals(other.objectPhysicalAddress_))
+    } else if (!objectPhysicalAddresses_.equals(other.objectPhysicalAddresses_))
       return false;
     if (title_ == null) {
       if (other.title_ != null)

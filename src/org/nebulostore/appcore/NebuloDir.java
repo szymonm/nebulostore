@@ -1,27 +1,27 @@
 package org.nebulostore.appcore;
 
-import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.nebulostore.replicator.DirectoryEntry;
 
 /**
- * Temporary directory implemetation.
+ * Temporary directory implementation.
  */
-public class Directory extends DataFile {
-  private LinkedList<DirectoryEntry> entries_;
+public class NebuloDir extends NebuloObject {
+  private Map<EntryId, EncryptedEntity> entries_;
 
-  public LinkedList<DirectoryEntry> getEntries() {
+  public Map<EntryId, EncryptedEntity> getEntries() {
     return entries_;
   }
 
-  public Directory(LinkedList<DirectoryEntry> entries) {
+  public NebuloDir(Map<EntryId, EncryptedEntity> entries) {
     super();
     entries_ = entries;
   }
 
-  public Directory() {
+  public NebuloDir() {
     super();
-    entries_ = new LinkedList<DirectoryEntry>();
+    entries_ = new TreeMap<EntryId, EncryptedEntity>();
   }
 
   @Override
@@ -39,7 +39,7 @@ public class Directory extends DataFile {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Directory other = (Directory) obj;
+    NebuloDir other = (NebuloDir) obj;
     if (entries_ == null) {
       if (other.entries_ != null)
         return false;

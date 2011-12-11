@@ -1,11 +1,11 @@
 package org.nebulostore.replicator.tests;
 
-import org.nebulostore.appcore.DataFile;
+import org.nebulostore.appcore.NebuloFile;
 
 /**
  * @author szymonmatejczyk
  */
-public class SimpleIntegerFile extends DataFile {
+public class SimpleIntegerFile extends NebuloFile {
   /**
    */
   private static final long serialVersionUID = -7808434525397499375L;

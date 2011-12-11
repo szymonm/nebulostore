@@ -12,14 +12,16 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 
-import org.nebulostore.appcore.DataFile;
-import org.nebulostore.appcore.Directory;
+import org.nebulostore.appcore.DirectoryEntry;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
+import org.nebulostore.appcore.NebuloDir;
+import org.nebulostore.appcore.NebuloFile;
+import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.ObjectId;
+import org.nebulostore.appcore.Reference;
 
 /**
  * @author szymonmatejczyk
@@ -37,7 +39,7 @@ public class Replicator extends Module {
 
   private HashMap<ObjectId, String> filesLocations_ = new HashMap<ObjectId, String>();
 
-  public void storeObject(ObjectId objectId, DataFile dataFile) throws SaveException {
+  public void storeObject(ObjectId objectId, NebuloObject dataFile) throws SaveException {
     if (filesLocations_.containsKey(objectId)) {
       throw new SaveException();
     }
@@ -51,7 +53,7 @@ public class Replicator extends Module {
    */
   public void storeObject(ObjectId objectId, InputStream inputStream) throws SaveException {
     try {
-      DataFile dataFile = (DataFile) ((ObjectInputStream) inputStream).readObject();
+      NebuloFile dataFile = (NebuloFile) ((ObjectInputStream) inputStream).readObject();
       storeObject(objectId, dataFile);
     } catch (ClassCastException exception) {
       throw new SaveException();
@@ -63,7 +65,7 @@ public class Replicator extends Module {
   }
 
   public void getObject(ObjectId objectId, OutputStream outputStream) {
-    DataFile dataFile = getObject(objectId);
+    NebuloObject dataFile = getObject(objectId);
     if (dataFile == null)
       return;
     try {
@@ -73,7 +75,7 @@ public class Replicator extends Module {
     }
   }
 
-  private void updateObject(ObjectId objectId, DataFile dataFile) throws SaveException {
+  private void updateObject(ObjectId objectId, NebuloObject dataFile) throws SaveException {
     String location = filesLocations_.get(objectId);
     if (location == null)
       throw new SaveException();
@@ -103,7 +105,7 @@ public class Replicator extends Module {
    *          Object's key.
    * @return DataFile.
    */
-  public DataFile getObject(ObjectId objectId) {
+  public NebuloObject getObject(ObjectId objectId) {
     String location = filesLocations_.get(objectId);
     if (location == null) {
       return null;
@@ -111,11 +113,11 @@ public class Replicator extends Module {
 
     FileInputStream fis = null;
     ObjectInputStream ois = null;
-    DataFile result = null;
+    NebuloFile result = null;
     try {
       fis = new FileInputStream(location);
       ois = new ObjectInputStream(fis);
-      result = (DataFile) ois.readObject();
+      result = (NebuloFile) ois.readObject();
       ois.close();
     } catch (IOException exception) {
       exception.printStackTrace();
@@ -144,18 +146,19 @@ public class Replicator extends Module {
   }
 
   public void createEmptyDirectory(ObjectId dirKey) throws SaveException {
-    storeObject(dirKey, new Directory());
+    storeObject(dirKey, new NebuloDir());
   }
 
   public Collection<DirectoryEntry> listDirectory(ObjectId dirKey) {
-    LinkedList<DirectoryEntry> list = ((Directory) getObject(dirKey)).getEntries();
-    return list;
+    // TODO(szymon): Should this return encrypted entries? Construct the collection and return it.
+    return null;
   }
 
-  public void appendToDirectory(ObjectId dirKey, DirectoryEntry directoryEntry)
+  public void appendToDirectory(ObjectId dirKey, Reference directoryEntry)
     throws SaveException {
-    Directory directory = (Directory) getObject(dirKey);
-    directory.getEntries().add(directoryEntry);
+    NebuloDir directory = (NebuloDir) getObject(dirKey);
+    // TODO(szymon): Encrypt directoryEntry and add it to map.
+    //directory.getEntries().add(directoryEntry);
 
     updateObject(dirKey, directory);
   }
