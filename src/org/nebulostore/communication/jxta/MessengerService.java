@@ -17,24 +17,25 @@ import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
 
 import org.apache.log4j.Logger;
-
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.messages.CommMessage;
 
 /**
+ * Module responsible for sending data over JXTA Network.
+ * 
  * @author Marcin Walas
  */
 public class MessengerService extends Module {
 
   private final DiscoveryService discovery_;
   private final PeerGroup peerGroup_;
+  /**
+   */
   private MessageReceiver accepter_;
 
-  private final PeerDiscoveryService resolverThread_;
-
-  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-" +
-      "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
+  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-"
+      + "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
 
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
 
@@ -56,19 +57,12 @@ public class MessengerService extends Module {
       e.printStackTrace();
     }
 
-    resolverThread_ = new PeerDiscoveryService(discovery_);
-    (new Thread(resolverThread_, "Nebulostore.Communication.ResolverThread"))
-        .start();
-
     logger_.info("fully initialised");
   }
 
   public static PipeAdvertisement getPipeAdvertisement() {
     PipeAdvertisement advertisement = (PipeAdvertisement) AdvertisementFactory
         .newAdvertisement(PipeAdvertisement.getAdvertisementType());
-
-    // / advertisement.setPipeID(IDFactory
-    // / .newPipeID(PeerGroupID.defaultNetPeerGroupID));
 
     advertisement.setPipeID(ID.create(URI.create(MESSAGE_PIPE_ID_STR)));
     advertisement.setType(PipeService.UnicastType);

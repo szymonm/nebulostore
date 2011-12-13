@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="Nebulostore" default="run-pingpong" basedir=".">
+<project name="Nebulostore" default="jar-pingpong" basedir=".">
 
   <property name="src.dir" value="src" />
 

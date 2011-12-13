@@ -7,10 +7,15 @@ import org.nebulostore.communication.dht.ValueDHT;
  * @author Marcin Walas
  */
 public class PutDHTMessage extends InDHTMessage {
+  /**
+   */
   private final KeyDHT key_;
+  /**
+   */
   private final ValueDHT value_;
 
-  public PutDHTMessage(KeyDHT key, ValueDHT value) {
+  public PutDHTMessage(String jobId, KeyDHT key, ValueDHT value) {
+    super(jobId);
     key_ = key;
     value_ = value;
   }

@@ -7,9 +7,12 @@ import org.nebulostore.communication.dht.KeyDHT;
  */
 public class GetDHTMessage extends InDHTMessage {
 
+  /**
+   */
   private final KeyDHT key_;
 
-  public GetDHTMessage(KeyDHT key) {
+  public GetDHTMessage(String jobId, KeyDHT key) {
+    super(jobId);
     key_ = key;
   }
 

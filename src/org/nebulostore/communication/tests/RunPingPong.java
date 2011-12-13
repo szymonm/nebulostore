@@ -47,8 +47,7 @@ public final class RunPingPong {
       try {
         msg = outQueue.take();
       } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        logger.error("", e);
       }
 
       if (msg != null) {

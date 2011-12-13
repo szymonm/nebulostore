@@ -11,7 +11,8 @@ public class ValueDHTMessage extends OutDHTMessage {
   private final KeyDHT key_;
   private final ValueDHT value_;
 
-  public ValueDHTMessage(KeyDHT key, ValueDHT value) {
+  public ValueDHTMessage(InDHTMessage reqMessage, KeyDHT key, ValueDHT value) {
+    super(reqMessage);
     key_ = key;
     value_ = value;
   }

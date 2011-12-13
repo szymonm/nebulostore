@@ -7,9 +7,12 @@ import org.nebulostore.communication.exceptions.CommException;
  */
 public class ErrorDHTMessage extends OutDHTMessage {
 
+  /**
+   */
   private final CommException exception_;
 
-  public ErrorDHTMessage(CommException exception) {
+  public ErrorDHTMessage(InDHTMessage reqMessage, CommException exception) {
+    super(reqMessage);
     exception_ = exception;
   }
 

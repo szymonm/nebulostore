@@ -5,8 +5,8 @@ package org.nebulostore.communication.messages.dht;
  */
 public class OkDHTMessage extends OutDHTMessage {
 
-  public OkDHTMessage() {
-
+  public OkDHTMessage(InDHTMessage reqMessage) {
+    super(reqMessage);
   }
 
 }

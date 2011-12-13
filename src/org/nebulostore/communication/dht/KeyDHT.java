@@ -1,9 +1,11 @@
 package org.nebulostore.communication.dht;
 
+import java.io.Serializable;
+
 /**
  * @author marcin
  */
-public class KeyDHT {
+public class KeyDHT implements Serializable {
 
   private final String key_;
 
@@ -13,6 +15,6 @@ public class KeyDHT {
 
   @Override
   public String toString() {
-    return null;
+    return key_;
   }
 }

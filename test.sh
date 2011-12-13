@@ -4,7 +4,7 @@ BUILD_DIR="build"
 JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
 PEERS_NUM=3
-TEST_RUN_TIME=20
+TEST_RUN_TIME=60
 
 rm -rf $BUILD_DIR
 
@@ -31,6 +31,9 @@ do
     echo "java -jar $JAR $i"
     cd ../../../
 done
+
+# Special mod for bdb dht impl
+cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR/1/resources/conf/communication/BdbPeer.xml
 
 sleep $TEST_RUN_TIME
 

@@ -10,7 +10,16 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
+import org.nebulostore.communication.dht.KeyDHT;
+import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
+import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
+import org.nebulostore.communication.messages.dht.GetDHTMessage;
+import org.nebulostore.communication.messages.dht.InDHTMessage;
+import org.nebulostore.communication.messages.dht.OkDHTMessage;
+import org.nebulostore.communication.messages.dht.OutDHTMessage;
+import org.nebulostore.communication.messages.dht.PutDHTMessage;
+import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
 
@@ -45,6 +54,14 @@ public final class BdbPeerTest {
     int peerNum = Integer.parseInt(args[0]);
     List<Integer> foundPeers = new LinkedList<Integer>();
 
+    // FOR holder discovery to take place
+    try {
+      Thread.sleep(10000);
+    } catch (InterruptedException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+
     while (true) {
 
       Message msg = null;
@@ -58,18 +75,55 @@ public final class BdbPeerTest {
       if (msg != null) {
         if (msg instanceof CommPeerFoundMessage) {
           logger.info("peer found, getting its number...");
-          inQueue.add(new PingMessage(((CommPeerFoundMessage) msg)
-              .getSourceAddress(), peerNum));
+          inQueue.add(new PingMessage(((CommPeerFoundMessage) msg).getSourceAddress(), peerNum));
         }
 
         if (msg instanceof PingMessage) {
           PingMessage ping = (PingMessage) msg;
-          logger.info("ping message received: " + ping.getNumber());
+          logger.info("ping message received with number: " + ping.getNumber());
           if (!foundPeers.contains(ping.getNumber())) {
             foundPeers.add(ping.getNumber());
+
           }
           inQueue.add(new PongMessage(ping.getSourceAddress(), peerNum));
         }
+        if (msg instanceof PongMessage) {
+          PongMessage pong = (PongMessage) msg;
+          logger.info("pong message received with number: " + pong.getNumber());
+          if (!foundPeers.contains(pong.getNumber())) {
+            foundPeers.add(pong.getNumber());
+          }
+          logger.info("sending put with current number to holder");
+          inQueue.add(new PutDHTMessage("Bdbtest", new KeyDHT("" + peerNum), new ValueDHT(
+              "Hello World with finding: " + pong.getNumber())));
+        }
+
+        if (msg instanceof BdbMessageWrapper) {
+          logger.error("Bdb message wrapper here - this should never happend!");
+          System.exit(-1);
+        }
+
+        if (msg instanceof InDHTMessage) {
+          logger.error("InDHTMessage here - this should never happend!");
+          System.exit(-1);
+        }
+
+        if (msg instanceof OutDHTMessage) {
+
+          if (msg instanceof ValueDHTMessage) {
+            logger.info("Received DHT response with: "
+                + ((ValueDHTMessage) msg).getKey().toString() + ":"
+                + ((ValueDHTMessage) msg).getValue().toString());
+          }
+          if (msg instanceof OkDHTMessage) {
+            logger.info("Received OK DHT response with: " + msg.getId());
+            logger.info("Sending get messages with keys to all found peers by now");
+            for (int n : foundPeers) {
+              inQueue.add(new GetDHTMessage("Bdbtest", new KeyDHT("" + n)));
+            }
+          }
+        }
+
       }
     }
   }

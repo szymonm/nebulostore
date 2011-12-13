@@ -74,6 +74,10 @@ public class ValueDHT implements Serializable {
     }
 
     return null;
+  }
 
+  @Override
+  public String toString() {
+    return value_.toString();
   }
 }

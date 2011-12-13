@@ -12,7 +12,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -23,7 +22,6 @@ import javax.security.cert.CertificateException;
 import net.jxta.discovery.DiscoveryEvent;
 import net.jxta.discovery.DiscoveryListener;
 import net.jxta.discovery.DiscoveryService;
-import net.jxta.document.Advertisement;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
@@ -33,7 +31,6 @@ import net.jxta.protocol.DiscoveryResponseMsg;
 import net.jxta.socket.JxtaSocket;
 
 import org.apache.log4j.Logger;
-
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.address.CommAddress;
@@ -51,6 +48,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   private transient MessengerService messengerService_;
 
   private transient SocketServer socketServer_;
+  private transient final PeerDiscoveryService peerDiscoveryService_;
 
   private transient NetworkManager networkManager_;
   private transient DiscoveryService discoveryService_;
@@ -144,6 +142,10 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     (new Thread(messengerService_, "Nebulostore.Communication.PeriodicWorker"))
         .start();
 
+    peerDiscoveryService_ = new PeerDiscoveryService(discoveryService_);
+    (new Thread(peerDiscoveryService_,
+        "Nebulostore.Communication.PeerDiscoveryService")).start();
+
     logger_.info("fully initialised");
   }
 
@@ -166,9 +168,8 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * org.nebulostore.appcore.IModule#processMessage(org
+   * 
+   * @see org.nebulostore.appcore.IModule#processMessage(org
    * .nebulostore.appcore.Message)
    */
   private static final long ITERATIONS = 10;
@@ -254,6 +255,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   /*
    * (non-Javadoc)
+   * 
    * @see
    * net.jxta.discovery.DiscoveryListener#discoveryEvent(net.jxta.discovery.
    * DiscoveryEvent)
@@ -261,41 +263,31 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   @Override
   public void discoveryEvent(DiscoveryEvent ev) {
-    DiscoveryResponseMsg res = ev.getResponse();
+    logger_.debug("DiscoveryEvent: " + ev.getQueryID());
 
-    // let's get the responding peer's advertisement
-    logger_.info(" [  Got a Discovery Response [" + res.getResponseCount() +
-        " elements]  from peer : " + ev.getSource() + "  ]");
+    DiscoveryResponseMsg res = ev.getResponse();
 
     if (!knownPeers_.contains("" + ev.getSource())) {
       knownPeers_.add("" + ev.getSource());
-      logger_.info("known peers: " + knownPeers_);
-      logger_.info("peer added!");
+      logger_.info("new peer found with address: " + ev.getSource());
 
       try {
-        outQueue_.add(new CommPeerFoundMessage(new CommAddress(PeerID.create(new URI(
-            "urn:" + ("" + ev.getSource()).replace("//", "")))), getPeerAddress()));
+        // TODO: move this URI mod to communication.utils
+        outQueue_.add(new CommPeerFoundMessage(
+            new CommAddress(PeerID.create(new URI("urn:" +
+                ("" + ev.getSource()).replace("//", "")))), getPeerAddress()));
       } catch (URISyntaxException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        logger_.error("URISyntaxException", e);
       }
-      logger_.info("out queue added");
+      logger_.debug("out queue added");
     }
-
-    Advertisement adv;
-    Enumeration en = res.getAdvertisements();
-
-    if (en != null) {
-      while (en.hasMoreElements()) {
-        adv = (Advertisement) en.nextElement();
-        logger_.info(adv);
-      }
-    }
-
   }
 
   public CommAddress getPeerAddress() {
-    // TODO Auto-generated method stub
     return new CommAddress(networkManager_.getPeerID());
+  }
+
+  public PeerDiscoveryService getPeerDiscoveryService() {
+    return peerDiscoveryService_;
   }
 }

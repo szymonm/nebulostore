@@ -15,6 +15,7 @@ import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.communication.jxtach.JXTAChPeer;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
+import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.InDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
@@ -33,8 +34,8 @@ public class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static String configurationPath_ = "resources/conf/communication/CommunicationPeer.xml";
 
-  public CommunicationPeer(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue) throws NebuloException {
+  public CommunicationPeer(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue)
+      throws NebuloException {
     super(inQueue, outQueue);
 
     // TODO: Move it to appcore to configuration factory
@@ -48,15 +49,13 @@ public class CommunicationPeer extends Module {
     jxtaPeerInQueue_ = new LinkedBlockingQueue<Message>();
     dhtInQueue_ = new LinkedBlockingQueue<Message>();
 
-    /*
-     * Here all messages from DHT and jxtaPeer are being forwarded straight to
-     * Dispatcher.
-     */
-    jxtaPeer_ = new JXTAPeer(jxtaPeerInQueue_, outQueue);
+    jxtaPeer_ = new JXTAPeer(jxtaPeerInQueue_, inQueue);
+
     new Thread(jxtaPeer_).start();
 
     if (config.getString("dht.provider", "bdb").equals("bdb"))
-      dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue);
+      dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue, jxtaPeer_.getPeerDiscoveryService(),
+          jxtaPeerInQueue_);
     else if (config.getString("dht.provider", "bdb").equals("jxtaCh"))
       dhtPeer_ = new JXTAChPeer(dhtInQueue_, outQueue);
     else {
@@ -68,31 +67,49 @@ public class CommunicationPeer extends Module {
 
   @Override
   protected void processMessage(Message msg) {
-    logger_.debug("process message got");
+    logger_.debug("Processing message..");
 
     if (msg instanceof CommPeerFoundMessage) {
+      logger_.debug("CommPeerFound message forwarded to Dispatcher");
       outQueue_.add(msg);
+      return;
     }
 
     if (msg instanceof DHTMessage) {
       if (msg instanceof InDHTMessage) {
+        logger_.debug("InDHTMessage forwarded to DHT");
         dhtInQueue_.add(msg);
       }
       if (msg instanceof OutDHTMessage) {
+        logger_.debug("OutDHTMessage forwarded to Dispatcher");
         outQueue_.add(msg);
       }
+      return;
+    }
+
+    if (msg instanceof BdbMessageWrapper) {
+      logger_.debug("BDB DHT message received");
+      BdbMessageWrapper casted = (BdbMessageWrapper) msg;
+      if (casted.getWrapped() instanceof InDHTMessage) {
+        logger_.debug("BDB DHT message forwarded to DHT");
+        dhtInQueue_.add(msg);
+      }
+      if (casted.getWrapped() instanceof OutDHTMessage) {
+        logger_.debug("BDB DHT message forwarded to Dispatcher");
+        outQueue_.add(casted.getWrapped());
+      }
+      return;
     }
 
     if (msg instanceof CommMessage) {
-      if (((CommMessage) msg).getDestinationAddress() == jxtaPeer_
-          .getPeerAddress()) {
+      if (((CommMessage) msg).getDestinationAddress().equals(jxtaPeer_.getPeerAddress())) {
         logger_.debug("message forwarded to Dispatcher");
         outQueue_.add(msg);
       } else {
         logger_.debug("message forwarded to jxtaPeer");
         jxtaPeerInQueue_.add(msg);
       }
-
+      return;
     }
 
   }

@@ -1,5 +1,9 @@
 package org.nebulostore.communication.jxta;
 
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.protocol.PipeAdvertisement;
 
@@ -8,60 +12,60 @@ import org.apache.log4j.Logger;
 /**
  * @author marcin
  */
-class PeerDiscoveryService implements Runnable {
+public class PeerDiscoveryService implements Runnable {
 
   private static Logger logger_ = Logger.getLogger(PeerDiscoveryService.class);
-  private final DiscoveryService discovery_;
+  private final DiscoveryService discoveryService_;
 
   private static long lifetime_ = 60 * 2 * 1000L;
   private static long expiration_ = 60 * 2 * 1000L;
   private static long waittime_ = 3 * 1000L;
 
-  public PeerDiscoveryService(DiscoveryService discovery) {
-    discovery_ = discovery;
+  List<PipeAdvertisement> advertisements_ = new LinkedList<PipeAdvertisement>();
+
+  public PeerDiscoveryService(DiscoveryService discoveryService) {
+    discoveryService_ = discoveryService;
   }
 
   @Override
   public void run() {
     logger_.info("Running!");
 
-    discovery_.getRemoteAdvertisements(null, DiscoveryService.ADV, null, null,
-        0, null);
+    discoveryService_.getRemoteAdvertisements(null, DiscoveryService.ADV, null,
+        null, 0, null);
 
-    try {
-      while (true) {
-        logger_.info("Publishing advertisement");
+    while (true) {
+      logger_.info("Publishing advertisements");
 
-        PipeAdvertisement pipeAdv = MessengerService.getPipeAdvertisement();
-
-        // publish the advertisement with a lifetime of 2 mintutes
-        logger_.info("Publishing the following advertisement with lifetime :" +
-            lifetime_ + " expiration :" + expiration_);
-        logger_.info(pipeAdv.toString());
-        discovery_.publish(pipeAdv, lifetime_, expiration_);
-        discovery_.remotePublish(pipeAdv, expiration_);
+      for (PipeAdvertisement adv : advertisements_) {
+        logger_.info("Publishing advertisement with lifetime :" + lifetime_ +
+            " expiration :" + expiration_);
+        // logger_.info(adv.toString());
         try {
-          logger_.info("Sleeping for :" + waittime_);
-          Thread.sleep(waittime_);
-        } catch (InterruptedException e) {
+          discoveryService_.publish(adv, lifetime_, expiration_);
+        } catch (IOException e) {
           logger_.error("", e);
         }
-
-        // moving to receiving adv
-        try {
-          logger_.info("Sleeping for :" + waittime_);
-          Thread.sleep(waittime_);
-        } catch (InterruptedException e) {
-          logger_.error("", e);
-        }
-
-        logger_.info("Sending a Discovery Message");
-        discovery_.getRemoteAdvertisements(null, DiscoveryService.ADV, "Name",
-            "Nebulostore messaging", 1, null);
-
+        discoveryService_.remotePublish(adv, expiration_);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+
+      try {
+        Thread.sleep(waittime_);
+      } catch (InterruptedException e) {
+        logger_.error("", e);
+      }
+
+      logger_.info("Getting remove advertisements");
+      discoveryService_.getRemoteAdvertisements(null, DiscoveryService.ADV,
+          null, null, 10);
     }
+  }
+
+  public DiscoveryService getDiscoveryService() {
+    return discoveryService_;
+  }
+
+  public void addAdvertisement(PipeAdvertisement adv) {
+    advertisements_.add(adv);
   }
 }

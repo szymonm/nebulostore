@@ -29,4 +29,8 @@ public class CommAddress implements Serializable {
         (peerId_.hashCode() == ((CommAddress) o).peerId_.hashCode());
   }
 
+  @Override
+  public String toString() {
+    return peerId_.toString();
+  }
 }
