@@ -24,58 +24,86 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.StoreObjectMessage;
 
 /**
- *
  * Generic Message visitor class.
- * TODO(bolek): All methods should not be abstract and throw a meaningful
- * exception.
- *
+ * @param <R>
+ *    return type.
  */
-public abstract class MessageVisitor {
+public abstract class MessageVisitor<R> {
   /* Common action for all messages that are not handled. */
-  private void action(String name) throws NebuloException {
+  private R action(String name) throws NebuloException {
     throw new UnsupportedMessageException(name);
   }
 
   /* Base class. */
-  public void visit(Message message) throws NebuloException { action("Message"); }
+  public R visit(Message message) throws NebuloException {
+    return action("Message");
+  }
 
   /* Dispatcher messages. */
-  public void visit(JobEndedMessage message) throws NebuloException { action("JobEndedMessage"); }
-  public void visit(JobInitMessage message) throws NebuloException { action("JobInitMessage"); }
-  public void visit(KillDispatcherMessage message) throws NebuloException {
-    action("KillDispatcherMessage");
+  public R visit(JobEndedMessage message) throws NebuloException {
+    return action("JobEndedMessage");
+  }
+  public R visit(JobInitMessage message) throws NebuloException {
+    return action("JobInitMessage");
+  }
+  public R visit(KillDispatcherMessage message) throws NebuloException {
+    return action("KillDispatcherMessage");
   }
 
   /* Replicator messages. */
-  public void visit(GetObjectMessage message) throws NebuloException { action("GetObjectMessage"); }
-  public void visit(DeleteObjectMessage message) throws NebuloException {
-    action("DeleteObjectMessage");
+  public R visit(GetObjectMessage message) throws NebuloException {
+    return action("GetObjectMessage");
   }
-  public void visit(SendObjectMessage message) throws NebuloException {
-    action("SendObjectMessage");
+  public R visit(DeleteObjectMessage message) throws NebuloException {
+    return action("DeleteObjectMessage");
   }
-  public void visit(StoreObjectMessage message) throws NebuloException {
-    action("StoreObjectMessage");
+  public R visit(SendObjectMessage message) throws NebuloException {
+    return action("SendObjectMessage");
+  }
+  public R visit(StoreObjectMessage message) throws NebuloException {
+    return action("StoreObjectMessage");
   }
 
   /* Network messages. */
-  public void visit(CommMessage message) throws NebuloException { action("CommMessage"); }
-  public void visit(CommPeerFoundMessage message) throws NebuloException {
-    action("CommPeerFoundMessage");
+  public R visit(CommMessage message) throws NebuloException {
+    return action("CommMessage");
   }
-  public void visit(CommSendDataMessage message) throws NebuloException {
-    action("CommSendDataMessage");
+  public R visit(CommPeerFoundMessage message) throws NebuloException {
+    return action("CommPeerFoundMessage");
   }
-  public void visit(DiscoveryMessage message) throws NebuloException { action("DiscoveryMessage"); }
+  public R visit(CommSendDataMessage message) throws NebuloException {
+    return action("CommSendDataMessage");
+  }
+  public R visit(DiscoveryMessage message) throws NebuloException {
+    return action("DiscoveryMessage");
+  }
 
   /* DHT messages. */
-  public void visit(DHTMessage message) throws NebuloException { action("DHTMessage"); }
-  public void visit(DelDHTMessage message) throws NebuloException { action("DelDHTMessage"); }
-  public void visit(ErrorDHTMessage message) throws NebuloException { action("ErrorDHTMessage"); }
-  public void visit(GetDHTMessage message) throws NebuloException { action("GetDHTMessage"); }
-  public void visit(InDHTMessage message) throws NebuloException { action("InDHTMessage"); }
-  public void visit(OkDHTMessage message) throws NebuloException { action("OkDHTMessage"); }
-  public void visit(OutDHTMessage message) throws NebuloException { action("OutDHTMessage"); }
-  public void visit(PutDHTMessage message) throws NebuloException { action("PutDHTMessage"); }
-  public void visit(ValueDHTMessage message) throws NebuloException { action("ValueDHTMessage"); }
+  public R visit(DHTMessage message) throws NebuloException {
+    return action("DHTMessage");
+  }
+  public R visit(DelDHTMessage message) throws NebuloException {
+    return action("DelDHTMessage");
+  }
+  public R visit(ErrorDHTMessage message) throws NebuloException {
+    return action("ErrorDHTMessage");
+  }
+  public R visit(GetDHTMessage message) throws NebuloException {
+    return action("GetDHTMessage");
+  }
+  public R visit(InDHTMessage message) throws NebuloException {
+    return action("InDHTMessage");
+  }
+  public R visit(OkDHTMessage message) throws NebuloException {
+    return action("OkDHTMessage");
+  }
+  public R visit(OutDHTMessage message) throws NebuloException {
+    return action("OutDHTMessage");
+  }
+  public R visit(PutDHTMessage message) throws NebuloException {
+    return action("PutDHTMessage");
+  }
+  public R visit(ValueDHTMessage message) throws NebuloException {
+    return action("ValueDHTMessage");
+  }
 }

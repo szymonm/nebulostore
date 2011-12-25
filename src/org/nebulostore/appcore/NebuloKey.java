@@ -7,6 +7,17 @@ import java.util.LinkedList;
  */
 public class NebuloKey {
 
+  public NebuloKey() {
+    path_ = new LinkedList<PathSegment>();
+  }
+
+  public void addPathSegment(ObjectId dirId, EntryId entryId) {
+    PathSegment segment = new PathSegment();
+    segment.dirId_ = dirId;
+    segment.entryId_ = entryId;
+    path_.add(segment);
+  }
+
   /**
    * Pair structure to store logical path segments.
    */

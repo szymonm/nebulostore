@@ -14,8 +14,8 @@ public class JobInitMessage extends Message {
     jobModule_ = jobModule;
   }
 
-  public void accept(MessageVisitor visitor) throws NebuloException {
-    visitor.visit(this);
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 
   public JobModule getHandler() {

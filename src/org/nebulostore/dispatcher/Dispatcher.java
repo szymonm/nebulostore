@@ -24,13 +24,13 @@ public class Dispatcher extends Module {
    * Visitor class. Contains logic for handling messages depending
    * on their types.
    */
-  public class MessageDispatchVisitor extends MessageVisitor {
+  public class MessageDispatchVisitor extends MessageVisitor<Void> {
     /*
      * Special handling for JobEndedMessage.
      * Remove MSG_ID from Dispatcher's map.
      */
     @Override
-    public void visit(JobEndedMessage message) {
+    public Void visit(JobEndedMessage message) {
       String jobId = message.getId();
       if (workersQueues_.containsKey(jobId)) {
         workersQueues_.remove(jobId);
@@ -38,13 +38,14 @@ public class Dispatcher extends Module {
       if (workersThreads_.containsKey(jobId)) {
         workersThreads_.remove(jobId);
       }
+      return null;
     }
 
     /*
      * End dispatcher.
      */
     @Override
-    public void visit(KillDispatcherMessage message) throws NebuloException {
+    public Void visit(KillDispatcherMessage message) throws NebuloException {
       Thread[] threads = workersThreads_.values().toArray(new Thread[0]);
       for (int i = 0; i < threads.length; ++i) {
         try {
@@ -60,7 +61,7 @@ public class Dispatcher extends Module {
      * General behavior - forwarding messages.
      */
     @Override
-    public void visit(Message message) throws NebuloException {
+    public Void visit(Message message) throws NebuloException {
       String jobId = message.getId();
       if (!workersQueues_.containsKey(jobId)) {
         // Spawn a new thread to handle the message.
@@ -82,6 +83,7 @@ public class Dispatcher extends Module {
       }
       // Delegate message to a waiting worker thread.
       workersQueues_.get(jobId).add(message);
+      return null;
     }
   }
 
@@ -107,5 +109,5 @@ public class Dispatcher extends Module {
 
   private Map<String, BlockingQueue<Message>> workersQueues_;
   private Map<String, Thread> workersThreads_;
-  private MessageVisitor visitor_;
+  private MessageVisitor<?> visitor_;
 }

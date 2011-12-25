@@ -15,8 +15,8 @@ public abstract class Message {
     msgId_ = msgID;
   }
 
-  public void accept(MessageVisitor visitor) throws NebuloException {
-    visitor.visit(this);
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 
   public JobModule getHandler() throws NebuloException {

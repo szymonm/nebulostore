@@ -9,7 +9,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * This message causes dispatcher termination.
  */
 public class KillDispatcherMessage extends Message {
-  public void accept(MessageVisitor visitor) throws NebuloException {
-    visitor.visit(this);
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 }

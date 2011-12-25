@@ -13,7 +13,7 @@ public class JobEndedMessage extends Message {
   public JobEndedMessage(String msgID) {
     super(msgID);
   }
-  public void accept(MessageVisitor visitor) throws NebuloException {
-    visitor.visit(this);
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 }
