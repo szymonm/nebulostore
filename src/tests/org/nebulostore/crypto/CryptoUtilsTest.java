@@ -1,9 +1,14 @@
 package tests.org.nebulostore.crypto;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.Test;
+import org.nebulostore.appcore.EncryptedEntity;
+import org.nebulostore.appcore.EntryId;
+import org.nebulostore.appcore.NebuloDir;
+import org.nebulostore.crypto.CryptoException;
 import org.nebulostore.crypto.CryptoUtils;
 
 import static org.junit.Assert.assertTrue;
@@ -14,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class CryptoUtilsTest {
 
   @Test
-  public void testSerialization() throws IOException, ClassNotFoundException {
+  public void testSerialization() throws CryptoException {
     ArrayList<String> list = new ArrayList<String>();
     list.add("One");
     list.add("Two");
@@ -23,5 +28,20 @@ public class CryptoUtilsTest {
     assertTrue(list2.size() == 2);
     assertTrue(list2.get(0).equals("One"));
     assertTrue(list2.get(1).equals("Two"));
+  }
+
+  @Test
+  public void testNebuloDirEncryption() throws CryptoException {
+    byte[] byteTab = {31, 11};
+    Map<EntryId, EncryptedEntity> entries = new TreeMap<EntryId, EncryptedEntity>();
+    entries.put(new EntryId("entry_1"), new EncryptedEntity(byteTab));
+    NebuloDir dir = new NebuloDir(entries);
+    Object object = CryptoUtils.decryptNebuloObject(CryptoUtils.encryptNebuloObject(dir));
+    assertTrue(object instanceof NebuloDir);
+    NebuloDir dir2 = (NebuloDir) object;
+    byte[] resTab = dir2.getEntries().get(new EntryId("entry_1")).getEncryptedData();
+    assertTrue(resTab.length == byteTab.length);
+    assertTrue(resTab[0] == byteTab[0]);
+    assertTrue(resTab[1] == byteTab[1]);
   }
 }

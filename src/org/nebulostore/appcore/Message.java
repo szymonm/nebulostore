@@ -8,11 +8,11 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 public abstract class Message {
 
   public Message() {
-    msgId_ = "unnamed_message";
+    jobId_ = "unnamed_message";
   }
 
-  public Message(String msgID) {
-    msgId_ = msgID;
+  public Message(String jobID) {
+    jobId_ = jobID;
   }
 
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
@@ -25,12 +25,9 @@ public abstract class Message {
   }
 
   public String getId() {
-    return msgId_;
+    return jobId_;
   }
 
-  /*
-   * To be used in merging queues mechanism
-   */
-  public String queueURI_;
-  protected String msgId_;
+  // ID used by Dispatcher to forward the message to proper thread (= running JobModule).
+  protected String jobId_;
 }

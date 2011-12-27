@@ -26,41 +26,52 @@ public final class CryptoUtils {
   }
 
   // TODO: Encryption must use cryptographic keys (add parameters?)
-  public static EncryptedEntity encryptNebuloObject(NebuloObject object) throws IOException {
+  public static EncryptedEntity encryptNebuloObject(NebuloObject object) throws CryptoException {
     return new EncryptedEntity(serializeObject(object));
   }
 
   public static NebuloObject decryptNebuloObject(EncryptedEntity encryptedObject) throws
-      IOException, ClassNotFoundException {
+      CryptoException {
     return (NebuloObject) deserializeObject(encryptedObject.getEncryptedData());
   }
 
-  public static EncryptedEntity encryptDirectoryEntry(NebuloObject object) throws IOException {
-    return new EncryptedEntity(serializeObject(object));
+  public static EncryptedEntity encryptDirectoryEntry(DirectoryEntry entry) throws CryptoException {
+    return new EncryptedEntity(serializeObject(entry));
   }
 
   public static DirectoryEntry decryptDirectoryEntry(EncryptedEntity encryptedObject) throws
-      IOException, ClassNotFoundException {
+      CryptoException {
     return (DirectoryEntry) deserializeObject(encryptedObject.getEncryptedData());
   }
 
-  public static byte[] serializeObject(Serializable object) throws IOException {
+  public static byte[] serializeObject(Serializable object) throws CryptoException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ObjectOutput out = new ObjectOutputStream(baos);
-    out.writeObject(object);
-    byte[] result = baos.toByteArray();
-    out.close();
-    baos.close();
+    byte[] result;
+    try {
+      ObjectOutput out = new ObjectOutputStream(baos);
+      out.writeObject(object);
+      result = baos.toByteArray();
+      out.close();
+      baos.close();
+    } catch (IOException exception) {
+      throw new CryptoException("IOError in serializing object: " + exception.getMessage());
+    }
     return result;
   }
 
-  public static Object deserializeObject(byte[] serializedObject) throws
-      IOException, ClassNotFoundException {
-    ByteArrayInputStream bais = new ByteArrayInputStream(serializedObject);
-    ObjectInput in = new ObjectInputStream(bais);
-    Object o = in.readObject();
-    bais.close();
-    in.close();
+  public static Object deserializeObject(byte[] serializedObject) throws CryptoException {
+    Object o;
+    try {
+      ByteArrayInputStream bais = new ByteArrayInputStream(serializedObject);
+      ObjectInput in = new ObjectInputStream(bais);
+      o = in.readObject();
+      bais.close();
+      in.close();
+    } catch (IOException exception) {
+      throw new CryptoException("IOError in deserializing object: " + exception.getMessage());
+    } catch (ClassNotFoundException exception) {
+      throw new CryptoException("Cannot deserialize object of unknown class.");
+    }
     return o;
   }
 

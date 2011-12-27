@@ -3,6 +3,8 @@ package org.nebulostore.communication.messages;
 import java.io.Serializable;
 
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
@@ -34,4 +36,7 @@ public abstract class CommMessage extends Message implements Serializable {
     commSourceAddress_ = sourceAddress;
   }
 
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
+  }
 }

@@ -5,29 +5,35 @@ import org.nebulostore.communication.address.CommAddress;
 /**
  * @author szymonmatejczyk
  */
-public class Reference extends DirectoryEntry {
+public class HardLink extends DirectoryEntry {
 
   /**
    * Temporal field for debugging.
    */
   public String title_;
-  public ObjectId objectKey_;
+  public ObjectId objectId_;
   /* Addresses of replicas of object objectKey_. */
   public CommAddress[] objectPhysicalAddresses_;
 
-  public Reference(String title, ObjectId objectId,
-    CommAddress[] objectPhysicalAddress) {
+  public HardLink(String title, ObjectId objectId, CommAddress[] objectPhysicalAddresses) {
     super();
     title_ = title;
-    objectKey_ = objectId;
-    objectPhysicalAddresses_ = objectPhysicalAddress;
+    objectId_ = objectId;
+    objectPhysicalAddresses_ = objectPhysicalAddresses;
+  }
+
+  public HardLink(ObjectId objectId, CommAddress[] objectPhysicalAddresses) {
+    super();
+    title_ = "";
+    objectId_ = objectId;
+    objectPhysicalAddresses_ = objectPhysicalAddresses;
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result;
-    result = prime + ((objectKey_ == null) ? 0 : objectKey_.hashCode());
+    result = prime + ((objectId_ == null) ? 0 : objectId_.hashCode());
     result = prime * result +
         ((objectPhysicalAddresses_ == null) ? 0 : objectPhysicalAddresses_.hashCode());
     result = prime * result + ((title_ == null) ? 0 : title_.hashCode());
@@ -42,11 +48,11 @@ public class Reference extends DirectoryEntry {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Reference other = (Reference) obj;
-    if (objectKey_ == null) {
-      if (other.objectKey_ != null)
+    HardLink other = (HardLink) obj;
+    if (objectId_ == null) {
+      if (other.objectId_ != null)
         return false;
-    } else if (!objectKey_.equals(other.objectKey_))
+    } else if (!objectId_.equals(other.objectId_))
       return false;
     if (objectPhysicalAddresses_ == null) {
       if (other.objectPhysicalAddresses_ != null)

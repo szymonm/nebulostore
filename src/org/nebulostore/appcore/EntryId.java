@@ -1,13 +1,20 @@
 package org.nebulostore.appcore;
 
+import java.io.Serializable;
+
 /**
  * @author bolek
- * Entry ID.
+ * Entry ID. Needs to be 'Comparable' as it is used as Map key.
  */
-public class EntryId {
+public class EntryId implements Serializable, Comparable<EntryId> {
+  public String entryId_;
+
   public EntryId(String entryId) {
     entryId_ = entryId;
   }
 
-  public String entryId_;
+  @Override
+  public int compareTo(EntryId arg0) {
+    return entryId_.compareTo(arg0.entryId_);
+  }
 }

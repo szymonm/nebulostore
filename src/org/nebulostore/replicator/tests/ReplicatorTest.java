@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.junit.Test;
 
 import org.nebulostore.appcore.DirectoryEntry;
+import org.nebulostore.appcore.HardLink;
 import org.nebulostore.appcore.ObjectId;
-import org.nebulostore.appcore.Reference;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.replicator.Replicator;
 import org.nebulostore.replicator.SaveException;
@@ -54,11 +54,11 @@ public class ReplicatorTest {
   public void testDirectoryOperations() throws SaveException {
     ObjectId dirKey1 = new ObjectId("dirKey1");
     replicator_.createEmptyDirectory(dirKey1);
-    Reference de1 = new Reference("entry 1", new ObjectId("entry1key"),
+    HardLink de1 = new HardLink("entry 1", new ObjectId("entry1key"),
                                            new CommAddress[1]);
     replicator_.appendToDirectory(dirKey1, de1);
 
-    Reference de2 = new Reference("entry 2", new ObjectId("entry2key"),
+    HardLink de2 = new HardLink("entry 2", new ObjectId("entry2key"),
         new CommAddress[1]);
     replicator_.appendToDirectory(dirKey1, de2);
 

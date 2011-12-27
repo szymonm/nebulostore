@@ -1,5 +1,7 @@
 package org.nebulostore.communication.messages.dht;
 
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.dht.KeyDHT;
 
 /**
@@ -18,5 +20,9 @@ public class GetDHTMessage extends InDHTMessage {
 
   public KeyDHT getKey() {
     return key_;
+  }
+
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 }

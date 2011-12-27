@@ -1,6 +1,8 @@
 package org.nebulostore.replicator.messages;
 
+import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ObjectId;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
@@ -11,7 +13,13 @@ import org.nebulostore.communication.messages.CommMessage;
  */
 public class GetObjectMessage extends CommMessage {
   public ObjectId objectId_;
-  public GetObjectMessage(CommAddress sourceAddress, CommAddress destAddress) {
+
+  public GetObjectMessage(CommAddress sourceAddress, CommAddress destAddress, ObjectId objectId) {
     super(sourceAddress, destAddress);
+    objectId_ = objectId;
+  }
+
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 }

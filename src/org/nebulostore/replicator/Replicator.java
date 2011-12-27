@@ -15,13 +15,13 @@ import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 
 import org.nebulostore.appcore.DirectoryEntry;
+import org.nebulostore.appcore.HardLink;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.NebuloDir;
 import org.nebulostore.appcore.NebuloFile;
 import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.ObjectId;
-import org.nebulostore.appcore.Reference;
 
 /**
  * @author szymonmatejczyk
@@ -154,7 +154,7 @@ public class Replicator extends Module {
     return null;
   }
 
-  public void appendToDirectory(ObjectId dirKey, Reference directoryEntry)
+  public void appendToDirectory(ObjectId dirKey, HardLink directoryEntry)
     throws SaveException {
     NebuloDir directory = (NebuloDir) getObject(dirKey);
     // TODO(szymon): Encrypt directoryEntry and add it to map.
