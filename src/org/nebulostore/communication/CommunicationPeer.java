@@ -34,8 +34,8 @@ public class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static String configurationPath_ = "resources/conf/communication/CommunicationPeer.xml";
 
-  public CommunicationPeer(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue)
-      throws NebuloException {
+  public CommunicationPeer(BlockingQueue<Message> inQueue,
+      BlockingQueue<Message> outQueue) throws NebuloException {
     super(inQueue, outQueue);
 
     // TODO: Move it to appcore to configuration factory

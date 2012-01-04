@@ -111,9 +111,9 @@ public final class BdbPeerTest {
         if (msg instanceof OutDHTMessage) {
 
           if (msg instanceof ValueDHTMessage) {
-            logger.info("Received DHT response with: "
-                + ((ValueDHTMessage) msg).getKey().toString() + ":"
-                + ((ValueDHTMessage) msg).getValue().toString());
+            logger.info("Received DHT response with: " +
+                ((ValueDHTMessage) msg).getKey().toString() + ":" +
+                ((ValueDHTMessage) msg).getValue().toString());
           }
           if (msg instanceof OkDHTMessage) {
             logger.info("Received OK DHT response with: " + msg.getId());

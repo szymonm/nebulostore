@@ -48,7 +48,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   private transient MessengerService messengerService_;
 
   private transient SocketServer socketServer_;
-  private transient final PeerDiscoveryService peerDiscoveryService_;
+  private final transient PeerDiscoveryService peerDiscoveryService_;
 
   private transient NetworkManager networkManager_;
   private transient DiscoveryService discoveryService_;
@@ -168,7 +168,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.nebulostore.appcore.IModule#processMessage(org
    * .nebulostore.appcore.Message)
    */
@@ -255,7 +255,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * net.jxta.discovery.DiscoveryListener#discoveryEvent(net.jxta.discovery.
    * DiscoveryEvent)

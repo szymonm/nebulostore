@@ -45,7 +45,7 @@ import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 
 /**
  * Implementation of berkely db based engine for...
- * 
+ *
  * @author marcin
  */
 public class BdbPeer extends Module implements DiscoveryListener {
@@ -53,8 +53,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
   private static String configurationPath_ = "resources/conf/communication/BdbPeer.xml";
   private static Logger logger_ = Logger.getLogger(BdbPeer.class);
 
-  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:"
-      + "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
+  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:" +
+      "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
 
   private String storagePath_;
   private String storeName_;
