@@ -3,7 +3,7 @@ package org.nebulostore.appcore;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-//import org.nebulostore.api.ApiFacade;
+import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.dispatcher.Dispatcher;
@@ -23,7 +23,7 @@ public final class Peer {
   public static void main(String[] args) {
     BlockingQueue<Message> networkInQueue = new LinkedBlockingQueue<Message>();
     BlockingQueue<Message> dispatcherInQueue = new LinkedBlockingQueue<Message>();
-    //ApiFacade.setDispatcherQueue(dispatcherInQueue);
+    ApiFacade.setDispatcherQueue(dispatcherInQueue);
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
     Thread dispatcherThread = new Thread(new Dispatcher(dispatcherInQueue,

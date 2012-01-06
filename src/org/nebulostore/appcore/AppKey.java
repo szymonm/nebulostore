@@ -6,4 +6,11 @@ package org.nebulostore.appcore;
  */
 public class AppKey {
   public String appKey_;
+
+  public AppKey() {
+  }
+
+  public AppKey(String key) {
+    appKey_ = key;
+  }
 }
