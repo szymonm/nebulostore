@@ -18,10 +18,13 @@ import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.DeleteObjectMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
+import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.StoreObjectMessage;
+import org.nebulostore.replicator.messages.UpdateObjectMessage;
 
 /**
  * Generic Message visitor class.
@@ -61,6 +64,15 @@ public abstract class MessageVisitor<R> {
     return action("SendObjectMessage");
   }
   public R visit(StoreObjectMessage message) throws NebuloException {
+    return action("StoreObjectMessage");
+  }
+  public R visit(ConfirmationMessage message) throws NebuloException {
+    return action("StoreObjectMessage");
+  }
+  public R visit(ReplicatorErrorMessage message) throws NebuloException {
+    return action("StoreObjectMessage");
+  }
+  public R visit(UpdateObjectMessage message) throws NebuloException {
     return action("StoreObjectMessage");
   }
 

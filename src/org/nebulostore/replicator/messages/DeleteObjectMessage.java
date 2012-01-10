@@ -13,8 +13,13 @@ import org.nebulostore.communication.messages.CommMessage;
 public class DeleteObjectMessage extends CommMessage {
   public ObjectId objectId_;
 
-  public DeleteObjectMessage(CommAddress sourceAddress, CommAddress destAddress) {
-    super(sourceAddress, destAddress);
+  public DeleteObjectMessage(String jobId, CommAddress sourceAddress,
+      CommAddress destAddress) {
+    super(jobId, sourceAddress, destAddress);
+  }
+
+  public ObjectId getObjectId() {
+    return objectId_;
   }
 
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {

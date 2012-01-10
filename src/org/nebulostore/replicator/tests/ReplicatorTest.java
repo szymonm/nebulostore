@@ -1,70 +1,92 @@
 package org.nebulostore.replicator.tests;
 
-import java.util.Collection;
+import java.util.Arrays;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.xml.DOMConfigurator;
+import org.junit.Before;
 import org.junit.Test;
-
-import org.nebulostore.appcore.DirectoryEntry;
-import org.nebulostore.appcore.HardLink;
+import org.nebulostore.appcore.EncryptedEntity;
+import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.ObjectId;
-import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.replicator.Replicator;
-import org.nebulostore.replicator.SaveException;
+import org.nebulostore.replicator.messages.ConfirmationMessage;
+import org.nebulostore.replicator.messages.GetObjectMessage;
+import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
+import org.nebulostore.replicator.messages.SendObjectMessage;
+import org.nebulostore.replicator.messages.StoreObjectMessage;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 /**
  * @author szymonmatejczyk
  */
-
 public class ReplicatorTest {
   private SimpleStringFile file1_ = new SimpleStringFile("Test string");
   private SimpleIntegerFile file2_ = new SimpleIntegerFile(273);
 
-  private Replicator replicator_ = new Replicator(null, null);
+  private BlockingQueue<Message> inQueue_ = new LinkedBlockingQueue<Message>();
+  private BlockingQueue<Message> networkQueue_ = new LinkedBlockingQueue<Message>();
+  private Replicator replicator_ = new Replicator(inQueue_, null);
 
-  /**
-   * Tries to store and restore different types of objects using Replicators storeObject and
-   * getObject methods.
-   * @throws SaveException
-   */
-  @Test
-  public void testStoreGet() throws SaveException {
-    replicator_.storeObject(new ObjectId("key1"), file1_);
-    SimpleStringFile local = new SimpleStringFile("Test string");
-    SimpleStringFile stored = (SimpleStringFile) replicator_.getObject(new ObjectId("key1"));
-    assertEquals("String store-get failed.", local, stored);
+  private Thread replicatorThread_;
 
-    replicator_.storeObject(new ObjectId("key2"), file2_);
-    SimpleIntegerFile localInteger = new SimpleIntegerFile(273);
-    SimpleIntegerFile storedInteger =
-        (SimpleIntegerFile) replicator_.getObject(new ObjectId("key2"));
-    assertEquals("Integer store-get failed.", localInteger, storedInteger);
-
-    Object obj3 = replicator_.getObject(new ObjectId("key3"));
-    assertNull(obj3);
+  @Before
+  public void setUp() {
+    DOMConfigurator.configure("resources/conf/log4j.xml");
   }
 
   /**
-   * Tries to create simple Directory, append to it 2 objects and retrieve the directory.
-   * @throws SaveException
+   * Saving file. Retrieving it using id.
    */
   @Test
-  public void testDirectoryOperations() throws SaveException {
-    ObjectId dirKey1 = new ObjectId("dirKey1");
-    replicator_.createEmptyDirectory(dirKey1);
-    HardLink de1 = new HardLink("entry 1", new ObjectId("entry1key"),
-                                           new CommAddress[1]);
-    replicator_.appendToDirectory(dirKey1, de1);
+  public void testStoreGetMessages() {
+    ObjectId objectId1 = new ObjectId("key3");
+    byte[] enc = {33, 12};
+    EncryptedEntity entity1 = new EncryptedEntity(enc);
+    StoreObjectMessage storeMessage = new StoreObjectMessage("job1", null,
+        null,
+        objectId1, entity1);
+    inQueue_.add(storeMessage);
 
-    HardLink de2 = new HardLink("entry 2", new ObjectId("entry2key"),
-        new CommAddress[1]);
-    replicator_.appendToDirectory(dirKey1, de2);
+    replicator_.setNetworkQueue(networkQueue_);
 
-    Collection<DirectoryEntry> col = replicator_.listDirectory(new ObjectId("dirKey1"));
-    assertTrue(col.contains(de1));
-    assertTrue(col.contains(de2));
-    assertTrue(col.size() == 2);
+    replicatorThread_ = new Thread(replicator_);
+    replicatorThread_.start();
+
+    Message msg;
+    try {
+      Thread.sleep(300);
+      msg = networkQueue_.take();
+      if (!(msg instanceof ConfirmationMessage)) {
+        assertTrue(false);
+        return;
+      }
+    } catch (InterruptedException e) {
+      assertTrue(false);
+      return;
+    }
+
+    GetObjectMessage getMessage = new GetObjectMessage(null, null, objectId1);
+    inQueue_.add(getMessage);
+
+    try {
+      msg = networkQueue_.take();
+    } catch (InterruptedException exception) {
+      assertTrue(false);
+      return;
+    }
+
+    if (msg instanceof SendObjectMessage) {
+      SendObjectMessage som = (SendObjectMessage) msg;
+      assertTrue(Arrays.equals(enc, som.encryptedEntity_.getEncryptedData()));
+    } else if (msg instanceof ReplicatorErrorMessage) {
+      ReplicatorErrorMessage rem = (ReplicatorErrorMessage) msg;
+      assertTrue(rem.getMessage(), false);
+    } else {
+      assertTrue("Unknown message type received.", false);
+      return;
+    }
   }
 }

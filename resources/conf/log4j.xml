@@ -36,7 +36,7 @@
     <appender-ref ref="CA" />
     <appender-ref ref="FA-bdb"/>
   </logger>
-   
+  
   <root>
     <level value="DEBUG" />
     <appender-ref ref="CA" />

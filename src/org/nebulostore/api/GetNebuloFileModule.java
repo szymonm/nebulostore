@@ -99,7 +99,8 @@ public class GetNebuloFileModule extends JobModule {
       if (state_ == 2) {
         NebuloObject nebuloObject;
         try {
-          nebuloObject = CryptoUtils.decryptNebuloObject(message.encryptedObject_);
+          nebuloObject = CryptoUtils
+              .decryptNebuloObject(message.encryptedEntity_);
         } catch (CryptoException exception) {
           // TODO(bolek): Error not fatal? Retry?
           dieWithError(exception.getMessage());

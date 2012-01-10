@@ -2,134 +2,181 @@
  */
 package org.nebulostore.replicator;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 
-import org.nebulostore.appcore.DirectoryEntry;
-import org.nebulostore.appcore.HardLink;
+import org.apache.log4j.Logger;
+import org.nebulostore.appcore.EncryptedEntity;
+import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.Module;
-import org.nebulostore.appcore.NebuloDir;
-import org.nebulostore.appcore.NebuloFile;
-import org.nebulostore.appcore.NebuloObject;
+import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ObjectId;
+import org.nebulostore.appcore.exceptions.KillModuleException;
+import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.replicator.messages.ConfirmationMessage;
+import org.nebulostore.replicator.messages.DeleteObjectMessage;
+import org.nebulostore.replicator.messages.GetObjectMessage;
+import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
+import org.nebulostore.replicator.messages.SendObjectMessage;
+import org.nebulostore.replicator.messages.StoreObjectMessage;
+import org.nebulostore.replicator.messages.UpdateObjectMessage;
 
 /**
  * @author szymonmatejczyk
  */
-public class Replicator extends Module {
+public class Replicator extends JobModule {
+  private MessageVisitor<Void> visitor_;
+
+  private static Logger logger_ = Logger.getLogger(Replicator.class);
 
   public Replicator(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
-    super(inQueue, outQueue);
+    super();
+    setInQueue(inQueue);
+    setOutQueue(outQueue);
+    visitor_ = new ReplicatorVisitor();
+  }
+
+  /**
+   * Visitor to handle different message types.
+   * @author szymonmatejczyk
+   */
+  private class ReplicatorVisitor extends MessageVisitor<Void> {
+
+    public Void visit(StoreObjectMessage message) throws KillModuleException {
+      try {
+        storeObject(message.getObjectId(), message.getEncryptedEntity());
+        networkQueue_.add(new ConfirmationMessage(message.getId(), message
+            .getDestinationAddress(), message.getSourceAddress()));
+      } catch (SaveException exception) {
+        logger_.warn(exception.toString());
+        dieWithError(message.getId(), message.getDestinationAddress(),
+            message.getSourceAddress(), exception.getMessage());
+      }
+      return null;
+    }
+
+    public Void visit(GetObjectMessage message) throws KillModuleException {
+      EncryptedEntity enc = getObject(message.objectId_);
+
+      if (enc == null) {
+        dieWithError(message.getId(), message.getDestinationAddress(),
+            message.getSourceAddress(), "Unable to retrieve object.");
+      }
+
+      networkQueue_.add(new SendObjectMessage(message.getId(), message
+          .getDestinationAddress(), message.getSourceAddress(), enc));
+      return null;
+    }
+
+    public Void visit(UpdateObjectMessage message) throws KillModuleException {
+      try {
+        updateObject(message.getObjectId(), message.getEncryptedEntity());
+        networkQueue_.add(new ConfirmationMessage(message.getId(), message
+            .getDestinationAddress(), message.getSourceAddress()));
+      } catch (SaveException exception) {
+        logger_.warn(exception.toString());
+        dieWithError(message.getId(), message.getDestinationAddress(),
+            message.getSourceAddress(), exception.getMessage());
+      }
+      return null;
+    }
+
+    public Void visit(DeleteObjectMessage message) throws KillModuleException {
+      try {
+        deleteObject(message.getObjectId());
+        networkQueue_.add(new ConfirmationMessage(message.getId(), message
+            .getDestinationAddress(), message.getSourceAddress()));
+      } catch (DeleteObjectException exception) {
+        logger_.warn(exception.toString());
+        dieWithError(message.getId(), message.getDestinationAddress(),
+            message.getSourceAddress(), exception.getMessage());
+      }
+      return null;
+    }
+
+    private void dieWithError(String jobId, CommAddress sourceAddress,
+        CommAddress destinationAddress, String errorMessage)
+      throws KillModuleException {
+      networkQueue_.add(new ReplicatorErrorMessage(jobId, sourceAddress,
+          destinationAddress, errorMessage));
+      die();
+    }
+
+    private void die() throws KillModuleException {
+      throw new KillModuleException();
+    }
   }
 
   @Override
-  protected void processMessage(Message msg) {
-    // TODO(SZM) should Replicator handle any messages?
+  protected void processMessage(Message message) throws NebuloException {
+    message.accept(visitor_);
   }
 
   private HashMap<ObjectId, String> filesLocations_ = new HashMap<ObjectId, String>();
 
-  public void storeObject(ObjectId objectId, NebuloObject dataFile) throws SaveException {
+  public void storeObject(ObjectId objectId, EncryptedEntity encryptedEntity)
+    throws SaveException {
     if (filesLocations_.containsKey(objectId)) {
       throw new SaveException();
     }
     String location = getLocationPrefix() + objectId.toString();
     filesLocations_.put(objectId, location);
-    updateObject(objectId, dataFile);
+    updateObject(objectId, encryptedEntity);
   }
 
-  /**
-   * Stream methods are temporary and ineffective.
-   */
-  public void storeObject(ObjectId objectId, InputStream inputStream) throws SaveException {
-    try {
-      NebuloFile dataFile = (NebuloFile) ((ObjectInputStream) inputStream).readObject();
-      storeObject(objectId, dataFile);
-    } catch (ClassCastException exception) {
-      throw new SaveException();
-    } catch (IOException e) {
-      throw new SaveException();
-    } catch (ClassNotFoundException e) {
-      throw new SaveException();
-    }
-  }
-
-  public void getObject(ObjectId objectId, OutputStream outputStream) {
-    NebuloObject dataFile = getObject(objectId);
-    if (dataFile == null)
-      return;
-    try {
-      ((ObjectOutputStream) outputStream).writeObject(dataFile);
-    } catch (IOException e) {
-      return;
-    }
-  }
-
-  private void updateObject(ObjectId objectId, NebuloObject dataFile) throws SaveException {
-    String location = filesLocations_.get(objectId);
-    if (location == null)
-      throw new SaveException();
-
-    FileOutputStream fos = null;
-    ObjectOutputStream oos = null;
-    try {
-      File f = new File(location);
-      f.getParentFile().mkdirs();
-      fos = new FileOutputStream(f);
-      oos = new ObjectOutputStream(fos);
-      oos.writeObject(dataFile);
-      oos.close();
-    } catch (IOException exception) {
-      exception.printStackTrace();
-      throw new SaveException();
-    }
-  }
-
-  private String getLocationPrefix() {
-    return "/tmp/nebulostore/store/";
-  }
-
-  /**
-   * Returns object stored by replicator or null if it's not found.
-   * @param objectId
-   *          Object's key.
-   * @return DataFile.
-   */
-  public NebuloObject getObject(ObjectId objectId) {
+  public EncryptedEntity getObject(ObjectId objectId) {
     String location = filesLocations_.get(objectId);
     if (location == null) {
       return null;
     }
 
+    File file = new File(location);
     FileInputStream fis = null;
-    ObjectInputStream ois = null;
-    NebuloFile result = null;
+    ByteArrayInputStream baos = null;
     try {
-      fis = new FileInputStream(location);
-      ois = new ObjectInputStream(fis);
-      result = (NebuloFile) ois.readObject();
-      ois.close();
-    } catch (IOException exception) {
-      exception.printStackTrace();
+      fis = new FileInputStream(file);
+      byte[] content = new byte[(int) (file.length())];
+
+      fis.read(content);
+
+      return new EncryptedEntity(content);
+    } catch (FileNotFoundException exception) {
+      logger_.warn("Object file not found.");
       return null;
-    } catch (ClassNotFoundException exception) {
-      exception.printStackTrace();
+    } catch (IOException e) {
+      logger_.warn(e.toString());
       return null;
     }
-    return result;
   }
 
-  public void deleteObject(ObjectId objectId) {
+  private void updateObject(ObjectId objectId, EncryptedEntity encryptedEntity)
+    throws SaveException {
+    String location = filesLocations_.get(objectId);
+    if (location == null)
+      throw new SaveException();
+
+    FileOutputStream fos = null;
+    try {
+      File f = new File(location);
+      f.getParentFile().mkdirs();
+      fos = new FileOutputStream(f);
+      fos.write(encryptedEntity.getEncryptedData());
+      fos.close();
+    } catch (IOException excepion) {
+      logger_.error(excepion.getMessage());
+      // TODO(szm): printStackTrace?
+      throw new SaveException();
+    }
+  }
+
+  public void deleteObject(ObjectId objectId) throws DeleteObjectException {
     String location = filesLocations_.get(objectId);
     if (location == null)
       return;
@@ -137,29 +184,13 @@ public class Replicator extends Module {
 
     File f = new File(location);
     if (!f.exists())
-      return;
-    // TODO there should be a way to indicate failure.
+      throw new DeleteObjectException("File does not exist.");
     boolean success = f.delete();
     if (!success)
-      return;
-    // TODO there should be a way to indicate failure
+      throw new DeleteObjectException("Unable to delete file.");
   }
 
-  public void createEmptyDirectory(ObjectId dirKey) throws SaveException {
-    storeObject(dirKey, new NebuloDir());
-  }
-
-  public Collection<DirectoryEntry> listDirectory(ObjectId dirKey) {
-    // TODO(szymon): Should this return encrypted entries? Construct the collection and return it.
-    return null;
-  }
-
-  public void appendToDirectory(ObjectId dirKey, HardLink directoryEntry)
-    throws SaveException {
-    NebuloDir directory = (NebuloDir) getObject(dirKey);
-    // TODO(szymon): Encrypt directoryEntry and add it to map.
-    //directory.getEntries().add(directoryEntry);
-
-    updateObject(dirKey, directory);
+  private String getLocationPrefix() {
+    return "/tmp/nebulostore/store/";
   }
 }

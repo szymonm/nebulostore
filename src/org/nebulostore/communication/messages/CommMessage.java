@@ -24,6 +24,12 @@ public abstract class CommMessage extends Message implements Serializable {
     commDestAddress_ = destAddress;
   }
 
+  public CommMessage(String jobId, CommAddress sourceAddress, CommAddress destAddress) {
+    super(jobId);
+    commSourceAddress_ = sourceAddress;
+    commDestAddress_ = destAddress;
+  }
+
   public CommAddress getDestinationAddress() {
     return commDestAddress_;
   }
