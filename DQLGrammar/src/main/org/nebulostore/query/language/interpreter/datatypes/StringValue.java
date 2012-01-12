@@ -8,4 +8,9 @@ public class StringValue extends DQLValue {
     value_ = value;
   }
 
+  @Override
+  public Object toJava() {
+    return value_;
+  }
+
 }

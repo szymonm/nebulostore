@@ -32,4 +32,9 @@ public class BooleanValue extends DQLValue {
   public String toString() {
     return "Double(" + value_ + ")";
   }
+
+  @Override
+  public Object toJava() {
+    return value_;
+  }
 }

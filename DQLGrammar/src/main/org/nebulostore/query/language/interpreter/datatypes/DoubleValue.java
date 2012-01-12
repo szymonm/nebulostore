@@ -129,4 +129,9 @@ public class DoubleValue extends DQLValue {
     return "Double(" + value_ + ")";
   }
 
+  @Override
+  public Object toJava() {
+    return value_;
+  }
+
 }

@@ -1,5 +1,5 @@
 package org.nebulostore.query.privacy;
 
-public class PrivacyLevel {
+abstract public class PrivacyLevel {
 
 }

@@ -13,17 +13,24 @@ options {
   import java.util.TreeMap;
   import java.util.List;
   import java.util.LinkedList;
+  import org.nebulostore.query.functions.DQLFunction;
   
   import org.nebulostore.query.language.interpreter.Location;
   import org.nebulostore.query.language.interpreter.datatypes.IDQLValue;
   import org.nebulostore.query.language.interpreter.datatypes.DQLValue.DQLType;
-  import org.nebulostore.query.privacy.PrivacyLevel;
+  
   import org.nebulostore.query.language.interpreter.datatypes.DoubleValue;
   import org.nebulostore.query.language.interpreter.datatypes.BooleanValue;
   import org.nebulostore.query.language.interpreter.datatypes.IntegerValue;
   import org.nebulostore.query.language.interpreter.datatypes.StringValue;
   import org.nebulostore.query.language.interpreter.datatypes.LambdaValue;
+  import org.nebulostore.query.language.interpreter.datatypes.JavaValuesGlue;
+  
   import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
+  import org.nebulostore.query.language.interpreter.exceptions.TypeException;
+  
+  import org.nebulostore.query.privacy.PrivacyLevel;
+  
 }
 
 @members {
@@ -31,18 +38,40 @@ options {
   private Map<String, Location> environment =  new TreeMap<String, Location>();
   private Map<Location, IDQLValue> store = new TreeMap<Location, IDQLValue>();
   
+  private Map<String, DQLFunction> functions = new TreeMap<String, DQLFunction>();
+  
+  public void insertFunction(DQLFunction function) throws InterpreterException {
+    if (functions.containsKey(function.getName())) {
+      throw new InterpreterException("Function " + function.getName() + " already defined");
+    }
+    functions.put(function.getName(), function);  
+  }
+  
   // TODO: wrap it in class?
-  private IDQLValue envGet(String ident) {
-    return store.get(environment.get(ident));
+  private IDQLValue envGet(String ident) throws InterpreterException {
+    if (!environment.containsKey(ident.toLowerCase())) {  
+      throw new InterpreterException("Undefined variable " + ident);
+    }
+    
+    if (!store.containsKey(environment.get(ident.toLowerCase()))) {  
+      throw new InterpreterException("Environment corruption occured. Undefined store for variable " + ident);
+    }   
+    
+    return store.get(environment.get(ident.toLowerCase()));
   }
   
   private void envPut(String ident, IDQLValue value) {
-    environment.put(ident, new Location()); // TODO: better code here    
+    Location location = new Location();
+    environment.put(ident.toLowerCase(), location);    
+    store.put(location, value);
   }
   
-  private IDQLValue call(String ident, List<IDQLValue> params)
+  private IDQLValue call(String ident, List<IDQLValue> params) throws InterpreterException
   {
-    return new IntegerValue(1);// TODO: proper function call 
+    if (!functions.containsKey(ident.toLowerCase())) {
+     throw new InterpreterException("Function " + ident + " not available");
+    }    
+    return functions.get(ident.toLowerCase()).call(params); 
   }
 }
 
@@ -105,7 +134,7 @@ expression returns [IDQLValue result]
   | ^('*' op1=expression op2=expression)       { result = op1.mult(op2); }
   | ^('/' op1=expression op2=expression)       { result = op1.div(op2); }
   | ^('%' op1=expression op2=expression)       { result = op1.mod(op2); }
-  | ^(NEGATION e=expression)                   { result = e.intNegation(); }
+  | ^(NEGATION e=expression)                   { result = e.numNegation(); }
   
   // comparison
   | ^('='   op1=expression op2=expression)     { result = op1.equals(op2); }
@@ -138,5 +167,7 @@ expression returns [IDQLValue result]
   catch[InterpreterException exc] {    
     System.out.println("Error catch at query level"); 
     exc.printStackTrace(); 
+    // TODO: Going into error state with interpreter...
+    throw new RuntimeException(exc);
   }
   

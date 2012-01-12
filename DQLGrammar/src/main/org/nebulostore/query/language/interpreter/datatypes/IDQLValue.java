@@ -33,4 +33,7 @@ public interface IDQLValue {
   IDQLValue or(IDQLValue arg) throws InterpreterException;
 
   IDQLValue not() throws InterpreterException;
+
+  Object toJava();
+
 }

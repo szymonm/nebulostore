@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g 2011-12-29 10:30:54
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g 2012-01-10 22:32:26
 
   package org.nebulostore.query.language.interpreter.antlr;
   
@@ -6,17 +6,24 @@
   import java.util.TreeMap;
   import java.util.List;
   import java.util.LinkedList;
+  import org.nebulostore.query.functions.DQLFunction;
   
   import org.nebulostore.query.language.interpreter.Location;
   import org.nebulostore.query.language.interpreter.datatypes.IDQLValue;
   import org.nebulostore.query.language.interpreter.datatypes.DQLValue.DQLType;
-  import org.nebulostore.query.privacy.PrivacyLevel;
+  
   import org.nebulostore.query.language.interpreter.datatypes.DoubleValue;
   import org.nebulostore.query.language.interpreter.datatypes.BooleanValue;
   import org.nebulostore.query.language.interpreter.datatypes.IntegerValue;
   import org.nebulostore.query.language.interpreter.datatypes.StringValue;
   import org.nebulostore.query.language.interpreter.datatypes.LambdaValue;
+  import org.nebulostore.query.language.interpreter.datatypes.JavaValuesGlue;
+  
   import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
+  import org.nebulostore.query.language.interpreter.exceptions.TypeException;
+  
+  import org.nebulostore.query.privacy.PrivacyLevel;
+  
 
 
 import org.antlr.runtime.*;
@@ -103,32 +110,54 @@ public class TreeWalker extends TreeParser {
       private Map<String, Location> environment =  new TreeMap<String, Location>();
       private Map<Location, IDQLValue> store = new TreeMap<Location, IDQLValue>();
       
+      private Map<String, DQLFunction> functions = new TreeMap<String, DQLFunction>();
+      
+      public void insertFunction(DQLFunction function) throws InterpreterException {
+        if (functions.containsKey(function.getName())) {
+          throw new InterpreterException("Function " + function.getName() + " already defined");
+        }
+        functions.put(function.getName(), function);  
+      }
+      
       // TODO: wrap it in class?
-      private IDQLValue envGet(String ident) {
-        return store.get(environment.get(ident));
+      private IDQLValue envGet(String ident) throws InterpreterException {
+        if (!environment.containsKey(ident.toLowerCase())) {  
+          throw new InterpreterException("Undefined variable " + ident);
+        }
+        
+        if (!store.containsKey(environment.get(ident.toLowerCase()))) {  
+          throw new InterpreterException("Environment corruption occured. Undefined store for variable " + ident);
+        }   
+        
+        return store.get(environment.get(ident.toLowerCase()));
       }
       
       private void envPut(String ident, IDQLValue value) {
-        environment.put(ident, new Location()); // TODO: better code here    
+        Location location = new Location();
+        environment.put(ident.toLowerCase(), location);    
+        store.put(location, value);
       }
       
-      private IDQLValue call(String ident, List<IDQLValue> params)
+      private IDQLValue call(String ident, List<IDQLValue> params) throws InterpreterException
       {
-        return new IntegerValue(1);// TODO: proper function call 
+        if (!functions.containsKey(ident.toLowerCase())) {
+         throw new InterpreterException("Function " + ident + " not available");
+        }    
+        return functions.get(ident.toLowerCase()).call(params); 
       }
 
 
 
     // $ANTLR start "let"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:50:1: let : ^( ID e= expression ) ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:79:1: let : ^( ID e= expression ) ;
     public final void let() throws RecognitionException {
         CommonTree ID1=null;
         IDQLValue e = null;
 
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:51:3: ( ^( ID e= expression ) )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:51:5: ^( ID e= expression )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:80:3: ( ^( ID e= expression ) )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:80:5: ^( ID e= expression )
             {
             ID1=(CommonTree)match(input,ID,FOLLOW_ID_in_let61); 
 
@@ -157,16 +186,16 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "gather_statement"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:55:1: gather_statement : ^( 'GATHER' ( let )+ ) ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:84:1: gather_statement : ^( 'GATHER' ( let )+ ) ;
     public final void gather_statement() throws RecognitionException {
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:56:3: ( ^( 'GATHER' ( let )+ ) )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:56:5: ^( 'GATHER' ( let )+ )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:85:3: ( ^( 'GATHER' ( let )+ ) )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:85:5: ^( 'GATHER' ( let )+ )
             {
             match(input,50,FOLLOW_50_in_gather_statement84); 
 
             match(input, Token.DOWN, null); 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:56:16: ( let )+
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:85:16: ( let )+
             int cnt1=0;
             loop1:
             do {
@@ -180,7 +209,7 @@ public class TreeWalker extends TreeParser {
 
                 switch (alt1) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:56:16: let
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:85:16: let
             	    {
             	    pushFollow(FOLLOW_let_in_gather_statement86);
             	    let();
@@ -218,11 +247,11 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "forward_statement"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:59:1: forward_statement : ^( 'FORWARD' INT expression ) ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:88:1: forward_statement : ^( 'FORWARD' INT expression ) ;
     public final void forward_statement() throws RecognitionException {
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:60:3: ( ^( 'FORWARD' INT expression ) )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:60:5: ^( 'FORWARD' INT expression )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:89:3: ( ^( 'FORWARD' INT expression ) )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:89:5: ^( 'FORWARD' INT expression )
             {
             match(input,51,FOLLOW_51_in_forward_statement104); 
 
@@ -252,11 +281,11 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "reduce_statement"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:64:1: reduce_statement : ^( 'REDUCE' expression ) ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:93:1: reduce_statement : ^( 'REDUCE' expression ) ;
     public final void reduce_statement() throws RecognitionException {
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:65:3: ( ^( 'REDUCE' expression ) )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:65:5: ^( 'REDUCE' expression )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:94:3: ( ^( 'REDUCE' expression ) )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:94:5: ^( 'REDUCE' expression )
             {
             match(input,55,FOLLOW_55_in_reduce_statement132); 
 
@@ -284,11 +313,11 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "query"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:69:1: query : gather_statement forward_statement reduce_statement ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:98:1: query : gather_statement forward_statement reduce_statement ;
     public final void query() throws RecognitionException {
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:69:7: ( gather_statement forward_statement reduce_statement )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:70:4: gather_statement forward_statement reduce_statement
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:98:7: ( gather_statement forward_statement reduce_statement )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:99:4: gather_statement forward_statement reduce_statement
             {
             pushFollow(FOLLOW_gather_statement_in_query151);
             gather_statement();
@@ -323,7 +352,7 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "function_call_parameters"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:80:1: function_call_parameters returns [List<IDQLValue> result] : (v= expression rest= function_call_parameters | );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:109:1: function_call_parameters returns [List<IDQLValue> result] : (v= expression rest= function_call_parameters | );
     public final List<IDQLValue> function_call_parameters() throws RecognitionException {
         List<IDQLValue> result = null;
 
@@ -333,7 +362,7 @@ public class TreeWalker extends TreeParser {
 
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:81:3: (v= expression rest= function_call_parameters | )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:110:3: (v= expression rest= function_call_parameters | )
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -351,7 +380,7 @@ public class TreeWalker extends TreeParser {
             }
             switch (alt2) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:81:5: v= expression rest= function_call_parameters
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:110:5: v= expression rest= function_call_parameters
                     {
                     pushFollow(FOLLOW_expression_in_function_call_parameters193);
                     v=expression();
@@ -368,7 +397,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 2 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:82:5: 
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:111:5: 
                     {
                      result = new LinkedList<IDQLValue>();
 
@@ -389,7 +418,7 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "function_decl_parameters"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:85:1: function_decl_parameters returns [List<String> result] : ( ID rest= function_decl_parameters | );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:114:1: function_decl_parameters returns [List<String> result] : ( ID rest= function_decl_parameters | );
     public final List<String> function_decl_parameters() throws RecognitionException {
         List<String> result = null;
 
@@ -398,7 +427,7 @@ public class TreeWalker extends TreeParser {
 
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:86:3: ( ID rest= function_decl_parameters | )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:115:3: ( ID rest= function_decl_parameters | )
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -416,7 +445,7 @@ public class TreeWalker extends TreeParser {
             }
             switch (alt3) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:86:5: ID rest= function_decl_parameters
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:115:5: ID rest= function_decl_parameters
                     {
                     ID2=(CommonTree)match(input,ID,FOLLOW_ID_in_function_decl_parameters224); 
                     pushFollow(FOLLOW_function_decl_parameters_in_function_decl_parameters228);
@@ -429,7 +458,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 2 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:87:5: 
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:116:5: 
                     {
                      result = new LinkedList<String>(); 
 
@@ -450,12 +479,12 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "type_rule"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:90:1: type_rule returns [DQLType result] : ( 'INTEGER' | ^( 'LIST' type_rule ) );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:119:1: type_rule returns [DQLType result] : ( 'INTEGER' | ^( 'LIST' type_rule ) );
     public final DQLType type_rule() throws RecognitionException {
         DQLType result = null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:91:3: ( 'INTEGER' | ^( 'LIST' type_rule ) )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:120:3: ( 'INTEGER' | ^( 'LIST' type_rule ) )
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -473,7 +502,7 @@ public class TreeWalker extends TreeParser {
             }
             switch (alt4) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:91:5: 'INTEGER'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:120:5: 'INTEGER'
                     {
                     match(input,28,FOLLOW_28_in_type_rule253); 
                      result=null; 
@@ -481,7 +510,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 2 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:92:5: ^( 'LIST' type_rule )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:121:5: ^( 'LIST' type_rule )
                     {
                     match(input,34,FOLLOW_34_in_type_rule275); 
 
@@ -512,12 +541,12 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "privacy_decl"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:96:1: privacy_decl returns [PrivacyLevel result] : ( 'PRIVATE_MY' | 'PUBLIC_MY' );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:125:1: privacy_decl returns [PrivacyLevel result] : ( 'PRIVATE_MY' | 'PUBLIC_MY' );
     public final PrivacyLevel privacy_decl() throws RecognitionException {
         PrivacyLevel result = null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:97:3: ( 'PRIVATE_MY' | 'PUBLIC_MY' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:126:3: ( 'PRIVATE_MY' | 'PUBLIC_MY' )
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -535,7 +564,7 @@ public class TreeWalker extends TreeParser {
             }
             switch (alt5) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:97:5: 'PRIVATE_MY'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:126:5: 'PRIVATE_MY'
                     {
                     match(input,23,FOLLOW_23_in_privacy_decl303); 
                      result=null; 
@@ -543,7 +572,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 2 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:98:5: 'PUBLIC_MY'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:127:5: 'PUBLIC_MY'
                     {
                     match(input,24,FOLLOW_24_in_privacy_decl311); 
                      result=null; 
@@ -565,7 +594,7 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "expression"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:101:1: expression returns [IDQLValue result] : ( ^( '+' op1= expression op2= expression ) | ^( '-' op1= expression op2= expression ) | ^( '*' op1= expression op2= expression ) | ^( '/' op1= expression op2= expression ) | ^( '%' op1= expression op2= expression ) | ^( NEGATION e= expression ) | ^( '=' op1= expression op2= expression ) | ^( '!=' op1= expression op2= expression ) | ^( '<' op1= expression op2= expression ) | ^( '<=' op1= expression op2= expression ) | ^( '>' op1= expression op2= expression ) | ^( '>=' op1= expression op2= expression ) | ^( '&&' op1= expression op2= expression ) | ^( '||' op1= expression op2= expression ) | ^( 'not' op1= expression ) | ID | ^( ID call_params= function_call_parameters ) | ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* ) | INT | DOUBLE | STRING_LITERAL | ^( 'AS' op= expression type= type_rule ) | ^( 'IS' op= expression level= privacy_decl ) );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:130:1: expression returns [IDQLValue result] : ( ^( '+' op1= expression op2= expression ) | ^( '-' op1= expression op2= expression ) | ^( '*' op1= expression op2= expression ) | ^( '/' op1= expression op2= expression ) | ^( '%' op1= expression op2= expression ) | ^( NEGATION e= expression ) | ^( '=' op1= expression op2= expression ) | ^( '!=' op1= expression op2= expression ) | ^( '<' op1= expression op2= expression ) | ^( '<=' op1= expression op2= expression ) | ^( '>' op1= expression op2= expression ) | ^( '>=' op1= expression op2= expression ) | ^( '&&' op1= expression op2= expression ) | ^( '||' op1= expression op2= expression ) | ^( 'not' op1= expression ) | ID | ^( ID call_params= function_call_parameters ) | ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* ) | INT | DOUBLE | STRING_LITERAL | ^( 'AS' op= expression type= type_rule ) | ^( 'IS' op= expression level= privacy_decl ) );
     public final IDQLValue expression() throws RecognitionException {
         IDQLValue result = null;
 
@@ -593,12 +622,12 @@ public class TreeWalker extends TreeParser {
 
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:103:3: ( ^( '+' op1= expression op2= expression ) | ^( '-' op1= expression op2= expression ) | ^( '*' op1= expression op2= expression ) | ^( '/' op1= expression op2= expression ) | ^( '%' op1= expression op2= expression ) | ^( NEGATION e= expression ) | ^( '=' op1= expression op2= expression ) | ^( '!=' op1= expression op2= expression ) | ^( '<' op1= expression op2= expression ) | ^( '<=' op1= expression op2= expression ) | ^( '>' op1= expression op2= expression ) | ^( '>=' op1= expression op2= expression ) | ^( '&&' op1= expression op2= expression ) | ^( '||' op1= expression op2= expression ) | ^( 'not' op1= expression ) | ID | ^( ID call_params= function_call_parameters ) | ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* ) | INT | DOUBLE | STRING_LITERAL | ^( 'AS' op= expression type= type_rule ) | ^( 'IS' op= expression level= privacy_decl ) )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:132:3: ( ^( '+' op1= expression op2= expression ) | ^( '-' op1= expression op2= expression ) | ^( '*' op1= expression op2= expression ) | ^( '/' op1= expression op2= expression ) | ^( '%' op1= expression op2= expression ) | ^( NEGATION e= expression ) | ^( '=' op1= expression op2= expression ) | ^( '!=' op1= expression op2= expression ) | ^( '<' op1= expression op2= expression ) | ^( '<=' op1= expression op2= expression ) | ^( '>' op1= expression op2= expression ) | ^( '>=' op1= expression op2= expression ) | ^( '&&' op1= expression op2= expression ) | ^( '||' op1= expression op2= expression ) | ^( 'not' op1= expression ) | ID | ^( ID call_params= function_call_parameters ) | ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* ) | INT | DOUBLE | STRING_LITERAL | ^( 'AS' op= expression type= type_rule ) | ^( 'IS' op= expression level= privacy_decl ) )
             int alt7=23;
             alt7 = dfa7.predict(input);
             switch (alt7) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:103:5: ^( '+' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:132:5: ^( '+' op1= expression op2= expression )
                     {
                     match(input,36,FOLLOW_36_in_expression334); 
 
@@ -620,7 +649,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 2 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:104:5: ^( '-' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:133:5: ^( '-' op1= expression op2= expression )
                     {
                     match(input,37,FOLLOW_37_in_expression358); 
 
@@ -642,7 +671,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 3 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:105:5: ^( '*' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:134:5: ^( '*' op1= expression op2= expression )
                     {
                     match(input,38,FOLLOW_38_in_expression382); 
 
@@ -664,7 +693,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 4 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:106:5: ^( '/' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:135:5: ^( '/' op1= expression op2= expression )
                     {
                     match(input,39,FOLLOW_39_in_expression406); 
 
@@ -686,7 +715,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 5 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:107:5: ^( '%' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:136:5: ^( '%' op1= expression op2= expression )
                     {
                     match(input,40,FOLLOW_40_in_expression430); 
 
@@ -708,7 +737,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 6 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:108:5: ^( NEGATION e= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:137:5: ^( NEGATION e= expression )
                     {
                     match(input,NEGATION,FOLLOW_NEGATION_in_expression454); 
 
@@ -720,12 +749,12 @@ public class TreeWalker extends TreeParser {
 
 
                     match(input, Token.UP, null); 
-                     result = e.intNegation(); 
+                     result = e.numNegation(); 
 
                     }
                     break;
                 case 7 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:111:5: ^( '=' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:140:5: ^( '=' op1= expression op2= expression )
                     {
                     match(input,41,FOLLOW_41_in_expression492); 
 
@@ -747,7 +776,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 8 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:112:5: ^( '!=' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:141:5: ^( '!=' op1= expression op2= expression )
                     {
                     match(input,42,FOLLOW_42_in_expression516); 
 
@@ -769,7 +798,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 9 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:113:5: ^( '<' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:142:5: ^( '<' op1= expression op2= expression )
                     {
                     match(input,32,FOLLOW_32_in_expression539); 
 
@@ -791,7 +820,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 10 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:114:5: ^( '<=' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:143:5: ^( '<=' op1= expression op2= expression )
                     {
                     match(input,43,FOLLOW_43_in_expression563); 
 
@@ -813,7 +842,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 11 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:115:5: ^( '>' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:144:5: ^( '>' op1= expression op2= expression )
                     {
                     match(input,33,FOLLOW_33_in_expression586); 
 
@@ -835,7 +864,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 12 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:116:5: ^( '>=' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:145:5: ^( '>=' op1= expression op2= expression )
                     {
                     match(input,44,FOLLOW_44_in_expression610); 
 
@@ -857,7 +886,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 13 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:119:5: ^( '&&' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:148:5: ^( '&&' op1= expression op2= expression )
                     {
                     match(input,45,FOLLOW_45_in_expression639); 
 
@@ -879,7 +908,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 14 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:120:5: ^( '||' op1= expression op2= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:149:5: ^( '||' op1= expression op2= expression )
                     {
                     match(input,46,FOLLOW_46_in_expression662); 
 
@@ -901,7 +930,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 15 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:121:5: ^( 'not' op1= expression )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:150:5: ^( 'not' op1= expression )
                     {
                     match(input,35,FOLLOW_35_in_expression685); 
 
@@ -918,7 +947,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 16 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:124:5: ID
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:153:5: ID
                     {
                     ID3=(CommonTree)match(input,ID,FOLLOW_ID_in_expression726); 
                      result = envGet((ID3!=null?ID3.getText():null)); 
@@ -926,7 +955,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 17 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:125:5: ^( ID call_params= function_call_parameters )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:154:5: ^( ID call_params= function_call_parameters )
                     {
                     ID4=(CommonTree)match(input,ID,FOLLOW_ID_in_expression777); 
 
@@ -945,7 +974,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 18 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:126:5: ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:155:5: ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* )
                     {
                     match(input,19,FOLLOW_19_in_expression791); 
 
@@ -956,7 +985,7 @@ public class TreeWalker extends TreeParser {
                     state._fsp--;
 
                     match(input,20,FOLLOW_20_in_expression797); 
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:126:62: (EXPRESSION= . )*
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:155:62: (EXPRESSION= . )*
                     loop6:
                     do {
                         int alt6=2;
@@ -969,7 +998,7 @@ public class TreeWalker extends TreeParser {
 
                         switch (alt6) {
                     	case 1 :
-                    	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:126:62: EXPRESSION= .
+                    	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:155:62: EXPRESSION= .
                     	    {
                     	    EXPRESSION=(CommonTree)input.LT(1);
                     	    matchAny(input); 
@@ -989,7 +1018,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 19 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:129:5: INT
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:158:5: INT
                     {
                     INT5=(CommonTree)match(input,INT,FOLLOW_INT_in_expression819); 
                      result = new IntegerValue(Integer.parseInt((INT5!=null?INT5.getText():null))); 
@@ -997,7 +1026,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 20 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:130:5: DOUBLE
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:159:5: DOUBLE
                     {
                     DOUBLE6=(CommonTree)match(input,DOUBLE,FOLLOW_DOUBLE_in_expression866); 
                      result = new DoubleValue(Double.parseDouble((DOUBLE6!=null?DOUBLE6.getText():null))); 
@@ -1005,7 +1034,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 21 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:131:5: STRING_LITERAL
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:160:5: STRING_LITERAL
                     {
                     STRING_LITERAL7=(CommonTree)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_expression910); 
                      result = new StringValue((STRING_LITERAL7!=null?STRING_LITERAL7.getText():null)); 
@@ -1013,7 +1042,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 22 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:135:5: ^( 'AS' op= expression type= type_rule )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:164:5: ^( 'AS' op= expression type= type_rule )
                     {
                     match(input,48,FOLLOW_48_in_expression956); 
 
@@ -1035,7 +1064,7 @@ public class TreeWalker extends TreeParser {
                     }
                     break;
                 case 23 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:136:5: ^( 'IS' op= expression level= privacy_decl )
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/TreeWalker.g:165:5: ^( 'IS' op= expression level= privacy_decl )
                     {
                     match(input,47,FOLLOW_47_in_expression974); 
 
@@ -1063,6 +1092,8 @@ public class TreeWalker extends TreeParser {
                 
                 System.out.println("Error catch at query level"); 
                 exc.printStackTrace(); 
+                // TODO: Going into error state with interpreter...
+                throw new RuntimeException(exc);
               
         }
         finally {
@@ -1149,7 +1180,7 @@ public class TreeWalker extends TreeParser {
             this.transition = DFA7_transition;
         }
         public String getDescription() {
-            return "101:1: expression returns [IDQLValue result] : ( ^( '+' op1= expression op2= expression ) | ^( '-' op1= expression op2= expression ) | ^( '*' op1= expression op2= expression ) | ^( '/' op1= expression op2= expression ) | ^( '%' op1= expression op2= expression ) | ^( NEGATION e= expression ) | ^( '=' op1= expression op2= expression ) | ^( '!=' op1= expression op2= expression ) | ^( '<' op1= expression op2= expression ) | ^( '<=' op1= expression op2= expression ) | ^( '>' op1= expression op2= expression ) | ^( '>=' op1= expression op2= expression ) | ^( '&&' op1= expression op2= expression ) | ^( '||' op1= expression op2= expression ) | ^( 'not' op1= expression ) | ID | ^( ID call_params= function_call_parameters ) | ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* ) | INT | DOUBLE | STRING_LITERAL | ^( 'AS' op= expression type= type_rule ) | ^( 'IS' op= expression level= privacy_decl ) );";
+            return "130:1: expression returns [IDQLValue result] : ( ^( '+' op1= expression op2= expression ) | ^( '-' op1= expression op2= expression ) | ^( '*' op1= expression op2= expression ) | ^( '/' op1= expression op2= expression ) | ^( '%' op1= expression op2= expression ) | ^( NEGATION e= expression ) | ^( '=' op1= expression op2= expression ) | ^( '!=' op1= expression op2= expression ) | ^( '<' op1= expression op2= expression ) | ^( '<=' op1= expression op2= expression ) | ^( '>' op1= expression op2= expression ) | ^( '>=' op1= expression op2= expression ) | ^( '&&' op1= expression op2= expression ) | ^( '||' op1= expression op2= expression ) | ^( 'not' op1= expression ) | ID | ^( ID call_params= function_call_parameters ) | ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* ) | INT | DOUBLE | STRING_LITERAL | ^( 'AS' op= expression type= type_rule ) | ^( 'IS' op= expression level= privacy_decl ) );";
         }
     }
  

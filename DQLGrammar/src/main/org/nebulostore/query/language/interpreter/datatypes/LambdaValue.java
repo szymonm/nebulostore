@@ -24,4 +24,9 @@ public class LambdaValue extends DQLValue {
     // TODO: setting up walker environment, passing environment as a var
     return walker.expression();
   }
+
+  @Override
+  public Object toJava() {
+    return this;
+  }
 }

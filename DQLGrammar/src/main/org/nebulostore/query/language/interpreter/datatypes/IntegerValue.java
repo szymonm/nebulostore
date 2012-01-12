@@ -137,4 +137,9 @@ public class IntegerValue extends DQLValue {
   public String toString() {
     return "Integer(" + value_ + ")";
   }
+
+  @Override
+  public Object toJava() {
+    return new Integer(value_);
+  }
 }
