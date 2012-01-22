@@ -1,32 +1,44 @@
 package org.nebulostore.query.language.interpreter.datatypes;
 
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
+import org.nebulostore.query.privacy.PrivacyLevel;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public abstract class DQLValue implements IDQLValue {
 
+  protected final PrivacyLevel privacyLevel_;
+
+  @Override
+  public PrivacyLevel getPrivacyLevel() {
+    return privacyLevel_;
+  }
+
+  public DQLValue(PrivacyLevel privacyLevel) {
+    privacyLevel_ = privacyLevel;
+  }
+
   public enum DQLType {
-    DQLInteger, DQLDouble, DQLString // TODO: all types
+    DQLInteger, DQLDouble, DQLString, DQLLambda, DQLList, DQLTuple, DQLBoolean
   };
 
   @Override
-  public IDQLValue add(IDQLValue arg) throws InterpreterException {
+  public IDQLValue addNum(IDQLValue arg) throws InterpreterException {
     throw new NotImplementedException();
   }
 
   @Override
-  public IDQLValue mult(IDQLValue arg) throws InterpreterException {
+  public IDQLValue multNum(IDQLValue arg) throws InterpreterException {
     throw new NotImplementedException();
   }
 
   @Override
-  public IDQLValue div(IDQLValue arg) throws InterpreterException {
+  public IDQLValue divNum(IDQLValue arg) throws InterpreterException {
     throw new NotImplementedException();
   }
 
   @Override
-  public IDQLValue sub(IDQLValue arg) throws InterpreterException {
+  public IDQLValue subNum(IDQLValue arg) throws InterpreterException {
     throw new NotImplementedException();
   }
 
@@ -36,7 +48,7 @@ public abstract class DQLValue implements IDQLValue {
   }
 
   @Override
-  public IDQLValue mod(IDQLValue arg) throws InterpreterException {
+  public IDQLValue modNum(IDQLValue arg) throws InterpreterException {
     throw new NotImplementedException();
   }
 

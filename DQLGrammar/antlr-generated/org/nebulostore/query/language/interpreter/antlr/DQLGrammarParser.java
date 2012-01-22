@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g 2012-01-10 22:32:23
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g 2012-01-22 23:18:46
 
   package org.nebulostore.query.language.interpreter.antlr;
 
@@ -471,7 +471,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "privacy_decl"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:106:1: privacy_decl : ( 'PRIVATE_MY' | 'PUBLIC_MY' | 'PRIVATE_COND_MY' | 'PUBLIC_OTHER' | 'PRIVATE_COND_OTHER' );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:103:1: privacy_decl : ( 'PRIVATE_MY' | 'PUBLIC_MY' | 'PRIVATE_COND_MY' | 'PUBLIC_OTHER' | 'PRIVATE_COND_OTHER' );
     public final DQLGrammarParser.privacy_decl_return privacy_decl() throws RecognitionException {
         DQLGrammarParser.privacy_decl_return retval = new DQLGrammarParser.privacy_decl_return();
         retval.start = input.LT(1);
@@ -483,7 +483,7 @@ public class DQLGrammarParser extends Parser {
         CommonTree set18_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:107:3: ( 'PRIVATE_MY' | 'PUBLIC_MY' | 'PRIVATE_COND_MY' | 'PUBLIC_OTHER' | 'PRIVATE_COND_OTHER' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:104:3: ( 'PRIVATE_MY' | 'PUBLIC_MY' | 'PRIVATE_COND_MY' | 'PUBLIC_OTHER' | 'PRIVATE_COND_OTHER' )
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:
             {
             root_0 = (CommonTree)adaptor.nil();
@@ -526,7 +526,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "type"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:115:1: type : ( 'INTEGER' | 'DOUBLE' | 'STRING' | 'TUPLE' '<' ( type )+ '>' | 'LIST' '<' type '>' );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:111:1: type : ( 'INTEGER' | 'DOUBLE' | 'STRING' | 'TUPLE' '<' ( type )+ '>' | 'LIST' '<' type '>' );
     public final DQLGrammarParser.type_return type() throws RecognitionException {
         DQLGrammarParser.type_return retval = new DQLGrammarParser.type_return();
         retval.start = input.LT(1);
@@ -558,7 +558,7 @@ public class DQLGrammarParser extends Parser {
         CommonTree char_literal29_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:116:3: ( 'INTEGER' | 'DOUBLE' | 'STRING' | 'TUPLE' '<' ( type )+ '>' | 'LIST' '<' type '>' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:112:3: ( 'INTEGER' | 'DOUBLE' | 'STRING' | 'TUPLE' '<' ( type )+ '>' | 'LIST' '<' type '>' )
             int alt5=5;
             switch ( input.LA(1) ) {
             case 28:
@@ -595,11 +595,11 @@ public class DQLGrammarParser extends Parser {
 
             switch (alt5) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:116:5: 'INTEGER'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:112:5: 'INTEGER'
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal19=(Token)match(input,28,FOLLOW_28_in_type799); 
+                    string_literal19=(Token)match(input,28,FOLLOW_28_in_type793); 
                     string_literal19_tree = (CommonTree)adaptor.create(string_literal19);
                     adaptor.addChild(root_0, string_literal19_tree);
 
@@ -607,11 +607,11 @@ public class DQLGrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:117:5: 'DOUBLE'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:113:5: 'DOUBLE'
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal20=(Token)match(input,29,FOLLOW_29_in_type805); 
+                    string_literal20=(Token)match(input,29,FOLLOW_29_in_type799); 
                     string_literal20_tree = (CommonTree)adaptor.create(string_literal20);
                     adaptor.addChild(root_0, string_literal20_tree);
 
@@ -619,11 +619,11 @@ public class DQLGrammarParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:118:5: 'STRING'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:114:5: 'STRING'
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal21=(Token)match(input,30,FOLLOW_30_in_type811); 
+                    string_literal21=(Token)match(input,30,FOLLOW_30_in_type805); 
                     string_literal21_tree = (CommonTree)adaptor.create(string_literal21);
                     adaptor.addChild(root_0, string_literal21_tree);
 
@@ -631,16 +631,16 @@ public class DQLGrammarParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:119:5: 'TUPLE' '<' ( type )+ '>'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:115:5: 'TUPLE' '<' ( type )+ '>'
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal22=(Token)match(input,31,FOLLOW_31_in_type817); 
+                    string_literal22=(Token)match(input,31,FOLLOW_31_in_type811); 
                     string_literal22_tree = (CommonTree)adaptor.create(string_literal22);
                     root_0 = (CommonTree)adaptor.becomeRoot(string_literal22_tree, root_0);
 
-                    char_literal23=(Token)match(input,32,FOLLOW_32_in_type820); 
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:119:19: ( type )+
+                    char_literal23=(Token)match(input,32,FOLLOW_32_in_type814); 
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:115:19: ( type )+
                     int cnt4=0;
                     loop4:
                     do {
@@ -654,9 +654,9 @@ public class DQLGrammarParser extends Parser {
 
                         switch (alt4) {
                     	case 1 :
-                    	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:119:19: type
+                    	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:115:19: type
                     	    {
-                    	    pushFollow(FOLLOW_type_in_type823);
+                    	    pushFollow(FOLLOW_type_in_type817);
                     	    type24=type();
 
                     	    state._fsp--;
@@ -675,27 +675,27 @@ public class DQLGrammarParser extends Parser {
                         cnt4++;
                     } while (true);
 
-                    char_literal25=(Token)match(input,33,FOLLOW_33_in_type826); 
+                    char_literal25=(Token)match(input,33,FOLLOW_33_in_type820); 
 
                     }
                     break;
                 case 5 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:120:5: 'LIST' '<' type '>'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:116:5: 'LIST' '<' type '>'
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal26=(Token)match(input,34,FOLLOW_34_in_type833); 
+                    string_literal26=(Token)match(input,34,FOLLOW_34_in_type827); 
                     string_literal26_tree = (CommonTree)adaptor.create(string_literal26);
                     root_0 = (CommonTree)adaptor.becomeRoot(string_literal26_tree, root_0);
 
-                    char_literal27=(Token)match(input,32,FOLLOW_32_in_type836); 
-                    pushFollow(FOLLOW_type_in_type839);
+                    char_literal27=(Token)match(input,32,FOLLOW_32_in_type830); 
+                    pushFollow(FOLLOW_type_in_type833);
                     type28=type();
 
                     state._fsp--;
 
                     adaptor.addChild(root_0, type28.getTree());
-                    char_literal29=(Token)match(input,33,FOLLOW_33_in_type841); 
+                    char_literal29=(Token)match(input,33,FOLLOW_33_in_type835); 
 
                     }
                     break;
@@ -725,7 +725,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "term"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:124:1: term : ( ID | '(' expression ')' | INT | DOUBLE | STRING_LITERAL | function_call | lambda_function );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:120:1: term : ( ID | '(' expression ')' | INT | DOUBLE | STRING_LITERAL | function_call | lambda_function );
     public final DQLGrammarParser.term_return term() throws RecognitionException {
         DQLGrammarParser.term_return retval = new DQLGrammarParser.term_return();
         retval.start = input.LT(1);
@@ -753,7 +753,7 @@ public class DQLGrammarParser extends Parser {
         CommonTree STRING_LITERAL36_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:125:3: ( ID | '(' expression ')' | INT | DOUBLE | STRING_LITERAL | function_call | lambda_function )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:121:3: ( ID | '(' expression ')' | INT | DOUBLE | STRING_LITERAL | function_call | lambda_function )
             int alt6=7;
             switch ( input.LA(1) ) {
             case ID:
@@ -808,11 +808,11 @@ public class DQLGrammarParser extends Parser {
 
             switch (alt6) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:125:5: ID
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:121:5: ID
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    ID30=(Token)match(input,ID,FOLLOW_ID_in_term857); 
+                    ID30=(Token)match(input,ID,FOLLOW_ID_in_term851); 
                     ID30_tree = (CommonTree)adaptor.create(ID30);
                     adaptor.addChild(root_0, ID30_tree);
 
@@ -820,27 +820,27 @@ public class DQLGrammarParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:126:5: '(' expression ')'
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:122:5: '(' expression ')'
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    char_literal31=(Token)match(input,21,FOLLOW_21_in_term863); 
-                    pushFollow(FOLLOW_expression_in_term866);
+                    char_literal31=(Token)match(input,21,FOLLOW_21_in_term857); 
+                    pushFollow(FOLLOW_expression_in_term860);
                     expression32=expression();
 
                     state._fsp--;
 
                     adaptor.addChild(root_0, expression32.getTree());
-                    char_literal33=(Token)match(input,22,FOLLOW_22_in_term868); 
+                    char_literal33=(Token)match(input,22,FOLLOW_22_in_term862); 
 
                     }
                     break;
                 case 3 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:127:5: INT
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:123:5: INT
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    INT34=(Token)match(input,INT,FOLLOW_INT_in_term875); 
+                    INT34=(Token)match(input,INT,FOLLOW_INT_in_term869); 
                     INT34_tree = (CommonTree)adaptor.create(INT34);
                     adaptor.addChild(root_0, INT34_tree);
 
@@ -848,11 +848,11 @@ public class DQLGrammarParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:128:5: DOUBLE
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:124:5: DOUBLE
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    DOUBLE35=(Token)match(input,DOUBLE,FOLLOW_DOUBLE_in_term881); 
+                    DOUBLE35=(Token)match(input,DOUBLE,FOLLOW_DOUBLE_in_term875); 
                     DOUBLE35_tree = (CommonTree)adaptor.create(DOUBLE35);
                     adaptor.addChild(root_0, DOUBLE35_tree);
 
@@ -860,11 +860,11 @@ public class DQLGrammarParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:129:5: STRING_LITERAL
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:125:5: STRING_LITERAL
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    STRING_LITERAL36=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_term888); 
+                    STRING_LITERAL36=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_term882); 
                     STRING_LITERAL36_tree = (CommonTree)adaptor.create(STRING_LITERAL36);
                     adaptor.addChild(root_0, STRING_LITERAL36_tree);
 
@@ -872,11 +872,11 @@ public class DQLGrammarParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:130:5: function_call
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:126:5: function_call
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_function_call_in_term894);
+                    pushFollow(FOLLOW_function_call_in_term888);
                     function_call37=function_call();
 
                     state._fsp--;
@@ -886,11 +886,11 @@ public class DQLGrammarParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:131:5: lambda_function
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:127:5: lambda_function
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_lambda_function_in_term900);
+                    pushFollow(FOLLOW_lambda_function_in_term894);
                     lambda_function38=lambda_function();
 
                     state._fsp--;
@@ -925,7 +925,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "negation"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:134:1: negation : ( 'not' )* term ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:130:1: negation : ( 'not' )* term ;
     public final DQLGrammarParser.negation_return negation() throws RecognitionException {
         DQLGrammarParser.negation_return retval = new DQLGrammarParser.negation_return();
         retval.start = input.LT(1);
@@ -939,12 +939,12 @@ public class DQLGrammarParser extends Parser {
         CommonTree string_literal39_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:3: ( ( 'not' )* term )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:5: ( 'not' )* term
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:131:3: ( ( 'not' )* term )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:131:5: ( 'not' )* term
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:5: ( 'not' )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:131:5: ( 'not' )*
             loop7:
             do {
                 int alt7=2;
@@ -957,9 +957,9 @@ public class DQLGrammarParser extends Parser {
 
                 switch (alt7) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:6: 'not'
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:131:6: 'not'
             	    {
-            	    string_literal39=(Token)match(input,35,FOLLOW_35_in_negation917); 
+            	    string_literal39=(Token)match(input,35,FOLLOW_35_in_negation911); 
             	    string_literal39_tree = (CommonTree)adaptor.create(string_literal39);
             	    root_0 = (CommonTree)adaptor.becomeRoot(string_literal39_tree, root_0);
 
@@ -972,7 +972,7 @@ public class DQLGrammarParser extends Parser {
                 }
             } while (true);
 
-            pushFollow(FOLLOW_term_in_negation922);
+            pushFollow(FOLLOW_term_in_negation916);
             term40=term();
 
             state._fsp--;
@@ -1005,7 +1005,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "unary"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:138:1: unary : ( '+' | unary_negation_rewrite )* negation ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:134:1: unary : ( '+' | unary_negation_rewrite )* negation ;
     public final DQLGrammarParser.unary_return unary() throws RecognitionException {
         DQLGrammarParser.unary_return retval = new DQLGrammarParser.unary_return();
         retval.start = input.LT(1);
@@ -1021,12 +1021,12 @@ public class DQLGrammarParser extends Parser {
         CommonTree char_literal41_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:139:3: ( ( '+' | unary_negation_rewrite )* negation )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:139:5: ( '+' | unary_negation_rewrite )* negation
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:3: ( ( '+' | unary_negation_rewrite )* negation )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:5: ( '+' | unary_negation_rewrite )* negation
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:139:5: ( '+' | unary_negation_rewrite )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:5: ( '+' | unary_negation_rewrite )*
             loop8:
             do {
                 int alt8=3;
@@ -1042,16 +1042,16 @@ public class DQLGrammarParser extends Parser {
 
                 switch (alt8) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:139:6: '+'
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:6: '+'
             	    {
-            	    char_literal41=(Token)match(input,36,FOLLOW_36_in_unary938); 
+            	    char_literal41=(Token)match(input,36,FOLLOW_36_in_unary932); 
 
             	    }
             	    break;
             	case 2 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:139:13: unary_negation_rewrite
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:135:13: unary_negation_rewrite
             	    {
-            	    pushFollow(FOLLOW_unary_negation_rewrite_in_unary943);
+            	    pushFollow(FOLLOW_unary_negation_rewrite_in_unary937);
             	    unary_negation_rewrite42=unary_negation_rewrite();
 
             	    state._fsp--;
@@ -1066,7 +1066,7 @@ public class DQLGrammarParser extends Parser {
                 }
             } while (true);
 
-            pushFollow(FOLLOW_negation_in_unary948);
+            pushFollow(FOLLOW_negation_in_unary942);
             negation43=negation();
 
             state._fsp--;
@@ -1099,7 +1099,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "unary_negation_rewrite"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:142:1: unary_negation_rewrite : '-' -> NEGATION ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:138:1: unary_negation_rewrite : '-' -> NEGATION ;
     public final DQLGrammarParser.unary_negation_rewrite_return unary_negation_rewrite() throws RecognitionException {
         DQLGrammarParser.unary_negation_rewrite_return retval = new DQLGrammarParser.unary_negation_rewrite_return();
         retval.start = input.LT(1);
@@ -1112,10 +1112,10 @@ public class DQLGrammarParser extends Parser {
         RewriteRuleTokenStream stream_37=new RewriteRuleTokenStream(adaptor,"token 37");
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:3: ( '-' -> NEGATION )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:5: '-'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:139:3: ( '-' -> NEGATION )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:139:5: '-'
             {
-            char_literal44=(Token)match(input,37,FOLLOW_37_in_unary_negation_rewrite963);  
+            char_literal44=(Token)match(input,37,FOLLOW_37_in_unary_negation_rewrite957);  
             stream_37.add(char_literal44);
 
 
@@ -1131,7 +1131,7 @@ public class DQLGrammarParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (CommonTree)adaptor.nil();
-            // 143:9: -> NEGATION
+            // 139:9: -> NEGATION
             {
                 adaptor.addChild(root_0, (CommonTree)adaptor.create(NEGATION, "NEGATION"));
 
@@ -1164,7 +1164,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "mult"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:146:1: mult : unary ( ( '*' | '/' | '%' ) unary )* ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:142:1: mult : unary ( ( '*' | '/' | '%' ) unary )* ;
     public final DQLGrammarParser.mult_return mult() throws RecognitionException {
         DQLGrammarParser.mult_return retval = new DQLGrammarParser.mult_return();
         retval.start = input.LT(1);
@@ -1184,18 +1184,18 @@ public class DQLGrammarParser extends Parser {
         CommonTree char_literal48_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:3: ( unary ( ( '*' | '/' | '%' ) unary )* )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:5: unary ( ( '*' | '/' | '%' ) unary )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:3: ( unary ( ( '*' | '/' | '%' ) unary )* )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:5: unary ( ( '*' | '/' | '%' ) unary )*
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_unary_in_mult982);
+            pushFollow(FOLLOW_unary_in_mult976);
             unary45=unary();
 
             state._fsp--;
 
             adaptor.addChild(root_0, unary45.getTree());
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:11: ( ( '*' | '/' | '%' ) unary )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:11: ( ( '*' | '/' | '%' ) unary )*
             loop10:
             do {
                 int alt10=2;
@@ -1208,9 +1208,9 @@ public class DQLGrammarParser extends Parser {
 
                 switch (alt10) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:12: ( '*' | '/' | '%' ) unary
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:12: ( '*' | '/' | '%' ) unary
             	    {
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:12: ( '*' | '/' | '%' )
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:12: ( '*' | '/' | '%' )
             	    int alt9=3;
             	    switch ( input.LA(1) ) {
             	    case 38:
@@ -1237,9 +1237,9 @@ public class DQLGrammarParser extends Parser {
 
             	    switch (alt9) {
             	        case 1 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:13: '*'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:13: '*'
             	            {
-            	            char_literal46=(Token)match(input,38,FOLLOW_38_in_mult986); 
+            	            char_literal46=(Token)match(input,38,FOLLOW_38_in_mult980); 
             	            char_literal46_tree = (CommonTree)adaptor.create(char_literal46);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal46_tree, root_0);
 
@@ -1247,9 +1247,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 2 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:20: '/'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:20: '/'
             	            {
-            	            char_literal47=(Token)match(input,39,FOLLOW_39_in_mult991); 
+            	            char_literal47=(Token)match(input,39,FOLLOW_39_in_mult985); 
             	            char_literal47_tree = (CommonTree)adaptor.create(char_literal47);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal47_tree, root_0);
 
@@ -1257,9 +1257,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 3 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:27: '%'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:143:27: '%'
             	            {
-            	            char_literal48=(Token)match(input,40,FOLLOW_40_in_mult996); 
+            	            char_literal48=(Token)match(input,40,FOLLOW_40_in_mult990); 
             	            char_literal48_tree = (CommonTree)adaptor.create(char_literal48);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal48_tree, root_0);
 
@@ -1269,7 +1269,7 @@ public class DQLGrammarParser extends Parser {
 
             	    }
 
-            	    pushFollow(FOLLOW_unary_in_mult1000);
+            	    pushFollow(FOLLOW_unary_in_mult994);
             	    unary49=unary();
 
             	    state._fsp--;
@@ -1311,7 +1311,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "add"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:150:1: add : mult ( ( '+' | '-' ) mult )* ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:146:1: add : mult ( ( '+' | '-' ) mult )* ;
     public final DQLGrammarParser.add_return add() throws RecognitionException {
         DQLGrammarParser.add_return retval = new DQLGrammarParser.add_return();
         retval.start = input.LT(1);
@@ -1329,18 +1329,18 @@ public class DQLGrammarParser extends Parser {
         CommonTree char_literal52_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:3: ( mult ( ( '+' | '-' ) mult )* )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:5: mult ( ( '+' | '-' ) mult )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:3: ( mult ( ( '+' | '-' ) mult )* )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:5: mult ( ( '+' | '-' ) mult )*
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_mult_in_add1015);
+            pushFollow(FOLLOW_mult_in_add1009);
             mult50=mult();
 
             state._fsp--;
 
             adaptor.addChild(root_0, mult50.getTree());
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:10: ( ( '+' | '-' ) mult )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:10: ( ( '+' | '-' ) mult )*
             loop12:
             do {
                 int alt12=2;
@@ -1353,9 +1353,9 @@ public class DQLGrammarParser extends Parser {
 
                 switch (alt12) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:11: ( '+' | '-' ) mult
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:11: ( '+' | '-' ) mult
             	    {
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:11: ( '+' | '-' )
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:11: ( '+' | '-' )
             	    int alt11=2;
             	    int LA11_0 = input.LA(1);
 
@@ -1373,9 +1373,9 @@ public class DQLGrammarParser extends Parser {
             	    }
             	    switch (alt11) {
             	        case 1 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:12: '+'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:12: '+'
             	            {
-            	            char_literal51=(Token)match(input,36,FOLLOW_36_in_add1019); 
+            	            char_literal51=(Token)match(input,36,FOLLOW_36_in_add1013); 
             	            char_literal51_tree = (CommonTree)adaptor.create(char_literal51);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal51_tree, root_0);
 
@@ -1383,9 +1383,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 2 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:19: '-'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:147:19: '-'
             	            {
-            	            char_literal52=(Token)match(input,37,FOLLOW_37_in_add1024); 
+            	            char_literal52=(Token)match(input,37,FOLLOW_37_in_add1018); 
             	            char_literal52_tree = (CommonTree)adaptor.create(char_literal52);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal52_tree, root_0);
 
@@ -1395,7 +1395,7 @@ public class DQLGrammarParser extends Parser {
 
             	    }
 
-            	    pushFollow(FOLLOW_mult_in_add1028);
+            	    pushFollow(FOLLOW_mult_in_add1022);
             	    mult53=mult();
 
             	    state._fsp--;
@@ -1437,7 +1437,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "relation"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:154:1: relation : add ( ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add )* ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:150:1: relation : add ( ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add )* ;
     public final DQLGrammarParser.relation_return relation() throws RecognitionException {
         DQLGrammarParser.relation_return retval = new DQLGrammarParser.relation_return();
         retval.start = input.LT(1);
@@ -1463,18 +1463,18 @@ public class DQLGrammarParser extends Parser {
         CommonTree char_literal60_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:3: ( add ( ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add )* )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:5: add ( ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:3: ( add ( ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add )* )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:5: add ( ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add )*
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_add_in_relation1043);
+            pushFollow(FOLLOW_add_in_relation1037);
             add54=add();
 
             state._fsp--;
 
             adaptor.addChild(root_0, add54.getTree());
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:9: ( ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:9: ( ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add )*
             loop14:
             do {
                 int alt14=2;
@@ -1487,9 +1487,9 @@ public class DQLGrammarParser extends Parser {
 
                 switch (alt14) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:10: ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:10: ( '=' | '!=' | '<' | '<=' | '>=' | '>' ) add
             	    {
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:10: ( '=' | '!=' | '<' | '<=' | '>=' | '>' )
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:10: ( '=' | '!=' | '<' | '<=' | '>=' | '>' )
             	    int alt13=6;
             	    switch ( input.LA(1) ) {
             	    case 41:
@@ -1531,9 +1531,9 @@ public class DQLGrammarParser extends Parser {
 
             	    switch (alt13) {
             	        case 1 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:11: '='
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:11: '='
             	            {
-            	            char_literal55=(Token)match(input,41,FOLLOW_41_in_relation1047); 
+            	            char_literal55=(Token)match(input,41,FOLLOW_41_in_relation1041); 
             	            char_literal55_tree = (CommonTree)adaptor.create(char_literal55);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal55_tree, root_0);
 
@@ -1541,9 +1541,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 2 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:18: '!='
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:18: '!='
             	            {
-            	            string_literal56=(Token)match(input,42,FOLLOW_42_in_relation1052); 
+            	            string_literal56=(Token)match(input,42,FOLLOW_42_in_relation1046); 
             	            string_literal56_tree = (CommonTree)adaptor.create(string_literal56);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal56_tree, root_0);
 
@@ -1551,9 +1551,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 3 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:26: '<'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:26: '<'
             	            {
-            	            char_literal57=(Token)match(input,32,FOLLOW_32_in_relation1057); 
+            	            char_literal57=(Token)match(input,32,FOLLOW_32_in_relation1051); 
             	            char_literal57_tree = (CommonTree)adaptor.create(char_literal57);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal57_tree, root_0);
 
@@ -1561,9 +1561,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 4 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:33: '<='
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:33: '<='
             	            {
-            	            string_literal58=(Token)match(input,43,FOLLOW_43_in_relation1062); 
+            	            string_literal58=(Token)match(input,43,FOLLOW_43_in_relation1056); 
             	            string_literal58_tree = (CommonTree)adaptor.create(string_literal58);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal58_tree, root_0);
 
@@ -1571,9 +1571,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 5 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:41: '>='
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:41: '>='
             	            {
-            	            string_literal59=(Token)match(input,44,FOLLOW_44_in_relation1067); 
+            	            string_literal59=(Token)match(input,44,FOLLOW_44_in_relation1061); 
             	            string_literal59_tree = (CommonTree)adaptor.create(string_literal59);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal59_tree, root_0);
 
@@ -1581,9 +1581,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 6 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:49: '>'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:151:49: '>'
             	            {
-            	            char_literal60=(Token)match(input,33,FOLLOW_33_in_relation1072); 
+            	            char_literal60=(Token)match(input,33,FOLLOW_33_in_relation1066); 
             	            char_literal60_tree = (CommonTree)adaptor.create(char_literal60);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal60_tree, root_0);
 
@@ -1593,7 +1593,7 @@ public class DQLGrammarParser extends Parser {
 
             	    }
 
-            	    pushFollow(FOLLOW_add_in_relation1076);
+            	    pushFollow(FOLLOW_add_in_relation1070);
             	    add61=add();
 
             	    state._fsp--;
@@ -1635,7 +1635,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "expression"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:158:1: expression : relation ( ( '&&' | '||' ) relation )* ( 'IS' privacy_decl ( 'AS' type )? )? ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:154:1: expression : relation ( ( '&&' | '||' ) relation )* ( 'IS' privacy_decl ( 'AS' type )? )? ;
     public final DQLGrammarParser.expression_return expression() throws RecognitionException {
         DQLGrammarParser.expression_return retval = new DQLGrammarParser.expression_return();
         retval.start = input.LT(1);
@@ -1661,18 +1661,18 @@ public class DQLGrammarParser extends Parser {
         CommonTree string_literal68_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:3: ( relation ( ( '&&' | '||' ) relation )* ( 'IS' privacy_decl ( 'AS' type )? )? )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:5: relation ( ( '&&' | '||' ) relation )* ( 'IS' privacy_decl ( 'AS' type )? )?
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:3: ( relation ( ( '&&' | '||' ) relation )* ( 'IS' privacy_decl ( 'AS' type )? )? )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:5: relation ( ( '&&' | '||' ) relation )* ( 'IS' privacy_decl ( 'AS' type )? )?
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_relation_in_expression1093);
+            pushFollow(FOLLOW_relation_in_expression1087);
             relation62=relation();
 
             state._fsp--;
 
             adaptor.addChild(root_0, relation62.getTree());
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:14: ( ( '&&' | '||' ) relation )*
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:14: ( ( '&&' | '||' ) relation )*
             loop16:
             do {
                 int alt16=2;
@@ -1685,9 +1685,9 @@ public class DQLGrammarParser extends Parser {
 
                 switch (alt16) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:15: ( '&&' | '||' ) relation
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:15: ( '&&' | '||' ) relation
             	    {
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:15: ( '&&' | '||' )
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:15: ( '&&' | '||' )
             	    int alt15=2;
             	    int LA15_0 = input.LA(1);
 
@@ -1705,9 +1705,9 @@ public class DQLGrammarParser extends Parser {
             	    }
             	    switch (alt15) {
             	        case 1 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:16: '&&'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:16: '&&'
             	            {
-            	            string_literal63=(Token)match(input,45,FOLLOW_45_in_expression1097); 
+            	            string_literal63=(Token)match(input,45,FOLLOW_45_in_expression1091); 
             	            string_literal63_tree = (CommonTree)adaptor.create(string_literal63);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal63_tree, root_0);
 
@@ -1715,9 +1715,9 @@ public class DQLGrammarParser extends Parser {
             	            }
             	            break;
             	        case 2 :
-            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:24: '||'
+            	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:24: '||'
             	            {
-            	            string_literal64=(Token)match(input,46,FOLLOW_46_in_expression1102); 
+            	            string_literal64=(Token)match(input,46,FOLLOW_46_in_expression1096); 
             	            string_literal64_tree = (CommonTree)adaptor.create(string_literal64);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal64_tree, root_0);
 
@@ -1727,7 +1727,7 @@ public class DQLGrammarParser extends Parser {
 
             	    }
 
-            	    pushFollow(FOLLOW_relation_in_expression1106);
+            	    pushFollow(FOLLOW_relation_in_expression1100);
             	    relation65=relation();
 
             	    state._fsp--;
@@ -1742,7 +1742,7 @@ public class DQLGrammarParser extends Parser {
                 }
             } while (true);
 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:42: ( 'IS' privacy_decl ( 'AS' type )? )?
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:42: ( 'IS' privacy_decl ( 'AS' type )? )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -1751,19 +1751,19 @@ public class DQLGrammarParser extends Parser {
             }
             switch (alt18) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:43: 'IS' privacy_decl ( 'AS' type )?
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:43: 'IS' privacy_decl ( 'AS' type )?
                     {
-                    string_literal66=(Token)match(input,47,FOLLOW_47_in_expression1111); 
+                    string_literal66=(Token)match(input,47,FOLLOW_47_in_expression1105); 
                     string_literal66_tree = (CommonTree)adaptor.create(string_literal66);
                     root_0 = (CommonTree)adaptor.becomeRoot(string_literal66_tree, root_0);
 
-                    pushFollow(FOLLOW_privacy_decl_in_expression1114);
+                    pushFollow(FOLLOW_privacy_decl_in_expression1108);
                     privacy_decl67=privacy_decl();
 
                     state._fsp--;
 
                     adaptor.addChild(root_0, privacy_decl67.getTree());
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:62: ( 'AS' type )?
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:62: ( 'AS' type )?
                     int alt17=2;
                     int LA17_0 = input.LA(1);
 
@@ -1772,13 +1772,13 @@ public class DQLGrammarParser extends Parser {
                     }
                     switch (alt17) {
                         case 1 :
-                            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:64: 'AS' type
+                            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:155:64: 'AS' type
                             {
-                            string_literal68=(Token)match(input,48,FOLLOW_48_in_expression1118); 
+                            string_literal68=(Token)match(input,48,FOLLOW_48_in_expression1112); 
                             string_literal68_tree = (CommonTree)adaptor.create(string_literal68);
                             root_0 = (CommonTree)adaptor.becomeRoot(string_literal68_tree, root_0);
 
-                            pushFollow(FOLLOW_type_in_expression1121);
+                            pushFollow(FOLLOW_type_in_expression1115);
                             type69=type();
 
                             state._fsp--;
@@ -1823,7 +1823,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "let"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:163:1: let : 'LET' ID '=' expression ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:1: let : 'LET' ID '=' expression ;
     public final DQLGrammarParser.let_return let() throws RecognitionException {
         DQLGrammarParser.let_return retval = new DQLGrammarParser.let_return();
         retval.start = input.LT(1);
@@ -1841,18 +1841,18 @@ public class DQLGrammarParser extends Parser {
         CommonTree char_literal72_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:163:5: ( 'LET' ID '=' expression )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:163:7: 'LET' ID '=' expression
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:5: ( 'LET' ID '=' expression )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:159:7: 'LET' ID '=' expression
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal70=(Token)match(input,49,FOLLOW_49_in_let1139); 
-            ID71=(Token)match(input,ID,FOLLOW_ID_in_let1142); 
+            string_literal70=(Token)match(input,49,FOLLOW_49_in_let1133); 
+            ID71=(Token)match(input,ID,FOLLOW_ID_in_let1136); 
             ID71_tree = (CommonTree)adaptor.create(ID71);
             root_0 = (CommonTree)adaptor.becomeRoot(ID71_tree, root_0);
 
-            char_literal72=(Token)match(input,41,FOLLOW_41_in_let1145); 
-            pushFollow(FOLLOW_expression_in_let1148);
+            char_literal72=(Token)match(input,41,FOLLOW_41_in_let1139); 
+            pushFollow(FOLLOW_expression_in_let1142);
             expression73=expression();
 
             state._fsp--;
@@ -1885,7 +1885,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "gather_statement"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:165:1: gather_statement : 'GATHER' ( let )+ ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:161:1: gather_statement : 'GATHER' ( let )+ ;
     public final DQLGrammarParser.gather_statement_return gather_statement() throws RecognitionException {
         DQLGrammarParser.gather_statement_return retval = new DQLGrammarParser.gather_statement_return();
         retval.start = input.LT(1);
@@ -1899,16 +1899,16 @@ public class DQLGrammarParser extends Parser {
         CommonTree string_literal74_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:166:3: ( 'GATHER' ( let )+ )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:166:7: 'GATHER' ( let )+
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:162:3: ( 'GATHER' ( let )+ )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:162:7: 'GATHER' ( let )+
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal74=(Token)match(input,50,FOLLOW_50_in_gather_statement1162); 
+            string_literal74=(Token)match(input,50,FOLLOW_50_in_gather_statement1156); 
             string_literal74_tree = (CommonTree)adaptor.create(string_literal74);
             root_0 = (CommonTree)adaptor.becomeRoot(string_literal74_tree, root_0);
 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:166:17: ( let )+
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:162:17: ( let )+
             int cnt19=0;
             loop19:
             do {
@@ -1922,9 +1922,9 @@ public class DQLGrammarParser extends Parser {
 
                 switch (alt19) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:166:17: let
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:162:17: let
             	    {
-            	    pushFollow(FOLLOW_let_in_gather_statement1165);
+            	    pushFollow(FOLLOW_let_in_gather_statement1159);
             	    let75=let();
 
             	    state._fsp--;
@@ -1970,7 +1970,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "forward_statement"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:168:1: forward_statement : 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:164:1: forward_statement : 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression ;
     public final DQLGrammarParser.forward_statement_return forward_statement() throws RecognitionException {
         DQLGrammarParser.forward_statement_return retval = new DQLGrammarParser.forward_statement_return();
         retval.start = input.LT(1);
@@ -1992,16 +1992,16 @@ public class DQLGrammarParser extends Parser {
         CommonTree string_literal80_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:169:3: ( 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:169:5: 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:165:3: ( 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:165:5: 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal76=(Token)match(input,51,FOLLOW_51_in_forward_statement1176); 
+            string_literal76=(Token)match(input,51,FOLLOW_51_in_forward_statement1170); 
             string_literal76_tree = (CommonTree)adaptor.create(string_literal76);
             root_0 = (CommonTree)adaptor.becomeRoot(string_literal76_tree, root_0);
 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:169:16: ( 'MAX' 'DEPTH' INT )?
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:165:16: ( 'MAX' 'DEPTH' INT )?
             int alt20=2;
             int LA20_0 = input.LA(1);
 
@@ -2010,11 +2010,11 @@ public class DQLGrammarParser extends Parser {
             }
             switch (alt20) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:169:17: 'MAX' 'DEPTH' INT
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:165:17: 'MAX' 'DEPTH' INT
                     {
-                    string_literal77=(Token)match(input,52,FOLLOW_52_in_forward_statement1180); 
-                    string_literal78=(Token)match(input,53,FOLLOW_53_in_forward_statement1183); 
-                    INT79=(Token)match(input,INT,FOLLOW_INT_in_forward_statement1186); 
+                    string_literal77=(Token)match(input,52,FOLLOW_52_in_forward_statement1174); 
+                    string_literal78=(Token)match(input,53,FOLLOW_53_in_forward_statement1177); 
+                    INT79=(Token)match(input,INT,FOLLOW_INT_in_forward_statement1180); 
                     INT79_tree = (CommonTree)adaptor.create(INT79);
                     adaptor.addChild(root_0, INT79_tree);
 
@@ -2024,8 +2024,8 @@ public class DQLGrammarParser extends Parser {
 
             }
 
-            string_literal80=(Token)match(input,54,FOLLOW_54_in_forward_statement1190); 
-            pushFollow(FOLLOW_expression_in_forward_statement1193);
+            string_literal80=(Token)match(input,54,FOLLOW_54_in_forward_statement1184); 
+            pushFollow(FOLLOW_expression_in_forward_statement1187);
             expression81=expression();
 
             state._fsp--;
@@ -2058,7 +2058,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "reduce_statement"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:171:1: reduce_statement : 'REDUCE' expression ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:167:1: reduce_statement : 'REDUCE' expression ;
     public final DQLGrammarParser.reduce_statement_return reduce_statement() throws RecognitionException {
         DQLGrammarParser.reduce_statement_return retval = new DQLGrammarParser.reduce_statement_return();
         retval.start = input.LT(1);
@@ -2072,16 +2072,16 @@ public class DQLGrammarParser extends Parser {
         CommonTree string_literal82_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:172:3: ( 'REDUCE' expression )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:172:5: 'REDUCE' expression
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:168:3: ( 'REDUCE' expression )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:168:5: 'REDUCE' expression
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal82=(Token)match(input,55,FOLLOW_55_in_reduce_statement1203); 
+            string_literal82=(Token)match(input,55,FOLLOW_55_in_reduce_statement1197); 
             string_literal82_tree = (CommonTree)adaptor.create(string_literal82);
             root_0 = (CommonTree)adaptor.becomeRoot(string_literal82_tree, root_0);
 
-            pushFollow(FOLLOW_expression_in_reduce_statement1206);
+            pushFollow(FOLLOW_expression_in_reduce_statement1200);
             expression83=expression();
 
             state._fsp--;
@@ -2114,7 +2114,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "query"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:174:1: query : gather_statement forward_statement reduce_statement EOF ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:170:1: query : gather_statement forward_statement reduce_statement EOF ;
     public final DQLGrammarParser.query_return query() throws RecognitionException {
         DQLGrammarParser.query_return retval = new DQLGrammarParser.query_return();
         retval.start = input.LT(1);
@@ -2132,30 +2132,30 @@ public class DQLGrammarParser extends Parser {
         CommonTree EOF87_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:174:7: ( gather_statement forward_statement reduce_statement EOF )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:175:4: gather_statement forward_statement reduce_statement EOF
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:170:7: ( gather_statement forward_statement reduce_statement EOF )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:171:4: gather_statement forward_statement reduce_statement EOF
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_gather_statement_in_query1217);
+            pushFollow(FOLLOW_gather_statement_in_query1211);
             gather_statement84=gather_statement();
 
             state._fsp--;
 
             adaptor.addChild(root_0, gather_statement84.getTree());
-            pushFollow(FOLLOW_forward_statement_in_query1222);
+            pushFollow(FOLLOW_forward_statement_in_query1216);
             forward_statement85=forward_statement();
 
             state._fsp--;
 
             adaptor.addChild(root_0, forward_statement85.getTree());
-            pushFollow(FOLLOW_reduce_statement_in_query1227);
+            pushFollow(FOLLOW_reduce_statement_in_query1221);
             reduce_statement86=reduce_statement();
 
             state._fsp--;
 
             adaptor.addChild(root_0, reduce_statement86.getTree());
-            EOF87=(Token)match(input,EOF,FOLLOW_EOF_in_query1231); 
+            EOF87=(Token)match(input,EOF,FOLLOW_EOF_in_query1225); 
 
             }
 
@@ -2200,74 +2200,74 @@ public class DQLGrammarParser extends Parser {
     public static final BitSet FOLLOW_function_call_parameters_in_function_call703 = new BitSet(new long[]{0x0000000000400000L});
     public static final BitSet FOLLOW_22_in_function_call706 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_privacy_decl0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_28_in_type799 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_29_in_type805 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_30_in_type811 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_31_in_type817 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_32_in_type820 = new BitSet(new long[]{0x00000004F0000000L});
-    public static final BitSet FOLLOW_type_in_type823 = new BitSet(new long[]{0x00000006F0000000L});
-    public static final BitSet FOLLOW_33_in_type826 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_34_in_type833 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_32_in_type836 = new BitSet(new long[]{0x00000004F0000000L});
-    public static final BitSet FOLLOW_type_in_type839 = new BitSet(new long[]{0x0000000200000000L});
-    public static final BitSet FOLLOW_33_in_type841 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_term857 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_21_in_term863 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_expression_in_term866 = new BitSet(new long[]{0x0000000000400000L});
-    public static final BitSet FOLLOW_22_in_term868 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_term875 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DOUBLE_in_term881 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_term888 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_function_call_in_term894 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lambda_function_in_term900 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_35_in_negation917 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_term_in_negation922 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_36_in_unary938 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_unary_negation_rewrite_in_unary943 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_negation_in_unary948 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_37_in_unary_negation_rewrite963 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_unary_in_mult982 = new BitSet(new long[]{0x000001C000000002L});
-    public static final BitSet FOLLOW_38_in_mult986 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_39_in_mult991 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_40_in_mult996 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_unary_in_mult1000 = new BitSet(new long[]{0x000001C000000002L});
-    public static final BitSet FOLLOW_mult_in_add1015 = new BitSet(new long[]{0x0000003000000002L});
-    public static final BitSet FOLLOW_36_in_add1019 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_37_in_add1024 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_mult_in_add1028 = new BitSet(new long[]{0x0000003000000002L});
-    public static final BitSet FOLLOW_add_in_relation1043 = new BitSet(new long[]{0x00001E0300000002L});
-    public static final BitSet FOLLOW_41_in_relation1047 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_42_in_relation1052 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_32_in_relation1057 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_43_in_relation1062 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_44_in_relation1067 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_33_in_relation1072 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_add_in_relation1076 = new BitSet(new long[]{0x00001E0300000002L});
-    public static final BitSet FOLLOW_relation_in_expression1093 = new BitSet(new long[]{0x0000E00000000002L});
-    public static final BitSet FOLLOW_45_in_expression1097 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_46_in_expression1102 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_relation_in_expression1106 = new BitSet(new long[]{0x0000E00000000002L});
-    public static final BitSet FOLLOW_47_in_expression1111 = new BitSet(new long[]{0x000000000F800000L});
-    public static final BitSet FOLLOW_privacy_decl_in_expression1114 = new BitSet(new long[]{0x0001000000000002L});
-    public static final BitSet FOLLOW_48_in_expression1118 = new BitSet(new long[]{0x00000004F0000000L});
-    public static final BitSet FOLLOW_type_in_expression1121 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_49_in_let1139 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_ID_in_let1142 = new BitSet(new long[]{0x0000020000000000L});
-    public static final BitSet FOLLOW_41_in_let1145 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_expression_in_let1148 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_50_in_gather_statement1162 = new BitSet(new long[]{0x0002000000000000L});
-    public static final BitSet FOLLOW_let_in_gather_statement1165 = new BitSet(new long[]{0x0002000000000002L});
-    public static final BitSet FOLLOW_51_in_forward_statement1176 = new BitSet(new long[]{0x0050000000000000L});
-    public static final BitSet FOLLOW_52_in_forward_statement1180 = new BitSet(new long[]{0x0020000000000000L});
-    public static final BitSet FOLLOW_53_in_forward_statement1183 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_INT_in_forward_statement1186 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_54_in_forward_statement1190 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_expression_in_forward_statement1193 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_55_in_reduce_statement1203 = new BitSet(new long[]{0x00000038002A0160L});
-    public static final BitSet FOLLOW_expression_in_reduce_statement1206 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_gather_statement_in_query1217 = new BitSet(new long[]{0x0008000000000000L});
-    public static final BitSet FOLLOW_forward_statement_in_query1222 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_reduce_statement_in_query1227 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_query1231 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_28_in_type793 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_29_in_type799 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_30_in_type805 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_31_in_type811 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_32_in_type814 = new BitSet(new long[]{0x00000004F0000000L});
+    public static final BitSet FOLLOW_type_in_type817 = new BitSet(new long[]{0x00000006F0000000L});
+    public static final BitSet FOLLOW_33_in_type820 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_34_in_type827 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_32_in_type830 = new BitSet(new long[]{0x00000004F0000000L});
+    public static final BitSet FOLLOW_type_in_type833 = new BitSet(new long[]{0x0000000200000000L});
+    public static final BitSet FOLLOW_33_in_type835 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_term851 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_21_in_term857 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_expression_in_term860 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_22_in_term862 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_term869 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DOUBLE_in_term875 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_term882 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_function_call_in_term888 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lambda_function_in_term894 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_35_in_negation911 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_term_in_negation916 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_36_in_unary932 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_unary_negation_rewrite_in_unary937 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_negation_in_unary942 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_37_in_unary_negation_rewrite957 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_unary_in_mult976 = new BitSet(new long[]{0x000001C000000002L});
+    public static final BitSet FOLLOW_38_in_mult980 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_39_in_mult985 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_40_in_mult990 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_unary_in_mult994 = new BitSet(new long[]{0x000001C000000002L});
+    public static final BitSet FOLLOW_mult_in_add1009 = new BitSet(new long[]{0x0000003000000002L});
+    public static final BitSet FOLLOW_36_in_add1013 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_37_in_add1018 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_mult_in_add1022 = new BitSet(new long[]{0x0000003000000002L});
+    public static final BitSet FOLLOW_add_in_relation1037 = new BitSet(new long[]{0x00001E0300000002L});
+    public static final BitSet FOLLOW_41_in_relation1041 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_42_in_relation1046 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_32_in_relation1051 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_43_in_relation1056 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_44_in_relation1061 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_33_in_relation1066 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_add_in_relation1070 = new BitSet(new long[]{0x00001E0300000002L});
+    public static final BitSet FOLLOW_relation_in_expression1087 = new BitSet(new long[]{0x0000E00000000002L});
+    public static final BitSet FOLLOW_45_in_expression1091 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_46_in_expression1096 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_relation_in_expression1100 = new BitSet(new long[]{0x0000E00000000002L});
+    public static final BitSet FOLLOW_47_in_expression1105 = new BitSet(new long[]{0x000000000F800000L});
+    public static final BitSet FOLLOW_privacy_decl_in_expression1108 = new BitSet(new long[]{0x0001000000000002L});
+    public static final BitSet FOLLOW_48_in_expression1112 = new BitSet(new long[]{0x00000004F0000000L});
+    public static final BitSet FOLLOW_type_in_expression1115 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_49_in_let1133 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_ID_in_let1136 = new BitSet(new long[]{0x0000020000000000L});
+    public static final BitSet FOLLOW_41_in_let1139 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_expression_in_let1142 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_50_in_gather_statement1156 = new BitSet(new long[]{0x0002000000000000L});
+    public static final BitSet FOLLOW_let_in_gather_statement1159 = new BitSet(new long[]{0x0002000000000002L});
+    public static final BitSet FOLLOW_51_in_forward_statement1170 = new BitSet(new long[]{0x0050000000000000L});
+    public static final BitSet FOLLOW_52_in_forward_statement1174 = new BitSet(new long[]{0x0020000000000000L});
+    public static final BitSet FOLLOW_53_in_forward_statement1177 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_INT_in_forward_statement1180 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_54_in_forward_statement1184 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_expression_in_forward_statement1187 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_55_in_reduce_statement1197 = new BitSet(new long[]{0x00000038002A0160L});
+    public static final BitSet FOLLOW_expression_in_reduce_statement1200 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_gather_statement_in_query1211 = new BitSet(new long[]{0x0008000000000000L});
+    public static final BitSet FOLLOW_forward_statement_in_query1216 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_reduce_statement_in_query1221 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_query1225 = new BitSet(new long[]{0x0000000000000002L});
 
 }

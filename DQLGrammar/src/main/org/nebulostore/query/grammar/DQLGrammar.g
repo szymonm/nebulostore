@@ -95,9 +95,6 @@ function_call :
   ID^ '('! function_call_parameters? ')'!;
 
 // http://javadude.com/articles/antlr3xtut/
-// TODO: Trzeba zrobic porzadna gramatyke dla wyrazen tutaj.
-
-
 
 STRING_LITERAL
   : '"' ( options { greedy = false;}: . )+ '"'
@@ -109,7 +106,6 @@ privacy_decl
   | 'PRIVATE_COND_MY' // TODO: Wyrazanie zwiazkow, pewnie w skladni jakiegos wyrazenia... 
   | 'PUBLIC_OTHER'
   | 'PRIVATE_COND_OTHER' // TODO: Wyrazanie zwiazkow, pewnie w skladni jakiegos wyrazenia...
-  // TODO: Jakies sposoby wyrazania differential privacy tutaj
   ;
 
 type 

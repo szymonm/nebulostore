@@ -8,11 +8,19 @@ options {
 
 @header {
   package org.nebulostore.query.language.interpreter.antlr;
-  
+
+  import java.util.Collection;  
+  import java.util.Collections;
   import java.util.Map;
   import java.util.TreeMap;
-  import java.util.List;
+
   import java.util.LinkedList;
+  import java.util.List;
+  import java.util.HashMap;
+  
+  import org.apache.commons.logging.Log;
+  import org.apache.commons.logging.LogFactory;  
+  
   import org.nebulostore.query.functions.DQLFunction;
   
   import org.nebulostore.query.language.interpreter.Location;
@@ -30,10 +38,13 @@ options {
   import org.nebulostore.query.language.interpreter.exceptions.TypeException;
   
   import org.nebulostore.query.privacy.PrivacyLevel;
+  import org.nebulostore.query.privacy.level.PublicMy;  
   
 }
 
 @members {
+
+  private static Log log = LogFactory.getLog(TreeWalker.class);
   
   private Map<String, Location> environment =  new TreeMap<String, Location>();
   private Map<Location, IDQLValue> store = new TreeMap<Location, IDQLValue>();
@@ -47,31 +58,68 @@ options {
     functions.put(function.getName(), function);  
   }
   
+  public void insertFunctions(Iterable <DQLFunction> functions) throws InterpreterException {
+    for (DQLFunction function : functions) {
+      insertFunction(function);
+    }
+  }
+  
+  public Collection<DQLFunction> getFunctions() {
+    return new LinkedList<DQLFunction> (functions.values());
+  }
+  
+  public void setInEnvironment(Map<String, IDQLValue> values) {
+    log.info("Setting environment");
+    for (String key : values.keySet()) {
+      envPut(key, values.get(key));      
+    }  
+  }
+  
   // TODO: wrap it in class?
   private IDQLValue envGet(String ident) throws InterpreterException {
-    if (!environment.containsKey(ident.toLowerCase())) {  
+    
+    
+    if (!environment.containsKey(ident.toLowerCase())) {      
       throw new InterpreterException("Undefined variable " + ident);
     }
     
     if (!store.containsKey(environment.get(ident.toLowerCase()))) {  
       throw new InterpreterException("Environment corruption occured. Undefined store for variable " + ident);
-    }   
-    
+    }
+    log.info("envGet of " + ident + " of value " + store.get(environment.get(ident.toLowerCase())));
     return store.get(environment.get(ident.toLowerCase()));
   }
   
+  public Map<String, IDQLValue> getEnvironmentContents() {
+    Map<String, IDQLValue> ret = new HashMap<String, IDQLValue>(32);
+    for (String key : environment.keySet()) {
+      ret.put(key, store.get(environment.get(key)));
+    }
+    return ret;
+  }
+  
   private void envPut(String ident, IDQLValue value) {
+    log.info("envPut " + ident + " : " + value);
     Location location = new Location();
     environment.put(ident.toLowerCase(), location);    
     store.put(location, value);
   }
   
-  private IDQLValue call(String ident, List<IDQLValue> params) throws InterpreterException
+  private IDQLValue call(String ident, List<IDQLValue> params) throws InterpreterException, RecognitionException
   {
+    log.info("call of function " + ident + " started");
+  
     if (!functions.containsKey(ident.toLowerCase())) {
      throw new InterpreterException("Function " + ident + " not available");
     }    
     return functions.get(ident.toLowerCase()).call(params); 
+  }
+  
+  private String prepareString(String v) {
+    v = v.trim();
+    v = v.replaceAll("^\"", "");
+    v = v.replaceAll("\"$", "");
+    return v;
   }
 }
 
@@ -85,13 +133,12 @@ gather_statement
   : ^('GATHER' let+) 
   ;
 
-forward_statement 
-  : ^('FORWARD' INT expression) { envPut("DQL_RESULTS", new IntegerValue(1)); } 
-  // TODO: proper handling of queries 
+forward_statement returns [IDQLValue result] 
+  : ^('FORWARD' INT ex=expression) { result = ex; } 
   ;
   
-reduce_statement 
-  : ^('REDUCE' expression) 
+reduce_statement returns [IDQLValue result]
+  : ^('REDUCE' ex=expression) { result = ex; } 
   ;
 
 
@@ -129,11 +176,11 @@ privacy_decl returns [PrivacyLevel result]
 
 expression returns [IDQLValue result]
   // arythmetic  
-  : ^('+' op1=expression op2=expression)       { result = op1.add(op2); }
-  | ^('-' op1=expression op2=expression)       { result = op1.sub(op2); }
-  | ^('*' op1=expression op2=expression)       { result = op1.mult(op2); }
-  | ^('/' op1=expression op2=expression)       { result = op1.div(op2); }
-  | ^('%' op1=expression op2=expression)       { result = op1.mod(op2); }
+  : ^('+' op1=expression op2=expression)       { result = op1.addNum(op2); }
+  | ^('-' op1=expression op2=expression)       { result = op1.subNum(op2); }
+  | ^('*' op1=expression op2=expression)       { result = op1.multNum(op2); }
+  | ^('/' op1=expression op2=expression)       { result = op1.divNum(op2); }
+  | ^('%' op1=expression op2=expression)       { result = op1.modNum(op2); }
   | ^(NEGATION e=expression)                   { result = e.numNegation(); }
   
   // comparison
@@ -151,13 +198,13 @@ expression returns [IDQLValue result]
    
   // vars and func_calls  
   | ID                                         { result = envGet($ID.text); }  
-  | ^(ID call_params=function_call_parameters) { result = call($ID.text, call_params); }
-  | ^('LAMBDA' params=function_decl_parameters ':' EXPRESSION=.*) { result = new LambdaValue(params, $EXPRESSION); }  
+  | ^(ID call_params=function_call_parameters) { Collections.reverse(call_params); result = call($ID.text, call_params); }
+  | ^('LAMBDA' params=function_decl_parameters ':' EXPRESSION=.*) { Collections.reverse(params); result = new LambdaValue(params, $EXPRESSION, this.getEnvironmentContents(), this.getFunctions()); }  
   
   // literals support
-  | INT                                        { result = new IntegerValue(Integer.parseInt($INT.text)); }
-  | DOUBLE                                     { result = new DoubleValue(Double.parseDouble($DOUBLE.text)); }
-  | STRING_LITERAL                             { result = new StringValue($STRING_LITERAL.text); }
+  | INT                                        { result = new IntegerValue(Integer.parseInt($INT.text), PublicMy.getInstance()); }
+  | DOUBLE                                     { result = new DoubleValue(Double.parseDouble($DOUBLE.text), PublicMy.getInstance()); }
+  | STRING_LITERAL                             { result = new StringValue(prepareString($STRING_LITERAL.text), PublicMy.getInstance()); }
   // TODO: True/false literals
   
   // privacy handling

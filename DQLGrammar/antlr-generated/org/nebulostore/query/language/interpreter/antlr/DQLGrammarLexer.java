@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g 2012-01-10 22:32:24
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g 2012-01-22 23:18:47
 
   package org.nebulostore.query.language.interpreter.antlr;
 
@@ -1810,11 +1810,11 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = STRING_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:103:3: ( '\"' ( options {greedy=false; } : . )+ '\"' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:103:5: '\"' ( options {greedy=false; } : . )+ '\"'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:100:3: ( '\"' ( options {greedy=false; } : . )+ '\"' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:100:5: '\"' ( options {greedy=false; } : . )+ '\"'
             {
             match('\"'); 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:103:9: ( options {greedy=false; } : . )+
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:100:9: ( options {greedy=false; } : . )+
             int cnt20=0;
             loop20:
             do {
@@ -1831,7 +1831,7 @@ public class DQLGrammarLexer extends Lexer {
 
                 switch (alt20) {
             	case 1 :
-            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:103:39: .
+            	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/org/nebulostore/query/grammar/DQLGrammar.g:100:39: .
             	    {
             	    matchAny(); 
 

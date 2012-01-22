@@ -15,12 +15,12 @@ import org.nebulostore.query.language.interpreter.antlr.TreeWalker;
 public class Test {
 
   public static void main(String[] args) {
-    String test = " GATHER"
+    String testQuery = " GATHER"
         + "  LET userFriends =  FILTER("
         + "        LAMBDA friendId : (friendId != DQL_SOURCE_ID) ,"
-        + "        XPATH (\".//friend/@ref\", LOAD (\"friends.xml\" ) ) )"
+        + "        XPATH (\".//friend/@ref\", LOAD (\"peerData.xml\" ) ) )"
         + "     IS PRIVATE_MY AS LIST < INTEGER > "
-        + "  LET peerAge = XPATH(\".//age\", LOAD(\"user-info.xml\"))  IS PRIVATE_MY AS INTEGER"
+        + "  LET peerAge = XPATH(\".//age\", LOAD(\"peerData.xml\"))  IS PRIVATE_MY AS INTEGER"
         + " FORWARD"
         + " MAX DEPTH 2"
         + " TO"
@@ -35,7 +35,7 @@ public class Test {
 
     System.out.println("Test started");
 
-    CharStream charStream = new ANTLRStringStream(test);
+    CharStream charStream = new ANTLRStringStream(testQuery);
     DQLGrammarLexer lexer = new DQLGrammarLexer(charStream);
     TokenStream tokenStream = new CommonTokenStream(lexer);
     DQLGrammarParser parser = new DQLGrammarParser(tokenStream);

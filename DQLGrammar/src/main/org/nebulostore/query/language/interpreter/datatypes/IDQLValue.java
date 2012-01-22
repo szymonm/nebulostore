@@ -1,20 +1,24 @@
 package org.nebulostore.query.language.interpreter.datatypes;
 
+import org.nebulostore.query.language.interpreter.datatypes.DQLValue.DQLType;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
+import org.nebulostore.query.privacy.PrivacyLevel;
 
 public interface IDQLValue {
 
-  IDQLValue add(IDQLValue arg) throws InterpreterException;
+  PrivacyLevel getPrivacyLevel();
 
-  IDQLValue mult(IDQLValue arg) throws InterpreterException;
+  IDQLValue addNum(IDQLValue arg) throws InterpreterException;
 
-  IDQLValue div(IDQLValue arg) throws InterpreterException;
+  IDQLValue multNum(IDQLValue arg) throws InterpreterException;
 
-  IDQLValue sub(IDQLValue arg) throws InterpreterException;
+  IDQLValue divNum(IDQLValue arg) throws InterpreterException;
+
+  IDQLValue subNum(IDQLValue arg) throws InterpreterException;
 
   IDQLValue numNegation() throws InterpreterException;
 
-  IDQLValue mod(IDQLValue arg) throws InterpreterException;
+  IDQLValue modNum(IDQLValue arg) throws InterpreterException;
 
   IDQLValue equals(IDQLValue arg) throws InterpreterException;
 
@@ -36,4 +40,5 @@ public interface IDQLValue {
 
   Object toJava();
 
+  DQLType getType();
 }
