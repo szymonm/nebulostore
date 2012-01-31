@@ -80,7 +80,7 @@ public class SocketServer implements Runnable {
               "Connection Handler Thread");
           thread.start();
         }
-      } catch (Exception e) {
+      } catch (IOException e) {
         logger_.error("Exception: ", e);
       }
     }
@@ -137,7 +137,7 @@ public class SocketServer implements Runnable {
             total, elapsed, (total / elapsed) * 1000 / 1024));
         socket.close();
         logger_.debug("Connection closed");
-      } catch (Exception ie) {
+      } catch (IOException ie) {
         ie.printStackTrace();
       }
     }

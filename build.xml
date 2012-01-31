@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="Nebulostore" default="jar-pingpong" basedir=".">
+<project name="Nebulostore" default="text-interface" basedir=".">
 
   <property name="src.dir" value="src" />
 
@@ -40,7 +40,6 @@
       </mapper>
 
       <path>
-
         <!-- lib.home contains all jar files, in several subdirectories -->
         <fileset dir="${lib.dir}">
           <include name="**/*.jar" />
@@ -73,6 +72,12 @@
   <target name="jar-bdbtest">
     <antcall target="jar">
       <param name="main-class" value="org.nebulostore.communication.bdbdht.tests.BdbPeerTest" />
+    </antcall>
+  </target>
+
+  <target name="text-interface">
+    <antcall target="jar">
+      <param name="main-class" value="tests.textinterface.TextInterface" />
     </antcall>
   </target>
 

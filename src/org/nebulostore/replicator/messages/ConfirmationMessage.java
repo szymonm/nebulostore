@@ -1,5 +1,7 @@
 package org.nebulostore.replicator.messages;
 
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
@@ -12,6 +14,10 @@ public class ConfirmationMessage extends CommMessage {
   public ConfirmationMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress) {
     super(jobId, sourceAddress, destAddress);
+  }
+
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 
   private static final long serialVersionUID = 4963514627405781252L;

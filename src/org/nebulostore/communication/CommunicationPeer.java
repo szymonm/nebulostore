@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.bdbdht.BdbPeer;
 import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.jxta.JXTAPeer;
@@ -34,6 +35,8 @@ public class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static String configurationPath_ = "resources/conf/communication/CommunicationPeer.xml";
 
+  private static JXTAPeer currJxtaPeer_;
+
   public CommunicationPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue) throws NebuloException {
     super(inQueue, outQueue);
@@ -50,6 +53,7 @@ public class CommunicationPeer extends Module {
     dhtInQueue_ = new LinkedBlockingQueue<Message>();
 
     jxtaPeer_ = new JXTAPeer(jxtaPeerInQueue_, inQueue);
+    currJxtaPeer_ = jxtaPeer_;
 
     new Thread(jxtaPeer_).start();
 
@@ -112,5 +116,9 @@ public class CommunicationPeer extends Module {
       return;
     }
 
+  }
+
+  public static CommAddress getPeerAddress() {
+    return currJxtaPeer_.getPeerAddress();
   }
 }

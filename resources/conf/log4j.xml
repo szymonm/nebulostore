@@ -3,6 +3,7 @@
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
   <appender name="CA" class="org.apache.log4j.ConsoleAppender">
+    <param name="Threshold" value="ERROR" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n" />
     </layout>
@@ -27,19 +28,17 @@
   
   <logger name="org.nebulostore.communication.bdbdht.tests.BdbPeerTest">
     <level value="DEBUG"/>
-    <appender-ref ref="CA" />
     <appender-ref ref="FA-bdb"/>
   </logger>
 
   <logger name="org.nebulostore.communication.bdbdht.BdbPeer">
     <level value="DEBUG"/>
-    <appender-ref ref="CA" />
     <appender-ref ref="FA-bdb"/>
   </logger>
   
   <root>
-    <level value="DEBUG" />
     <appender-ref ref="CA" />
     <appender-ref ref="FA" />
   </root>
+
 </log4j:configuration>

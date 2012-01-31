@@ -73,6 +73,9 @@ public class GetNebuloFileModule extends JobModule {
         // State 1 - Send appKey to DHT and wait for reply.
         state_ = 1;
         taskId_ = message.getId();
+
+        logger_.debug("Adding GetDHT to network queue (" + nebuloKey_.appKey_.appKey_ + ", " +
+            taskId_ + ").");
         networkQueue_.add(new GetDHTMessage(taskId_, new KeyDHT(nebuloKey_.appKey_.appKey_)));
       } else {
         log("JobInitMessage", state_);
@@ -82,6 +85,7 @@ public class GetNebuloFileModule extends JobModule {
 
     public Void visit(ValueDHTMessage message) throws KillModuleException {
       if (state_ == 1) {
+
         // State 2 - Receive reply from DHT and iterate over logical path segments asking
         // for consecutive parts.
         state_ = 2;
@@ -140,7 +144,7 @@ public class GetNebuloFileModule extends JobModule {
         // TODO(bolek): Ask other replicas if first query is unsuccessful.
         HardLink hardLink = (HardLink) entry;
         // Source address will be added by Network module.
-        networkQueue_.add(new GetObjectMessage(null, hardLink.objectPhysicalAddresses_[0],
+        networkQueue_.add(new GetObjectMessage(taskId_, null, hardLink.objectPhysicalAddresses_[0],
             hardLink.objectId_));
       } else {
         log("Unrecognized subclass of DirectoryEntry.");

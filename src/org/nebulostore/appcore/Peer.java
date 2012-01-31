@@ -21,18 +21,20 @@ public final class Peer {
    *          Command line arguments.
    */
   public static void main(String[] args) {
+    runPeer();
+  }
+
+  public static void runPeer() {
     BlockingQueue<Message> networkInQueue = new LinkedBlockingQueue<Message>();
     BlockingQueue<Message> dispatcherInQueue = new LinkedBlockingQueue<Message>();
     ApiFacade.setDispatcherQueue(dispatcherInQueue);
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
-    Thread dispatcherThread = new Thread(new Dispatcher(dispatcherInQueue,
-        networkInQueue));
+    Thread dispatcherThread = new Thread(new Dispatcher(dispatcherInQueue, networkInQueue));
     // Create network module.
     Thread networkThread = null;
     try {
-      networkThread = new Thread(new CommunicationPeer(networkInQueue,
-          dispatcherInQueue));
+      networkThread = new Thread(new CommunicationPeer(networkInQueue, dispatcherInQueue));
     } catch (NebuloException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
@@ -43,7 +45,7 @@ public final class Peer {
 
     // Wait for threads to finish execution.
     try {
-      networkThread.join();
+      //networkThread.join();
       dispatcherThread.join();
     } catch (InterruptedException e) {
       // TODO(bolek): Log it?

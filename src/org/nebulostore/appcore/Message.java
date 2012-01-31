@@ -1,11 +1,13 @@
 package org.nebulostore.appcore;
 
+import java.io.Serializable;
+
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
  * Base class for messages.
  */
-public abstract class Message {
+public abstract class Message implements Serializable {
 
   public Message() {
     jobId_ = "unnamed_message";

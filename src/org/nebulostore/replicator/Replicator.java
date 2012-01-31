@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
@@ -119,9 +119,10 @@ public class Replicator extends JobModule {
     message.accept(visitor_);
   }
 
-  private HashMap<ObjectId, String> filesLocations_ = new HashMap<ObjectId, String>();
+  // Hashtable is synchronized.
+  private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
 
-  public void storeObject(ObjectId objectId, EncryptedEntity encryptedEntity)
+  public static void storeObject(ObjectId objectId, EncryptedEntity encryptedEntity)
     throws SaveException {
     if (filesLocations_.containsKey(objectId)) {
       throw new SaveException();
@@ -131,7 +132,7 @@ public class Replicator extends JobModule {
     updateObject(objectId, encryptedEntity);
   }
 
-  public EncryptedEntity getObject(ObjectId objectId) {
+  public static EncryptedEntity getObject(ObjectId objectId) {
     String location = filesLocations_.get(objectId);
     if (location == null) {
       return null;
@@ -156,7 +157,7 @@ public class Replicator extends JobModule {
     }
   }
 
-  private void updateObject(ObjectId objectId, EncryptedEntity encryptedEntity)
+  private static void updateObject(ObjectId objectId, EncryptedEntity encryptedEntity)
     throws SaveException {
     String location = filesLocations_.get(objectId);
     if (location == null)
@@ -169,14 +170,14 @@ public class Replicator extends JobModule {
       fos = new FileOutputStream(f);
       fos.write(encryptedEntity.getEncryptedData());
       fos.close();
-    } catch (IOException excepion) {
-      logger_.error(excepion.getMessage());
+    } catch (IOException exception) {
+      logger_.error(exception.getMessage());
       // TODO(szm): printStackTrace?
       throw new SaveException();
     }
   }
 
-  public void deleteObject(ObjectId objectId) throws DeleteObjectException {
+  public static void deleteObject(ObjectId objectId) throws DeleteObjectException {
     String location = filesLocations_.get(objectId);
     if (location == null)
       return;
@@ -190,7 +191,7 @@ public class Replicator extends JobModule {
       throw new DeleteObjectException("Unable to delete file.");
   }
 
-  private String getLocationPrefix() {
+  private static String getLocationPrefix() {
     return "/tmp/nebulostore/store/";
   }
 }

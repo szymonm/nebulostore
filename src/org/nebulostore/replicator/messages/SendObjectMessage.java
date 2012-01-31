@@ -20,8 +20,7 @@ public class SendObjectMessage extends CommMessage {
   }
 
   public SendObjectMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress,
-      EncryptedEntity encryptedObject) {
+      CommAddress destAddress, EncryptedEntity encryptedObject) {
     super(jobId, sourceAddress, destAddress);
     encryptedEntity_ = encryptedObject;
   }

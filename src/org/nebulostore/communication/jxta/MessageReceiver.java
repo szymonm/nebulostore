@@ -35,7 +35,7 @@ class MessageReceiver implements Runnable {
       net.jxta.endpoint.Message m = null;
       try {
         m = inputPipe_.waitForMessage();
-      } catch (Throwable t) {
+      } catch (InterruptedException t) {
         logger_.error("error in accept serverPipe", t);
         t.printStackTrace();
       }

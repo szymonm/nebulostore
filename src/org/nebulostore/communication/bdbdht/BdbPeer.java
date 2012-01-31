@@ -23,7 +23,6 @@ import net.jxta.document.AdvertisementFactory;
 import net.jxta.id.ID;
 import net.jxta.peer.PeerID;
 import net.jxta.pipe.PipeService;
-import net.jxta.protocol.DiscoveryResponseMsg;
 import net.jxta.protocol.PipeAdvertisement;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -147,9 +146,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
     Message message;
 
     if (isProxy_) {
-      logger_.info("Putting message to be sent to holder");
-      jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
-          (DHTMessage) msg));
+      logger_.info("Putting message to be sent to holder (taskId = " + msg.getId() + ")");
+      jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_, (DHTMessage) msg));
     } else {
       boolean fromNetwork = false;
       if (msg instanceof BdbMessageWrapper) {
@@ -162,7 +160,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
       if (message instanceof PutDHTMessage) {
 
         PutDHTMessage putMsg = (PutDHTMessage) message;
-        logger_.info("PutDHTMessage in holder with " +
+        logger_.info("PutDHTMessage (" + putMsg.getId() + ") in holder with " +
             putMsg.getKey().toString() + " : " + putMsg.getValue().toString());
 
         String key = putMsg.getKey().toString();
@@ -174,9 +172,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
         t.commit();
         if (fromNetwork) {
-          jxtaInQueue_.add(new BdbMessageWrapper(null,
-              ((BdbMessageWrapper) msg).getSourceAddress(), new OkDHTMessage(
-                  putMsg)));
+          jxtaInQueue_.add(new BdbMessageWrapper(null, ((BdbMessageWrapper) msg).getSourceAddress(),
+              new OkDHTMessage(putMsg)));
         } else {
           outQueue_.add(new OkDHTMessage(putMsg));
         }
@@ -204,7 +201,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
         } else {
           // TODO: Error handling
           logger_
-              .error("Unable to save data. Should send an ErrorDHTMessage back");
+              .error("Unable to read from database. Should send an ErrorDHTMessage back");
         }
         logger_.info("GetDHTMessage processing finished");
       } else {
@@ -218,16 +215,14 @@ public class BdbPeer extends Module implements DiscoveryListener {
     logger_.debug("DiscoveryEvent: " + ev.getQueryID());
 
     Advertisement adv;
-    Enumeration en = ev.getResponse().getAdvertisements();
-
-    DiscoveryResponseMsg res = ev.getResponse();
+    Enumeration<Advertisement> en = ev.getResponse().getAdvertisements();
 
     if (en != null) {
       while (en.hasMoreElements()) {
         adv = (Advertisement) en.nextElement();
 
         String id = adv.getID() == null ? "null" : adv.getID().toString();
-        if (BDB_HOLDER_ADV_ID_STR.equals(id) && holderCommAddress_ == null) {
+        if (BDB_HOLDER_ADV_ID_STR.equals(id) /*&& holderCommAddress_ == null*/) {
           try {
             holderCommAddress_ = new CommAddress(PeerID.create(new URI("urn:" +
                 ("" + ev.getSource()).replace("//", ""))));

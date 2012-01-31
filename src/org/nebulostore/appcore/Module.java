@@ -2,6 +2,7 @@ package org.nebulostore.appcore;
 
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.KillModuleException;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
@@ -13,6 +14,7 @@ public abstract class Module implements Runnable {
 
   protected BlockingQueue<Message> inQueue_;
   protected BlockingQueue<Message> outQueue_;
+  private static Logger logger_ = Logger.getLogger(Module.class);
 
   public Module() {
   }
@@ -36,13 +38,13 @@ public abstract class Module implements Runnable {
       try {
         processMessage(inQueue_.take());
       } catch (InterruptedException exception) {
-        // TODO(bolek): Log interrupt?
+        logger_.warn("Received InterruptedException from inQueue.");
         continue;
       } catch (KillModuleException exception) {
         break;
       } catch (NebuloException exception) {
-        // TODO(bolek): Log it?
-        break;
+        logger_.warn("Received NebuloException from inQueue.");
+        continue;
       }
     }
   }

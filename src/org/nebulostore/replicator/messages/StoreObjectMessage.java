@@ -1,11 +1,13 @@
 package org.nebulostore.replicator.messages;
 
 import org.nebulostore.appcore.EncryptedEntity;
+import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
+import org.nebulostore.replicator.Replicator;
 
 /**
  * @author bolek
@@ -38,6 +40,11 @@ public class StoreObjectMessage extends CommMessage {
 
   public ObjectId getObjectId() {
     return objectId_;
+  }
+
+  @Override
+  public JobModule getHandler() {
+    return new Replicator(null, null);
   }
 
 }

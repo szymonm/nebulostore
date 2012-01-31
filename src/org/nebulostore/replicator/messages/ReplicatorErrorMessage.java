@@ -1,5 +1,7 @@
 package org.nebulostore.replicator.messages;
 
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
@@ -15,6 +17,10 @@ public class ReplicatorErrorMessage extends CommMessage {
       CommAddress destinationAddress, String message) {
     super(jobId, sourceAddress, destinationAddress);
     message_ = message;
+  }
+
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 
   public String getMessage() {

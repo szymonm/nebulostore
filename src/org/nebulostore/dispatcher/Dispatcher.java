@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
@@ -19,6 +20,12 @@ import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
  *
  */
 public class Dispatcher extends Module {
+
+  private Map<String, BlockingQueue<Message>> workersQueues_;
+  private Map<String, Thread> workersThreads_;
+  private MessageVisitor<?> visitor_;
+
+  private static Logger logger_ = Logger.getLogger(Dispatcher.class);
 
   /**
    * Visitor class. Contains logic for handling messages depending
@@ -47,6 +54,8 @@ public class Dispatcher extends Module {
     @Override
     public Void visit(KillDispatcherMessage message) throws NebuloException {
       Thread[] threads = workersThreads_.values().toArray(new Thread[0]);
+      logger_.debug("Quitting dispatcher, waiting for " + String.valueOf(threads.length) +
+          " job threads.");
       for (int i = 0; i < threads.length; ++i) {
         try {
           threads[i].join();
@@ -61,8 +70,11 @@ public class Dispatcher extends Module {
      * General behavior - forwarding messages.
      */
     @Override
-    public Void visit(Message message) throws NebuloException {
+    public Void visitDefault(Message message) throws NebuloException {
       String jobId = message.getId();
+      logger_.debug("Received message with jobID: " + jobId + " and class name: " +
+          message.getClass().getName());
+
       if (!workersQueues_.containsKey(jobId)) {
         // Spawn a new thread to handle the message.
         try {
@@ -76,6 +88,7 @@ public class Dispatcher extends Module {
           Thread newThread = new Thread(handler);
           workersThreads_.put(jobId, newThread);
           newThread.start();
+          logger_.debug("Starting new thread.");
         } catch (NebuloException exception) {
           // TODO(bolek): Better log it here than deeper in run().
           throw exception;
@@ -106,8 +119,4 @@ public class Dispatcher extends Module {
     // Handling logic lies inside our visitor class.
     message.accept(visitor_);
   }
-
-  private Map<String, BlockingQueue<Message>> workersQueues_;
-  private Map<String, Thread> workersThreads_;
-  private MessageVisitor<?> visitor_;
 }

@@ -18,6 +18,7 @@ public class JobInitMessage extends Message {
     return visitor.visit(this);
   }
 
+  @Override
   public JobModule getHandler() {
     return jobModule_;
   }

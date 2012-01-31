@@ -1,5 +1,9 @@
 package org.nebulostore.appcore;
 
+import org.nebulostore.api.ApiErrorMessage;
+import org.nebulostore.api.ApiGetNebuloFileMessage;
+import org.nebulostore.api.ApiMessage;
+import org.nebulostore.api.ApiPutKeyMessage;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
 import org.nebulostore.communication.messages.CommMessage;
@@ -33,89 +37,103 @@ import org.nebulostore.replicator.messages.UpdateObjectMessage;
  */
 public abstract class MessageVisitor<R> {
   /* Common action for all messages that are not handled. */
-  private R action(String name) throws NebuloException {
-    throw new UnsupportedMessageException(name);
+  protected R visitDefault(Message message) throws NebuloException {
+    throw new UnsupportedMessageException(message.getClass().getName());
   }
 
   /* Base class. */
   public R visit(Message message) throws NebuloException {
-    return action("Message");
+    return visitDefault(message);
   }
 
   /* Dispatcher messages. */
   public R visit(JobEndedMessage message) throws NebuloException {
-    return action("JobEndedMessage");
+    return visitDefault(message);
   }
   public R visit(JobInitMessage message) throws NebuloException {
-    return action("JobInitMessage");
+    return visitDefault(message);
   }
   public R visit(KillDispatcherMessage message) throws NebuloException {
-    return action("KillDispatcherMessage");
+    return visitDefault(message);
   }
 
   /* Replicator messages. */
   public R visit(GetObjectMessage message) throws NebuloException {
-    return action("GetObjectMessage");
+    return visitDefault(message);
   }
   public R visit(DeleteObjectMessage message) throws NebuloException {
-    return action("DeleteObjectMessage");
+    return visitDefault(message);
   }
   public R visit(SendObjectMessage message) throws NebuloException {
-    return action("SendObjectMessage");
+    return visitDefault(message);
   }
   public R visit(StoreObjectMessage message) throws NebuloException {
-    return action("StoreObjectMessage");
+    return visitDefault(message);
   }
   public R visit(ConfirmationMessage message) throws NebuloException {
-    return action("StoreObjectMessage");
+    return visitDefault(message);
   }
   public R visit(ReplicatorErrorMessage message) throws NebuloException {
-    return action("StoreObjectMessage");
+    return visitDefault(message);
   }
   public R visit(UpdateObjectMessage message) throws NebuloException {
-    return action("StoreObjectMessage");
+    return visitDefault(message);
   }
 
   /* Network messages. */
   public R visit(CommMessage message) throws NebuloException {
-    return action("CommMessage");
+    return visitDefault(message);
   }
   public R visit(CommPeerFoundMessage message) throws NebuloException {
-    return action("CommPeerFoundMessage");
+    return visitDefault(message);
   }
   public R visit(CommSendDataMessage message) throws NebuloException {
-    return action("CommSendDataMessage");
+    return visitDefault(message);
   }
   public R visit(DiscoveryMessage message) throws NebuloException {
-    return action("DiscoveryMessage");
+    return visitDefault(message);
   }
 
   /* DHT messages. */
   public R visit(DHTMessage message) throws NebuloException {
-    return action("DHTMessage");
+    return visitDefault(message);
   }
   public R visit(DelDHTMessage message) throws NebuloException {
-    return action("DelDHTMessage");
+    return visitDefault(message);
   }
   public R visit(ErrorDHTMessage message) throws NebuloException {
-    return action("ErrorDHTMessage");
+    return visitDefault(message);
   }
   public R visit(GetDHTMessage message) throws NebuloException {
-    return action("GetDHTMessage");
+    return visitDefault(message);
   }
   public R visit(InDHTMessage message) throws NebuloException {
-    return action("InDHTMessage");
+    return visitDefault(message);
   }
   public R visit(OkDHTMessage message) throws NebuloException {
-    return action("OkDHTMessage");
+    return visitDefault(message);
   }
   public R visit(OutDHTMessage message) throws NebuloException {
-    return action("OutDHTMessage");
+    return visitDefault(message);
   }
   public R visit(PutDHTMessage message) throws NebuloException {
-    return action("PutDHTMessage");
+    return visitDefault(message);
   }
   public R visit(ValueDHTMessage message) throws NebuloException {
-    return action("ValueDHTMessage");
+    return visitDefault(message);
+  }
+
+  /* API messages. */
+  public R visit(ApiMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+  public R visit(ApiErrorMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+  public R visit(ApiGetNebuloFileMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+  public R visit(ApiPutKeyMessage message) throws NebuloException {
+    return visitDefault(message);
   }
 }
