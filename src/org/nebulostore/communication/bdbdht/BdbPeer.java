@@ -2,7 +2,6 @@ package org.nebulostore.communication.bdbdht;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.concurrent.BlockingQueue;
 
@@ -21,6 +20,7 @@ import net.jxta.discovery.DiscoveryListener;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.id.ID;
+import net.jxta.impl.protocol.PipeAdv;
 import net.jxta.peer.PeerID;
 import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
@@ -44,7 +44,7 @@ import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 
 /**
  * Implementation of berkely db based engine for...
- *
+ * 
  * @author marcin
  */
 public class BdbPeer extends Module implements DiscoveryListener {
@@ -52,8 +52,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
   private static String configurationPath_ = "resources/conf/communication/BdbPeer.xml";
   private static Logger logger_ = Logger.getLogger(BdbPeer.class);
 
-  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:" +
-      "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
+  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:"
+      + "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
 
   private String storagePath_;
   private String storeName_;
@@ -66,6 +66,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
   private CommAddress holderCommAddress_;
 
   private final BlockingQueue<Message> jxtaInQueue_;
+  private CommAddress peerAddress_;
 
   /**
    * @param inQueue
@@ -76,7 +77,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
    */
   public BdbPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue,
-      PeerDiscoveryService peerDiscoveryService,
+      PeerDiscoveryService peerDiscoveryService, CommAddress peerAddress,
       BlockingQueue<Message> jxtaInQueue) {
     super(inQueue, outQueue);
 
@@ -108,7 +109,9 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
       database_ = env_.openDatabase(null, storeName_, dbConfig);
 
+      peerAddress_ = peerAddress;
       peerDiscoveryService.addAdvertisement(getBdbAdvertisement());
+
     } else {
       logger_.info("Configuring as proxy");
       isProxy_ = true;
@@ -130,13 +133,15 @@ public class BdbPeer extends Module implements DiscoveryListener {
     return env;
   }
 
-  public static PipeAdvertisement getBdbAdvertisement() {
+  public PipeAdvertisement getBdbAdvertisement() {
     PipeAdvertisement advertisement = (PipeAdvertisement) AdvertisementFactory
         .newAdvertisement(PipeAdvertisement.getAdvertisementType());
 
     advertisement.setPipeID(ID.create(URI.create(BDB_HOLDER_ADV_ID_STR)));
+    advertisement.setDescription(peerAddress_.getPeerId().toString());
     advertisement.setType(PipeService.UnicastType);
     advertisement.setName("Nebulostore bdb dht holder");
+    advertisement.setType(BDB_HOLDER_ADV_ID_STR);
     return advertisement;
   }
 
@@ -146,8 +151,10 @@ public class BdbPeer extends Module implements DiscoveryListener {
     Message message;
 
     if (isProxy_) {
-      logger_.info("Putting message to be sent to holder (taskId = " + msg.getId() + ")");
-      jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_, (DHTMessage) msg));
+      logger_.info("Putting message to be sent to holder (taskId = " +
+          msg.getId() + ")");
+      jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
+          (DHTMessage) msg));
     } else {
       boolean fromNetwork = false;
       if (msg instanceof BdbMessageWrapper) {
@@ -172,8 +179,9 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
         t.commit();
         if (fromNetwork) {
-          jxtaInQueue_.add(new BdbMessageWrapper(null, ((BdbMessageWrapper) msg).getSourceAddress(),
-              new OkDHTMessage(putMsg)));
+          jxtaInQueue_.add(new BdbMessageWrapper(null,
+              ((BdbMessageWrapper) msg).getSourceAddress(), new OkDHTMessage(
+                  putMsg)));
         } else {
           outQueue_.add(new OkDHTMessage(putMsg));
         }
@@ -219,17 +227,12 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
     if (en != null) {
       while (en.hasMoreElements()) {
-        adv = (Advertisement) en.nextElement();
-
+        adv = en.nextElement();
         String id = adv.getID() == null ? "null" : adv.getID().toString();
-        if (BDB_HOLDER_ADV_ID_STR.equals(id) /*&& holderCommAddress_ == null*/) {
-          try {
-            holderCommAddress_ = new CommAddress(PeerID.create(new URI("urn:" +
-                ("" + ev.getSource()).replace("//", ""))));
-            logger_.info("Holder detected at " + holderCommAddress_.toString());
-          } catch (URISyntaxException e) {
-            logger_.error("", e);
-          }
+        if (BDB_HOLDER_ADV_ID_STR.equals(id) /* && holderCommAddress_ == null */) {
+          holderCommAddress_ = new CommAddress(PeerID.create(URI
+              .create(((PipeAdv) adv).getDescription())));
+          logger_.info("Holder detected at " + holderCommAddress_.toString());
         }
       }
     } else {

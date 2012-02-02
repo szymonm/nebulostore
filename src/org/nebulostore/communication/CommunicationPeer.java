@@ -58,7 +58,8 @@ public class CommunicationPeer extends Module {
     new Thread(jxtaPeer_).start();
 
     if (config.getString("dht.provider", "bdb").equals("bdb"))
-      dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue, jxtaPeer_.getPeerDiscoveryService(),
+      dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue,
+          jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
           jxtaPeerInQueue_);
     else if (config.getString("dht.provider", "bdb").equals("jxtaCh"))
       dhtPeer_ = new JXTAChPeer(dhtInQueue_, outQueue);
@@ -106,7 +107,8 @@ public class CommunicationPeer extends Module {
     }
 
     if (msg instanceof CommMessage) {
-      if (((CommMessage) msg).getDestinationAddress().equals(jxtaPeer_.getPeerAddress())) {
+      if (((CommMessage) msg).getDestinationAddress().equals(
+          jxtaPeer_.getPeerAddress())) {
         logger_.debug("message forwarded to Dispatcher");
         outQueue_.add(msg);
       } else {
