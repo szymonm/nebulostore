@@ -7,8 +7,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nebulostore.api.ApiGetNebuloFileMessage;
-import org.nebulostore.api.ApiMessage;
 import org.nebulostore.api.GetNebuloFileModule;
 import org.nebulostore.appcore.EncryptedEntity;
 import org.nebulostore.appcore.EntryId;
@@ -18,6 +16,7 @@ import org.nebulostore.appcore.NebuloDir;
 import org.nebulostore.appcore.NebuloFile;
 import org.nebulostore.appcore.NebuloKey;
 import org.nebulostore.appcore.ObjectId;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
@@ -41,14 +40,12 @@ public class GetNebuloFileModuleTest {
   private BlockingQueue<Message> inQueue_;
   private BlockingQueue<Message> outQueue_;
   private BlockingQueue<Message> networkQueue_;
-  private BlockingQueue<ApiMessage> resultQueue_;
   private Thread thread_;
 
   @Before
   public void setUp() {
     inQueue_ = new LinkedBlockingQueue<Message>();
     outQueue_ = new LinkedBlockingQueue<Message>();
-    resultQueue_ = new LinkedBlockingQueue<ApiMessage>();
     networkQueue_ = new LinkedBlockingQueue<Message>();
   }
 
@@ -59,7 +56,7 @@ public class GetNebuloFileModuleTest {
     NebuloKey nebuloKey = TestUtils.createNebuloKey("app_key", dirIds, entryIds, "objectID");
     assertTrue(nebuloKey.appKey_.appKey_.equals("app_key"));
 
-    GetNebuloFileModule module = new GetNebuloFileModule(nebuloKey, resultQueue_);
+    GetNebuloFileModule module = new GetNebuloFileModule(nebuloKey);
     module.setInQueue(inQueue_);
     module.setOutQueue(outQueue_);
     module.setNetworkQueue(networkQueue_);
@@ -75,7 +72,7 @@ public class GetNebuloFileModuleTest {
     Message msg;
     try {
       msg = networkQueue_.take();
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       assertTrue(false);
       return;
     }
@@ -94,7 +91,7 @@ public class GetNebuloFileModuleTest {
     // Wait for dir_id_1 query via SendObjectMessage.
     try {
       msg = networkQueue_.take();
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       assertTrue(false);
       return;
     }
@@ -108,21 +105,21 @@ public class GetNebuloFileModuleTest {
     Map<EntryId, EncryptedEntity> entries = new TreeMap<EntryId, EncryptedEntity>();
     try {
       entries.put(new EntryId("entry_1"), CryptoUtils.encryptDirectoryEntry(entry));
-    } catch (CryptoException e) {
+    } catch (CryptoException exception) {
       assertTrue(false);
     }
     NebuloDir dir = new NebuloDir(entries);
     try {
       inQueue_.add(new SendObjectMessage(null, null, CryptoUtils.encryptNebuloObject(dir)));
-    } catch (CryptoException e) {
-      System.out.print(e.getMessage());
+    } catch (CryptoException exception) {
+      System.out.print(exception.getMessage());
       assertTrue(false);
     }
 
     // Wait for object query.
     try {
       msg = networkQueue_.take();
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       assertTrue(false);
       return;
     }
@@ -134,31 +131,28 @@ public class GetNebuloFileModuleTest {
     NebuloFile file = new NebuloFile(targetObject);
     try {
       inQueue_.add(new SendObjectMessage(null, null, CryptoUtils.encryptNebuloObject(file)));
-    } catch (CryptoException e) {
-      System.out.print(e.getMessage());
+    } catch (CryptoException exception) {
+      System.out.print(exception.getMessage());
       assertTrue(false);
     }
 
     // Wait for API call result.
-    ApiMessage apiMsg;
+    NebuloFile nebuloFile = null;
     try {
-      apiMsg = resultQueue_.take();
-    } catch (InterruptedException e) {
+      nebuloFile = module.getResult(5);
+    } catch (NebuloException exception) {
+      System.out.print(exception.getMessage());
       assertTrue(false);
-      return;
     }
-    ApiGetNebuloFileMessage retMessage;
-    assertTrue(apiMsg instanceof ApiGetNebuloFileMessage);
-    retMessage = (ApiGetNebuloFileMessage) apiMsg;
-    assertTrue(retMessage.getNebuloFile().data_.length == 2);
-    assertTrue(retMessage.getNebuloFile().data_[0] == 4);
-    assertTrue(retMessage.getNebuloFile().data_[1] == 13);
+    assertTrue(nebuloFile.data_.length == 2);
+    assertTrue(nebuloFile.data_[0] == 4);
+    assertTrue(nebuloFile.data_[1] == 13);
 
     // Wait for JobEndedMessage.
     Message endMsg;
     try {
       endMsg = outQueue_.take();
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       assertTrue(false);
       return;
     }
@@ -169,7 +163,7 @@ public class GetNebuloFileModuleTest {
     // Wait for thread to finish.
     try {
       thread_.join();
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       assertTrue(false);
     }
   }

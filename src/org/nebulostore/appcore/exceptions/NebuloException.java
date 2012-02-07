@@ -6,27 +6,27 @@ package org.nebulostore.appcore.exceptions;
  */
 public class NebuloException extends Exception {
 
-  protected final Exception innerException_;
+  protected final Exception cause_;
 
   public NebuloException() {
-    innerException_ = null;
+    cause_ = null;
   }
 
   public NebuloException(String message) {
     super(message);
-    innerException_ = null;
+    cause_ = null;
   }
 
-  public NebuloException(Exception innerException) {
-    innerException_ = innerException;
+  public NebuloException(Exception cause) {
+    cause_ = cause;
   }
 
-  public NebuloException(String message, Exception innerException) {
+  public NebuloException(String message, Exception cause) {
     super(message);
-    innerException_ = innerException;
+    cause_ = cause;
   }
 
   public Exception getInnerException() {
-    return innerException_;
+    return cause_;
   }
 }

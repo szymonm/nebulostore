@@ -35,18 +35,12 @@ public final class TextInterface {
   }
 
   public static void main(String[] args) {
-    /**
-     * Run NebuloStore in a separate thread.
-     */
-    class Runner implements Runnable {
-      @Override
+    // Run NebuloStore in a separate thread.
+    Thread nebuloThread = new Thread(new Runnable() {
       public void run() {
         Peer.runPeer();
       }
-    }
-
-    // Run NebuloStore.
-    Thread nebuloThread = new Thread(new Runner());
+    });
     DOMConfigurator.configure("resources/conf/log4j.xml");
     System.out.print("Starting NebuloStore ...\n");
     nebuloThread.start();
@@ -70,8 +64,8 @@ public final class TextInterface {
         try {
           NebuloKey retKey = ApiFacade.putKey(new AppKey(tokens[1]));
           System.out.println("Successfully received key (" + retKey.appKey_.appKey_ + ")");
-        } catch (NebuloException exc) {
-          System.out.println("Got exception: " + exc.getMessage());
+        } catch (NebuloException exception) {
+          System.out.println("Got exception: " + exception.getMessage());
           continue;
         }
       } else if (tokens[0].equals("get")) {
@@ -86,8 +80,8 @@ public final class TextInterface {
         NebuloFile file;
         try {
           file = ApiFacade.getNebuloFile(nebuloKey);
-        } catch (NebuloException exc) {
-          System.out.println("Got exception: " + exc.getMessage());
+        } catch (NebuloException exception) {
+          System.out.println("Got exception: " + exception.getMessage());
           continue;
         }
 
@@ -96,11 +90,13 @@ public final class TextInterface {
           FileOutputStream fos = new FileOutputStream(tokens[2]);
           fos.write(file.data_);
           fos.close();
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException eexception) {
           System.out.println("Cannot write file!");
-        } catch (IOException e) {
+        } catch (IOException exception) {
           System.out.println("Cannot write file!");
         }
+      } else if (tokens[0].equals("")) {
+        continue;
       } else {
         System.out.println("Unknown command (type \"end\" to exit)");
       }
@@ -108,8 +104,8 @@ public final class TextInterface {
 
     try {
       nebuloThread.join();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    } catch (InterruptedException exception) {
+      exception.printStackTrace();
     }
   }
 

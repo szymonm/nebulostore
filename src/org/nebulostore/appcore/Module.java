@@ -3,7 +3,6 @@ package org.nebulostore.appcore;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.exceptions.KillModuleException;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
@@ -14,10 +13,12 @@ public abstract class Module implements Runnable {
 
   protected BlockingQueue<Message> inQueue_;
   protected BlockingQueue<Message> outQueue_;
+  // Is this thread ready to die (false by default). This is set by endModule() method.
+  private boolean isFinished_;
+
   private static Logger logger_ = Logger.getLogger(Module.class);
 
-  public Module() {
-  }
+  public Module() { }
 
   public Module(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
     outQueue_ = outQueue;
@@ -32,16 +33,19 @@ public abstract class Module implements Runnable {
     outQueue_ = outQueue;
   }
 
+  protected void endModule() {
+    isFinished_ = true;
+  }
+
   @Override
   public void run() {
-    while (true) {
+    while (!isFinished_) {
       try {
         processMessage(inQueue_.take());
+        // If isFinished_ is set now, the thread will die.
       } catch (InterruptedException exception) {
         logger_.warn("Received InterruptedException from inQueue.");
         continue;
-      } catch (KillModuleException exception) {
-        break;
       } catch (NebuloException exception) {
         logger_.warn("Received NebuloException from inQueue.");
         continue;

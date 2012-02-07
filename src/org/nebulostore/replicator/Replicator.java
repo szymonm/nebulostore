@@ -1,8 +1,5 @@
-/**
- */
 package org.nebulostore.replicator;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,7 +14,6 @@ import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ObjectId;
-import org.nebulostore.appcore.exceptions.KillModuleException;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
@@ -32,8 +28,11 @@ import org.nebulostore.replicator.messages.UpdateObjectMessage;
  * @author szymonmatejczyk
  */
 public class Replicator extends JobModule {
+
   private MessageVisitor<Void> visitor_;
 
+  // Hashtable is synchronized.
+  private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
   private static Logger logger_ = Logger.getLogger(Replicator.class);
 
   public Replicator(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
@@ -44,12 +43,13 @@ public class Replicator extends JobModule {
   }
 
   /**
-   * Visitor to handle different message types.
+   * Visitor to handle different message types. It calls static methods and returns
+   * results via queues.
    * @author szymonmatejczyk
    */
   private class ReplicatorVisitor extends MessageVisitor<Void> {
 
-    public Void visit(StoreObjectMessage message) throws KillModuleException {
+    public Void visit(StoreObjectMessage message) {
       try {
         storeObject(message.getObjectId(), message.getEncryptedEntity());
         networkQueue_.add(new ConfirmationMessage(message.getId(), message
@@ -62,7 +62,7 @@ public class Replicator extends JobModule {
       return null;
     }
 
-    public Void visit(GetObjectMessage message) throws KillModuleException {
+    public Void visit(GetObjectMessage message) {
       EncryptedEntity enc = getObject(message.objectId_);
 
       if (enc == null) {
@@ -75,7 +75,7 @@ public class Replicator extends JobModule {
       return null;
     }
 
-    public Void visit(UpdateObjectMessage message) throws KillModuleException {
+    public Void visit(UpdateObjectMessage message) {
       try {
         updateObject(message.getObjectId(), message.getEncryptedEntity());
         networkQueue_.add(new ConfirmationMessage(message.getId(), message
@@ -88,7 +88,7 @@ public class Replicator extends JobModule {
       return null;
     }
 
-    public Void visit(DeleteObjectMessage message) throws KillModuleException {
+    public Void visit(DeleteObjectMessage message) {
       try {
         deleteObject(message.getObjectId());
         networkQueue_.add(new ConfirmationMessage(message.getId(), message
@@ -102,15 +102,10 @@ public class Replicator extends JobModule {
     }
 
     private void dieWithError(String jobId, CommAddress sourceAddress,
-        CommAddress destinationAddress, String errorMessage)
-      throws KillModuleException {
+        CommAddress destinationAddress, String errorMessage) {
       networkQueue_.add(new ReplicatorErrorMessage(jobId, sourceAddress,
           destinationAddress, errorMessage));
-      die();
-    }
-
-    private void die() throws KillModuleException {
-      throw new KillModuleException();
+      endJobModule();
     }
   }
 
@@ -119,8 +114,9 @@ public class Replicator extends JobModule {
     message.accept(visitor_);
   }
 
-  // Hashtable is synchronized.
-  private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
+  /*
+   * Static methods.
+   */
 
   public static void storeObject(ObjectId objectId, EncryptedEntity encryptedEntity)
     throws SaveException {
@@ -140,7 +136,6 @@ public class Replicator extends JobModule {
 
     File file = new File(location);
     FileInputStream fis = null;
-    ByteArrayInputStream baos = null;
     try {
       fis = new FileInputStream(file);
       byte[] content = new byte[(int) (file.length())];
@@ -151,8 +146,8 @@ public class Replicator extends JobModule {
     } catch (FileNotFoundException exception) {
       logger_.warn("Object file not found.");
       return null;
-    } catch (IOException e) {
-      logger_.warn(e.toString());
+    } catch (IOException exception) {
+      logger_.warn(exception.toString());
       return null;
     }
   }
@@ -192,6 +187,7 @@ public class Replicator extends JobModule {
   }
 
   private static String getLocationPrefix() {
+    // TODO: Read this from config file!
     return "/tmp/nebulostore/store/";
   }
 }

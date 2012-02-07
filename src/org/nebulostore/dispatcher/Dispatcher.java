@@ -10,7 +10,6 @@ import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Module;
-import org.nebulostore.appcore.exceptions.KillModuleException;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -59,11 +58,12 @@ public class Dispatcher extends Module {
       for (int i = 0; i < threads.length; ++i) {
         try {
           threads[i].join();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException exception) {
           continue;
         }
       }
-      throw new KillModuleException();
+      endModule();
+      return null;
     }
 
     /*

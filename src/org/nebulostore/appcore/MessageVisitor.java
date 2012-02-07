@@ -1,9 +1,5 @@
 package org.nebulostore.appcore;
 
-import org.nebulostore.api.ApiErrorMessage;
-import org.nebulostore.api.ApiGetNebuloFileMessage;
-import org.nebulostore.api.ApiMessage;
-import org.nebulostore.api.ApiPutKeyMessage;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
 import org.nebulostore.communication.messages.CommMessage;
@@ -120,20 +116,6 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
   public R visit(ValueDHTMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  /* API messages. */
-  public R visit(ApiMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-  public R visit(ApiErrorMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-  public R visit(ApiGetNebuloFileMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-  public R visit(ApiPutKeyMessage message) throws NebuloException {
     return visitDefault(message);
   }
 }

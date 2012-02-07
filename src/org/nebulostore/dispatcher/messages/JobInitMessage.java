@@ -9,8 +9,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * This is a generic message to start a job via dispatcher.
  */
 public class JobInitMessage extends Message {
-  public JobInitMessage(String msgId, JobModule jobModule) {
-    super(msgId);
+  public JobInitMessage(String jobId, JobModule jobModule) {
+    super(jobId);
     jobModule_ = jobModule;
   }
 

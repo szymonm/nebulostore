@@ -10,8 +10,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  *
  */
 public class JobEndedMessage extends Message {
-  public JobEndedMessage(String msgID) {
-    super(msgID);
+  public JobEndedMessage(String jobID) {
+    super(jobID);
   }
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);

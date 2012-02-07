@@ -63,7 +63,7 @@ public class ReplicatorTest {
         assertTrue(false);
         return;
       }
-    } catch (InterruptedException e) {
+    } catch (InterruptedException exception) {
       assertTrue(false);
       return;
     }
