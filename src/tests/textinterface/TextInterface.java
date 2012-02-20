@@ -3,18 +3,18 @@ package tests.textinterface;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.nebulostore.addressing.AppKey;
+import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.api.ApiFacade;
-import org.nebulostore.appcore.AppKey;
 import org.nebulostore.appcore.NebuloFile;
-import org.nebulostore.appcore.NebuloKey;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
-
-import tests.org.nebulostore.TestUtils;
 
 /**
  * @author bolek
@@ -62,8 +62,8 @@ public final class TextInterface {
           tokens[1] = "appkey";
         }
         try {
-          NebuloKey retKey = ApiFacade.putKey(new AppKey(tokens[1]));
-          System.out.println("Successfully received key (" + retKey.appKey_.appKey_ + ")");
+          ApiFacade.putKey(new AppKey(tokens[1]));
+          System.out.println("Successfully executed putKey().");
         } catch (NebuloException exception) {
           System.out.println("Got exception: " + exception.getMessage());
           continue;
@@ -76,10 +76,10 @@ public final class TextInterface {
           tokens[1] = "appkey/topdir.file1/fileId";
           tokens[2] = "pliczek";
         }
-        NebuloKey nebuloKey = parseNebuloKey(tokens[1]);
         NebuloFile file;
         try {
-          file = ApiFacade.getNebuloFile(nebuloKey);
+          file = (NebuloFile) ApiFacade.getNebuloFile(new NebuloAddress(new AppKey("appkey"),
+              new ObjectId(new BigInteger("2"))));
         } catch (NebuloException exception) {
           System.out.println("Got exception: " + exception.getMessage());
           continue;
@@ -90,7 +90,7 @@ public final class TextInterface {
           FileOutputStream fos = new FileOutputStream(tokens[2]);
           fos.write(file.data_);
           fos.close();
-        } catch (FileNotFoundException eexception) {
+        } catch (FileNotFoundException exception) {
           System.out.println("Cannot write file!");
         } catch (IOException exception) {
           System.out.println("Cannot write file!");
@@ -107,17 +107,5 @@ public final class TextInterface {
     } catch (InterruptedException exception) {
       exception.printStackTrace();
     }
-  }
-
-  private static NebuloKey parseNebuloKey(String key) {
-    String[] segments = key.split("/");
-    String[] dirIds = new String[segments.length - 2];
-    String[] entryIds = new String[segments.length - 2];
-    for (int i = 1; i < segments.length - 1; ++i) {
-      String[] parts = segments[i].split("\\.");
-      dirIds[i - 1] = parts[0];
-      entryIds[i - 1] = parts[1];
-    }
-    return TestUtils.createNebuloKey(segments[0], dirIds, entryIds, segments[segments.length - 1]);
   }
 }

@@ -1,31 +1,27 @@
-package org.nebulostore.appcore;
+package org.nebulostore.addressing;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
- * @author szymonmatejczyk
+ * Unique integer ID that identifies object stored in NebuloStore.
  */
 public class ObjectId implements Serializable {
 
   private static final long serialVersionUID = 1687973599624381804L;
 
-  private String key_;
+  private BigInteger key_;
 
-  public ObjectId(String key) {
-    super();
+  public ObjectId(BigInteger key) {
     key_ = key;
   }
 
-  public String getKey() {
+  public BigInteger getKey() {
     return key_;
   }
 
-  public void setKey(String key) {
+  public void setKey(BigInteger key) {
     key_ = key;
-  }
-
-  public String toString() {
-    return key_;
   }
 
   @Override
@@ -52,5 +48,4 @@ public class ObjectId implements Serializable {
       return false;
     return true;
   }
-
 }

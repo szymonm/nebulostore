@@ -9,11 +9,11 @@ import java.util.Hashtable;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.EncryptedEntity;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.replicator.messages.ConfirmationMessage;

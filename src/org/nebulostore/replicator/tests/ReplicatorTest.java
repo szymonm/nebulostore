@@ -1,5 +1,6 @@
 package org.nebulostore.replicator.tests;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -7,9 +8,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
 import org.junit.Test;
+import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.EncryptedEntity;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.ObjectId;
 import org.nebulostore.replicator.Replicator;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
@@ -42,7 +43,7 @@ public class ReplicatorTest {
    */
   @Test
   public void testStoreGetMessages() {
-    ObjectId objectId1 = new ObjectId("key3");
+    ObjectId objectId1 = new ObjectId(new BigInteger("3"));
     byte[] enc = {33, 12};
     EncryptedEntity entity1 = new EncryptedEntity(enc);
     StoreObjectMessage storeMessage = new StoreObjectMessage("job1", null,

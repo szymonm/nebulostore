@@ -38,10 +38,10 @@ public abstract class ApiModule<R> extends JobModule {
     } catch (InterruptedException exception) {
       throw new NebuloException("Interrupted while waiting for result", exception);
     }
-    if (result_ != null) {
-      return result_;
-    } else {
+    if (error_ != null) {
       throw error_;
+    } else {
+      return result_;
     }
   }
 
