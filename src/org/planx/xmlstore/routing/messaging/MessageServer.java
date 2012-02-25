@@ -5,209 +5,230 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
+
+import org.apache.log4j.Logger;
+import org.nebulostore.appcore.Message;
+import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.messages.kademlia.KademliaMessage;
 
 /**
- * Listens for incoming UDP messages and provides a framework for sending messages
- * and responding to received messages.
- * Two threads are started: One that listens for incoming messages and one that
- * handles timeout events.
+ * Listens for incoming UDP messages and provides a framework for sending
+ * messages and responding to received messages. Two threads are started: One
+ * that listens for incoming messages and one that handles timeout events.
  **/
 public class MessageServer {
-    /**
-     * Maximum size of a received datagram packet.
-     * Could probably be less, but is set too high to be on the safe side.
-     **/
-    private static final int DATAGRAM_BUFFER_SIZE = 10*1024;
+  /**
+   * Maximum size of a received datagram packet. Could probably be less, but is
+   * set too high to be on the safe side.
+   **/
 
-    private static Random random = new Random();
-    private MessageFactory factory;
-    private long timeout;
-    private DatagramSocket socket;
-    private Timer timer;
-    private boolean isRunning = true;
-    private Map receivers; // keeps track of registered receivers
-    private Map tasks;     // keeps track of timeout events
+  private static Logger logger_ = Logger.getLogger(MessageServer.class);
 
-    /**
-     * Constructs a MessageServer listening on the specified UDP port using the
-     * specified MessageFactory for interpreting incoming messages.
-     *
-     * @param udpPort The UDP port on which to listen for incoming messages
-     * @param factory Factory for creating Message and Receiver objects
-     * @param timeout The timeout period in milliseconds
-     *
-     * @throws SocketException if the socket could not be opened, or the socket
-     *                         could not bind to the specified local port
-     **/
-    public MessageServer(int udpPort, MessageFactory factory, long timeout)
-                                                    throws SocketException {
-        this.factory = factory;
-        this.timeout = timeout;
-        socket = new DatagramSocket(udpPort);
-        timer = new Timer(true);
-        receivers = new HashMap();
-        tasks = new HashMap();
+  private static Random random = new Random();
+  private final MessageFactory factory;
+  private final long timeout;
+  private final BlockingQueue<Message> outQueue_;
+  private final BlockingQueue<Message> inQueue_;
+  private final Timer timer;
+  private boolean isRunning = true;
+  private final Map receivers; // keeps track of registered receivers
+  private final Map tasks; // keeps track of timeout events
 
-        new Thread() {
-            public void run() {
-                listen();
-            }
-        }.start();
+  /**
+   * Constructs a MessageServer listening on the specified UDP port using the
+   * specified MessageFactory for interpreting incoming messages.
+   * 
+   * @param udpPort
+   *          The UDP port on which to listen for incoming messages
+   * @param factory
+   *          Factory for creating Message and Receiver objects
+   * @param timeout
+   *          The timeout period in milliseconds
+   * @throws SocketException
+   *           if the socket could not be opened, or the socket could not bind
+   *           to the specified local port
+   **/
+  public MessageServer(BlockingQueue<Message> outQueue,
+      BlockingQueue<Message> inQueue, MessageFactory factory, long timeout)
+      throws SocketException {
+    this.factory = factory;
+    this.timeout = timeout;
+
+    outQueue_ = outQueue;
+    inQueue_ = inQueue;
+
+    timer = new Timer(true);
+    receivers = new HashMap();
+    tasks = new HashMap();
+
+    new Thread() {
+      @Override
+      public void run() {
+        listen();
+      }
+    }.start();
+  }
+
+  /**
+   * Sends the specified Message and calls the specified Receiver when a reply
+   * for the message is received. If <code>recv</code> is <code>null</code> any
+   * reply is ignored. Returns a unique communication id which can be used to
+   * identify a reply.
+   **/
+  public synchronized int send(KademliaInternalMessage message,
+      CommAddress address, Receiver recv) throws IOException {
+
+    logger_.info("Message to send:  " + message.toString());
+    if (!isRunning)
+      throw new IllegalStateException("MessageServer not running");
+    int comm = random.nextInt();
+    if (recv != null) {
+      Integer key = new Integer(comm);
+      receivers.put(key, recv);
+      TimerTask task = new TimeoutTask(comm, recv);
+      timer.schedule(task, timeout);
+      tasks.put(key, task);
     }
+    sendMessage(comm, message, address);
 
-    /**
-     * Sends the specified Message and calls the specified Receiver when a reply
-     * for the message is received. If <code>recv</code> is <code>null</code>
-     * any reply is ignored. Returns a unique communication id which can be used
-     * to identify a reply.
-     **/
-    public synchronized int send(Message message, InetAddress ip,
-                                 int port, Receiver recv) throws IOException {
-        if (!isRunning) throw new IllegalStateException("MessageServer not running");
-        int comm = random.nextInt();
-        if (recv != null) {
-            Integer key = new Integer(comm);
-            receivers.put(key, recv);
-            TimerTask task = new TimeoutTask(comm, recv);
-            timer.schedule(task, timeout);
-            tasks.put(key, task);
-        }
-        sendMessage(comm, message, ip, port);
-        return comm;
+    logger_.info("Message sent:  " + message.toString());
+    return comm;
+  }
+
+  /**
+   * Sends a reply to the message with the specified communication id.
+   **/
+  public synchronized void reply(int comm, KademliaInternalMessage message,
+      CommAddress address) throws IOException {
+    if (!isRunning)
+      throw new IllegalStateException("MessageServer not running");
+    logger_.info("Reply by message to send:  " + message.toString());
+    sendMessage(comm, message, address);
+    logger_.info("Message sent:  " + message.toString());
+  }
+
+  private void sendMessage(int comm, KademliaInternalMessage message,
+      CommAddress address) throws IOException {
+    ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    DataOutputStream dout = new DataOutputStream(bout);
+    dout.writeInt(comm);
+    dout.writeByte(message.code());
+    message.toStream(dout);
+    dout.close();
+    byte[] data = bout.toByteArray();
+    KademliaMessage msg = new KademliaMessage(null, address, data);
+    try {
+      outQueue_.put(msg);
+    } catch (InterruptedException e) {
     }
+  }
 
-    /**
-     * Sends a reply to the message with the specified communication id.
-     **/
-    public synchronized void reply(int comm, Message message, InetAddress ip,
-                                                int port) throws IOException {
-        if (!isRunning) throw new IllegalStateException("MessageServer not running");
-        sendMessage(comm, message, ip, port);
-    }
+  private synchronized void unregister(int comm) {
+    Integer key = new Integer(comm);
+    receivers.remove(key);
+    tasks.remove(key);
+  }
 
-    private void sendMessage(int comm, Message message, InetAddress ip, int port)
-                                                              throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        DataOutputStream dout = new DataOutputStream(bout);
-        dout.writeInt(comm);
-        dout.writeByte(message.code());
-        message.toStream(dout);
-        dout.close();
-
-        byte[] data = bout.toByteArray();
-        if (data.length > DATAGRAM_BUFFER_SIZE) {
-            throw new IOException("Message too big, size="+data.length+
-                                  " bytes, max="+DATAGRAM_BUFFER_SIZE+" bytes");
-        }
-        DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
-        socket.send(packet);
-    }
-
-    private synchronized void unregister(int comm) {
-        Integer key = new Integer(comm);
-        receivers.remove(key);
-        tasks.remove(key);
-    }
-
-    /**
-     * Started in a separate thread.
-     **/
-    private void listen() {
+  /**
+   * Started in a separate thread.
+   **/
+  private void listen() {
+    try {
+      while (isRunning) {
         try {
-            while (isRunning) {
-                try {
-                    // Wait for packet
-                    byte[] buffer = new byte[DATAGRAM_BUFFER_SIZE];
-                    DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                    socket.receive(packet);
 
-                    // Decode data into Message object
-                    ByteArrayInputStream bin = new ByteArrayInputStream(packet.getData(),
-                                                 packet.getOffset(), packet.getLength());
-                    DataInputStream din = new DataInputStream(bin);
-                    int comm = din.readInt();
-                    byte messCode = din.readByte();
-                    Message message = factory.createMessage(messCode, din);
-                    din.close();
+          // Decode data into Message object
 
-                    // Create Receiver if one is supported
-                    Receiver recv = null;
-                    recv = factory.createReceiver(messCode, this);
+          KademliaMessage msg = ((KademliaMessage) inQueue_.take());
 
-                    // If no receiver, get registered Receiver, if any
-                    if (recv == null) {
-                        synchronized (this) {
-                            Integer key = new Integer(comm);
-                            recv = (Receiver) receivers.remove(key);
-                            // Cancel timer if there was a registered Receiver
-                            if (recv != null) {
-                                TimerTask task = (TimerTask) tasks.remove(key);
-                                task.cancel();
-                            }
-                        }
-                    }
+          ByteArrayInputStream bin = new ByteArrayInputStream(msg.getData());
+          DataInputStream din = new DataInputStream(bin);
+          int comm = din.readInt();
+          byte messCode = din.readByte();
 
-                    // Invoke Receiver if one was found
-                    if (recv != null) {
-                        recv.receive(message, comm);
-                    }
-                } catch (SocketException e) {
-                    // Socket has been closed, done by the close() method
-                    isRunning = false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+          KademliaInternalMessage message = factory
+              .createMessage(messCode, din);
+
+          logger_.info("Message received: " + message.toString());
+
+          // Create Receiver if one is supported
+          Receiver recv = null;
+          recv = factory.createReceiver(messCode, this);
+
+          // If no receiver, get registered Receiver, if any
+          if (recv == null) {
+            synchronized (this) {
+              Integer key = new Integer(comm);
+              recv = (Receiver) receivers.remove(key);
+              // Cancel timer if there was a registered Receiver
+              if (recv != null) {
+                TimerTask task = (TimerTask) tasks.remove(key);
+                task.cancel();
+              }
             }
-        } finally {
-            if (!socket.isClosed()) socket.close();
-            isRunning = false;
+          }
+
+          // Invoke Receiver if one was found
+          if (recv != null) {
+            recv.receive(message, comm);
+          }
+        } catch (SocketException e) {
+          // Socket has been closed, done by the close() method
+          isRunning = false;
+        } catch (IOException e) {
+          e.printStackTrace();
+        } catch (InterruptedException e) {
         }
+      }
+    } finally {
+      isRunning = false;
+    }
+  }
+
+  /**
+   * Signals to the MessageServer thread that it should stop running.
+   **/
+  public synchronized void close() {
+    if (!isRunning)
+      throw new IllegalStateException("MessageServer not running");
+    isRunning = false;
+    timer.cancel();
+    // socket.close(); // breaks the wait for incoming packets
+    receivers.clear();
+    tasks.clear();
+  }
+
+  /**
+   * Task that gets called by a separate thread if a timeout for a receiver
+   * occurs. When a reply arrives this task must be cancelled using the
+   * <code>cancel()</code> method inherited from <code>TimerTask</code>. In this
+   * case the caller is responsible for removing the task from the
+   * <code>tasks</code> map.
+   **/
+  class TimeoutTask extends TimerTask {
+    private final int comm;
+    private final Receiver recv;
+
+    public TimeoutTask(int comm, Receiver recv) {
+      this.comm = comm;
+      this.recv = recv;
     }
 
-    /**
-     * Signals to the MessageServer thread that it should stop running.
-     **/
-    public synchronized void close() {
-        if (!isRunning) throw new IllegalStateException("MessageServer not running");
-        isRunning = false;
-        timer.cancel();
-        socket.close(); // breaks the wait for incoming packets
-        receivers.clear();
-        tasks.clear();
+    @Override
+    public void run() {
+      try {
+        unregister(comm);
+        recv.timeout(comm);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
-
-    /**
-     * Task that gets called by a separate thread if a timeout for a receiver occurs.
-     * When a reply arrives this task must be cancelled using the <code>cancel()</code>
-     * method inherited from <code>TimerTask</code>. In this case the caller is
-     * responsible for removing the task from the <code>tasks</code> map.
-     **/
-    class TimeoutTask extends TimerTask {
-        private int comm;
-        private Receiver recv;
-
-        public TimeoutTask(int comm, Receiver recv) {
-            this.comm = comm;
-            this.recv = recv;
-        }
-
-        public void run() {
-            try {
-                unregister(comm);
-                recv.timeout(comm);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+  }
 }

@@ -16,7 +16,7 @@ public interface Receiver {
      * @throws UnknownMessageException if the message or <code>comm</code> was
      *                                 unexpected
      **/
-    public void receive(Message incoming, int comm)
+    public void receive(KademliaInternalMessage incoming, int comm)
        throws IOException, UnknownMessageException;
 
     /**

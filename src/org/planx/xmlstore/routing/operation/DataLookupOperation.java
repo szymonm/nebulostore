@@ -43,7 +43,7 @@ public class DataLookupOperation extends NodeLookupOperation {
      * If a NodeReplyMessage is received the algorithm continues as by
      * the superclass.
      **/
-    public synchronized void receive(Message incoming, int comm) throws IOException {
+    public synchronized void receive(KademliaInternalMessage incoming, int comm) throws IOException {
         if (incoming instanceof DataMessage) {
             DataMessage mess = (DataMessage) incoming;
             space.insertNode(mess.getOrigin());

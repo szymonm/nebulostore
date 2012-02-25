@@ -17,9 +17,9 @@ public class PeerDiscoveryService implements Runnable {
   private static Logger logger_ = Logger.getLogger(PeerDiscoveryService.class);
   private final DiscoveryService discoveryService_;
 
-  private static long lifetime_ = 60 * 2 * 1000L;
-  private static long expiration_ = 60 * 2 * 1000L;
-  private static long waittime_ = 3 * 1000L;
+  private static long lifetime_ = 10 * 1000L;
+  private static long expiration_ = 10 * 1000L;
+  private static long waittime_ = 5000L;
 
   List<PipeAdvertisement> advertisements_ = new LinkedList<PipeAdvertisement>();
 
@@ -32,7 +32,7 @@ public class PeerDiscoveryService implements Runnable {
     logger_.info("Running!");
 
     discoveryService_.getRemoteAdvertisements(null, DiscoveryService.ADV, null,
-        null, 0, null);
+        null, 1, null);
 
     while (true) {
       logger_.info("Publishing advertisements");

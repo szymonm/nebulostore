@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <communication-peer>
   <dht>
-    <provider>bdb</provider>
+    <provider>kademlia</provider>
   </dht>
 </communication-peer>
 

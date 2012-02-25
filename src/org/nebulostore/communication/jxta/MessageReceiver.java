@@ -9,7 +9,6 @@ import net.jxta.impl.util.Base64;
 import net.jxta.pipe.InputPipe;
 
 import org.apache.log4j.Logger;
-
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.messages.CommMessage;
 
@@ -30,7 +29,6 @@ class MessageReceiver implements Runnable {
 
   @Override
   public void run() {
-    // TODO Auto-generated method stub
     while (true) {
       net.jxta.endpoint.Message m = null;
       try {
@@ -39,9 +37,12 @@ class MessageReceiver implements Runnable {
         logger_.error("error in accept serverPipe", t);
         t.printStackTrace();
       }
-      logger_.info("message received!");
-      outQueue_.add(unwrapMessage(m));
-      logger_.info("message on out queue");
+
+      Message msg = unwrapMessage(m);
+      if (msg != null) {
+        logger_.info("message received of type: " + msg.getClass());
+        outQueue_.add(msg);
+      }
     }
   }
 
@@ -51,11 +52,11 @@ class MessageReceiver implements Runnable {
     try {
       data = Base64
           .decodeBase64(msg.getMessageElement("serialized").toString());
-    } catch (IOException e2) {
-      // TODO Auto-generated catch block
-      e2.printStackTrace();
+    } catch (IOException e) {
+      logger_.error(e);
+      return null;
     }
-    logger_.info("message after decoding: " + msg.getMessageElement("serialized").toString());
+
     ByteArrayInputStream baos = new ByteArrayInputStream(data);
     ObjectInputStream ois = null;
     try {
@@ -68,13 +69,9 @@ class MessageReceiver implements Runnable {
     try {
       return (CommMessage) ois.readObject();
     } catch (ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      logger_.error("error:", e);
-      e.printStackTrace();
+      logger_.error(e);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      logger_.error("error:", e);
-      e.printStackTrace();
+      logger_.error(e);
     }
     return null;
   }

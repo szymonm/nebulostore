@@ -14,12 +14,14 @@ import org.nebulostore.communication.bdbdht.BdbPeer;
 import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.communication.jxtach.JXTAChPeer;
+import org.nebulostore.communication.kademlia.KademliaPeer;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.InDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
+import org.nebulostore.communication.messages.kademlia.KademliaMessage;
 
 /**
  * @author Marcin Walas
@@ -55,19 +57,23 @@ public class CommunicationPeer extends Module {
     jxtaPeer_ = new JXTAPeer(jxtaPeerInQueue_, inQueue);
     currJxtaPeer_ = jxtaPeer_;
 
-    new Thread(jxtaPeer_).start();
+    new Thread(jxtaPeer_, "Nebulostore.Communication.Jxta").start();
 
-    if (config.getString("dht.provider", "bdb").equals("bdb"))
+    if (config.getString("dht.provider", "bdb").equals("bdb")) {
       dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue,
           jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
           jxtaPeerInQueue_);
-    else if (config.getString("dht.provider", "bdb").equals("jxtaCh"))
+    } else if (config.getString("dht.provider", "bdb").equals("kademlia")) {
+      dhtPeer_ = new KademliaPeer(dhtInQueue_, outQueue,
+          jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
+          jxtaPeerInQueue_);
+    } else if (config.getString("dht.provider", "bdb").equals("jxtaCh")) {
       dhtPeer_ = new JXTAChPeer(dhtInQueue_, outQueue);
-    else {
+    } else {
       throw new CommException();
     }
 
-    new Thread(dhtPeer_).start();
+    new Thread(dhtPeer_, "Nebulostore.Communication.DHT").start();
   }
 
   @Override
@@ -89,6 +95,12 @@ public class CommunicationPeer extends Module {
         logger_.debug("OutDHTMessage forwarded to Dispatcher");
         outQueue_.add(msg);
       }
+      return;
+    }
+
+    if (msg instanceof KademliaMessage) {
+      logger_.debug("Kademlia DHT message received");
+      dhtInQueue_.add(msg);
       return;
     }
 
@@ -122,5 +134,9 @@ public class CommunicationPeer extends Module {
 
   public static CommAddress getPeerAddress() {
     return currJxtaPeer_.getPeerAddress();
+  }
+
+  public Module getDHTPeer() {
+    return dhtPeer_;
   }
 }

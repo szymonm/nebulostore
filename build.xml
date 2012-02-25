@@ -74,6 +74,18 @@
       <param name="main-class" value="org.nebulostore.communication.bdbdht.tests.BdbPeerTest" />
     </antcall>
   </target>
+	
+  <target name="jar-kademliatest">
+	<antcall target="jar">
+	  <param name="main-class" value="org.nebulostore.communication.kademlia.KademliaPeerTest" />
+	 </antcall>
+  </target>
+
+  <target name="jar-perfkademliatest">
+	<antcall target="jar">
+	  <param name="main-class" value="org.nebulostore.communication.kademlia.KademliaPerfTest" />
+	</antcall>
+  </target>
 
   <target name="text-interface">
     <antcall target="jar">

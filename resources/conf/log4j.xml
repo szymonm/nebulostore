@@ -5,36 +5,55 @@
   <appender name="CA" class="org.apache.log4j.ConsoleAppender">
     <param name="Threshold" value="ERROR" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
   </appender>
 
-  <!--  TODO MBW: Remove this repetitions -->
+  <!--  TODO MBW: Remove this repetitions -->  
   <appender name="FA" class="org.apache.log4j.FileAppender">
-    <param name="File" value="comm.log" />
+    <param name="File" value="all.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n" />
-    </layout>
-  </appender>
-
-  <appender name="FA-bdb" class="org.apache.log4j.FileAppender">
-    <param name="File" value="bdb.log" />
-    <param name="Threshold" value="DEBUG" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%-4r [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
   </appender>
   
-  <logger name="org.nebulostore.communication.bdbdht.tests.BdbPeerTest">
+  <appender name="FA-comm" class="org.apache.log4j.FileAppender">
+    <param name="File" value="comm.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
+
+  <appender name="FA-dht" class="org.apache.log4j.FileAppender">
+    <param name="File" value="dht.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>  
+
+  <logger name="org.nebulostore.communication.bdbdht">
     <level value="DEBUG"/>
-    <appender-ref ref="FA-bdb"/>
+    <appender-ref ref="FA-dht"/>
   </logger>
 
-  <logger name="org.nebulostore.communication.bdbdht.BdbPeer">
+  <logger name="org.nebulostore.communication.kademlia">
     <level value="DEBUG"/>
-    <appender-ref ref="FA-bdb"/>
+    <appender-ref ref="FA-dht"/>
+  </logger>  
+  
+  <logger name="org.nebulostore.communication">
+    <level value="DEBUG"/>
+    <appender-ref ref="FA-comm"/>
   </logger>
+  
+  <logger name="org.planx.xmlstore.routing">
+    <level value="DEBUG"/>
+    <appender-ref ref="FA-comm"/>
+  </logger> 
+  
   
   <root>
     <appender-ref ref="CA" />

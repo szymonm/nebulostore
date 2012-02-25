@@ -20,7 +20,7 @@ public class RemoveReceiver extends OriginReceiver {
         this.localMap = localMap;
     }
 
-    public void receive(Message incoming, int comm) throws IOException {
+    public void receive(KademliaInternalMessage incoming, int comm) throws IOException {
         super.receive(incoming, comm);
         RemoveMessage mess = (RemoveMessage) incoming;
         localMap.remove(mess.getKey());

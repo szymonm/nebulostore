@@ -25,7 +25,7 @@ public abstract class OriginReceiver implements Receiver {
      * node already exists in the local space, it's time last seen is updated
      * instead.
      **/
-    public void receive(Message incoming, int comm) throws IOException {
+    public void receive(KademliaInternalMessage incoming, int comm) throws IOException {
         OriginMessage mess = (OriginMessage) incoming;
         space.insertNode(mess.getOrigin());
     }

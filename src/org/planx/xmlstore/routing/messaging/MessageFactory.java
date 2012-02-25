@@ -12,7 +12,7 @@ public interface MessageFactory {
      *
      * @throws UnknownMessageException if the message code type is not supported
      **/
-    public Message createMessage(byte code, DataInput in)
+    public KademliaInternalMessage createMessage(byte code, DataInput in)
                    throws IOException, UnknownMessageException;
 
     /**

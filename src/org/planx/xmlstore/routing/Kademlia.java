@@ -10,13 +10,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
 
+import org.nebulostore.appcore.Message;
+import org.nebulostore.communication.address.CommAddress;
 import org.planx.xmlstore.routing.messaging.MessageFactory;
 import org.planx.xmlstore.routing.messaging.MessageServer;
 import org.planx.xmlstore.routing.operation.ConnectOperation;
@@ -52,9 +53,10 @@ public class Kademlia implements DistributedMap {
    * @param udpPort
    *          The UDP port to use for routing messages
    **/
-  public Kademlia(Identifier id, int udpPort) throws IOException,
-      RoutingException {
-    this(null, id, udpPort, null, null);
+  public Kademlia(Identifier id, BlockingQueue<Message> jxtaInQueue,
+      BlockingQueue<Message> inQueue, CommAddress localAddress)
+      throws IOException, RoutingException {
+    this(null, id, jxtaInQueue, inQueue, localAddress, null, null);
   }
 
   /**
@@ -68,9 +70,10 @@ public class Kademlia implements DistributedMap {
    * @param config
    *          Configuration parameters
    **/
-  public Kademlia(Identifier id, int udpPort, Configuration config)
-      throws IOException, RoutingException {
-    this(null, id, udpPort, null, config);
+  public Kademlia(Identifier id, BlockingQueue<Message> jxtaInQueue,
+      BlockingQueue<Message> inQueue, CommAddress localAddress,
+      Configuration config) throws IOException, RoutingException {
+    this(null, id, jxtaInQueue, inQueue, localAddress, null, config);
   }
 
   /**
@@ -88,10 +91,13 @@ public class Kademlia implements DistributedMap {
    *          not attempt to connect
    * @param config
    *          Configuration parameters. If null default parameters are used.
+   * @param localAddress
    **/
-  public Kademlia(String name, int udpPort, InetSocketAddress bootstrap,
-      Configuration config) throws IOException, RoutingException {
-    this(name, null, udpPort, bootstrap, config);
+  public Kademlia(String name, BlockingQueue<Message> jxtaInQueue,
+      BlockingQueue<Message> inQueue, CommAddress localAddress,
+      CommAddress bootstrap, Configuration config) throws IOException,
+      RoutingException {
+    this(name, null, jxtaInQueue, inQueue, localAddress, bootstrap, config);
   }
 
   /**
@@ -112,6 +118,7 @@ public class Kademlia implements DistributedMap {
    *          not attempt to connect
    * @param config
    *          Configuration parameters. If null default parameters are used.
+   * @param localAddress
    * @throws RoutingException
    *           If the bootstrap node did not respond
    * @throws IOException
@@ -119,9 +126,10 @@ public class Kademlia implements DistributedMap {
    *           <i>or</i> a network error occurred while attempting to connect to
    *           the network
    **/
-  public Kademlia(String name, Identifier defaultId, int udpPort,
-      InetSocketAddress bootstrap, Configuration config) throws IOException,
-      RoutingException {
+  public Kademlia(String name, Identifier defaultId,
+      BlockingQueue<Message> jxtaInQueue, BlockingQueue<Message> inQueue,
+      CommAddress localAddress, CommAddress bootstrap, Configuration config)
+      throws IOException, RoutingException {
 
     conf = (config == null) ? new Configuration() : config;
 
@@ -135,12 +143,13 @@ public class Kademlia implements DistributedMap {
     if (name != null)
       id = initFromDisk(defaultId);
 
-    local = new Node(InetAddress.getLocalHost(), udpPort, id);
+    local = new Node(localAddress, id);
     NeighbourhoodListenerImpl listener = new NeighbourhoodListenerImpl(local);
     space = new Space(local, conf, listener);
 
     MessageFactory factory = new MessageFactoryImpl(localMap, local, space);
-    server = new MessageServer(udpPort, factory, conf.RESPONSE_TIMEOUT);
+    server = new MessageServer(jxtaInQueue, inQueue, factory,
+        conf.RESPONSE_TIMEOUT);
     listener.setMessageServer(server);
 
     // Schedule recurring RestoreOperation
@@ -219,12 +228,11 @@ public class Kademlia implements DistributedMap {
    * @throws IllegalStateException
    *           If this object is closed
    **/
-  public void connect(InetSocketAddress bootstrap) throws IOException,
+  public void connect(CommAddress bootstrap) throws IOException,
       RoutingException {
     if (isClosed)
       throw new IllegalStateException("Kademlia instance is closed");
-    Operation op = new ConnectOperation(conf, server, space, local,
-        bootstrap.getAddress(), bootstrap.getPort());
+    Operation op = new ConnectOperation(conf, server, space, local, bootstrap);
     op.execute();
   }
 
@@ -356,18 +364,20 @@ public class Kademlia implements DistributedMap {
    **/
   @Override
   public String toString() {
-    String ret = local.getInetAddress().toString() + ":" + local.getPort() +
-        ", " + "map size=" + localMap.size() + ", " + "space size=" +
-        space.nodeCount();
-    ret += "\n";
-    for (Object key : localMap.keySet()) {
-      ret += "\t" + key.toString() + " : " + localMap.get(key).toString() +
-          "\n";
-    }
-    ret += local.toString();
-    // ret += space.toString();
-    return ret;
+    synchronized (localMap) {
+      String ret = "map size=" + localMap.size() + ", " + "space size=" +
+          space.nodeCount();
+      ret += "\n";
+      for (Object key : localMap.keySet()) {
+        ret += "\t" + key.toString() + " : " + localMap.get(key).toString() +
+            "\n";
+      }
+      ret += local.toString() + "\n";
 
+      ret += space.toString() + "\n";
+      // ret += space.toString();
+      return ret;
+    }
   }
 
   Space internalGetSpace() {

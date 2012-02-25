@@ -1,0 +1,4 @@
+roti.mimuw.edu.pl
+prata.mimuw.edu.pl
+planetlab4.warsaw.rd.tp.pl
+planetlab2.warsaw.rd.tp.pl

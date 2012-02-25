@@ -145,6 +145,56 @@ public class BdbPeer extends Module implements DiscoveryListener {
     return advertisement;
   }
 
+  private void put(PutDHTMessage putMsg, boolean fromNetwork,
+      CommAddress sourceAddress) {
+    logger_.info("PutDHTMessage (" + putMsg.getId() + ") in holder with " +
+        putMsg.getKey().toString() + " : " + putMsg.getValue().toString());
+
+    String key = putMsg.getKey().toString();
+    String value = putMsg.getValue().serializeValue();
+    // TODO: Serialization error handling as well
+    Transaction t = env_.beginTransaction(null, null);
+    database_.put(t, new DatabaseEntry(key.getBytes()),
+        new DatabaseEntry(value.getBytes()));
+
+    t.commit();
+    if (fromNetwork) {
+      jxtaInQueue_.add(new BdbMessageWrapper(null, sourceAddress,
+          new OkDHTMessage(putMsg)));
+    } else {
+      outQueue_.add(new OkDHTMessage(putMsg));
+    }
+    logger_.info("PutDHTMessage processing finished");
+  }
+
+  private void get(GetDHTMessage message, boolean fromNetwork,
+      CommAddress sourceAddress) {
+    logger_.info("GetDHTMessage in holder");
+    GetDHTMessage getMsg = message;
+
+    KeyDHT key = getMsg.getKey();
+    DatabaseEntry data = new DatabaseEntry();
+
+    if (database_.get(null, new DatabaseEntry(key.toString().getBytes()), data,
+        LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+      ValueDHT value = ValueDHT.build(new String(data.getData()));
+
+      if (fromNetwork) {
+        jxtaInQueue_.add(new BdbMessageWrapper(null, sourceAddress,
+            new ValueDHTMessage(getMsg, key, value)));
+      } else {
+        outQueue_.add(new ValueDHTMessage(getMsg, key, value));
+      }
+
+    } else {
+      // TODO: Error handling
+      logger_
+          .error("Unable to read from database. Should send an ErrorDHTMessage back");
+    }
+    logger_.info("GetDHTMessage processing finished");
+
+  }
+
   @Override
   protected void processMessage(Message msg) throws NebuloException {
     logger_.info("Message accepted.");
@@ -157,61 +207,19 @@ public class BdbPeer extends Module implements DiscoveryListener {
           (DHTMessage) msg));
     } else {
       boolean fromNetwork = false;
+      CommAddress sourceAddress = null;
       if (msg instanceof BdbMessageWrapper) {
         message = ((BdbMessageWrapper) msg).getWrapped();
         fromNetwork = true;
+        sourceAddress = ((BdbMessageWrapper) msg).getSourceAddress();
       } else {
         message = msg;
       }
 
       if (message instanceof PutDHTMessage) {
-
-        PutDHTMessage putMsg = (PutDHTMessage) message;
-        logger_.info("PutDHTMessage (" + putMsg.getId() + ") in holder with " +
-            putMsg.getKey().toString() + " : " + putMsg.getValue().toString());
-
-        String key = putMsg.getKey().toString();
-        String value = putMsg.getValue().serializeValue();
-        // TODO: Serialization error handling as well
-        Transaction t = env_.beginTransaction(null, null);
-        database_.put(t, new DatabaseEntry(key.getBytes()), new DatabaseEntry(
-            value.getBytes()));
-
-        t.commit();
-        if (fromNetwork) {
-          jxtaInQueue_.add(new BdbMessageWrapper(null,
-              ((BdbMessageWrapper) msg).getSourceAddress(), new OkDHTMessage(
-                  putMsg)));
-        } else {
-          outQueue_.add(new OkDHTMessage(putMsg));
-        }
-
-        logger_.info("PutDHTMessage processing finished");
+        put((PutDHTMessage) message, fromNetwork, sourceAddress);
       } else if (message instanceof GetDHTMessage) {
-        GetDHTMessage getMsg = (GetDHTMessage) message;
-        logger_.info("GetDHTMessage in holder with key: " + getMsg.getKey().toString());
-
-        KeyDHT key = getMsg.getKey();
-        DatabaseEntry data = new DatabaseEntry();
-
-        if (database_.get(null, new DatabaseEntry(key.toString().getBytes()),
-            data, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
-          ValueDHT value = ValueDHT.build(new String(data.getData()));
-
-          if (fromNetwork) {
-            jxtaInQueue_.add(new BdbMessageWrapper(null,
-                ((BdbMessageWrapper) msg).getSourceAddress(),
-                new ValueDHTMessage(getMsg, key, value)));
-          } else {
-            outQueue_.add(new ValueDHTMessage(getMsg, key, value));
-          }
-
-        } else {
-          // TODO: Error handling
-          logger_
-              .error("Unable to read from database. Should send an ErrorDHTMessage back");
-        }
-        logger_.info("GetDHTMessage processing finished");
+        get((GetDHTMessage) message, fromNetwork, sourceAddress);
       } else {
         logger_.error("BdbPeer got message that is not supported");
       }

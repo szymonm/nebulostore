@@ -34,7 +34,7 @@ public class MessageFactoryImpl implements MessageFactory {
         this.space = space;
     }
 
-    public Message createMessage(byte code, DataInput in)
+    public KademliaInternalMessage createMessage(byte code, DataInput in)
                    throws IOException, UnknownMessageException {
         switch (code) {
         case CODE_CONNECT:

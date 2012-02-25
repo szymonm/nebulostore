@@ -3,8 +3,8 @@
 BUILD_DIR="build"
 JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
-PEERS_NUM=3
-TEST_RUN_TIME=60
+PEERS_NUM=2
+TEST_RUN_TIME=50
 
 rm -rf $BUILD_DIR
 
