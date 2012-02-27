@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-import org.nebulostore.appcore.DirectoryEntry;
 import org.nebulostore.appcore.EncryptedEntity;
 import org.nebulostore.appcore.NebuloObject;
 
@@ -33,15 +32,6 @@ public final class CryptoUtils {
   public static NebuloObject decryptNebuloObject(EncryptedEntity encryptedObject) throws
       CryptoException {
     return (NebuloObject) deserializeObject(encryptedObject.getEncryptedData());
-  }
-
-  public static EncryptedEntity encryptDirectoryEntry(DirectoryEntry entry) throws CryptoException {
-    return new EncryptedEntity(serializeObject(entry));
-  }
-
-  public static DirectoryEntry decryptDirectoryEntry(EncryptedEntity encryptedObject) throws
-      CryptoException {
-    return (DirectoryEntry) deserializeObject(encryptedObject.getEncryptedData());
   }
 
   public static byte[] serializeObject(Serializable object) throws CryptoException {

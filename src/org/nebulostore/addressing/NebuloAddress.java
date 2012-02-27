@@ -4,8 +4,8 @@ package org.nebulostore.addressing;
  * (AppKey, ObjectId) pair uniquely identifying object.
  */
 public class NebuloAddress {
-  private AppKey appKey_;
-  private ObjectId objectId_;
+  private final AppKey appKey_;
+  private final ObjectId objectId_;
 
   public NebuloAddress(AppKey appKey, ObjectId objectId) {
     appKey_ = appKey;

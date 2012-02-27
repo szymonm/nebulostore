@@ -8,6 +8,7 @@ import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.dispatcher.Dispatcher;
+import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
 /**
  * @author marcin This is the entry point for a regular peer with full
@@ -15,6 +16,8 @@ import org.nebulostore.dispatcher.Dispatcher;
  */
 public final class Peer {
   private static Logger logger_ = Logger.getLogger(Peer.class);
+  private static BlockingQueue<Message> networkInQueue_;
+  private static BlockingQueue<Message> dispatcherInQueue_;
 
   private Peer() { }
 
@@ -27,16 +30,17 @@ public final class Peer {
   }
 
   public static void runPeer() {
-    BlockingQueue<Message> networkInQueue = new LinkedBlockingQueue<Message>();
-    BlockingQueue<Message> dispatcherInQueue = new LinkedBlockingQueue<Message>();
-    ApiFacade.initApi(dispatcherInQueue);
+    networkInQueue_ = new LinkedBlockingQueue<Message>();
+    dispatcherInQueue_ = new LinkedBlockingQueue<Message>();
+    ApiFacade.initApi(dispatcherInQueue_);
+    NebuloObject.initObjectApi(dispatcherInQueue_);
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
-    Thread dispatcherThread = new Thread(new Dispatcher(dispatcherInQueue, networkInQueue));
+    Thread dispatcherThread = new Thread(new Dispatcher(dispatcherInQueue_, networkInQueue_));
     // Create network module.
     Thread networkThread = null;
     try {
-      networkThread = new Thread(new CommunicationPeer(networkInQueue, dispatcherInQueue));
+      networkThread = new Thread(new CommunicationPeer(networkInQueue_, dispatcherInQueue_));
     } catch (NebuloException exception) {
       logger_.fatal("Error while creating CommunicationPeer");
       exception.printStackTrace();
@@ -54,5 +58,9 @@ public final class Peer {
       logger_.fatal("Interrupted");
       return;
     }
+  }
+
+  public static void quitNebuloStore() {
+    dispatcherInQueue_.add(new KillDispatcherMessage());
   }
 }

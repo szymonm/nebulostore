@@ -13,6 +13,7 @@ import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.NebuloFile;
+import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
@@ -52,7 +53,7 @@ public final class TextInterface {
       String[] tokens = line.split(" ");
       if (tokens[0].equals("end")) {
         // End application.
-        ApiFacade.quitNebuloStore();
+        Peer.quitNebuloStore();
         break;
       } else if (tokens[0].equals("put")) {
         // Execute putKey().
@@ -70,15 +71,9 @@ public final class TextInterface {
         }
       } else if (tokens[0].equals("get")) {
         // Execute getNebuloFile().
-        if (tokens.length == 1) {
-          // TESTING - default values.
-          tokens = new String[3];
-          tokens[1] = "appkey/topdir.file1/fileId";
-          tokens[2] = "pliczek";
-        }
         NebuloFile file;
         try {
-          file = (NebuloFile) ApiFacade.getNebuloFile(new NebuloAddress(new AppKey("appkey"),
+          file = (NebuloFile) NebuloObject.fromAddress(new NebuloAddress(new AppKey("appkey"),
               new ObjectId(new BigInteger("2"))));
         } catch (NebuloException exception) {
           System.out.println("Got exception: " + exception.getMessage());
@@ -87,7 +82,7 @@ public final class TextInterface {
 
         System.out.println("Successfully received file!");
         try {
-          FileOutputStream fos = new FileOutputStream(tokens[2]);
+          FileOutputStream fos = new FileOutputStream("pliczek");
           fos.write(file.data_);
           fos.close();
         } catch (FileNotFoundException exception) {
