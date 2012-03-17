@@ -4,7 +4,7 @@ BUILD_DIR="build"
 JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
 PEERS_NUM=2
-TEST_RUN_TIME=50
+TEST_RUN_TIME=200
 
 rm -rf $BUILD_DIR
 

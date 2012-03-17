@@ -14,8 +14,10 @@ import net.jxta.endpoint.StringMessageElement;
 import net.jxta.id.ID;
 import net.jxta.impl.pipe.BlockingWireOutputPipe;
 import net.jxta.impl.util.Base64;
+import net.jxta.impl.util.pipe.reliable.OutgoingPipeAdaptorSync;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
+import net.jxta.pipe.OutputPipe;
 import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
 
@@ -23,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.messages.CommMessage;
+import org.nebulostore.communication.messages.ErrorCommMessage;
 
 /**
  * Module responsible for sending data over JXTA Network.
@@ -33,35 +36,29 @@ public class MessengerService extends Module {
 
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
 
-  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-" +
-      "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
-
-  private static final int MAX_RETRIES_ = 3;
+  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-"
+      + "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
+  private static final int MAX_RETRIES = 3;
+  private static final int PIPE_TIMEOUT = 3000;
 
   private final DiscoveryService discovery_;
   private final PeerGroup peerGroup_;
 
   private MessageReceiver accepter_;
+  private final BlockingQueue<Message> outQueue_;
 
-  private final Map<String, BlockingWireOutputPipe> pipes_;
+  private final Map<String, OutgoingPipeAdaptorSync> pipes_;
 
   public MessengerService(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue, PeerGroup peerGroup,
       DiscoveryService discovery) {
     super(inQueue, outQueue);
+    this.outQueue_ = outQueue;
 
     discovery_ = discovery;
     peerGroup_ = peerGroup;
 
-    pipes_ = new HashMap<String, BlockingWireOutputPipe>(256);
-
-    try {
-      accepter_ = new MessageReceiver(peerGroup.getPipeService()
-          .createInputPipe(getPipeAdvertisement()), outQueue);
-      (new Thread(accepter_, "Nebulostore.Communication.Accepter")).start();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    pipes_ = new HashMap<String, OutgoingPipeAdaptorSync>(256);
 
     logger_.info("fully initialised");
   }
@@ -78,38 +75,44 @@ public class MessengerService extends Module {
 
   @Override
   protected void processMessage(Message msg) {
-    processMessageRetry(msg, 0);
+    processMessageRetry(msg, 0, null);
   }
 
-  private void processMessageRetry(Message msg, int retries) {
-    if (retries < MAX_RETRIES_) {
+  private void processMessageRetry(Message msg, int retries, Exception lastError) {
+    if (retries < MAX_RETRIES) {
       PeerID destAddress = ((CommMessage) msg).getDestinationAddress()
           .getPeerId();
+
       try {
-
         logger_.info("Message to be sent over network to: " + destAddress);
-        // new BlockingWireOutputPipe(peerGroup_, getPipeAdvertisement(),
-        // destAddress).send(wrapMessage(msg));
 
-        if ((!pipes_.containsKey(destAddress.toString())) ||
-            (pipes_.get(destAddress.toString()).isClosed())) {
+        if (!pipes_.containsKey(destAddress.toString())) {
           logger_.info("Refreshing pipe..");
-          pipes_.put(destAddress.toString(), new BlockingWireOutputPipe(
-              peerGroup_, getPipeAdvertisement(), destAddress));
+          refreshPipe(destAddress);
         }
         pipes_.get(destAddress.toString()).send(wrapMessage(msg));
-        logger_.info("sended to " + destAddress);
+        logger_.info("sent to " + destAddress);
+
       } catch (IOException e) {
         logger_.error(e);
         pipes_.get(destAddress.toString()).close();
-        pipes_.put(destAddress.toString(), new BlockingWireOutputPipe(
-            peerGroup_, getPipeAdvertisement(), destAddress));
-        processMessageRetry(msg, retries + 1);
+        refreshPipe(destAddress);
+
+        processMessageRetry(msg, retries + 1, e);
       }
     } else {
-      logger_.error("Max retries elapsed, dropping message...");
+      outQueue_.add(new ErrorCommMessage((CommMessage)msg, lastError));
+      logger_.error("Max retries elapsed, raising error message...");
     }
 
+  }
+
+  private void refreshPipe(PeerID destAddress) {
+    OutputPipe pipe = new BlockingWireOutputPipe(peerGroup_,
+        getPipeAdvertisement(), destAddress);
+    OutgoingPipeAdaptorSync pipeAdaptor = new OutgoingPipeAdaptorSync(pipe);
+    pipeAdaptor.setTimeout(PIPE_TIMEOUT);
+    pipes_.put(destAddress.toString(), pipeAdaptor);
   }
 
   private net.jxta.endpoint.Message wrapMessage(Message msg) {

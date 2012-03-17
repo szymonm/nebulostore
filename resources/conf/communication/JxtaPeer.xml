@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<jxta-peer>
+	<jxta>
+		<bootstrap-url>http://students.mimuw.edu.pl/~mw262460/bootstrap.rdv</bootstrap-url>
+	</jxta>
+</jxta-peer>

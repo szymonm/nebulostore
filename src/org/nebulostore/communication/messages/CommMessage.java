@@ -12,11 +12,8 @@ import org.nebulostore.communication.address.CommAddress;
  * @author  Marcin Walas
  */
 public abstract class CommMessage extends Message implements Serializable {
-  /**
-   */
+
   private CommAddress commSourceAddress_;
-  /**
-   */
   private final CommAddress commDestAddress_;
 
   public CommMessage(CommAddress sourceAddress, CommAddress destAddress) {
@@ -42,6 +39,13 @@ public abstract class CommMessage extends Message implements Serializable {
     commSourceAddress_ = sourceAddress;
   }
 
+  /**
+   * Method used to implement functionality of cleaning message before sending
+   * over the network.
+   */
+  public void prepareToSend() { }
+
+  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }

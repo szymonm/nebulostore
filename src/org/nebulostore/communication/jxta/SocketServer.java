@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.impl.id.CBID.PipeID;
@@ -18,37 +18,35 @@ import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaServerSocket;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.communication.jxta.utils.IDFactory;
 
 /**
  * @author Marcin Walas
  */
 public class SocketServer implements Runnable {
 
-  public static final String SOCKETIDSTR = "urn:jxta:cbid-" +
-      "59616261646162614E5047205032503393B5C2F6CA7A41FBB0F890173088E79404";
-  private transient PeerGroup netPeerGroup_;
-
   private static Logger logger_ = Logger.getLogger(SocketServer.class);
 
+  public static final String SOCKETIDSTR = "socketServerAdv";
+  private transient PeerGroup netPeerGroup_;
+  private final ExecutorService pool_;
+
   public SocketServer(PeerGroup netPeerGroup) {
+    pool_ = Executors.newCachedThreadPool();
     this.netPeerGroup_ = netPeerGroup;
   }
 
-  public static PipeAdvertisement createSocketAdvertisement() {
-    PipeID socketID = null;
-
-    try {
-      socketID = (PipeID) PipeID.create(new URI(SOCKETIDSTR));
-    } catch (URISyntaxException use) {
-      logger_.error(use.getStackTrace());
-    }
+  public PipeAdvertisement createSocketAdvertisement() {
+    PipeID socketID = IDFactory.createPipeID(netPeerGroup_.getPeerGroupID(),
+        SOCKETIDSTR);
 
     PipeAdvertisement advertisement = (PipeAdvertisement) AdvertisementFactory
         .newAdvertisement(PipeAdvertisement.getAdvertisementType());
 
     advertisement.setPipeID(socketID);
     advertisement.setType(PipeService.UnicastType);
-    advertisement.setName("Socket tutorial");
+    advertisement.setName("Nebulostore socket.");
+
     return advertisement;
   }
 
@@ -65,9 +63,8 @@ public class SocketServer implements Runnable {
           createSocketAdvertisement(), 10);
       serverSocket.setSoTimeout(0);
     } catch (IOException e) {
-      logger_.debug("failed to create a server socket");
-      e.printStackTrace();
-      System.exit(-1);
+      logger_.error(e);
+      return;
     }
 
     while (true) {
@@ -76,9 +73,7 @@ public class SocketServer implements Runnable {
         Socket socket = serverSocket.accept();
         if (socket != null) {
           logger_.debug("New socket connection accepted");
-          Thread thread = new Thread(new ConnectionHandler(socket),
-              "Connection Handler Thread");
-          thread.start();
+          pool_.execute(new ConnectionHandler(socket));
         }
       } catch (IOException e) {
         logger_.error("Exception: ", e);
@@ -98,6 +93,7 @@ public class SocketServer implements Runnable {
 
     /**
      * Sends data over socket.
+     * 
      * @param socket
      *          the socket
      */
@@ -144,7 +140,8 @@ public class SocketServer implements Runnable {
 
     @Override
     public void run() {
-      sendAndReceiveData(socket_);
+
+      newFixedThreadPool(10);
     }
   }
 

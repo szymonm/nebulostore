@@ -3,6 +3,12 @@ package org.nebulostore.communication.messages.kademlia;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
+/**
+ * Wrapper for packets sent over network by Angus implementation
+ * of Kademlia protocol.
+ *
+ * @author Marcin Walas *
+ */
 public class KademliaMessage extends CommMessage {
 
   private final byte[] data_;

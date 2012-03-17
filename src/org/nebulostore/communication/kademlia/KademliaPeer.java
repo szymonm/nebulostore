@@ -35,6 +35,10 @@ import org.planx.xmlstore.routing.Identifier;
 import org.planx.xmlstore.routing.Kademlia;
 import org.planx.xmlstore.routing.RoutingException;
 
+/**
+ * @author Marcin Walas
+ *
+ */
 public class KademliaPeer extends Module implements DiscoveryListener {
 
   private static Logger logger_ = Logger.getLogger(KademliaPeer.class);

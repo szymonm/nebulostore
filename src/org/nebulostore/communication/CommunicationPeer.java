@@ -35,7 +35,7 @@ public class CommunicationPeer extends Module {
   private final BlockingQueue<Message> dhtInQueue_;
 
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
-  private static String configurationPath_ = "resources/conf/communication/CommunicationPeer.xml";
+  private static String CONFIGURATION_PATH = "resources/conf/communication/CommunicationPeer.xml";
 
   private static JXTAPeer currJxtaPeer_;
 
@@ -43,12 +43,11 @@ public class CommunicationPeer extends Module {
       BlockingQueue<Message> outQueue) throws NebuloException {
     super(inQueue, outQueue);
 
-    // TODO: Move it to appcore to configuration factory
     XMLConfiguration config = null;
     try {
-      config = new XMLConfiguration(configurationPath_);
+      config = new XMLConfiguration(CONFIGURATION_PATH);
     } catch (ConfigurationException cex) {
-      logger_.error("Configuration read error in: " + configurationPath_);
+      logger_.error("Configuration read error in: " + CONFIGURATION_PATH);
     }
 
     jxtaPeerInQueue_ = new LinkedBlockingQueue<Message>();
