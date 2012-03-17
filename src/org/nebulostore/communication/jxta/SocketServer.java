@@ -140,8 +140,7 @@ public class SocketServer implements Runnable {
 
     @Override
     public void run() {
-
-      newFixedThreadPool(10);
+      //newFixedThreadPool(10);
     }
   }
 

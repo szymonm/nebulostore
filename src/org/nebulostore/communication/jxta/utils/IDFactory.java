@@ -43,7 +43,7 @@ abstract public class IDFactory {
 
   public static PipeID createPipeID(PeerGroupID pgID, String pipeName) {
     String seed = pipeName + SEED;
-    return (PipeID) IDFactory.newPipeID(pgID, hash(seed.toLowerCase()));
+    return (PipeID) net.jxta.id.IDFactory.newPipeID(pgID, hash(seed.toLowerCase()));
   }
 
 }
