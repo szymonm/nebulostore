@@ -109,7 +109,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
   private void get(GetDHTMessage msg) {
     ValueDHT val = null;
     try {
-      Identifier keyId = new Identifier(msg.getKey().getBytes());
+      Identifier keyId = new Identifier(msg.getKey().getBigInt());
       logger_.info("get of key: " + keyId);
       val = (ValueDHT) kademlia_.get(keyId);
       outQueue_.add(new ValueDHTMessage(msg, msg.getKey(), val));
@@ -120,7 +120,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
   }
 
   private void put(PutDHTMessage msg) {
-    Identifier keyId = new Identifier(msg.getKey().getBytes());
+    Identifier keyId = new Identifier(msg.getKey().getBigInt());
     try {
       logger_.info("put on key: " + keyId);
       kademlia_.put(keyId, msg.getValue());

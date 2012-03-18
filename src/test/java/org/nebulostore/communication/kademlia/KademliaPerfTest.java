@@ -1,6 +1,5 @@
 package org.nebulostore.communication.kademlia;
 
-import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,8 +101,8 @@ public final class KademliaPerfTest {
         byte[] rbytes = new byte[5];
         random.nextBytes(rbytes);
         testSet.add(new String(rbytes));
-        inQueue.add(new PutDHTMessage(new String(rbytes), new KeyDHT(
-            new BigInteger(rbytes)), new ValueDHT(random.nextLong())));
+        inQueue.add(new PutDHTMessage(new String(rbytes), KeyDHT.fromSerializableObject(rbytes)
+            , new ValueDHT(random.nextLong())));
       }
 
       Message msg = null;
