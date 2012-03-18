@@ -93,7 +93,7 @@ public class SocketServer implements Runnable {
 
     /**
      * Sends data over socket.
-     * 
+     *
      * @param socket
      *          the socket
      */

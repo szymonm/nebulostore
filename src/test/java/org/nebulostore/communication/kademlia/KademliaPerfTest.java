@@ -1,5 +1,6 @@
 package org.nebulostore.communication.kademlia;
 
+import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,13 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 
-public class KademliaPerfTest {
+/**
+ * Performance test of Kadmelia DHT implementation.
+ *
+ * @author Marcin Walas
+ *
+ */
+public final class KademliaPerfTest {
 
   static Logger logger_ = Logger.getLogger(KademliaPerfTest.class);
   CommunicationPeer communicationPeer_;
@@ -52,7 +59,8 @@ public class KademliaPerfTest {
     // FOR boostrap process to take place
     try {
       Thread.sleep(7000);
-    } catch (InterruptedException e1) {
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
 
     logger_.info("Starting performance tests...");
@@ -65,11 +73,11 @@ public class KademliaPerfTest {
 
     while (true) {
       try {
-        Thread.sleep(10000);
+        Thread.sleep(3000);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      logger_.debug(communicationPeer_.getDHTPeer().toString());
+      logger_.info(communicationPeer_.getDHTPeer().toString());
 
     }
 
@@ -95,20 +103,21 @@ public class KademliaPerfTest {
         random.nextBytes(rbytes);
         testSet.add(new String(rbytes));
         inQueue.add(new PutDHTMessage(new String(rbytes), new KeyDHT(
-            new String(rbytes)), new ValueDHT(random.nextLong())));
+            new BigInteger(rbytes)), new ValueDHT(random.nextLong())));
       }
 
       Message msg = null;
       try {
         msg = outQueue.poll(5, TimeUnit.MILLISECONDS);
       } catch (InterruptedException e) {
+        e.printStackTrace();
       }
       if (msg != null) {
         logger_.debug("Got message of class " + msg.getClass());
 
         if (msg instanceof OutDHTMessage && msg instanceof OkDHTMessage) {
           finished.add(((OkDHTMessage) msg).getId());
-//          logger.debug(communicationPeer.getDHTPeer().toString());
+          //          logger.debug(communicationPeer.getDHTPeer().toString());
         }
         if (msg instanceof OutDHTMessage && msg instanceof ErrorDHTMessage) {
           logger_.error("Got ErrorDHTMessage with ",
@@ -124,7 +133,7 @@ public class KademliaPerfTest {
     }
     long endTime = System.currentTimeMillis();
     logger_.info("test results: put of " + testSize + " messages finished in " +
-        (endTime - startTime) + " per sec: " + ((double)testSize) * 1000.0 / (double)(endTime - startTime) );
+        (endTime - startTime) + " per sec: " + testSize * 1000.0 / (endTime - startTime));
 
   }
 }

@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.security.cert.CertificateException;
+
 import net.jxta.discovery.DiscoveryEvent;
 import net.jxta.discovery.DiscoveryListener;
 import net.jxta.discovery.DiscoveryService;
+import net.jxta.exception.PeerGroupException;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.NetworkConfigurator;
@@ -141,9 +144,9 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   /**
    * Initializes and saves to hard drive configuration of JXTA, NetworkManager
    * providing peer unique identity.
-   * 
+   *
    * All errors here are treated as fatal and result in application unclean shutdown.
-   * 
+   *
    * @throws NebuloException
    */
   private void initNetworkManager() throws NebuloException {
@@ -179,7 +182,10 @@ public class JXTAPeer extends Module implements DiscoveryListener {
         logger_.info("Loading found configuration");
         networkConfigurator_.load(localConfig.toURI());
         logger_.info("Configuration loaded");
-      } catch (Exception e) {
+      } catch (IOException e) {
+        logger_.fatal(e);
+        System.exit(-1);
+      } catch (CertificateException e) {
         logger_.fatal(e);
         System.exit(-1);
       }
@@ -204,7 +210,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
         logger_.info("Saving new configuration");
         networkConfigurator_.save();
         logger_.info("New configuration saved successfully");
-      } catch (Exception e) {
+      } catch (IOException e) {
         logger_.fatal(e);
         System.exit(-1);
       }
@@ -215,7 +221,10 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   private void startNetworkManager() throws NebuloException {
     try {
       networkManager_.startNetwork();
-    } catch (Exception e) {
+    } catch (IOException e) {
+      logger_.error(e);
+      throw new NebuloException(e);
+    } catch (PeerGroupException e) {
       logger_.error(e);
       throw new NebuloException(e);
     }

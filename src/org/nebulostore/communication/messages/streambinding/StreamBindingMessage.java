@@ -29,6 +29,13 @@ public class StreamBindingMessage extends CommMessage {
     streamId_ = streamId;
   }
 
+  public StreamBindingMessage(CommAddress destAddress, InputStream inStream,
+      String streamId) {
+    super(null, destAddress);
+    inStream_ = inStream;
+    streamId_ = streamId;
+  }
+
   public String getStreamId() {
     return streamId_;
   }
@@ -44,7 +51,6 @@ public class StreamBindingMessage extends CommMessage {
   public void setOutputStream(OutputStream outStream) {
     outStream_ = outStream;
   }
-
 
   @Override
   public void prepareToSend() {

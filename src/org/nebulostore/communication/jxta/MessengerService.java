@@ -29,15 +29,15 @@ import org.nebulostore.communication.messages.ErrorCommMessage;
 
 /**
  * Module responsible for sending data over JXTA Network.
- * 
+ *
  * @author Marcin Walas
  */
 public class MessengerService extends Module {
 
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
 
-  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-"
-      + "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
+  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-" +
+      "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
   private static final int MAX_RETRIES = 3;
   private static final int PIPE_TIMEOUT = 3000;
 
@@ -84,14 +84,14 @@ public class MessengerService extends Module {
           .getPeerId();
 
       try {
-        logger_.info("Message to be sent over network to: " + destAddress);
+        logger_.debug("Message to be sent over network to: " + destAddress);
 
         if (!pipes_.containsKey(destAddress.toString())) {
-          logger_.info("Refreshing pipe..");
+          logger_.debug("Refreshing pipe..");
           refreshPipe(destAddress);
         }
         pipes_.get(destAddress.toString()).send(wrapMessage(msg));
-        logger_.info("sent to " + destAddress);
+        logger_.debug("sent to " + destAddress);
 
       } catch (IOException e) {
         logger_.error(e);
@@ -101,7 +101,7 @@ public class MessengerService extends Module {
         processMessageRetry(msg, retries + 1, e);
       }
     } else {
-      outQueue_.add(new ErrorCommMessage((CommMessage)msg, lastError));
+      outQueue_.add(new ErrorCommMessage((CommMessage) msg, lastError));
       logger_.error("Max retries elapsed, raising error message...");
     }
 

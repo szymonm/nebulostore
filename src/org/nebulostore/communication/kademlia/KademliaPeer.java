@@ -36,6 +36,8 @@ import org.planx.xmlstore.routing.Kademlia;
 import org.planx.xmlstore.routing.RoutingException;
 
 /**
+ * Internal Module wrapper for DHT based on Kademlia functionlity.
+ *
  * @author Marcin Walas
  *
  */
@@ -60,7 +62,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
   public KademliaPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue,
       PeerDiscoveryService peerDiscoveryService, CommAddress peerAddress,
-      BlockingQueue<Message> jxtaInQueue) {
+      BlockingQueue<Message> jxtaInQueue) throws NebuloException {
     super(inQueue, outQueue);
 
     jxtaInQueue_ = jxtaInQueue;
@@ -72,7 +74,11 @@ public class KademliaPeer extends Module implements DiscoveryListener {
     try {
       kademlia_ = new Kademlia(null, jxtaInQueue, kademliaQueue_, peerAddress);
     } catch (RoutingException e) {
+      logger_.error(e);
+      throw new NebuloException(e);
     } catch (IOException e) {
+      logger_.error(e);
+      throw new NebuloException(e);
     }
 
     peerDiscoveryService.addAdvertisement(getKademliaAdvertisement());
@@ -103,46 +109,39 @@ public class KademliaPeer extends Module implements DiscoveryListener {
   private void get(GetDHTMessage msg) {
     ValueDHT val = null;
     try {
-      Identifier keyId = new Identifier(msg.getKey().toString().getBytes());
+      Identifier keyId = new Identifier(msg.getKey().getBytes());
       logger_.info("get of key: " + keyId);
       val = (ValueDHT) kademlia_.get(keyId);
-    } catch (Exception e) {
-      try {
-        logger_.error(e);
-        outQueue_.put(new ErrorDHTMessage(msg, new CommException(e)));
-        return;
-      } catch (InterruptedException e1) {
-      }
-    }
-    try {
-      outQueue_.put(new ValueDHTMessage(msg, msg.getKey(), val));
-    } catch (InterruptedException e) {
+      outQueue_.add(new ValueDHTMessage(msg, msg.getKey(), val));
+    } catch (IOException e) {
+      logger_.error(e);
+      outQueue_.add(new ErrorDHTMessage(msg, new CommException(e)));
     }
   }
 
   private void put(PutDHTMessage msg) {
-    Identifier keyId = new Identifier(msg.getKey().toString().getBytes());
+    Identifier keyId = new Identifier(msg.getKey().getBytes());
     try {
-      //      logger_.debug(this.toString());
-
       logger_.info("put on key: " + keyId);
       kademlia_.put(keyId, msg.getValue());
-    } catch (Exception e) {
-      try {
-        logger_.error(e);
-        outQueue_.put(new ErrorDHTMessage(msg, new CommException(e)));
-        return;
-      } catch (InterruptedException e1) {
-      }
-    }
-    try {
-      logger_.info("put on key: " + keyId + " finished");
-      outQueue_.put(new OkDHTMessage(msg));
-    } catch (InterruptedException e) {
-    }
 
+      logger_.info("put on key: " + keyId + " finished");
+      outQueue_.add(new OkDHTMessage(msg));
+    } catch (IOException e) {
+      logger_.error(e);
+      outQueue_.add(new ErrorDHTMessage(msg, new CommException(e)));
+    }
   }
 
+  /**
+   * Internal class used to handle external put/get requests from other modules.
+   * Introduced because of the fact that queue for incoming messages in KademliaPeer
+   * is collecting operations from modules as well as network reponses from remote
+   * hosts.
+   *
+   * @author Marcin Walas
+   *
+   */
   class MessageWorker extends Module {
 
     KademliaPeer kademliaPeer_;
@@ -206,7 +205,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
                   bootstrapAddress.toString());
 
               kademlia_.connect(bootstrapAddress);
-            } catch (Exception e) {
+            } catch (IOException e) {
               logger_.error(e);
             }
             logger_.info("Kademlia bootstraped with " +

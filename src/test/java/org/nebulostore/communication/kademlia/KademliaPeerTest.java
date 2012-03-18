@@ -1,5 +1,6 @@
 package org.nebulostore.communication.kademlia;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -21,7 +22,13 @@ import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
 
-public class KademliaPeerTest {
+/**
+ * Test of KademliaPeer DHT implementation.
+ *
+ * @author Marcin Walas
+ *
+ */
+public final class KademliaPeerTest {
 
   private KademliaPeerTest() {
   }
@@ -92,9 +99,9 @@ public class KademliaPeerTest {
             foundPeers.add(pong.getNumber());
           }
           logger.info("put with current number");
-          inQueue.add(new PutDHTMessage("Kademlia test", new KeyDHT("" +
-              peerNum), new ValueDHT("Hello World with finding: " +
-              pong.getNumber())));
+          inQueue.add(new PutDHTMessage("Kademlia test", new KeyDHT(
+              BigInteger.valueOf(peerNum)), new ValueDHT("Hello World with finding: " +
+                  pong.getNumber())));
         }
 
         if (msg instanceof OutDHTMessage) {
@@ -107,8 +114,8 @@ public class KademliaPeerTest {
           if (msg instanceof OkDHTMessage) {
             logger.info("Received OK DHT response with: " + msg.getId());
             logger
-                .info("Sending get messages with keys to all found peers by now (foundPeers = " +
-                    foundPeers + ")");
+            .info("Sending get messages with keys to all found peers by now (foundPeers = " +
+                foundPeers + ")");
             try {
               Thread.sleep(10000);
             } catch (InterruptedException e1) {
@@ -116,7 +123,7 @@ public class KademliaPeerTest {
               e1.printStackTrace();
             }
             for (int n : foundPeers) {
-              inQueue.add(new GetDHTMessage("Bdbtest", new KeyDHT("" + n)));
+              inQueue.add(new GetDHTMessage("Bdbtest", new KeyDHT(BigInteger.valueOf(n))));
             }
           }
         }

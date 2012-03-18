@@ -1,5 +1,6 @@
 package org.nebulostore.api;
 
+import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
@@ -25,8 +26,8 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
  */
 public class GetNebuloFileModule extends ApiModule<NebuloObject> {
 
-  private NebuloAddress address_;
-  private StateMachineVisitor visitor_;
+  private final NebuloAddress address_;
+  private final StateMachineVisitor visitor_;
 
   private static Logger logger_ = Logger.getLogger(GetNebuloFileModule.class);
 
@@ -54,13 +55,14 @@ public class GetNebuloFileModule extends ApiModule<NebuloObject> {
    */
   private class StateMachineVisitor extends MessageVisitor<Void> {
     private STATE state_;
-    private int currentPathPart_;
+    private final int currentPathPart_;
 
     public StateMachineVisitor() {
       state_ = STATE.INIT;
       currentPathPart_ = 0;
     }
 
+    @Override
     public Void visit(JobInitMessage message) {
       if (state_ == STATE.INIT) {
         // State 1 - Send groupId to DHT and wait for reply.
@@ -69,13 +71,16 @@ public class GetNebuloFileModule extends ApiModule<NebuloObject> {
 
         logger_.debug("Adding GetDHT to network queue (" + address_.getGroupId() + ", " +
             jobId_ + ").");
-        networkQueue_.add(new GetDHTMessage(jobId_, new KeyDHT(address_.getGroupId().getKey())));
+        // TODO: MBW : App key pewnie powinno nie być stringiem, tylko jakimś BigIntem?
+        networkQueue_.add(new GetDHTMessage(jobId_,
+            new KeyDHT(new BigInteger(address_.getGroupId().getKey().getBytes()))));
       } else {
         logger_.warn("JobInitMessage received in state " + state_.name());
       }
       return null;
     }
 
+    @Override
     public Void visit(ValueDHTMessage message) {
       if (state_ == STATE.DHT_QUERY) {
 
@@ -98,6 +103,7 @@ public class GetNebuloFileModule extends ApiModule<NebuloObject> {
       return null;
     }
 
+    @Override
     public Void visit(SendObjectMessage message) {
       if (state_ == STATE.REPLICA_FETCH) {
         NebuloObject nebuloObject;

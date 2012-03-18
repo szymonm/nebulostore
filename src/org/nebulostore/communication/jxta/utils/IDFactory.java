@@ -11,7 +11,7 @@ import net.jxta.peergroup.PeerGroupID;
  * @author Marcin Walas
  *
  */
-abstract public class IDFactory {
+public abstract class IDFactory {
 
   private static final String SEED = "nebuloSeed";
 

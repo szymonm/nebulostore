@@ -1,5 +1,6 @@
 package org.nebulostore.communication.bdbdht.tests;
 
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -94,8 +95,8 @@ public final class BdbPeerTest {
             foundPeers.add(pong.getNumber());
           }
           logger.info("sending put with current number to holder");
-          inQueue.add(new PutDHTMessage("Bdbtest", new KeyDHT("" + peerNum), new ValueDHT(
-              "Hello World with finding: " + pong.getNumber())));
+          inQueue.add(new PutDHTMessage("Bdbtest", new KeyDHT(BigInteger.valueOf(peerNum)),
+              new ValueDHT("Hello World with finding: " + pong.getNumber())));
         }
 
         if (msg instanceof BdbMessageWrapper) {
@@ -119,7 +120,7 @@ public final class BdbPeerTest {
             logger.info("Received OK DHT response with: " + msg.getId());
             logger.info("Sending get messages with keys to all found peers by now");
             for (int n : foundPeers) {
-              inQueue.add(new GetDHTMessage("Bdbtest", new KeyDHT("" + n)));
+              inQueue.add(new GetDHTMessage("Bdbtest", new KeyDHT(BigInteger.valueOf(n))));
             }
           }
         }

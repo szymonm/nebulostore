@@ -31,8 +31,8 @@ import org.nebulostore.replicator.Replicator;
  */
 public class PutKeyModule extends ApiModule<Void> {
 
-  private AppKey appKey_;
-  private StateMachineVisitor visitor_;
+  private final AppKey appKey_;
+  private final StateMachineVisitor visitor_;
 
   private static Logger logger_ = Logger.getLogger(PutKeyModule.class);
 
@@ -66,6 +66,7 @@ public class PutKeyModule extends ApiModule<Void> {
       state_ = STATE.INIT;
     }
 
+    @Override
     public Void visit(JobInitMessage message) {
       if (state_ == STATE.INIT) {
         // State 1 - Send appKey to DHT and wait for reply.
@@ -103,7 +104,9 @@ public class PutKeyModule extends ApiModule<Void> {
         } catch (IntervalCollisionException exception) {
           endWithError(new NebuloException("Error while creating replication group", exception));
         }
-        networkQueue_.add(new PutDHTMessage(jobId_, new KeyDHT(appKey_.getKey()),
+        // TODO: MBW : App key pewnie powinno nie być stringiem, tylko jakimś BigIntem?
+        networkQueue_.add(new PutDHTMessage(jobId_,
+            new KeyDHT(new BigInteger(appKey_.getKey().getBytes())),
             new ValueDHT(dhtValue)));
       } else {
         logger_.warn("JobInitMessage received in state " + state_);
@@ -111,6 +114,7 @@ public class PutKeyModule extends ApiModule<Void> {
       return null;
     }
 
+    @Override
     public Void visit(OkDHTMessage message) {
       if (state_ == STATE.DHT_INSERT) {
         endWithSuccess(null);
@@ -120,6 +124,7 @@ public class PutKeyModule extends ApiModule<Void> {
       return null;
     }
 
+    @Override
     public Void visit(ErrorDHTMessage message) {
       if (state_ == STATE.DHT_INSERT) {
         endWithError(new NebuloException("DHT write returned with error", message.getException()));

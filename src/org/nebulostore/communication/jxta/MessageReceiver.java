@@ -40,7 +40,7 @@ class MessageReceiver implements Runnable {
 
       Message msg = unwrapMessage(m);
       if (msg != null) {
-        logger_.info("message received of type: " + msg.getClass());
+        logger_.debug("message received of type: " + msg.getClass());
         outQueue_.add(msg);
       }
     }

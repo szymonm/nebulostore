@@ -13,7 +13,6 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.bdbdht.BdbPeer;
 import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.jxta.JXTAPeer;
-import org.nebulostore.communication.jxtach.JXTAChPeer;
 import org.nebulostore.communication.kademlia.KademliaPeer;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
@@ -35,7 +34,7 @@ public class CommunicationPeer extends Module {
   private final BlockingQueue<Message> dhtInQueue_;
 
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
-  private static String CONFIGURATION_PATH = "resources/conf/communication/CommunicationPeer.xml";
+  private static String CONFIGURATION_PATH_ = "resources/conf/communication/CommunicationPeer.xml";
 
   private static JXTAPeer currJxtaPeer_;
 
@@ -45,9 +44,9 @@ public class CommunicationPeer extends Module {
 
     XMLConfiguration config = null;
     try {
-      config = new XMLConfiguration(CONFIGURATION_PATH);
+      config = new XMLConfiguration(CONFIGURATION_PATH_);
     } catch (ConfigurationException cex) {
-      logger_.error("Configuration read error in: " + CONFIGURATION_PATH);
+      logger_.error("Configuration read error in: " + CONFIGURATION_PATH_);
     }
 
     jxtaPeerInQueue_ = new LinkedBlockingQueue<Message>();
@@ -66,8 +65,6 @@ public class CommunicationPeer extends Module {
       dhtPeer_ = new KademliaPeer(dhtInQueue_, outQueue,
           jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
           jxtaPeerInQueue_);
-    } else if (config.getString("dht.provider", "bdb").equals("jxtaCh")) {
-      dhtPeer_ = new JXTAChPeer(dhtInQueue_, outQueue);
     } else {
       throw new CommException();
     }

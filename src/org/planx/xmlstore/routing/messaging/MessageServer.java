@@ -57,7 +57,7 @@ public class MessageServer {
    **/
   public MessageServer(BlockingQueue<Message> outQueue,
       BlockingQueue<Message> inQueue, MessageFactory factory, long timeout)
-      throws SocketException {
+          throws SocketException {
     this.factory = factory;
     this.timeout = timeout;
 
@@ -85,7 +85,7 @@ public class MessageServer {
   public synchronized int send(KademliaInternalMessage message,
       CommAddress address, Receiver recv) throws IOException {
 
-    logger_.info("Message to send:  " + message.toString());
+    logger_.debug("Message to send:  " + message.toString());
     if (!isRunning)
       throw new IllegalStateException("MessageServer not running");
     int comm = random.nextInt();
@@ -98,7 +98,7 @@ public class MessageServer {
     }
     sendMessage(comm, message, address);
 
-    logger_.info("Message sent:  " + message.toString());
+    logger_.debug("Message sent:  " + message.toString());
     return comm;
   }
 
@@ -109,9 +109,9 @@ public class MessageServer {
       CommAddress address) throws IOException {
     if (!isRunning)
       throw new IllegalStateException("MessageServer not running");
-    logger_.info("Reply by message to send:  " + message.toString());
+    logger_.debug("Reply by message to send:  " + message.toString());
     sendMessage(comm, message, address);
-    logger_.info("Message sent:  " + message.toString());
+    logger_.debug("Message sent:  " + message.toString());
   }
 
   private void sendMessage(int comm, KademliaInternalMessage message,
@@ -156,7 +156,7 @@ public class MessageServer {
           KademliaInternalMessage message = factory
               .createMessage(messCode, din);
 
-          logger_.info("Message received: " + message.toString());
+          logger_.debug("Message received: " + message.toString());
 
           // Create Receiver if one is supported
           Receiver recv = null;
