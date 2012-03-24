@@ -4,8 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import net.jxta.impl.id.CBID.PipeID;
 import net.jxta.peergroup.PeerGroupID;
+import net.jxta.pipe.PipeID;
 
 /**
  * @author Marcin Walas
@@ -43,7 +43,7 @@ public abstract class IDFactory {
 
   public static PipeID createPipeID(PeerGroupID pgID, String pipeName) {
     String seed = pipeName + SEED;
-    return (PipeID) net.jxta.id.IDFactory.newPipeID(pgID, hash(seed.toLowerCase()));
+    return net.jxta.id.IDFactory.newPipeID(pgID, hash(seed.toLowerCase()));
   }
 
 }

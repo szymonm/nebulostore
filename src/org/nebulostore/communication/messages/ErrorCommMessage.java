@@ -33,5 +33,4 @@ public class ErrorCommMessage extends Message {
   public Exception getNetworkException() {
     return networkException_;
   }
-
 }

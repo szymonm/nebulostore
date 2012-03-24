@@ -92,7 +92,12 @@
       <param name="main-class" value="tests.textinterface.TextInterface" />
     </antcall>
   </target>
-
+	
+  <target name="jar-streambindingtest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.streambinding.StreamBindingTest" />
+    </antcall>
+  </target>
 
   <target name="run-pingpong" depends="jar-pingpong">
     <java fork="true" classname="org.nebulostore.communication.tests.RunPingPong">

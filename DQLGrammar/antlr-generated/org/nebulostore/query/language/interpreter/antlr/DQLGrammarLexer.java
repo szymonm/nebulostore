@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g 2012-02-09 23:15:34
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g 2012-03-24 20:50:42
 
   package org.nebulostore.query.language.interpreter.antlr;
 
@@ -248,10 +248,11 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = T__26;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:19:7: ( '<' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:19:9: '<'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:19:7: ( 'PUBLIC_OTHER' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:19:9: 'PUBLIC_OTHER'
             {
-            match('<'); 
+            match("PUBLIC_OTHER"); 
+
 
             }
 
@@ -268,10 +269,11 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = T__27;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:20:7: ( '>' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:20:9: '>'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:20:7: ( 'PUBLIC_COND' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:20:9: 'PUBLIC_COND'
             {
-            match('>'); 
+            match("PUBLIC_COND"); 
+
 
             }
 
@@ -288,10 +290,10 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = T__28;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:21:7: ( 'PUBLIC_OTHER' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:21:9: 'PUBLIC_OTHER'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:21:7: ( 'INTEGER' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:21:9: 'INTEGER'
             {
-            match("PUBLIC_OTHER"); 
+            match("INTEGER"); 
 
 
             }
@@ -309,10 +311,10 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = T__29;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:22:7: ( 'PRIVATE_COND_OTHER' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:22:9: 'PRIVATE_COND_OTHER'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:22:7: ( 'DOUBLE' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:22:9: 'DOUBLE'
             {
-            match("PRIVATE_COND_OTHER"); 
+            match("DOUBLE"); 
 
 
             }
@@ -330,10 +332,10 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = T__30;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:23:7: ( 'INTEGER' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:23:9: 'INTEGER'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:23:7: ( 'STRING' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:23:9: 'STRING'
             {
-            match("INTEGER"); 
+            match("STRING"); 
 
 
             }
@@ -351,10 +353,10 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = T__31;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:24:7: ( 'DOUBLE' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:24:9: 'DOUBLE'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:24:7: ( 'TUPLE' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:24:9: 'TUPLE'
             {
-            match("DOUBLE"); 
+            match("TUPLE"); 
 
 
             }
@@ -372,11 +374,10 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = T__32;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:25:7: ( 'STRING' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:25:9: 'STRING'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:25:7: ( '<' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:25:9: '<'
             {
-            match("STRING"); 
-
+            match('<'); 
 
             }
 
@@ -393,11 +394,10 @@ public class DQLGrammarLexer extends Lexer {
         try {
             int _type = T__33;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:26:7: ( 'TUPLE' )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:26:9: 'TUPLE'
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:26:7: ( '>' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:26:9: '>'
             {
-            match("TUPLE"); 
-
+            match('>'); 
 
             }
 
@@ -2335,24 +2335,23 @@ public class DQLGrammarLexer extends Lexer {
         }
     }
     static final String DFA21_eotS =
-        "\2\uffff\1\34\3\uffff\1\34\1\50\1\52\6\34\3\uffff\1\70\5\uffff\4"+
-        "\34\1\uffff\1\75\4\uffff\5\34\4\uffff\1\34\1\107\5\34\1\115\4\34"+
-        "\2\uffff\1\122\3\34\3\uffff\1\135\2\34\1\140\3\34\1\uffff\5\34\1"+
-        "\uffff\3\34\1\154\1\uffff\1\34\1\156\1\34\1\133\5\uffff\1\135\1"+
-        "\uffff\1\34\1\164\1\uffff\7\34\1\174\1\175\2\34\1\uffff\1\34\1\uffff"+
-        "\1\34\3\uffff\1\34\1\uffff\4\34\1\u0089\1\34\1\u008b\2\uffff\1\u008c"+
+        "\2\uffff\1\34\3\uffff\5\34\1\60\1\62\2\34\3\uffff\1\70\5\uffff\4"+
+        "\34\1\uffff\1\75\4\uffff\6\34\1\107\5\34\1\115\4\uffff\4\34\2\uffff"+
+        "\1\122\3\34\3\uffff\1\135\2\34\1\140\3\34\1\uffff\5\34\1\uffff\3"+
+        "\34\1\154\1\uffff\1\34\1\156\1\34\1\133\5\uffff\1\135\1\uffff\1"+
+        "\34\1\164\1\uffff\7\34\1\174\1\175\2\34\1\uffff\1\34\1\uffff\1\34"+
+        "\3\uffff\1\34\1\uffff\4\34\1\u0089\1\34\1\u008b\2\uffff\1\u008c"+
         "\3\34\2\uffff\1\u0091\3\34\1\u0095\1\uffff\1\u0096\2\uffff\1\34"+
-        "\1\u0098\1\u0099\2\uffff\2\34\1\u009e\2\uffff\1\u009f\3\uffff\3"+
-        "\34\2\uffff\2\34\1\u00a6\1\34\1\u00a8\1\34\1\uffff\1\34\1\uffff"+
-        "\3\34\1\u00ae\1\34\1\uffff\2\34\1\u00b3\1\34\1\uffff\2\34\1\u00b7"+
-        "\1\uffff";
+        "\1\u0098\1\u0099\2\uffff\2\34\1\u009f\2\uffff\1\u00a0\3\uffff\4"+
+        "\34\2\uffff\2\34\1\u00a8\2\34\1\u00ab\1\34\1\uffff\2\34\1\uffff"+
+        "\2\34\1\u00b1\1\34\1\u00b3\1\uffff\1\34\1\uffff\1\34\1\u00b6\1\uffff";
     static final String DFA21_eofS =
-        "\u00b8\uffff";
+        "\u00b7\uffff";
     static final String DFA21_minS =
-        "\1\11\1\uffff\1\101\3\uffff\1\122\2\75\1\116\1\105\1\124\1\117\1"+
+        "\1\11\1\uffff\1\101\3\uffff\1\122\1\116\1\105\1\124\1\117\2\75\1"+
         "\101\1\157\3\uffff\1\52\5\uffff\1\123\2\101\1\105\1\uffff\1\56\2"+
-        "\uffff\1\0\1\uffff\1\115\1\123\1\124\1\111\1\102\4\uffff\1\124\1"+
-        "\60\1\125\1\120\1\122\1\120\1\125\1\60\2\114\1\122\1\164\2\uffff"+
+        "\uffff\1\0\1\uffff\1\115\1\123\1\124\1\111\1\102\1\124\1\60\1\125"+
+        "\1\120\1\122\1\120\1\125\1\60\4\uffff\2\114\1\122\1\164\2\uffff"+
         "\1\60\1\124\1\130\1\104\1\uffff\3\0\1\102\1\124\1\60\1\126\1\114"+
         "\1\105\1\uffff\1\102\1\124\1\111\1\114\1\105\1\uffff\1\105\1\123"+
         "\1\127\1\60\1\uffff\1\110\1\60\1\125\5\0\1\uffff\1\0\1\uffff\1\104"+
@@ -2360,16 +2359,16 @@ public class DQLGrammarLexer extends Lexer {
         "\1\101\1\uffff\1\105\1\uffff\1\103\3\0\1\101\1\uffff\1\124\1\103"+
         "\2\105\1\60\1\107\1\60\2\uffff\1\60\2\122\1\105\2\0\1\60\1\105\1"+
         "\137\1\122\1\60\1\uffff\1\60\2\uffff\1\104\2\60\1\0\1\uffff\1\137"+
-        "\1\115\1\60\2\uffff\1\60\2\uffff\1\0\1\103\1\131\1\124\2\uffff\1"+
-        "\131\1\117\1\60\1\110\1\60\1\116\1\uffff\1\105\1\uffff\1\104\1\122"+
-        "\1\137\1\60\1\115\1\uffff\1\131\1\124\1\60\1\110\1\uffff\1\105\1"+
-        "\122\1\60\1\uffff";
+        "\1\103\1\60\2\uffff\1\60\2\uffff\1\0\1\103\1\131\1\124\1\117\2\uffff"+
+        "\1\131\1\117\1\60\1\110\1\116\1\60\1\116\1\uffff\1\105\1\104\1\uffff"+
+        "\1\104\1\122\1\60\1\137\1\60\1\uffff\1\115\1\uffff\1\131\1\60\1"+
+        "\uffff";
     static final String DFA21_maxS =
-        "\1\174\1\uffff\1\111\3\uffff\1\125\2\75\1\123\1\117\1\124\1\125"+
+        "\1\174\1\uffff\1\111\3\uffff\1\125\1\123\1\117\1\124\1\125\2\75"+
         "\1\117\1\157\3\uffff\1\57\5\uffff\1\123\2\101\1\105\1\uffff\1\145"+
-        "\2\uffff\1\uffff\1\uffff\1\115\1\123\1\124\1\111\1\102\4\uffff\1"+
-        "\124\1\172\1\125\1\120\1\122\1\120\1\125\1\172\2\114\1\122\1\164"+
-        "\2\uffff\1\172\1\124\1\130\1\104\1\uffff\3\uffff\1\102\1\124\1\172"+
+        "\2\uffff\1\uffff\1\uffff\1\115\1\123\1\124\1\111\1\102\1\124\1\172"+
+        "\1\125\1\120\1\122\1\120\1\125\1\172\4\uffff\2\114\1\122\1\164\2"+
+        "\uffff\1\172\1\124\1\130\1\104\1\uffff\3\uffff\1\102\1\124\1\172"+
         "\1\126\1\114\1\105\1\uffff\1\102\1\124\1\111\1\114\1\105\1\uffff"+
         "\1\105\1\123\1\127\1\172\1\uffff\1\110\1\172\1\125\5\uffff\1\uffff"+
         "\1\uffff\1\uffff\1\104\1\172\1\uffff\1\101\1\111\1\107\1\114\1\110"+
@@ -2377,41 +2376,40 @@ public class DQLGrammarLexer extends Lexer {
         "\1\101\1\uffff\1\124\1\103\2\105\1\172\1\107\1\172\2\uffff\1\172"+
         "\2\122\1\105\2\uffff\1\172\1\105\1\137\1\122\1\172\1\uffff\1\172"+
         "\2\uffff\1\104\2\172\1\uffff\1\uffff\1\137\1\117\1\172\2\uffff\1"+
-        "\172\2\uffff\1\uffff\1\115\1\131\1\124\2\uffff\1\131\1\117\1\172"+
-        "\1\110\1\172\1\116\1\uffff\1\105\1\uffff\1\104\1\122\1\137\1\172"+
-        "\1\117\1\uffff\1\131\1\124\1\172\1\110\1\uffff\1\105\1\122\1\172"+
-        "\1\uffff";
+        "\172\2\uffff\1\uffff\1\115\1\131\1\124\1\117\2\uffff\1\131\1\117"+
+        "\1\172\1\110\1\116\1\172\1\116\1\uffff\1\105\1\104\1\uffff\1\104"+
+        "\1\122\1\172\1\137\1\172\1\uffff\1\115\1\uffff\1\131\1\172\1\uffff";
     static final String DFA21_acceptS =
         "\1\uffff\1\1\1\uffff\1\3\1\4\1\5\11\uffff\1\26\1\27\1\30\1\uffff"+
         "\1\32\1\33\1\34\1\37\1\40\4\uffff\1\52\1\uffff\1\54\1\56\1\uffff"+
-        "\1\60\5\uffff\1\35\1\11\1\36\1\12\14\uffff\1\55\1\31\4\uffff\1\53"+
+        "\1\60\15\uffff\1\35\1\17\1\36\1\20\4\uffff\1\55\1\31\4\uffff\1\53"+
         "\11\uffff\1\41\5\uffff\1\50\4\uffff\1\42\10\uffff\1\61\1\uffff\1"+
         "\57\2\uffff\1\43\13\uffff\1\25\1\uffff\1\46\5\uffff\1\21\7\uffff"+
-        "\1\23\1\22\13\uffff\1\47\1\uffff\1\20\1\24\4\uffff\1\2\3\uffff\1"+
-        "\16\1\17\1\uffff\1\44\1\51\4\uffff\1\15\1\45\6\uffff\1\7\1\uffff"+
-        "\1\6\5\uffff\1\13\4\uffff\1\10\3\uffff\1\14";
+        "\1\23\1\22\13\uffff\1\47\1\uffff\1\16\1\24\4\uffff\1\2\3\uffff\1"+
+        "\14\1\15\1\uffff\1\44\1\51\5\uffff\1\13\1\45\7\uffff\1\7\2\uffff"+
+        "\1\6\5\uffff\1\12\1\uffff\1\11\2\uffff\1\10";
     static final String DFA21_specialS =
-        "\40\uffff\1\4\35\uffff\1\3\1\20\1\5\25\uffff\1\14\1\17\1\0\1\1\1"+
-        "\12\1\uffff\1\2\23\uffff\1\11\1\15\1\13\17\uffff\1\10\1\16\14\uffff"+
-        "\1\7\11\uffff\1\6\35\uffff}>";
+        "\40\uffff\1\16\35\uffff\1\14\1\11\1\1\25\uffff\1\10\1\7\1\2\1\0"+
+        "\1\17\1\uffff\1\15\23\uffff\1\4\1\20\1\13\17\uffff\1\3\1\12\14\uffff"+
+        "\1\6\11\uffff\1\5\34\uffff}>";
     static final String[] DFA21_transitionS = {
             "\2\37\2\uffff\1\37\22\uffff\1\37\1\25\1\40\2\uffff\1\23\1\26"+
             "\1\41\1\4\1\5\1\21\1\17\1\1\1\20\1\36\1\22\12\35\1\3\1\uffff"+
-            "\1\7\1\24\1\10\2\uffff\1\30\2\34\1\12\1\34\1\15\1\31\1\34\1"+
-            "\11\2\34\1\2\1\32\2\34\1\6\1\34\1\33\1\13\1\14\6\34\4\uffff"+
-            "\1\34\1\uffff\15\34\1\16\14\34\1\uffff\1\27",
+            "\1\13\1\24\1\14\2\uffff\1\30\2\34\1\10\1\34\1\15\1\31\1\34\1"+
+            "\7\2\34\1\2\1\32\2\34\1\6\1\34\1\33\1\11\1\12\6\34\4\uffff\1"+
+            "\34\1\uffff\15\34\1\16\14\34\1\uffff\1\27",
             "",
             "\1\42\3\uffff\1\44\3\uffff\1\43",
             "",
             "",
             "",
             "\1\45\2\uffff\1\46",
-            "\1\47",
-            "\1\51",
-            "\1\53\4\uffff\1\54",
-            "\1\56\11\uffff\1\55",
+            "\1\47\4\uffff\1\50",
+            "\1\52\11\uffff\1\51",
+            "\1\53",
+            "\1\56\2\uffff\1\55\2\uffff\1\54",
             "\1\57",
-            "\1\62\2\uffff\1\61\2\uffff\1\60",
+            "\1\61",
             "\1\64\7\uffff\1\63\5\uffff\1\65",
             "\1\66",
             "",
@@ -2438,10 +2436,6 @@ public class DQLGrammarLexer extends Lexer {
             "\1\103",
             "\1\104",
             "\1\105",
-            "",
-            "",
-            "",
-            "",
             "\1\106",
             "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
             "\1\110",
@@ -2450,6 +2444,10 @@ public class DQLGrammarLexer extends Lexer {
             "\1\113",
             "\1\114",
             "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
+            "",
+            "",
+            "",
+            "",
             "\1\116",
             "\1\117",
             "\1\120",
@@ -2548,7 +2546,7 @@ public class DQLGrammarLexer extends Lexer {
             "\60\133\12\u009a\7\133\6\u009a\32\133\6\u009a\uff99\133",
             "",
             "\1\u009b",
-            "\1\u009c\1\uffff\1\u009d",
+            "\1\u009e\11\uffff\1\u009c\1\uffff\1\u009d",
             "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
             "",
             "",
@@ -2556,33 +2554,32 @@ public class DQLGrammarLexer extends Lexer {
             "",
             "",
             "\42\77\1\134\71\77\1\76\uffa3\77",
-            "\1\u00a1\11\uffff\1\u00a0",
-            "\1\u00a2",
+            "\1\u00a2\11\uffff\1\u00a1",
             "\1\u00a3",
-            "",
-            "",
             "\1\u00a4",
             "\1\u00a5",
-            "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
+            "",
+            "",
+            "\1\u00a6",
             "\1\u00a7",
             "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
             "\1\u00a9",
-            "",
             "\1\u00aa",
-            "",
-            "\1\u00ab",
-            "\1\u00ac",
-            "\1\u00ad",
             "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
-            "\1\u00af\1\uffff\1\u00b0",
+            "\1\u00ac",
             "",
-            "\1\u00b1",
+            "\1\u00ad",
+            "\1\u00ae",
+            "",
+            "\1\u00af",
+            "\1\u00b0",
+            "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
             "\1\u00b2",
             "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
+            "",
             "\1\u00b4",
             "",
             "\1\u00b5",
-            "\1\u00b6",
             "\12\34\7\uffff\32\34\4\uffff\1\34\1\uffff\32\34",
             ""
     };
@@ -2624,20 +2621,6 @@ public class DQLGrammarLexer extends Lexer {
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA21_88 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA21_88>='0' && LA21_88<='7')) ) {s = 113;}
-
-                        else if ( (LA21_88=='\"') ) {s = 92;}
-
-                        else if ( (LA21_88=='\\') ) {s = 62;}
-
-                        else if ( ((LA21_88>='\u0000' && LA21_88<='!')||(LA21_88>='#' && LA21_88<='/')||(LA21_88>='8' && LA21_88<='[')||(LA21_88>=']' && LA21_88<='\uFFFF')) ) {s = 63;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 1 : 
                         int LA21_89 = input.LA(1);
 
                         s = -1;
@@ -2651,17 +2634,133 @@ public class DQLGrammarLexer extends Lexer {
 
                         if ( s>=0 ) return s;
                         break;
-                    case 2 : 
-                        int LA21_92 = input.LA(1);
+                    case 1 : 
+                        int LA21_64 = input.LA(1);
 
                         s = -1;
-                        if ( ((LA21_92>='\u0000' && LA21_92<='\uFFFF')) ) {s = 91;}
+                        if ( ((LA21_64>='\u0000' && LA21_64<='\uFFFF')) ) {s = 91;}
 
                         else s = 93;
 
                         if ( s>=0 ) return s;
                         break;
+                    case 2 : 
+                        int LA21_88 = input.LA(1);
+
+                        s = -1;
+                        if ( ((LA21_88>='0' && LA21_88<='7')) ) {s = 113;}
+
+                        else if ( (LA21_88=='\"') ) {s = 92;}
+
+                        else if ( (LA21_88=='\\') ) {s = 62;}
+
+                        else if ( ((LA21_88>='\u0000' && LA21_88<='!')||(LA21_88>='#' && LA21_88<='/')||(LA21_88>='8' && LA21_88<='[')||(LA21_88>=']' && LA21_88<='\uFFFF')) ) {s = 63;}
+
+                        if ( s>=0 ) return s;
+                        break;
                     case 3 : 
+                        int LA21_130 = input.LA(1);
+
+                        s = -1;
+                        if ( ((LA21_130>='0' && LA21_130<='9')||(LA21_130>='A' && LA21_130<='F')||(LA21_130>='a' && LA21_130<='f')) ) {s = 144;}
+
+                        else if ( ((LA21_130>='\u0000' && LA21_130<='/')||(LA21_130>=':' && LA21_130<='@')||(LA21_130>='G' && LA21_130<='`')||(LA21_130>='g' && LA21_130<='\uFFFF')) ) {s = 91;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 4 : 
+                        int LA21_112 = input.LA(1);
+
+                        s = -1;
+                        if ( ((LA21_112>='0' && LA21_112<='9')||(LA21_112>='A' && LA21_112<='F')||(LA21_112>='a' && LA21_112<='f')) ) {s = 130;}
+
+                        else if ( ((LA21_112>='\u0000' && LA21_112<='/')||(LA21_112>=':' && LA21_112<='@')||(LA21_112>='G' && LA21_112<='`')||(LA21_112>='g' && LA21_112<='\uFFFF')) ) {s = 91;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 5 : 
+                        int LA21_154 = input.LA(1);
+
+                        s = -1;
+                        if ( (LA21_154=='\"') ) {s = 92;}
+
+                        else if ( (LA21_154=='\\') ) {s = 62;}
+
+                        else if ( ((LA21_154>='\u0000' && LA21_154<='!')||(LA21_154>='#' && LA21_154<='[')||(LA21_154>=']' && LA21_154<='\uFFFF')) ) {s = 63;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 6 : 
+                        int LA21_144 = input.LA(1);
+
+                        s = -1;
+                        if ( ((LA21_144>='0' && LA21_144<='9')||(LA21_144>='A' && LA21_144<='F')||(LA21_144>='a' && LA21_144<='f')) ) {s = 154;}
+
+                        else if ( ((LA21_144>='\u0000' && LA21_144<='/')||(LA21_144>=':' && LA21_144<='@')||(LA21_144>='G' && LA21_144<='`')||(LA21_144>='g' && LA21_144<='\uFFFF')) ) {s = 91;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 7 : 
+                        int LA21_87 = input.LA(1);
+
+                        s = -1;
+                        if ( ((LA21_87>='0' && LA21_87<='9')||(LA21_87>='A' && LA21_87<='F')||(LA21_87>='a' && LA21_87<='f')) ) {s = 112;}
+
+                        else if ( ((LA21_87>='\u0000' && LA21_87<='/')||(LA21_87>=':' && LA21_87<='@')||(LA21_87>='G' && LA21_87<='`')||(LA21_87>='g' && LA21_87<='\uFFFF')) ) {s = 91;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 8 : 
+                        int LA21_86 = input.LA(1);
+
+                        s = -1;
+                        if ( (LA21_86=='\"') ) {s = 92;}
+
+                        else if ( (LA21_86=='\\') ) {s = 62;}
+
+                        else if ( ((LA21_86>='\u0000' && LA21_86<='!')||(LA21_86>='#' && LA21_86<='[')||(LA21_86>=']' && LA21_86<='\uFFFF')) ) {s = 63;}
+
+                        else s = 91;
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 9 : 
+                        int LA21_63 = input.LA(1);
+
+                        s = -1;
+                        if ( (LA21_63=='\"') ) {s = 92;}
+
+                        else if ( (LA21_63=='\\') ) {s = 62;}
+
+                        else if ( ((LA21_63>='\u0000' && LA21_63<='!')||(LA21_63>='#' && LA21_63<='[')||(LA21_63>=']' && LA21_63<='\uFFFF')) ) {s = 63;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 10 : 
+                        int LA21_131 = input.LA(1);
+
+                        s = -1;
+                        if ( (LA21_131=='\"') ) {s = 92;}
+
+                        else if ( (LA21_131=='\\') ) {s = 62;}
+
+                        else if ( ((LA21_131>='\u0000' && LA21_131<='!')||(LA21_131>='#' && LA21_131<='[')||(LA21_131>=']' && LA21_131<='\uFFFF')) ) {s = 63;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 11 : 
+                        int LA21_114 = input.LA(1);
+
+                        s = -1;
+                        if ( (LA21_114=='\"') ) {s = 92;}
+
+                        else if ( (LA21_114=='\\') ) {s = 62;}
+
+                        else if ( ((LA21_114>='\u0000' && LA21_114<='!')||(LA21_114>='#' && LA21_114<='[')||(LA21_114>=']' && LA21_114<='\uFFFF')) ) {s = 63;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 12 : 
                         int LA21_62 = input.LA(1);
 
                         s = -1;
@@ -2679,7 +2778,17 @@ public class DQLGrammarLexer extends Lexer {
 
                         if ( s>=0 ) return s;
                         break;
-                    case 4 : 
+                    case 13 : 
+                        int LA21_92 = input.LA(1);
+
+                        s = -1;
+                        if ( ((LA21_92>='\u0000' && LA21_92<='\uFFFF')) ) {s = 91;}
+
+                        else s = 93;
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 14 : 
                         int LA21_32 = input.LA(1);
 
                         s = -1;
@@ -2691,59 +2800,7 @@ public class DQLGrammarLexer extends Lexer {
 
                         if ( s>=0 ) return s;
                         break;
-                    case 5 : 
-                        int LA21_64 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA21_64>='\u0000' && LA21_64<='\uFFFF')) ) {s = 91;}
-
-                        else s = 93;
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 6 : 
-                        int LA21_154 = input.LA(1);
-
-                        s = -1;
-                        if ( (LA21_154=='\"') ) {s = 92;}
-
-                        else if ( (LA21_154=='\\') ) {s = 62;}
-
-                        else if ( ((LA21_154>='\u0000' && LA21_154<='!')||(LA21_154>='#' && LA21_154<='[')||(LA21_154>=']' && LA21_154<='\uFFFF')) ) {s = 63;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 7 : 
-                        int LA21_144 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA21_144>='0' && LA21_144<='9')||(LA21_144>='A' && LA21_144<='F')||(LA21_144>='a' && LA21_144<='f')) ) {s = 154;}
-
-                        else if ( ((LA21_144>='\u0000' && LA21_144<='/')||(LA21_144>=':' && LA21_144<='@')||(LA21_144>='G' && LA21_144<='`')||(LA21_144>='g' && LA21_144<='\uFFFF')) ) {s = 91;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 8 : 
-                        int LA21_130 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA21_130>='0' && LA21_130<='9')||(LA21_130>='A' && LA21_130<='F')||(LA21_130>='a' && LA21_130<='f')) ) {s = 144;}
-
-                        else if ( ((LA21_130>='\u0000' && LA21_130<='/')||(LA21_130>=':' && LA21_130<='@')||(LA21_130>='G' && LA21_130<='`')||(LA21_130>='g' && LA21_130<='\uFFFF')) ) {s = 91;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 9 : 
-                        int LA21_112 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA21_112>='0' && LA21_112<='9')||(LA21_112>='A' && LA21_112<='F')||(LA21_112>='a' && LA21_112<='f')) ) {s = 130;}
-
-                        else if ( ((LA21_112>='\u0000' && LA21_112<='/')||(LA21_112>=':' && LA21_112<='@')||(LA21_112>='G' && LA21_112<='`')||(LA21_112>='g' && LA21_112<='\uFFFF')) ) {s = 91;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 10 : 
+                    case 15 : 
                         int LA21_90 = input.LA(1);
 
                         s = -1;
@@ -2755,33 +2812,7 @@ public class DQLGrammarLexer extends Lexer {
 
                         if ( s>=0 ) return s;
                         break;
-                    case 11 : 
-                        int LA21_114 = input.LA(1);
-
-                        s = -1;
-                        if ( (LA21_114=='\"') ) {s = 92;}
-
-                        else if ( (LA21_114=='\\') ) {s = 62;}
-
-                        else if ( ((LA21_114>='\u0000' && LA21_114<='!')||(LA21_114>='#' && LA21_114<='[')||(LA21_114>=']' && LA21_114<='\uFFFF')) ) {s = 63;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 12 : 
-                        int LA21_86 = input.LA(1);
-
-                        s = -1;
-                        if ( (LA21_86=='\"') ) {s = 92;}
-
-                        else if ( (LA21_86=='\\') ) {s = 62;}
-
-                        else if ( ((LA21_86>='\u0000' && LA21_86<='!')||(LA21_86>='#' && LA21_86<='[')||(LA21_86>=']' && LA21_86<='\uFFFF')) ) {s = 63;}
-
-                        else s = 91;
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 13 : 
+                    case 16 : 
                         int LA21_113 = input.LA(1);
 
                         s = -1;
@@ -2792,40 +2823,6 @@ public class DQLGrammarLexer extends Lexer {
                         else if ( (LA21_113=='\\') ) {s = 62;}
 
                         else if ( ((LA21_113>='\u0000' && LA21_113<='!')||(LA21_113>='#' && LA21_113<='/')||(LA21_113>='8' && LA21_113<='[')||(LA21_113>=']' && LA21_113<='\uFFFF')) ) {s = 63;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 14 : 
-                        int LA21_131 = input.LA(1);
-
-                        s = -1;
-                        if ( (LA21_131=='\"') ) {s = 92;}
-
-                        else if ( (LA21_131=='\\') ) {s = 62;}
-
-                        else if ( ((LA21_131>='\u0000' && LA21_131<='!')||(LA21_131>='#' && LA21_131<='[')||(LA21_131>=']' && LA21_131<='\uFFFF')) ) {s = 63;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 15 : 
-                        int LA21_87 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA21_87>='0' && LA21_87<='9')||(LA21_87>='A' && LA21_87<='F')||(LA21_87>='a' && LA21_87<='f')) ) {s = 112;}
-
-                        else if ( ((LA21_87>='\u0000' && LA21_87<='/')||(LA21_87>=':' && LA21_87<='@')||(LA21_87>='G' && LA21_87<='`')||(LA21_87>='g' && LA21_87<='\uFFFF')) ) {s = 91;}
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 16 : 
-                        int LA21_63 = input.LA(1);
-
-                        s = -1;
-                        if ( (LA21_63=='\"') ) {s = 92;}
-
-                        else if ( (LA21_63=='\\') ) {s = 62;}
-
-                        else if ( ((LA21_63>='\u0000' && LA21_63<='!')||(LA21_63>='#' && LA21_63<='[')||(LA21_63>=']' && LA21_63<='\uFFFF')) ) {s = 63;}
 
                         if ( s>=0 ) return s;
                         break;

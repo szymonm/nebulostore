@@ -77,7 +77,7 @@ public class PrivacyAlgebraTest {
       boolean raised = false;
 
       List<IDQLValue> lambdaParams = new LinkedList<IDQLValue>();
-      lambdaParams.add(new DoubleValue(1.0, PrivateMy.getInstance()));
+      lambdaParams.add(new DoubleValue(1.0, new PrivateMy()));
 
       try {
         ((LambdaValue) params.get(0)).evaluate(lambdaParams);
@@ -89,7 +89,7 @@ public class PrivacyAlgebraTest {
       if (!raised) {
         throw new InterpreterException("Lambda should raise an exception!");
       }
-      return new DoubleValue(1.0, PrivateMy.getInstance());
+      return new DoubleValue(1.0, new PrivateMy());
     }
 
     @Override
@@ -102,9 +102,9 @@ public class PrivacyAlgebraTest {
     String testQuery = " GATHER"
         + "  LET secondTest = SHOULD_FAIL(LAMBDA X : ( (1.0 IS PUBLIC_MY AS DOUBLE) + (2.0 IS PRIVATE_MY AS DOUBLE)  IS PUBLIC_MY AS DOUBLE) )"
         + "  LET userFriends =  "
-        + "        CheckPrivacy(XPATH (\".//friend/@ref\", LOAD (\"peerData.xml\" ), TRUE ), \"PrivateMy\") "
+        + "        CheckPrivacy(XPATH (\".//friends/friend\", LOAD (\"peerData.xml\" ), TRUE ), \"PrivateConditionalMy\") "
         + "     IS PRIVATE_MY AS LIST < INTEGER > "
-        + "  LET peerAge = XPATH(\".//age\", LOAD(\"peerData.xml\"), FALSE)  IS PRIVATE_MY AS INTEGER"
+        + "  LET peerAge = XPATH(\".//age/value\", LOAD(\"peerData.xml\"), FALSE)  IS PRIVATE_MY AS INTEGER"
         + "  LET firstTest = (1.0 IS PUBLIC_MY AS DOUBLE) + (2.0 IS PRIVATE_MY AS DOUBLE)  IS PRIVATE_MY AS DOUBLE"
         + " FORWARD"
         + " MAX DEPTH 2"
@@ -123,7 +123,8 @@ public class PrivacyAlgebraTest {
     DQLInterpreter interpreter = new DQLInterpreter(new ExecutorContext(
         "./resources/test/avgAgeTest/1/"));
 
-    PreparedQuery preparedQuery = interpreter.prepareQuery(testQuery, sender);
+    PreparedQuery preparedQuery = interpreter.prepareQuery(testQuery, sender,
+        1, 2);
 
     InterpreterState state = interpreter.createEmptyState();
     state.mockFunction(new CheckPrivacyLevel());
@@ -134,26 +135,26 @@ public class PrivacyAlgebraTest {
 
     // TODO: Returned from other peers values
     state.addFromForward(new TupleValue(Arrays.asList(new IDQLValue[] {
-        new IntegerValue(28, PublicOthers.getInstance()),
-        new IntegerValue(300, PublicOthers.getInstance()) }), Arrays
+        new IntegerValue(28, new PublicOthers()),
+        new IntegerValue(300, new PublicOthers()) }), Arrays
         .asList(new DQLType[] {
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger),
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger) }),
-        PublicOthers.getInstance()));
+        new PublicOthers()));
     state.addFromForward(new TupleValue(Arrays.asList(new IDQLValue[] {
-        new IntegerValue(55, PublicOthers.getInstance()),
-        new IntegerValue(30, PublicOthers.getInstance()) }), Arrays
+        new IntegerValue(55, new PublicOthers()),
+        new IntegerValue(30, new PublicOthers()) }), Arrays
         .asList(new DQLType[] {
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger),
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger) }),
-        PublicOthers.getInstance()));
+        new PublicOthers()));
     state.addFromForward(new TupleValue(Arrays.asList(new IDQLValue[] {
-        new IntegerValue(18, PublicOthers.getInstance()),
-        new IntegerValue(240, PublicOthers.getInstance()) }), Arrays
+        new IntegerValue(18, new PublicOthers()),
+        new IntegerValue(240, new PublicOthers()) }), Arrays
         .asList(new DQLType[] {
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger),
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger) }),
-        PublicOthers.getInstance()));
+        new PublicOthers()));
 
     interpreter.runReduce(preparedQuery, state);
 

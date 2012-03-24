@@ -31,6 +31,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
+import org.nebulostore.communication.streambinding.IStreamBindingDriver;
+import org.nebulostore.communication.streambinding.StreamBindingService;
 
 /**
  * @author Marcin Walas
@@ -104,14 +106,14 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
 
     messengerService_ = new MessengerService(messengerServiceInQueue_,
-        outQueue_, networkManager_.getNetPeerGroup(), discoveryService_);
+        outQueue_, networkManager_.getNetPeerGroup());
     (new Thread(messengerService_, "Nebulostore.Communication.MessengerService"))
     .start();
 
     try {
       messageReceiver_ = new MessageReceiver(networkManager_.getNetPeerGroup()
           .getPipeService()
-          .createInputPipe(messengerService_.getPipeAdvertisement()), outQueue_);
+          .createInputPipe(MessengerService.getPipeAdvertisement()), outQueue_);
 
       (new Thread(messageReceiver_, "Nebulostore.Communication.MeesageReceiver"))
       .start();
@@ -246,6 +248,10 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     }
   }
 
+  public void setStreamBindingService(StreamBindingService service) {
+    socketServer_.setStreamBindingService(service);
+  }
+
   /* (non-Javadoc)
    * @see net.jxta.discovery.DiscoveryListener#discoveryEvent(net.jxta.discovery.DiscoveryEvent)
    */
@@ -277,5 +283,9 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   public PeerDiscoveryService getPeerDiscoveryService() {
     return peerDiscoveryService_;
+  }
+
+  public IStreamBindingDriver getStreamDriver() {
+    return socketServer_;
   }
 }

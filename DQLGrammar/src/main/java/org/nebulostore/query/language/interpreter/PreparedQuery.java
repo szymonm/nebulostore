@@ -15,6 +15,8 @@ import org.nebulostore.query.language.interpreter.exceptions.InterpreterExceptio
 public class PreparedQuery {
 
   private final String sender_;
+  private final int maxDepth_;
+  private final int currentDepth_;
 
   private final Tree gatherTree_;
   private final Tree forwardTree_;
@@ -24,9 +26,12 @@ public class PreparedQuery {
   private static final int FORWARD_TREE_INDEX = 1;
   private static final int REDUCE_TREE_INDEX = 2;
 
-  public PreparedQuery(String query, String sender) throws InterpreterException {
+  public PreparedQuery(String query, String sender, int maxDepth,
+      int currentDepth) throws InterpreterException {
 
     sender_ = sender;
+    maxDepth_ = maxDepth;
+    currentDepth_ = currentDepth;
 
     CharStream charStream = new ANTLRStringStream(query);
     DQLGrammarLexer lexer = new DQLGrammarLexer(charStream);
@@ -59,5 +64,17 @@ public class PreparedQuery {
 
   public Tree getReduceTree() {
     return reduceTree_;
+  }
+
+  public int getMaxDepth() {
+    return maxDepth_;
+  }
+
+  public int getCurrDepth() {
+    return currentDepth_;
+  }
+
+  public boolean isLeafQuery() {
+    return maxDepth_ <= currentDepth_;
   }
 }

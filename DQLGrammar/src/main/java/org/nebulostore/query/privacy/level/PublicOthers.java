@@ -1,20 +1,21 @@
 package org.nebulostore.query.privacy.level;
 
+import java.util.List;
+
+import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
 import org.nebulostore.query.privacy.PrivacyLevel;
 
 public class PublicOthers extends PrivacyLevel {
 
-  private static PublicOthers instance_;
-
-  public static PrivacyLevel getInstance() {
-    if (instance_ == null) {
-      instance_ = new PublicOthers();
-    }
-    return instance_;
+  private PublicOthers(List<DataSourcesSet> dataSources) {
+    super(dataSources);
   }
 
-  private PublicOthers() {
+  public PublicOthers(DataSourcesSet dataSources) {
+    super(dataSources);
+  }
 
+  public PublicOthers() {
   }
 
   @Override
@@ -22,5 +23,15 @@ public class PublicOthers extends PrivacyLevel {
     return "PublicOthers";
   }
 
-  // TODO: equals
+  @Override
+  protected PrivacyLevel freshCopy() {
+    return new PublicOthers(dataSources_);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    // TODO: Czy to jest poprawne
+    return o instanceof PublicOthers;
+  }
+
 }

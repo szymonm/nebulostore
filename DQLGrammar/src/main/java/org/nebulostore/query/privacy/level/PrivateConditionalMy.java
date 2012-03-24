@@ -1,14 +1,21 @@
 package org.nebulostore.query.privacy.level;
 
-import org.antlr.runtime.tree.CommonTree;
-import org.nebulostore.query.privacy.PrivacyLevel;
+import java.util.List;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
+import org.nebulostore.query.privacy.PrivacyLevel;
 
 public class PrivateConditionalMy extends PrivacyLevel {
 
-  public PrivateConditionalMy(CommonTree expression) {
-    // TODO Auto-generated constructor stub
+  public PrivateConditionalMy(List<DataSourcesSet> dataSources) {
+    super(dataSources);
+  }
+
+  public PrivateConditionalMy(DataSourcesSet dataSources) {
+    super(dataSources);
+  }
+
+  public PrivateConditionalMy() {
 
   }
 
@@ -18,9 +25,13 @@ public class PrivateConditionalMy extends PrivacyLevel {
   }
 
   @Override
-  public boolean isMorePublicThan(PrivacyLevel level) {
-    throw new NotImplementedException();
+  protected PrivacyLevel freshCopy() {
+    return new PrivateConditionalMy(dataSources_);
   }
 
-  // TODO: equals
+  @Override
+  public boolean equals(Object o) {
+    // TODO: Czy to jest poprawne
+    return o instanceof PrivateConditionalMy;
+  }
 }

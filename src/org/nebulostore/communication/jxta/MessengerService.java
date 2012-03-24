@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
-import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.StringMessageElement;
 import net.jxta.id.ID;
@@ -41,21 +40,16 @@ public class MessengerService extends Module {
   private static final int MAX_RETRIES = 3;
   private static final int PIPE_TIMEOUT = 3000;
 
-  private final DiscoveryService discovery_;
   private final PeerGroup peerGroup_;
-
-  private MessageReceiver accepter_;
   private final BlockingQueue<Message> outQueue_;
 
   private final Map<String, OutgoingPipeAdaptorSync> pipes_;
 
   public MessengerService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue, PeerGroup peerGroup,
-      DiscoveryService discovery) {
+      BlockingQueue<Message> outQueue, PeerGroup peerGroup) {
     super(inQueue, outQueue);
     this.outQueue_ = outQueue;
 
-    discovery_ = discovery;
     peerGroup_ = peerGroup;
 
     pipes_ = new HashMap<String, OutgoingPipeAdaptorSync>(256);

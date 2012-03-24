@@ -12,7 +12,7 @@
   <!--  TODO MBW: Remove this repetitions -->  
   <appender name="FA" class="org.apache.log4j.FileAppender">
     <param name="File" value="all.log" />
-    <param name="Threshold" value="INFO" />
+    <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
@@ -20,7 +20,15 @@
   
   <appender name="FA-comm" class="org.apache.log4j.FileAppender">
     <param name="File" value="comm.log" />
-    <param name="Threshold" value="INFO" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
+
+  <appender name="FA-stream" class="org.apache.log4j.FileAppender">
+    <param name="File" value="stream.log" />
+    <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
@@ -28,7 +36,7 @@
 
   <appender name="FA-dht" class="org.apache.log4j.FileAppender">
     <param name="File" value="dht.log" />
-    <param name="Threshold" value="INFO" />
+    <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
@@ -47,6 +55,11 @@
   <logger name="org.nebulostore.communication">
     <level value="INFO"/>
     <appender-ref ref="FA-comm"/>
+  </logger>
+  
+  <logger name="org.nebulostore.communication.streambinding">
+    <level value="DEBUG"/>
+    <appender-ref ref="FA-stream"/>
   </logger>
   
   <logger name="org.planx.xmlstore.routing">

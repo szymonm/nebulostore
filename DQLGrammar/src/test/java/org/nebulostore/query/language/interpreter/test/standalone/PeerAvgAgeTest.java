@@ -27,10 +27,12 @@ public class PeerAvgAgeTest {
    */
   public static void main(String[] args) throws InterpreterException {
     String testQuery = " GATHER"
+        + "  LET peerData = LOAD (\"peerData.xml\" ) "
         + "  LET userFriends =  "
-        + "        XPATH (\".//friend/@ref\", LOAD (\"peerData.xml\" ), TRUE ) "
+        + "        XPATH(\".//friends/friend\", peerData, TRUE ) "
         + "     IS PRIVATE_MY AS LIST < INTEGER > "
-        + "  LET peerAge = XPATH(\".//age\", LOAD(\"peerData.xml\"), FALSE)  IS PRIVATE_MY AS INTEGER"
+        + "  LET peerAge = IF(LEAF_EXECUTION, XPATH_NOISE(\".//age/value\", peerData, FALSE), XPATH(\".//age/value\", peerData, FALSE)) AS INTEGER"
+        + "  LET asdf = IF(1 = 2, 3, 4) IS PRIVATE_MY AS INTEGER"
         + " FORWARD"
         + " MAX DEPTH 2"
         + " TO"
@@ -48,7 +50,8 @@ public class PeerAvgAgeTest {
     DQLInterpreter interpreter = new DQLInterpreter(new ExecutorContext(
         "./resources/test/avgAgeTest/2/"));
 
-    PreparedQuery preparedQuery = interpreter.prepareQuery(testQuery, sender);
+    PreparedQuery preparedQuery = interpreter.prepareQuery(testQuery, sender,
+        2, 1);
 
     InterpreterState state = interpreter.createEmptyState();
     // state.mockFunction(new FilterMocked());
@@ -58,26 +61,26 @@ public class PeerAvgAgeTest {
 
     // TODO: Returned from other peers values
     state.addFromForward(new TupleValue(Arrays.asList(new IDQLValue[] {
-        new IntegerValue(28, PublicOthers.getInstance()),
-        new IntegerValue(300, PublicOthers.getInstance()) }), Arrays
+        new IntegerValue(28, new PublicOthers()),
+        new IntegerValue(300, new PublicOthers()) }), Arrays
         .asList(new DQLType[] {
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger),
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger) }),
-        PublicOthers.getInstance()));
+        new PublicOthers()));
     state.addFromForward(new TupleValue(Arrays.asList(new IDQLValue[] {
-        new IntegerValue(55, PublicOthers.getInstance()),
-        new IntegerValue(30, PublicOthers.getInstance()) }), Arrays
+        new IntegerValue(55, new PublicOthers()),
+        new IntegerValue(30, new PublicOthers()) }), Arrays
         .asList(new DQLType[] {
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger),
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger) }),
-        PublicOthers.getInstance()));
+        new PublicOthers()));
     state.addFromForward(new TupleValue(Arrays.asList(new IDQLValue[] {
-        new IntegerValue(18, PublicOthers.getInstance()),
-        new IntegerValue(240, PublicOthers.getInstance()) }), Arrays
+        new IntegerValue(18, new PublicOthers()),
+        new IntegerValue(240, new PublicOthers()) }), Arrays
         .asList(new DQLType[] {
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger),
             new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger) }),
-        PublicOthers.getInstance()));
+        new PublicOthers()));
 
     interpreter.runReduce(preparedQuery, state);
 

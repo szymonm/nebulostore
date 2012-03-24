@@ -9,6 +9,8 @@ import org.nebulostore.query.filestorage.FileStorage;
 import org.nebulostore.query.functions.CallParametersConditions;
 import org.nebulostore.query.functions.DQLFunction;
 import org.nebulostore.query.functions.exceptions.FunctionCallException;
+import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
+import org.nebulostore.query.language.interpreter.datasources.FileDataSource;
 import org.nebulostore.query.language.interpreter.datatypes.DQLPrimitiveType;
 import org.nebulostore.query.language.interpreter.datatypes.DQLPrimitiveType.DQLPrimitiveTypeEnum;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
@@ -36,10 +38,16 @@ public class Load extends DQLFunction {
     checkParams(params);
     log.debug("Called");
     try {
+
+      String fileName = ((StringValue) params.get(0)).getValue();
       String fileContents = FileStorage.getInstance(getContext()).readFile(
-          ((StringValue) params.get(0)).getValue());
-      // TODO: Proper support of privacy levels here
-      return new StringValue(fileContents, PrivateMy.getInstance());
+          fileName);
+
+      DataSourcesSet dataSources = new DataSourcesSet();
+      dataSources.add(FileDataSource.getInstance(fileName));
+
+      return new StringValue(fileContents, new PrivateMy());
+
     } catch (InterpreterException e) {
       throw new FunctionCallException(e);
     }

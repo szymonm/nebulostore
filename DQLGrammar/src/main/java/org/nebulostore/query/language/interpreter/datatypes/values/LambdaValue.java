@@ -32,7 +32,7 @@ public class LambdaValue extends DQLValue {
 
   public LambdaValue(Collection<String> paramsDecl, CommonTree expression,
       Map<String, IDQLValue> environment, Collection<DQLFunction> functions) {
-    super(PrivateMy.getInstance());
+    super(new PrivateMy());
     paramsDecls_ = new LinkedList<String>(paramsDecl);
     expression_ = expression;
     environment_ = environment;
@@ -41,7 +41,7 @@ public class LambdaValue extends DQLValue {
 
   public LambdaValue(String lambdaCode, Iterable<DQLFunction> functions)
       throws InterpreterException {
-    super(PrivateMy.getInstance());
+    super(new PrivateMy());
 
     CharStream charStream = new ANTLRStringStream(lambdaCode);
     DQLGrammarLexer lexer = new DQLGrammarLexer(charStream);

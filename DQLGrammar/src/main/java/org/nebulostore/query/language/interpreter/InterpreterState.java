@@ -9,6 +9,8 @@ import org.nebulostore.query.executor.ExecutorContext;
 import org.nebulostore.query.functions.DQLFunction;
 import org.nebulostore.query.functions.FunctionsLibrary;
 import org.nebulostore.query.language.interpreter.antlr.TreeWalker;
+import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
+import org.nebulostore.query.language.interpreter.datasources.InjectedDataSource;
 import org.nebulostore.query.language.interpreter.datatypes.DQLPrimitiveType;
 import org.nebulostore.query.language.interpreter.datatypes.DQLPrimitiveType.DQLPrimitiveTypeEnum;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
@@ -42,9 +44,11 @@ public class InterpreterState {
 
   public ListValue getForwardResults() {
     // TODO: Types proper support here
-    // TODO : PrivacyLevels proper support here
+
+    DataSourcesSet set = new DataSourcesSet();
+    set.add(InjectedDataSource.getInstance(InjectedDataSource.DQL_RESULTS));
     return new ListValue(fromForward_, new DQLPrimitiveType(
-        DQLPrimitiveTypeEnum.DQLInteger), PublicOthers.getInstance());
+        DQLPrimitiveTypeEnum.DQLInteger), new PublicOthers(set));
   }
 
   @Override

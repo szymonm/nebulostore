@@ -27,14 +27,15 @@ import org.nebulostore.query.language.interpreter.datatypes.values.IntegerValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.ListValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.StringValue;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
-import org.nebulostore.query.privacy.level.PrivateConditionalMy;
+import org.nebulostore.query.privacy.level.PrivateMy;
+import org.nebulostore.query.privacy.level.PublicMy;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class XPath extends DQLFunction {
+public class XPathNoise extends DQLFunction {
 
   private static Log log = LogFactory.getLog(XPath.class);
 
@@ -45,16 +46,16 @@ public class XPath extends DQLFunction {
       .parameter(2, new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLBoolean))
       .parametersNumber(3).build();
 
-  public XPath(ExecutorContext context) {
-    super("xpath", conditions_, context);
+  public XPathNoise(ExecutorContext context) {
+    super("xpath_noise", conditions_, context);
   }
 
   @Override
   public IDQLValue call(List<IDQLValue> params) throws FunctionCallException {
     checkParams(params);
 
+    // TODO: return with noise...
     StringValue fileValue = ((StringValue) params.get(1));
-
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
     DocumentBuilder builder;
@@ -108,17 +109,13 @@ public class XPath extends DQLFunction {
       return serializePrimitive(list.item(0).getTextContent(), fileValue);
     } else {
       // TODO: Proper support of privacy levels here
-      if (list.getLength() == 0) {
-        return new ListValue(new DQLPrimitiveType(
-            DQLPrimitiveTypeEnum.DQLDouble), new PrivateConditionalMy(fileValue
-            .getPrivacyLevel().getDataSources()));
-      }
+      // TODO: Empty list ? What about its privacy level?
 
       DQLType firstType = serializePrimitive(list.item(0).getTextContent(),
           fileValue).getType();
 
-      ListValue ret = new ListValue(firstType, new PrivateConditionalMy(
-          fileValue.getPrivacyLevel().getDataSources()));
+      ListValue ret = new ListValue(firstType, new PrivateMy(fileValue
+          .getPrivacyLevel().getDataSources()));
       for (int i = 0; i < list.getLength(); i++) {
         ret.add(serializePrimitive(list.item(i).getTextContent(), fileValue));
       }
@@ -132,13 +129,12 @@ public class XPath extends DQLFunction {
       StringValue fileValue) {
     try {
       // TODO: Proper support of privacy levels here
-      return new IntegerValue(
-          Integer.parseInt(textContent),
-          new PrivateConditionalMy(fileValue.getPrivacyLevel().getDataSources()));
+      return new IntegerValue(Integer.parseInt(textContent), new PublicMy(
+          fileValue.getPrivacyLevel().getDataSources()));
     } catch (Exception e) {
     }
     // TODO: Proper support of privacy levels here
-    return new StringValue(textContent, new PrivateConditionalMy(fileValue
+    return new StringValue(textContent, new PublicMy(fileValue
         .getPrivacyLevel().getDataSources()));
   }
 

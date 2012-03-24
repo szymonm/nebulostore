@@ -10,9 +10,11 @@ import org.nebulostore.query.functions.dql.Filter;
 import org.nebulostore.query.functions.dql.FoldL;
 import org.nebulostore.query.functions.dql.FoldR;
 import org.nebulostore.query.functions.dql.Get;
+import org.nebulostore.query.functions.dql.If;
 import org.nebulostore.query.functions.dql.Sum;
 import org.nebulostore.query.functions.ql.xml.Load;
 import org.nebulostore.query.functions.ql.xml.XPath;
+import org.nebulostore.query.functions.ql.xml.XPathNoise;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
 
 public class FunctionsLibrary {
@@ -30,9 +32,9 @@ public class FunctionsLibrary {
     context_ = context;
 
     functions_ = new DQLFunction[] { new Load(context_), new XPath(context_),
-        new Filter(context_), new Sum(context_), new FoldL(context_),
-        new FoldR(context_), new CreateTuple(context_),
-        new CreateList(context_), new Get(context_) };
+        new XPathNoise(context_), new Filter(context_), new Sum(context_),
+        new FoldL(context_), new FoldR(context_), new CreateTuple(context_),
+        new CreateList(context_), new Get(context_), new If(context_) };
   }
 
   private final DQLFunction[] functions_;

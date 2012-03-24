@@ -25,6 +25,7 @@ options {
   
   import org.nebulostore.query.language.interpreter.Location;
     
+  import org.nebulostore.query.language.interpreter.datasources.ConstantDataSource;
   
   import org.nebulostore.query.language.interpreter.datatypes.DQLComplexType;
   import org.nebulostore.query.language.interpreter.datatypes.DQLComplexType.DQLComplexTypeEnum;
@@ -48,7 +49,7 @@ options {
   import org.nebulostore.query.privacy.level.PublicOthers;
   import org.nebulostore.query.privacy.level.PrivateMy;  
   import org.nebulostore.query.privacy.level.PrivateConditionalMy;
-  import org.nebulostore.query.privacy.level.PrivateConditionalOthers;
+  import org.nebulostore.query.privacy.level.PublicConditionalMy;
   
 }
 
@@ -194,11 +195,11 @@ type_rule returns [DQLType result]
 
 
 privacy_decl returns [PrivacyLevel result]
-  : 'PRIVATE_MY'                              { result=PrivateMy.getInstance(); }
-  | 'PUBLIC_MY'                               { result=PublicMy.getInstance(); }
-  | 'PUBLIC_OTHER'                            { result=PublicOthers.getInstance(); }
-  | 'PRIVATE_COND_MY' EXPRESSION=.*           { result=new PrivateConditionalMy($EXPRESSION); }
-  | 'PRIVATE_COND_OTHER' EXPRESSION=.*        { result=new PrivateConditionalMy($EXPRESSION); }
+  : 'PRIVATE_MY'                              { result = new PrivateMy(); }
+  | 'PUBLIC_MY'                               { result = new PublicMy(); }
+  | 'PUBLIC_OTHER'                            { result = new PublicOthers(); }
+  | 'PRIVATE_COND'                            { result = new PrivateConditionalMy(); }
+  | 'PUBLIC_COND'                             { result = new PublicConditionalMy(); }
   ;
 
 expression returns [IDQLValue result]
@@ -229,11 +230,11 @@ expression returns [IDQLValue result]
   | ^('LAMBDA' params=function_decl_parameters ':' EXPRESSION=.*) { Collections.reverse(params); result = new LambdaValue(params, $EXPRESSION, this.getEnvironmentContents(), this.getFunctions()); }  
   
   // literals support
-  | INT                                        { result = new IntegerValue(Integer.parseInt($INT.text), PublicMy.getInstance()); }
-  | DOUBLE                                     { result = new DoubleValue(Double.parseDouble($DOUBLE.text), PublicMy.getInstance()); }
-  | STRING_LITERAL                             { result = new StringValue(prepareString($STRING_LITERAL.text), PublicMy.getInstance()); }
-  | 'TRUE'                                     { result = new BooleanValue(true, PublicMy.getInstance()); }
-  | 'FALSE'                                    { result = new BooleanValue(false, PublicMy.getInstance()); }
+  | INT                                        { result = new IntegerValue(Integer.parseInt($INT.text), new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); }
+  | DOUBLE                                     { result = new DoubleValue(Double.parseDouble($DOUBLE.text), new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); }
+  | STRING_LITERAL                             { result = new StringValue(prepareString($STRING_LITERAL.text), new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); }
+  | 'TRUE'                                     { result = new BooleanValue(true, new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); }
+  | 'FALSE'                                    { result = new BooleanValue(false, new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); }
     
   // privacy handling
   | ^('AS' e=expression type=type_rule)        { e.checkType(type); result = e; }

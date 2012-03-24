@@ -9,8 +9,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nebulostore.query.executor.ExecutorContext;
 import org.nebulostore.query.language.interpreter.antlr.TreeWalker;
+import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
+import org.nebulostore.query.language.interpreter.datasources.InjectedDataSource;
+import org.nebulostore.query.language.interpreter.datatypes.values.BooleanValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
+import org.nebulostore.query.privacy.level.PublicMy;
 
 public class DQLInterpreter {
 
@@ -25,15 +29,22 @@ public class DQLInterpreter {
     return new InterpreterState(context_);
   }
 
-  public PreparedQuery prepareQuery(String query, String sender)
-      throws InterpreterException {
-    return new PreparedQuery(query, sender);
+  public PreparedQuery prepareQuery(String query, String sender, int maxDepth,
+      int currentDepth) throws InterpreterException {
+    return new PreparedQuery(query, sender, maxDepth, currentDepth);
   }
 
   public InterpreterState runGather(PreparedQuery query, InterpreterState state)
       throws InterpreterException {
     // TODO: Query ID here
     log.info("called for query ");
+
+    // TODO: Maybe introduce statefulQuery?
+    DataSourcesSet set = new DataSourcesSet();
+    set.add(InjectedDataSource.getInstance(InjectedDataSource.LEAF_EXECUTION));
+    state.getEnvironment().put("LEAF_EXECUTION",
+        new BooleanValue(query.isLeafQuery(), new PublicMy(set)));
+
     TreeWalker walker = state.prepareEnvironment(new TreeWalker(
         new CommonTreeNodeStream(query.getGatherTree())));
 
@@ -82,7 +93,6 @@ public class DQLInterpreter {
     TreeWalker walker = state.prepareEnvironment(new TreeWalker(
         new CommonTreeNodeStream(query.getReduceTree())));
 
-    // TODO : move it to interpreterState once we have good FORWARD support
     Map<String, IDQLValue> dummyMap = new HashMap<String, IDQLValue>();
     dummyMap.put("DQL_RESULTS", state.getForwardResults());
 

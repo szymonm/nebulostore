@@ -1,39 +1,39 @@
 package org.nebulostore.communication.jxta;
 
-import java.io.DataInput;
-import java.io.DataInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.text.MessageFormat;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import net.jxta.document.AdvertisementFactory;
-import net.jxta.impl.id.CBID.PipeID;
 import net.jxta.peergroup.PeerGroup;
+import net.jxta.pipe.PipeID;
 import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaServerSocket;
+import net.jxta.socket.JxtaSocket;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.jxta.utils.IDFactory;
+import org.nebulostore.communication.streambinding.IStreamBindingDriver;
+import org.nebulostore.communication.streambinding.StreamBindingService;
 
 /**
  * @author Marcin Walas
  */
-public class SocketServer implements Runnable {
+public class SocketServer implements Runnable, IStreamBindingDriver {
 
   private static Logger logger_ = Logger.getLogger(SocketServer.class);
 
   public static final String SOCKETIDSTR = "socketServerAdv";
   private transient PeerGroup netPeerGroup_;
-  private final ExecutorService pool_;
+
+  private StreamBindingService streamBindingService_;
 
   public SocketServer(PeerGroup netPeerGroup) {
-    pool_ = Executors.newCachedThreadPool();
-    this.netPeerGroup_ = netPeerGroup;
+    netPeerGroup_ = netPeerGroup;
   }
 
   public PipeAdvertisement createSocketAdvertisement() {
@@ -67,81 +67,97 @@ public class SocketServer implements Runnable {
       return;
     }
 
+    while (streamBindingService_ == null) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+      }
+    }
+
     while (true) {
       try {
         logger_.debug("Waiting for connections");
         Socket socket = serverSocket.accept();
-        if (socket != null) {
-          logger_.debug("New socket connection accepted");
-          pool_.execute(new ConnectionHandler(socket));
+        logger_.debug("Connection established!");
+
+        InputStream inStream = socket.getInputStream();
+        BufferedInputStream buffStream = new BufferedInputStream(inStream);
+
+        byte[] jobIdByte = new byte[buffStream.read()];
+        buffStream.read(jobIdByte);
+        String jobId = new String(jobIdByte);
+
+        byte[] streamIdByte = new byte[buffStream.read()];
+        buffStream.read(streamIdByte);
+        String streamId = new String(streamIdByte);
+
+        logger_.debug("Description of socket fully read.");
+
+        if (jobId != null && jobId.equals("")) {
+          jobId = null;
         }
+
+        if (jobId != null && streamId.equals("")) {
+          streamId = null;
+        }
+        streamBindingService_.bindStream(inStream, jobId, streamId);
+
       } catch (IOException e) {
         logger_.error("Exception: ", e);
       }
     }
   }
 
-  /**
-   * @author Marcin Walas
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.nebulostore.communication.streambinding.IStreamBindingDriver#bindStream
+   * (org.nebulostore.communication.address.CommAddress, java.lang.String,
+   * java.lang.String, long)
    */
-  private class ConnectionHandler implements Runnable {
-    Socket socket_;
+  @Override
+  public OutputStream bindStream(CommAddress address, String jobId,
+      String streamId, long timeout) throws IOException {
 
-    ConnectionHandler(Socket socket) {
-      socket_ = socket;
+    logger_.debug("Connection requested with: " + address.toString() + " timeout: " + timeout);
+
+    if (jobId == null) {
+      jobId = "";
     }
 
-    /**
-     * Sends data over socket.
-     *
-     * @param socket
-     *          the socket
-     */
-    private void sendAndReceiveData(Socket socket) {
-      try {
-
-        long start = System.currentTimeMillis();
-
-        // get the socket output stream
-        OutputStream out = socket.getOutputStream();
-        // get the socket input stream
-        InputStream in = socket.getInputStream();
-        DataInput dis = new DataInputStream(in);
-
-        long iterations = dis.readLong();
-        int size = dis.readInt();
-        long total = iterations * size * 2L;
-        long current = 0;
-
-        logger_.debug(MessageFormat.format("Sending/Receiving {0} bytes.",
-            total));
-        while (current < iterations) {
-          byte[] buf = new byte[size];
-          dis.readFully(buf);
-          out.write(buf);
-          out.flush();
-          current++;
-        }
-
-        out.close();
-        in.close();
-
-        long finish = System.currentTimeMillis();
-        long elapsed = finish - start;
-        logger_.debug(MessageFormat.format(
-            "EOT. Received {0} bytes in {1} ms. Throughput = {2} KB/sec.",
-            total, elapsed, (total / elapsed) * 1000 / 1024));
-        socket.close();
-        logger_.debug("Connection closed");
-      } catch (IOException ie) {
-        ie.printStackTrace();
-      }
+    if (streamId == null) {
+      streamId = "";
     }
 
-    @Override
-    public void run() {
-      //newFixedThreadPool(10);
+    if (jobId.getBytes().length > 255 || streamId.getBytes().length > 255) {
+      throw new IOException("Illegal jobId(" + jobId.getBytes().length +
+          " or streamId(" + streamId.getBytes().length + ") length");
     }
+
+    logger_.debug("Watiting for socket handshake...");
+
+    Socket socket = new JxtaSocket(netPeerGroup_, address.getPeerId(),
+        createSocketAdvertisement(), (int) timeout, true);
+
+    logger_.debug("Writing socket description.");
+
+    OutputStream outStream = socket.getOutputStream();
+
+    outStream.write(jobId.getBytes().length);
+    outStream.write(jobId.getBytes());
+
+    outStream.write(streamId.getBytes().length);
+    outStream.write(streamId.getBytes());
+
+    outStream.flush();
+
+    logger_.debug("Socket should be opened. Returning.");
+    return outStream;
   }
 
+  public void setStreamBindingService(StreamBindingService s) {
+    streamBindingService_ = s;
+  }
 }

@@ -103,9 +103,9 @@ STRING_LITERAL
 privacy_decl 
   : 'PRIVATE_MY'
   | 'PUBLIC_MY'
-  | 'PRIVATE_COND_MY'^ '<'! expression '>'! 
+  | 'PRIVATE_COND_MY' 
   | 'PUBLIC_OTHER'
-  | 'PRIVATE_COND_OTHER' '<'! expression '>'!
+  | 'PUBLIC_COND'
   ;
 
 

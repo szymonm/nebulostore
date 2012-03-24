@@ -31,7 +31,7 @@ public class TupleValue extends DQLValue {
   }
 
   public TupleValue() {
-    super(PublicMy.getInstance());
+    super(new PublicMy());
     values_ = new LinkedList<IDQLValue>();
     types_ = new LinkedList<DQLType>();
     size_ = 0;

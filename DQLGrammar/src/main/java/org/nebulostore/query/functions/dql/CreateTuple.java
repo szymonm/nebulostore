@@ -28,7 +28,7 @@ public class CreateTuple extends DQLFunction {
   public IDQLValue call(List<IDQLValue> params) throws FunctionCallException,
       InterpreterException, RecognitionException {
     LinkedList<DQLType> types = new LinkedList<DQLType>();
-    PrivacyLevel privacyLevel = PublicMy.getInstance();
+    PrivacyLevel privacyLevel = new PublicMy();
     for (IDQLValue value : params) {
       types.add(value.getType());
       privacyLevel = privacyLevel.generalize(value.getPrivacyLevel());

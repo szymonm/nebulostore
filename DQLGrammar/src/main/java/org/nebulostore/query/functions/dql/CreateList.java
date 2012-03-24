@@ -36,7 +36,7 @@ public class CreateList extends DQLFunction {
 
     if (ret == null) {
       ret = new ListValue(new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLDouble),
-          PrivateMy.getInstance());
+          new PrivateMy());
     }
 
     return ret;

@@ -43,10 +43,10 @@ public class Sum extends DQLFunction {
     switch (((DQLPrimitiveType) ((DQLComplexType) ((ListValue) params.get(0))
         .getType()).getComplexTypeContents().get(0)).getTypeEnum()) {
     case DQLDouble:
-      startValue = new DoubleValue(0.0, PublicMy.getInstance());
+      startValue = new DoubleValue(0.0, new PublicMy());
       break;
     case DQLInteger:
-      startValue = new IntegerValue(0, PublicMy.getInstance());
+      startValue = new IntegerValue(0, new PublicMy());
       break;
     }
     foldParams.add(startValue);

@@ -5,32 +5,33 @@ import java.util.List;
 import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
 import org.nebulostore.query.privacy.PrivacyLevel;
 
-public class PrivateMy extends PrivacyLevel {
+public class PublicConditionalMy extends PrivacyLevel {
 
-  public PrivateMy(List<DataSourcesSet> dataSources) {
+  public PublicConditionalMy() {
+
+  }
+
+  public PublicConditionalMy(List<DataSourcesSet> dataSources) {
     super(dataSources);
   }
 
-  public PrivateMy(DataSourcesSet dataSources_) {
-    super(dataSources_);
-  }
-
-  public PrivateMy() {
+  public PublicConditionalMy(DataSourcesSet dataSources) {
+    super(dataSources);
   }
 
   @Override
   public String toString() {
-    return "PrivateMy";
+    return "PublicConditionalMy";
   }
 
   @Override
   protected PrivacyLevel freshCopy() {
-    return new PrivateMy(dataSources_);
+    return new PublicConditionalMy(dataSources_);
   }
 
   @Override
   public boolean equals(Object o) {
     // TODO: Czy to jest poprawne
-    return o instanceof PrivateMy;
+    return o instanceof PublicConditionalMy;
   }
 }
