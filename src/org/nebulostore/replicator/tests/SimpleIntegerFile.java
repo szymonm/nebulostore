@@ -1,5 +1,8 @@
 package org.nebulostore.replicator.tests;
 
+import java.math.BigInteger;
+
+import org.nebulostore.addressing.AppKey;
 import org.nebulostore.appcore.NebuloFile;
 
 /**
@@ -12,7 +15,7 @@ public class SimpleIntegerFile extends NebuloFile {
   private Integer integer_;
 
   public SimpleIntegerFile(Integer integer) {
-    super();
+    super(new AppKey(BigInteger.ONE));
     this.integer_ = integer;
   }
 

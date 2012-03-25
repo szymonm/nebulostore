@@ -44,7 +44,7 @@ public class StoreObjectMessage extends CommMessage {
 
   @Override
   public JobModule getHandler() {
-    return new Replicator(null, null);
+    return new Replicator(jobId_, null, null);
   }
 
 }

@@ -11,51 +11,34 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.crypto.CryptoException;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
-import org.nebulostore.replicator.messages.GetObjectMessage;
+import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
-import org.nebulostore.replicator.messages.SendObjectMessage;
+import org.nebulostore.replicator.messages.StoreObjectMessage;
 
 /**
  * @author bolek
- * Job module that fetches an existing object from NebuloStore.
- * TODO(bolek): Change name into GetNebuloObjectModule?
  */
-public class GetNebuloFileModule extends ApiModule<NebuloObject> {
+public class WriteNebuloFileModule extends ApiModule<Void> {
 
-  private final NebuloAddress address_;
-  private final StateMachineVisitor visitor_;
-  private CommAddress queryAddress_;
+  private NebuloAddress address_;
+  private NebuloObject object_;
+  private StateMachineVisitor visitor_;
 
   private static Logger logger_ = Logger.getLogger(GetNebuloFileModule.class);
-
-  public GetNebuloFileModule(NebuloAddress nebuloKey) {
-    address_ = nebuloKey;
-    visitor_ = new StateMachineVisitor();
-  }
 
   /*
    * Constructor that runs newly created module.
    */
-  public GetNebuloFileModule(NebuloAddress nebuloKey, BlockingQueue<Message> dispatcherQueue) {
-    address_ = nebuloKey;
-    visitor_ = new StateMachineVisitor();
-    runThroughDispatcher(dispatcherQueue);
-  }
-
-  /*
-   * Constructor that runs newly created module in the ADDRESS_GIVEN mode.
-   */
-  public GetNebuloFileModule(NebuloAddress nebuloKey, CommAddress replicaAddress,
+  public WriteNebuloFileModule(NebuloAddress nebuloKey, NebuloObject object,
       BlockingQueue<Message> dispatcherQueue) {
     address_ = nebuloKey;
-    queryAddress_ = replicaAddress;
+    object_ = object;
     visitor_ = new StateMachineVisitor();
     runThroughDispatcher(dispatcherQueue);
   }
@@ -63,7 +46,7 @@ public class GetNebuloFileModule extends ApiModule<NebuloObject> {
   /**
    * States of the state machine.
    */
-  private enum STATE { INIT, DHT_QUERY, REPLICA_FETCH, FILE_RECEIVED, ADDRESS_GIVEN };
+  private enum STATE { INIT, DHT_QUERY, REPLICA_UPDATE, DONE };
 
   /**
    * Visitor class that acts as a state machine realizing the procedure of fetching the file.
@@ -84,11 +67,7 @@ public class GetNebuloFileModule extends ApiModule<NebuloObject> {
 
         logger_.debug("Adding GetDHT to network queue (" + address_.getAppKey() + ", " +
             jobId_ + ").");
-        networkQueue_.add(new GetDHTMessage(jobId_,
-            new KeyDHT(address_.getAppKey().getKey())));
-      } else if (state_ == STATE.ADDRESS_GIVEN) {
-        state_ = STATE.REPLICA_FETCH;
-        queryReplica(queryAddress_);
+        networkQueue_.add(new GetDHTMessage(jobId_, new KeyDHT(address_.getAppKey().getKey())));
       } else {
         logger_.warn("JobInitMessage received in state " + state_.name());
       }
@@ -101,8 +80,9 @@ public class GetNebuloFileModule extends ApiModule<NebuloObject> {
 
         // State 2 - Receive reply from DHT and iterate over logical path segments asking
         // for consecutive parts.
-        state_ = STATE.REPLICA_FETCH;
+        state_ = STATE.REPLICA_UPDATE;
         // TODO(bolek): How to avoid casting here? Make ValueDHTMessage generic?
+        // TODO(bolek): Merge this with similar part from GetNebuloFileModule?
         Metadata metadata = (Metadata) message.getValue().getValue();
         ContractList contractList = metadata.getContractList();
         ReplicationGroup group = contractList.getGroup(address_.getObjectId());
@@ -110,33 +90,24 @@ public class GetNebuloFileModule extends ApiModule<NebuloObject> {
           endWithError(new NebuloException("No peers replicating this object."));
         }
         // TODO(bolek): Ask other replicas if first query is unsuccessful.
-        queryReplica(group.getReplicator(0));
+        // Source address will be added by Network module.
+        try {
+          networkQueue_.add(new StoreObjectMessage(jobId_, null, group.getReplicator(0),
+              address_.getObjectId(), CryptoUtils.encryptNebuloObject(object_)));
+        } catch (CryptoException exception) {
+          endWithError(new NebuloException("Unable to encrypt object.", exception));
+        }
       } else {
         logger_.warn("ValueDHTMessage received in state " + state_.name());
       }
       return null;
     }
 
-    public void queryReplica(CommAddress replicaAddress) {
-      // Source address will be added by Network module.
-      networkQueue_.add(new GetObjectMessage(jobId_, null, replicaAddress, address_.getObjectId()));
-    }
-
     @Override
-    public Void visit(SendObjectMessage message) {
-      if (state_ == STATE.REPLICA_FETCH) {
-        NebuloObject nebuloObject;
-        try {
-          nebuloObject = CryptoUtils.decryptNebuloObject(message.encryptedEntity_);
-          nebuloObject.setSender(message.getSourceAddress());
-        } catch (CryptoException exception) {
-          // TODO(bolek): Error not fatal? Retry?
-          endWithError(exception);
-          return null;
-        }
-        // State 3 - Finally got the file, return it;
-        state_ = STATE.FILE_RECEIVED;
-        endWithSuccess(nebuloObject);
+    public Void visit(ConfirmationMessage message) {
+      if (state_ == STATE.REPLICA_UPDATE) {
+        state_ = STATE.DONE;
+        endWithSuccess(null);
       } else {
         logger_.warn("SendObjectMessage received in state " + state_);
       }
@@ -145,7 +116,7 @@ public class GetNebuloFileModule extends ApiModule<NebuloObject> {
 
     @Override
     public Void visit(ReplicatorErrorMessage message) {
-      if (state_ == STATE.REPLICA_FETCH) {
+      if (state_ == STATE.REPLICA_UPDATE) {
         // TODO(bolek): ReplicatorErrorMessage should contain exception instead of string.
         endWithError(new NebuloException(message.getMessage()));
       } else {

@@ -1,23 +1,24 @@
 package org.nebulostore.addressing;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
  * Application Key.
  */
 public class AppKey implements Serializable {
   private static final long serialVersionUID = -5977296486784377545L;
-  private String key_;
+  private BigInteger key_;
 
-  public AppKey(String key) {
+  public AppKey(BigInteger key) {
     key_ = key;
   }
 
-  public String getKey() {
+  public BigInteger getKey() {
     return key_;
   }
 
-  public void setKey(String key) {
+  public void setKey(BigInteger key) {
     key_ = key;
   }
 }

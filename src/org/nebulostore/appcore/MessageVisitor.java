@@ -24,7 +24,6 @@ import org.nebulostore.replicator.messages.GetObjectMessage;
 import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.StoreObjectMessage;
-import org.nebulostore.replicator.messages.UpdateObjectMessage;
 
 /**
  * Generic Message visitor class.
@@ -70,9 +69,6 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
   public R visit(ReplicatorErrorMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-  public R visit(UpdateObjectMessage message) throws NebuloException {
     return visitDefault(message);
   }
 

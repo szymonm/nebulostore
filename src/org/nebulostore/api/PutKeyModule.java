@@ -7,12 +7,10 @@ import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ContractList;
 import org.nebulostore.addressing.IntervalCollisionException;
-import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.addressing.ReplicationGroup;
-import org.nebulostore.appcore.EncryptedEntity;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.NebuloFile;
+import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
@@ -21,9 +19,7 @@ import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
-import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
-import org.nebulostore.replicator.Replicator;
 
 /**
  * @author bolek
@@ -73,41 +69,18 @@ public class PutKeyModule extends ApiModule<Void> {
         state_ = STATE.DHT_INSERT;
         jobId_ = message.getId();
 
-        /*
-         * THIS IS ONLY FOR TESTING PURPOSES AND WILL BE GONE WHEN OTHER API METHODS ARE IMPLEMENTED
-         *
-         * Create top-level directory with one file inside it. Store both objects in my replicator.
-         * Create a mapping in DHT form my AppKey into a list of replicas containing only
-         * my address.
-         */
-        CommAddress myAddr = CommunicationPeer.getPeerAddress();
-
-        // File 'file1'.
-        ObjectId fileId = new ObjectId(new BigInteger("2"));
-        NebuloFile file1 = new NebuloFile("test file".getBytes());
-        try {
-          EncryptedEntity encryptedFile = CryptoUtils.encryptNebuloObject(file1);
-          Replicator.storeObject(fileId, encryptedFile);
-        } catch (NebuloException exception) {
-          endWithError(new NebuloException("Error while creating sample file", exception));
-        }
-        /*
-         * END OF TEST
-         */
-
         // List of top-dir replicators stored in DHT.
-        // TODO(bolek): is it always a new dir? should addresses be taken from broker at this point?
-        ContractList dhtValue = new ContractList();
+        ContractList contractList = new ContractList();
         try {
-          dhtValue.addGroup(new ReplicationGroup(new CommAddress[]{myAddr}, new BigInteger("0"),
-              new BigInteger("100")));
+          // TODO(bolek): Remove this - it adds a single group with owner's address (testing).
+          CommAddress myAddr = CommunicationPeer.getPeerAddress();
+          contractList.addGroup(new ReplicationGroup(new CommAddress[]{myAddr}, new BigInteger("0"),
+              new BigInteger("1000000")));
         } catch (IntervalCollisionException exception) {
           endWithError(new NebuloException("Error while creating replication group", exception));
         }
-        // TODO: MBW : App key pewnie powinno nie być stringiem, tylko jakimś BigIntem?
-        networkQueue_.add(new PutDHTMessage(jobId_,
-            new KeyDHT(new BigInteger(appKey_.getKey().getBytes())),
-            new ValueDHT(dhtValue)));
+        networkQueue_.add(new PutDHTMessage(jobId_, new KeyDHT(appKey_.getKey()),
+            new ValueDHT(new Metadata(appKey_, contractList))));
       } else {
         logger_.warn("JobInitMessage received in state " + state_);
       }

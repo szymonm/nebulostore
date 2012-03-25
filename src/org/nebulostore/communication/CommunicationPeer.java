@@ -38,7 +38,8 @@ public class CommunicationPeer extends Module {
   private final BlockingQueue<Message> dhtInQueue_;
 
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
-  private static String CONFIGURATION_PATH_ = "resources/conf/communication/CommunicationPeer.xml";
+  private static final String CONFIGURATION_PATH =
+      "resources/conf/communication/CommunicationPeer.xml";
 
   private static JXTAPeer currJxtaPeer_;
 
@@ -51,9 +52,9 @@ public class CommunicationPeer extends Module {
 
     XMLConfiguration config = null;
     try {
-      config = new XMLConfiguration(CONFIGURATION_PATH_);
+      config = new XMLConfiguration(CONFIGURATION_PATH);
     } catch (ConfigurationException cex) {
-      logger_.error("Configuration read error in: " + CONFIGURATION_PATH_);
+      logger_.error("Configuration read error in: " + CONFIGURATION_PATH);
     }
 
     jxtaPeerInQueue_ = new LinkedBlockingQueue<Message>();

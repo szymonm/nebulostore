@@ -1,9 +1,12 @@
 package org.nebulostore.addressing;
 
+import java.io.Serializable;
+
 /**
  * (AppKey, ObjectId) pair uniquely identifying object.
  */
-public class NebuloAddress {
+public class NebuloAddress implements Serializable {
+  private static final long serialVersionUID = 673007553164628096L;
   private final AppKey appKey_;
   private final ObjectId objectId_;
 
@@ -16,7 +19,7 @@ public class NebuloAddress {
     return objectId_;
   }
 
-  public AppKey getGroupId() {
+  public AppKey getAppKey() {
     return appKey_;
   }
 }

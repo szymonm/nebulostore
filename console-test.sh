@@ -2,32 +2,38 @@
 
 # Instructions:
 #
-# 1. Set a valid path in 'resources/conf/communication/BdbPeer_holder.xml'
-#    to a dir with rw permissions (or leave '/tmp/' if it is ok).
-# 2. Run ./console-test.sh
-# 3. On first terminal (database holder):
+# 1. Run ./console-test.sh
+# 2. On first terminal:
 #       cd build/jar/1/
 #       java -jar Nebulostore.jar
-# 4. On second terminal (proxy):
+# 3. On second terminal:
 #       cd build/jar/2/
 #       java -jar Nebulostore.jar
 #       (wait a few seconds)
 #       (press enter to see the command prompt)
-#       (type "put" and press enter)
-#       (expect message "Successfully received key (appkey)")
-# 5. Now instance 2 of NebuloStore has called putKey() API method that additionally
-#    created her topdir with one file. This instance itself is the only replica of
-#    both dir and file. DHT contains addresses of topdir
-#    replicas (= single entry with instance 2 address).
-# 6. On first terminal:
+#       type "putkey" and press enter
+#       (expect message "Successfully executed putKey(9999).")
+# 4. On third terminal (not on terminal 2!):
 #       (press enter to see the command prompt)
-#       (type "get" and press enter)
+#       type "write" and press enter
+#       (expect messages "Successfully created new file." and "Successfully written 24 bytes.")
+# 5. On terminal 1 or 3 (not on terminal 2!):
+#       (press enter to see the command prompt)
+#       type "read" and press enter
 #       (expect message "Successfully received file!")
-# 7. Now first instance has called getNebuloFile() with a correct path and received
-#    instance2's file. The file is saved into "pliczek" - check if it contains reasonable
-#    data.
+# 6. The file is saved into "pliczek" - check if it contains reasonable data.
 #
-# 8. Details about keys and file names can be found in PutKeyModule.java and TextInterface.java.
+# 7. Details about commands and file names can be found in
+#    TextInterface.java - feel free to experiment!
+
+
+
+# Instructions to run on BDB DHT:
+#
+# 1. Change provider to "bdb" in resources/conf/communication/CommunicationPeer.xml
+# 2. Set a valid path in 'resources/conf/communication/BdbPeer_holder.xml'
+#    to a dir with rw permissions (or leave '/tmp/' if it is ok).
+# 3. Continue with previous instructions.
 
 
 BUILD_DIR="build"

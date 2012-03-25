@@ -22,7 +22,6 @@ import org.nebulostore.replicator.messages.GetObjectMessage;
 import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.StoreObjectMessage;
-import org.nebulostore.replicator.messages.UpdateObjectMessage;
 
 /**
  * @author szymonmatejczyk
@@ -35,8 +34,8 @@ public class Replicator extends JobModule {
   private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
   private static Logger logger_ = Logger.getLogger(Replicator.class);
 
-  public Replicator(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
-    super();
+  public Replicator(String jobId, BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
+    super(jobId);
     setInQueue(inQueue);
     setOutQueue(outQueue);
     visitor_ = new ReplicatorVisitor();
@@ -68,22 +67,9 @@ public class Replicator extends JobModule {
       if (enc == null) {
         dieWithError(message.getId(), message.getDestinationAddress(),
             message.getSourceAddress(), "Unable to retrieve object.");
-      }
-
-      networkQueue_.add(new SendObjectMessage(message.getId(), message
-          .getDestinationAddress(), message.getSourceAddress(), enc));
-      return null;
-    }
-
-    public Void visit(UpdateObjectMessage message) {
-      try {
-        updateObject(message.getObjectId(), message.getEncryptedEntity());
-        networkQueue_.add(new ConfirmationMessage(message.getId(), message
-            .getDestinationAddress(), message.getSourceAddress()));
-      } catch (SaveException exception) {
-        logger_.warn(exception.toString());
-        dieWithError(message.getId(), message.getDestinationAddress(),
-            message.getSourceAddress(), exception.getMessage());
+      } else {
+        networkQueue_.add(new SendObjectMessage(message.getId(), message.getDestinationAddress(),
+            message.getSourceAddress(), enc));
       }
       return null;
     }
@@ -117,15 +103,26 @@ public class Replicator extends JobModule {
   /*
    * Static methods.
    */
-
   public static void storeObject(ObjectId objectId, EncryptedEntity encryptedEntity)
     throws SaveException {
-    if (filesLocations_.containsKey(objectId)) {
+    String location = filesLocations_.get(objectId);
+    if (location == null) {
+      location = getLocationPrefix() + objectId.toString();
+      filesLocations_.put(objectId, location);
+    }
+
+    FileOutputStream fos = null;
+    try {
+      File f = new File(location);
+      f.getParentFile().mkdirs();
+      fos = new FileOutputStream(f);
+      fos.write(encryptedEntity.getEncryptedData());
+      fos.close();
+    } catch (IOException exception) {
+      logger_.error(exception.getMessage());
+      // TODO(szm): printStackTrace?
       throw new SaveException();
     }
-    String location = getLocationPrefix() + objectId.toString();
-    filesLocations_.put(objectId, location);
-    updateObject(objectId, encryptedEntity);
   }
 
   public static EncryptedEntity getObject(ObjectId objectId) {
@@ -149,26 +146,6 @@ public class Replicator extends JobModule {
     } catch (IOException exception) {
       logger_.warn(exception.toString());
       return null;
-    }
-  }
-
-  private static void updateObject(ObjectId objectId, EncryptedEntity encryptedEntity)
-    throws SaveException {
-    String location = filesLocations_.get(objectId);
-    if (location == null)
-      throw new SaveException();
-
-    FileOutputStream fos = null;
-    try {
-      File f = new File(location);
-      f.getParentFile().mkdirs();
-      fos = new FileOutputStream(f);
-      fos.write(encryptedEntity.getEncryptedData());
-      fos.close();
-    } catch (IOException exception) {
-      logger_.error(exception.getMessage());
-      // TODO(szm): printStackTrace?
-      throw new SaveException();
     }
   }
 

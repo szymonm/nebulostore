@@ -20,8 +20,8 @@ import org.nebulostore.appcore.NebuloObject;
  */
 public final class CryptoUtils {
 
-  public static String getRandomName() {
-    return new BigInteger(130, RANDOM).toString(32);
+  public static BigInteger getRandomId() {
+    return new BigInteger(130, RANDOM);
   }
 
   // TODO: Encryption must use cryptographic keys (add parameters?)
@@ -32,6 +32,14 @@ public final class CryptoUtils {
   public static NebuloObject decryptNebuloObject(EncryptedEntity encryptedObject) throws
       CryptoException {
     return (NebuloObject) deserializeObject(encryptedObject.getEncryptedData());
+  }
+
+  public static byte[] encryptData(byte[] data) {
+    return data;
+  }
+
+  public static byte[] decryptData(byte[] data) {
+    return data;
   }
 
   public static byte[] serializeObject(Serializable object) throws CryptoException {

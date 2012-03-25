@@ -15,6 +15,14 @@ public abstract class JobModule extends Module {
   protected BlockingQueue<Message> networkQueue_;
   protected String jobId_;
 
+  public JobModule() {
+    jobId_ = null;
+  }
+
+  public JobModule(String jobId) {
+    jobId_ = jobId;
+  }
+
   public void setNetworkQueue(BlockingQueue<Message> networkQueue) {
     networkQueue_ = networkQueue;
   }
@@ -23,7 +31,7 @@ public abstract class JobModule extends Module {
    * Run this module through a JobInitMessage (with new random ID) sent to Dispatcher.
    */
   protected void runThroughDispatcher(BlockingQueue<Message> dispatcherQueue) {
-    jobId_ = CryptoUtils.getRandomName();
+    jobId_ = CryptoUtils.getRandomId().toString();
     dispatcherQueue.add(new JobInitMessage(jobId_, this));
   }
 

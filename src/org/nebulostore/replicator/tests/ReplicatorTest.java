@@ -29,7 +29,7 @@ public class ReplicatorTest {
 
   private BlockingQueue<Message> inQueue_ = new LinkedBlockingQueue<Message>();
   private BlockingQueue<Message> networkQueue_ = new LinkedBlockingQueue<Message>();
-  private Replicator replicator_ = new Replicator(inQueue_, null);
+  private Replicator replicator_ = new Replicator(null, inQueue_, null);
 
   private Thread replicatorThread_;
 

@@ -1,5 +1,8 @@
 package org.nebulostore.replicator.tests;
 
+import java.math.BigInteger;
+
+import org.nebulostore.addressing.AppKey;
 import org.nebulostore.appcore.NebuloFile;
 
 /**
@@ -10,7 +13,7 @@ public class SimpleStringFile extends NebuloFile {
   private String string_;
 
   public SimpleStringFile(String string) {
-    super();
+    super(new AppKey(BigInteger.ONE));
     string_ = string;
   }
 
