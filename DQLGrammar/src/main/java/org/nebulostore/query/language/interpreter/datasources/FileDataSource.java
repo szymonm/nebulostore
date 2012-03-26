@@ -37,4 +37,9 @@ public class FileDataSource extends DQLDataSource {
     return false;
   }
 
+  @Override
+  public String toString() {
+    return "FileDataSource(" + fileName_ + ")";
+  }
+
 }

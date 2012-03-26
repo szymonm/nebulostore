@@ -226,7 +226,7 @@ expression returns [IDQLValue result]
    
   // vars and func_calls  
   | ID                                         { result = envGet($ID.text); }  
-  | ^(ID call_params=function_call_parameters) { Collections.reverse(call_params); result = call($ID.text, call_params); }
+  | ^(ID '(' call_params=function_call_parameters ')' ) { Collections.reverse(call_params); result = call($ID.text, call_params); }
   | ^('LAMBDA' params=function_decl_parameters ':' EXPRESSION=.*) { Collections.reverse(params); result = new LambdaValue(params, $EXPRESSION, this.getEnvironmentContents(), this.getFunctions()); }  
   
   // literals support
@@ -238,7 +238,7 @@ expression returns [IDQLValue result]
     
   // privacy handling
   | ^('AS' e=expression type=type_rule)        { e.checkType(type); result = e; }
-  | ^('IS' e=expression level=privacy_decl)    { e.setPrivacyLevel(level); result = e; }
+  | ^('IS' e=expression level=privacy_decl)    { e.setPrivacyLevel(e.getPrivacyLevel().generalize(level)); result = e; }
   ;
   catch[InterpreterException exc] {    
     System.out.println("Error catch at query level"); 

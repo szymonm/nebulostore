@@ -5,4 +5,7 @@ public abstract class DQLDataSource {
 
   @Override
   public abstract boolean equals(Object other);
+
+  @Override
+  public abstract String toString();
 }

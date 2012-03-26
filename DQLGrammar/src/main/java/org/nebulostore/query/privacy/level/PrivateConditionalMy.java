@@ -20,12 +20,7 @@ public class PrivateConditionalMy extends PrivacyLevel {
   }
 
   @Override
-  public String toString() {
-    return "PrivateConditionalMy";
-  }
-
-  @Override
-  protected PrivacyLevel freshCopy() {
+  public PrivacyLevel freshCopy() {
     return new PrivateConditionalMy(dataSources_);
   }
 
@@ -33,5 +28,10 @@ public class PrivateConditionalMy extends PrivacyLevel {
   public boolean equals(Object o) {
     // TODO: Czy to jest poprawne
     return o instanceof PrivateConditionalMy;
+  }
+
+  @Override
+  public String toString() {
+    return "PrivateConditionalMy " + super.toString();
   }
 }

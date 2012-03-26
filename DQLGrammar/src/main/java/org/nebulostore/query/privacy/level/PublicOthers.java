@@ -19,12 +19,7 @@ public class PublicOthers extends PrivacyLevel {
   }
 
   @Override
-  public String toString() {
-    return "PublicOthers";
-  }
-
-  @Override
-  protected PrivacyLevel freshCopy() {
+  public PrivacyLevel freshCopy() {
     return new PublicOthers(dataSources_);
   }
 
@@ -34,4 +29,8 @@ public class PublicOthers extends PrivacyLevel {
     return o instanceof PublicOthers;
   }
 
+  @Override
+  public String toString() {
+    return "PublicOthers " + super.toString();
+  }
 }

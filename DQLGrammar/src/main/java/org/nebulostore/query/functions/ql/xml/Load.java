@@ -46,7 +46,7 @@ public class Load extends DQLFunction {
       DataSourcesSet dataSources = new DataSourcesSet();
       dataSources.add(FileDataSource.getInstance(fileName));
 
-      return new StringValue(fileContents, new PrivateMy());
+      return new StringValue(fileContents, new PrivateMy(dataSources));
 
     } catch (InterpreterException e) {
       throw new FunctionCallException(e);

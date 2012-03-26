@@ -101,6 +101,11 @@ public class DQLInterpreter {
     try {
       IDQLValue returned = walker.reduce_statement();
       log.info("Returned: " + returned);
+      if (!returned.getPrivacyLevel().isMorePublicThan(new PublicMy())) {
+        throw new InterpreterException(
+            "Returned value must be public, but is: " +
+                returned.getPrivacyLevel());
+      }
     } catch (RecognitionException e) {
       throw new InterpreterException(e);
     } catch (Throwable t) {

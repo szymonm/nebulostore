@@ -37,7 +37,7 @@ public class BooleanValue extends DQLValue {
 
   @Override
   public String toString() {
-    return "Double(" + value_ + ") : " + getPrivacyLevel() + "]";
+    return "Boolean(" + value_ + ") : " + getPrivacyLevel() + "]";
   }
 
   @Override

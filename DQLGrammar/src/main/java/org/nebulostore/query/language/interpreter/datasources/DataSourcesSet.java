@@ -44,4 +44,13 @@ public class DataSourcesSet implements Iterable<DQLDataSource> {
   public Iterator<DQLDataSource> iterator() {
     return dataSources_.iterator();
   }
+
+  @Override
+  public String toString() {
+    String ret = "";
+    for (DQLDataSource source : this) {
+      ret += source.toString() + ", ";
+    }
+    return ret;
+  }
 }

@@ -31,4 +31,9 @@ public class ConstantDataSource extends DQLDataSource {
     return false;
   }
 
+  @Override
+  public String toString() {
+    return "ConstantDataSource";
+  }
+
 }

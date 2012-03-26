@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g 2012-03-24 20:50:41
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g 2012-03-26 23:49:04
 
   package org.nebulostore.query.language.interpreter.antlr;
 
@@ -13,7 +13,7 @@ import org.antlr.runtime.tree.*;
 
 public class DQLGrammarParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "NEGATION", "ID", "INT", "EXPONENT", "DOUBLE", "COMMENT", "WS", "ESC_SEQ", "STRING", "CHAR", "HEX_DIGIT", "UNICODE_ESC", "OCTAL_ESC", "STRING_LITERAL", "','", "'LAMBDA'", "':'", "'('", "')'", "'PRIVATE_MY'", "'PUBLIC_MY'", "'PRIVATE_COND_MY'", "'PUBLIC_OTHER'", "'PUBLIC_COND'", "'INTEGER'", "'DOUBLE'", "'STRING'", "'TUPLE'", "'<'", "'>'", "'LIST'", "'FILE'", "'TRUE'", "'FALSE'", "'not'", "'+'", "'-'", "'*'", "'/'", "'%'", "'='", "'!='", "'<='", "'>='", "'&&'", "'||'", "'IS'", "'AS'", "'LET'", "'GATHER'", "'FORWARD'", "'MAX'", "'DEPTH'", "'TO'", "'REDUCE'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "NEGATION", "ID", "INT", "EXPONENT", "DOUBLE", "COMMENT", "WS", "ESC_SEQ", "STRING", "CHAR", "HEX_DIGIT", "UNICODE_ESC", "OCTAL_ESC", "STRING_LITERAL", "','", "'LAMBDA'", "':'", "'('", "')'", "'PRIVATE_MY'", "'PUBLIC_MY'", "'PRIVATE_COND'", "'PUBLIC_OTHER'", "'PUBLIC_COND'", "'INTEGER'", "'DOUBLE'", "'STRING'", "'TUPLE'", "'<'", "'>'", "'LIST'", "'FILE'", "'TRUE'", "'FALSE'", "'not'", "'+'", "'-'", "'*'", "'/'", "'%'", "'='", "'!='", "'<='", "'>='", "'&&'", "'||'", "'IS'", "'AS'", "'LET'", "'GATHER'", "'FORWARD'", "'MAX'", "'DEPTH'", "'TO'", "'REDUCE'"
     };
     public static final int EOF=-1;
     public static final int T__18=18;
@@ -423,7 +423,10 @@ public class DQLGrammarParser extends Parser {
             root_0 = (CommonTree)adaptor.becomeRoot(ID14_tree, root_0);
 
             char_literal15=(Token)match(input,21,FOLLOW_21_in_function_call700); 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:95:12: ( function_call_parameters )?
+            char_literal15_tree = (CommonTree)adaptor.create(char_literal15);
+            adaptor.addChild(root_0, char_literal15_tree);
+
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:95:11: ( function_call_parameters )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -432,9 +435,9 @@ public class DQLGrammarParser extends Parser {
             }
             switch (alt3) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:95:12: function_call_parameters
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:95:11: function_call_parameters
                     {
-                    pushFollow(FOLLOW_function_call_parameters_in_function_call703);
+                    pushFollow(FOLLOW_function_call_parameters_in_function_call702);
                     function_call_parameters16=function_call_parameters();
 
                     state._fsp--;
@@ -446,7 +449,10 @@ public class DQLGrammarParser extends Parser {
 
             }
 
-            char_literal17=(Token)match(input,22,FOLLOW_22_in_function_call706); 
+            char_literal17=(Token)match(input,22,FOLLOW_22_in_function_call705); 
+            char_literal17_tree = (CommonTree)adaptor.create(char_literal17);
+            adaptor.addChild(root_0, char_literal17_tree);
+
 
             }
 
@@ -474,7 +480,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "privacy_decl"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:103:1: privacy_decl : ( 'PRIVATE_MY' | 'PUBLIC_MY' | 'PRIVATE_COND_MY' | 'PUBLIC_OTHER' | 'PUBLIC_COND' );
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:103:1: privacy_decl : ( 'PRIVATE_MY' | 'PUBLIC_MY' | 'PRIVATE_COND' | 'PUBLIC_OTHER' | 'PUBLIC_COND' );
     public final DQLGrammarParser.privacy_decl_return privacy_decl() throws RecognitionException {
         DQLGrammarParser.privacy_decl_return retval = new DQLGrammarParser.privacy_decl_return();
         retval.start = input.LT(1);
@@ -486,7 +492,7 @@ public class DQLGrammarParser extends Parser {
         CommonTree set18_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:104:3: ( 'PRIVATE_MY' | 'PUBLIC_MY' | 'PRIVATE_COND_MY' | 'PUBLIC_OTHER' | 'PUBLIC_COND' )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:104:3: ( 'PRIVATE_MY' | 'PUBLIC_MY' | 'PRIVATE_COND' | 'PUBLIC_OTHER' | 'PUBLIC_COND' )
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:
             {
             root_0 = (CommonTree)adaptor.nil();
@@ -550,7 +556,7 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_type_in_type_list792);
+            pushFollow(FOLLOW_type_in_type_list790);
             type19=type();
 
             state._fsp--;
@@ -571,8 +577,8 @@ public class DQLGrammarParser extends Parser {
             	case 1 :
             	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:113:10: ',' type
             	    {
-            	    char_literal20=(Token)match(input,18,FOLLOW_18_in_type_list796); 
-            	    pushFollow(FOLLOW_type_in_type_list799);
+            	    char_literal20=(Token)match(input,18,FOLLOW_18_in_type_list794); 
+            	    pushFollow(FOLLOW_type_in_type_list797);
             	    type21=type();
 
             	    state._fsp--;
@@ -694,7 +700,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal22=(Token)match(input,28,FOLLOW_28_in_type813); 
+                    string_literal22=(Token)match(input,28,FOLLOW_28_in_type811); 
                     string_literal22_tree = (CommonTree)adaptor.create(string_literal22);
                     adaptor.addChild(root_0, string_literal22_tree);
 
@@ -706,7 +712,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal23=(Token)match(input,29,FOLLOW_29_in_type819); 
+                    string_literal23=(Token)match(input,29,FOLLOW_29_in_type817); 
                     string_literal23_tree = (CommonTree)adaptor.create(string_literal23);
                     adaptor.addChild(root_0, string_literal23_tree);
 
@@ -718,7 +724,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal24=(Token)match(input,30,FOLLOW_30_in_type825); 
+                    string_literal24=(Token)match(input,30,FOLLOW_30_in_type823); 
                     string_literal24_tree = (CommonTree)adaptor.create(string_literal24);
                     adaptor.addChild(root_0, string_literal24_tree);
 
@@ -730,18 +736,18 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal25=(Token)match(input,31,FOLLOW_31_in_type831); 
+                    string_literal25=(Token)match(input,31,FOLLOW_31_in_type829); 
                     string_literal25_tree = (CommonTree)adaptor.create(string_literal25);
                     root_0 = (CommonTree)adaptor.becomeRoot(string_literal25_tree, root_0);
 
-                    char_literal26=(Token)match(input,32,FOLLOW_32_in_type834); 
-                    pushFollow(FOLLOW_type_list_in_type837);
+                    char_literal26=(Token)match(input,32,FOLLOW_32_in_type832); 
+                    pushFollow(FOLLOW_type_list_in_type835);
                     type_list27=type_list();
 
                     state._fsp--;
 
                     adaptor.addChild(root_0, type_list27.getTree());
-                    char_literal28=(Token)match(input,33,FOLLOW_33_in_type839); 
+                    char_literal28=(Token)match(input,33,FOLLOW_33_in_type837); 
 
                     }
                     break;
@@ -750,18 +756,18 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal29=(Token)match(input,34,FOLLOW_34_in_type846); 
+                    string_literal29=(Token)match(input,34,FOLLOW_34_in_type844); 
                     string_literal29_tree = (CommonTree)adaptor.create(string_literal29);
                     root_0 = (CommonTree)adaptor.becomeRoot(string_literal29_tree, root_0);
 
-                    char_literal30=(Token)match(input,32,FOLLOW_32_in_type849); 
-                    pushFollow(FOLLOW_type_in_type852);
+                    char_literal30=(Token)match(input,32,FOLLOW_32_in_type847); 
+                    pushFollow(FOLLOW_type_in_type850);
                     type31=type();
 
                     state._fsp--;
 
                     adaptor.addChild(root_0, type31.getTree());
-                    char_literal32=(Token)match(input,33,FOLLOW_33_in_type854); 
+                    char_literal32=(Token)match(input,33,FOLLOW_33_in_type852); 
 
                     }
                     break;
@@ -770,7 +776,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal33=(Token)match(input,35,FOLLOW_35_in_type862); 
+                    string_literal33=(Token)match(input,35,FOLLOW_35_in_type860); 
                     string_literal33_tree = (CommonTree)adaptor.create(string_literal33);
                     adaptor.addChild(root_0, string_literal33_tree);
 
@@ -844,7 +850,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    ID34=(Token)match(input,ID,FOLLOW_ID_in_term876); 
+                    ID34=(Token)match(input,ID,FOLLOW_ID_in_term874); 
                     ID34_tree = (CommonTree)adaptor.create(ID34);
                     adaptor.addChild(root_0, ID34_tree);
 
@@ -856,14 +862,14 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    char_literal35=(Token)match(input,21,FOLLOW_21_in_term882); 
-                    pushFollow(FOLLOW_expression_in_term885);
+                    char_literal35=(Token)match(input,21,FOLLOW_21_in_term880); 
+                    pushFollow(FOLLOW_expression_in_term883);
                     expression36=expression();
 
                     state._fsp--;
 
                     adaptor.addChild(root_0, expression36.getTree());
-                    char_literal37=(Token)match(input,22,FOLLOW_22_in_term887); 
+                    char_literal37=(Token)match(input,22,FOLLOW_22_in_term885); 
 
                     }
                     break;
@@ -872,7 +878,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    INT38=(Token)match(input,INT,FOLLOW_INT_in_term894); 
+                    INT38=(Token)match(input,INT,FOLLOW_INT_in_term892); 
                     INT38_tree = (CommonTree)adaptor.create(INT38);
                     adaptor.addChild(root_0, INT38_tree);
 
@@ -884,7 +890,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    DOUBLE39=(Token)match(input,DOUBLE,FOLLOW_DOUBLE_in_term900); 
+                    DOUBLE39=(Token)match(input,DOUBLE,FOLLOW_DOUBLE_in_term898); 
                     DOUBLE39_tree = (CommonTree)adaptor.create(DOUBLE39);
                     adaptor.addChild(root_0, DOUBLE39_tree);
 
@@ -896,7 +902,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    STRING_LITERAL40=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_term907); 
+                    STRING_LITERAL40=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_term905); 
                     STRING_LITERAL40_tree = (CommonTree)adaptor.create(STRING_LITERAL40);
                     adaptor.addChild(root_0, STRING_LITERAL40_tree);
 
@@ -908,7 +914,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_function_call_in_term913);
+                    pushFollow(FOLLOW_function_call_in_term911);
                     function_call41=function_call();
 
                     state._fsp--;
@@ -922,7 +928,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    pushFollow(FOLLOW_lambda_function_in_term919);
+                    pushFollow(FOLLOW_lambda_function_in_term917);
                     lambda_function42=lambda_function();
 
                     state._fsp--;
@@ -936,7 +942,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal43=(Token)match(input,36,FOLLOW_36_in_term926); 
+                    string_literal43=(Token)match(input,36,FOLLOW_36_in_term924); 
                     string_literal43_tree = (CommonTree)adaptor.create(string_literal43);
                     adaptor.addChild(root_0, string_literal43_tree);
 
@@ -948,7 +954,7 @@ public class DQLGrammarParser extends Parser {
                     {
                     root_0 = (CommonTree)adaptor.nil();
 
-                    string_literal44=(Token)match(input,37,FOLLOW_37_in_term932); 
+                    string_literal44=(Token)match(input,37,FOLLOW_37_in_term930); 
                     string_literal44_tree = (CommonTree)adaptor.create(string_literal44);
                     adaptor.addChild(root_0, string_literal44_tree);
 
@@ -1015,7 +1021,7 @@ public class DQLGrammarParser extends Parser {
             	case 1 :
             	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:138:6: 'not'
             	    {
-            	    string_literal45=(Token)match(input,38,FOLLOW_38_in_negation948); 
+            	    string_literal45=(Token)match(input,38,FOLLOW_38_in_negation946); 
             	    string_literal45_tree = (CommonTree)adaptor.create(string_literal45);
             	    root_0 = (CommonTree)adaptor.becomeRoot(string_literal45_tree, root_0);
 
@@ -1028,7 +1034,7 @@ public class DQLGrammarParser extends Parser {
                 }
             } while (true);
 
-            pushFollow(FOLLOW_term_in_negation953);
+            pushFollow(FOLLOW_term_in_negation951);
             term46=term();
 
             state._fsp--;
@@ -1100,14 +1106,14 @@ public class DQLGrammarParser extends Parser {
             	case 1 :
             	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:142:6: '+'
             	    {
-            	    char_literal47=(Token)match(input,39,FOLLOW_39_in_unary969); 
+            	    char_literal47=(Token)match(input,39,FOLLOW_39_in_unary967); 
 
             	    }
             	    break;
             	case 2 :
             	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:142:13: unary_negation_rewrite
             	    {
-            	    pushFollow(FOLLOW_unary_negation_rewrite_in_unary974);
+            	    pushFollow(FOLLOW_unary_negation_rewrite_in_unary972);
             	    unary_negation_rewrite48=unary_negation_rewrite();
 
             	    state._fsp--;
@@ -1122,7 +1128,7 @@ public class DQLGrammarParser extends Parser {
                 }
             } while (true);
 
-            pushFollow(FOLLOW_negation_in_unary979);
+            pushFollow(FOLLOW_negation_in_unary977);
             negation49=negation();
 
             state._fsp--;
@@ -1171,7 +1177,7 @@ public class DQLGrammarParser extends Parser {
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:146:3: ( '-' -> NEGATION )
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:146:5: '-'
             {
-            char_literal50=(Token)match(input,40,FOLLOW_40_in_unary_negation_rewrite994);  
+            char_literal50=(Token)match(input,40,FOLLOW_40_in_unary_negation_rewrite992);  
             stream_40.add(char_literal50);
 
 
@@ -1245,7 +1251,7 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_unary_in_mult1013);
+            pushFollow(FOLLOW_unary_in_mult1011);
             unary51=unary();
 
             state._fsp--;
@@ -1295,7 +1301,7 @@ public class DQLGrammarParser extends Parser {
             	        case 1 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:150:13: '*'
             	            {
-            	            char_literal52=(Token)match(input,41,FOLLOW_41_in_mult1017); 
+            	            char_literal52=(Token)match(input,41,FOLLOW_41_in_mult1015); 
             	            char_literal52_tree = (CommonTree)adaptor.create(char_literal52);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal52_tree, root_0);
 
@@ -1305,7 +1311,7 @@ public class DQLGrammarParser extends Parser {
             	        case 2 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:150:20: '/'
             	            {
-            	            char_literal53=(Token)match(input,42,FOLLOW_42_in_mult1022); 
+            	            char_literal53=(Token)match(input,42,FOLLOW_42_in_mult1020); 
             	            char_literal53_tree = (CommonTree)adaptor.create(char_literal53);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal53_tree, root_0);
 
@@ -1315,7 +1321,7 @@ public class DQLGrammarParser extends Parser {
             	        case 3 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:150:27: '%'
             	            {
-            	            char_literal54=(Token)match(input,43,FOLLOW_43_in_mult1027); 
+            	            char_literal54=(Token)match(input,43,FOLLOW_43_in_mult1025); 
             	            char_literal54_tree = (CommonTree)adaptor.create(char_literal54);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal54_tree, root_0);
 
@@ -1325,7 +1331,7 @@ public class DQLGrammarParser extends Parser {
 
             	    }
 
-            	    pushFollow(FOLLOW_unary_in_mult1031);
+            	    pushFollow(FOLLOW_unary_in_mult1029);
             	    unary55=unary();
 
             	    state._fsp--;
@@ -1390,7 +1396,7 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_mult_in_add1046);
+            pushFollow(FOLLOW_mult_in_add1044);
             mult56=mult();
 
             state._fsp--;
@@ -1431,7 +1437,7 @@ public class DQLGrammarParser extends Parser {
             	        case 1 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:154:12: '+'
             	            {
-            	            char_literal57=(Token)match(input,39,FOLLOW_39_in_add1050); 
+            	            char_literal57=(Token)match(input,39,FOLLOW_39_in_add1048); 
             	            char_literal57_tree = (CommonTree)adaptor.create(char_literal57);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal57_tree, root_0);
 
@@ -1441,7 +1447,7 @@ public class DQLGrammarParser extends Parser {
             	        case 2 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:154:19: '-'
             	            {
-            	            char_literal58=(Token)match(input,40,FOLLOW_40_in_add1055); 
+            	            char_literal58=(Token)match(input,40,FOLLOW_40_in_add1053); 
             	            char_literal58_tree = (CommonTree)adaptor.create(char_literal58);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal58_tree, root_0);
 
@@ -1451,7 +1457,7 @@ public class DQLGrammarParser extends Parser {
 
             	    }
 
-            	    pushFollow(FOLLOW_mult_in_add1059);
+            	    pushFollow(FOLLOW_mult_in_add1057);
             	    mult59=mult();
 
             	    state._fsp--;
@@ -1524,7 +1530,7 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_add_in_relation1074);
+            pushFollow(FOLLOW_add_in_relation1072);
             add60=add();
 
             state._fsp--;
@@ -1589,7 +1595,7 @@ public class DQLGrammarParser extends Parser {
             	        case 1 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:158:11: '='
             	            {
-            	            char_literal61=(Token)match(input,44,FOLLOW_44_in_relation1078); 
+            	            char_literal61=(Token)match(input,44,FOLLOW_44_in_relation1076); 
             	            char_literal61_tree = (CommonTree)adaptor.create(char_literal61);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal61_tree, root_0);
 
@@ -1599,7 +1605,7 @@ public class DQLGrammarParser extends Parser {
             	        case 2 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:158:18: '!='
             	            {
-            	            string_literal62=(Token)match(input,45,FOLLOW_45_in_relation1083); 
+            	            string_literal62=(Token)match(input,45,FOLLOW_45_in_relation1081); 
             	            string_literal62_tree = (CommonTree)adaptor.create(string_literal62);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal62_tree, root_0);
 
@@ -1609,7 +1615,7 @@ public class DQLGrammarParser extends Parser {
             	        case 3 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:158:26: '<'
             	            {
-            	            char_literal63=(Token)match(input,32,FOLLOW_32_in_relation1088); 
+            	            char_literal63=(Token)match(input,32,FOLLOW_32_in_relation1086); 
             	            char_literal63_tree = (CommonTree)adaptor.create(char_literal63);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal63_tree, root_0);
 
@@ -1619,7 +1625,7 @@ public class DQLGrammarParser extends Parser {
             	        case 4 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:158:33: '<='
             	            {
-            	            string_literal64=(Token)match(input,46,FOLLOW_46_in_relation1093); 
+            	            string_literal64=(Token)match(input,46,FOLLOW_46_in_relation1091); 
             	            string_literal64_tree = (CommonTree)adaptor.create(string_literal64);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal64_tree, root_0);
 
@@ -1629,7 +1635,7 @@ public class DQLGrammarParser extends Parser {
             	        case 5 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:158:41: '>='
             	            {
-            	            string_literal65=(Token)match(input,47,FOLLOW_47_in_relation1098); 
+            	            string_literal65=(Token)match(input,47,FOLLOW_47_in_relation1096); 
             	            string_literal65_tree = (CommonTree)adaptor.create(string_literal65);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal65_tree, root_0);
 
@@ -1639,7 +1645,7 @@ public class DQLGrammarParser extends Parser {
             	        case 6 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:158:49: '>'
             	            {
-            	            char_literal66=(Token)match(input,33,FOLLOW_33_in_relation1103); 
+            	            char_literal66=(Token)match(input,33,FOLLOW_33_in_relation1101); 
             	            char_literal66_tree = (CommonTree)adaptor.create(char_literal66);
             	            root_0 = (CommonTree)adaptor.becomeRoot(char_literal66_tree, root_0);
 
@@ -1649,7 +1655,7 @@ public class DQLGrammarParser extends Parser {
 
             	    }
 
-            	    pushFollow(FOLLOW_add_in_relation1107);
+            	    pushFollow(FOLLOW_add_in_relation1105);
             	    add67=add();
 
             	    state._fsp--;
@@ -1722,7 +1728,7 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_relation_in_expression1124);
+            pushFollow(FOLLOW_relation_in_expression1122);
             relation68=relation();
 
             state._fsp--;
@@ -1763,7 +1769,7 @@ public class DQLGrammarParser extends Parser {
             	        case 1 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:162:16: '&&'
             	            {
-            	            string_literal69=(Token)match(input,48,FOLLOW_48_in_expression1128); 
+            	            string_literal69=(Token)match(input,48,FOLLOW_48_in_expression1126); 
             	            string_literal69_tree = (CommonTree)adaptor.create(string_literal69);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal69_tree, root_0);
 
@@ -1773,7 +1779,7 @@ public class DQLGrammarParser extends Parser {
             	        case 2 :
             	            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:162:24: '||'
             	            {
-            	            string_literal70=(Token)match(input,49,FOLLOW_49_in_expression1133); 
+            	            string_literal70=(Token)match(input,49,FOLLOW_49_in_expression1131); 
             	            string_literal70_tree = (CommonTree)adaptor.create(string_literal70);
             	            root_0 = (CommonTree)adaptor.becomeRoot(string_literal70_tree, root_0);
 
@@ -1783,7 +1789,7 @@ public class DQLGrammarParser extends Parser {
 
             	    }
 
-            	    pushFollow(FOLLOW_relation_in_expression1137);
+            	    pushFollow(FOLLOW_relation_in_expression1135);
             	    relation71=relation();
 
             	    state._fsp--;
@@ -1807,19 +1813,19 @@ public class DQLGrammarParser extends Parser {
             }
             switch (alt18) {
                 case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:162:43: 'IS' privacy_decl ( 'AS' type )?
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:162:44: 'IS' privacy_decl ( 'AS' type )?
                     {
-                    string_literal72=(Token)match(input,50,FOLLOW_50_in_expression1142); 
+                    string_literal72=(Token)match(input,50,FOLLOW_50_in_expression1141); 
                     string_literal72_tree = (CommonTree)adaptor.create(string_literal72);
                     root_0 = (CommonTree)adaptor.becomeRoot(string_literal72_tree, root_0);
 
-                    pushFollow(FOLLOW_privacy_decl_in_expression1145);
+                    pushFollow(FOLLOW_privacy_decl_in_expression1144);
                     privacy_decl73=privacy_decl();
 
                     state._fsp--;
 
                     adaptor.addChild(root_0, privacy_decl73.getTree());
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:162:62: ( 'AS' type )?
+                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:162:63: ( 'AS' type )?
                     int alt17=2;
                     int LA17_0 = input.LA(1);
 
@@ -1828,13 +1834,13 @@ public class DQLGrammarParser extends Parser {
                     }
                     switch (alt17) {
                         case 1 :
-                            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:162:64: 'AS' type
+                            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:162:65: 'AS' type
                             {
-                            string_literal74=(Token)match(input,51,FOLLOW_51_in_expression1149); 
+                            string_literal74=(Token)match(input,51,FOLLOW_51_in_expression1148); 
                             string_literal74_tree = (CommonTree)adaptor.create(string_literal74);
                             root_0 = (CommonTree)adaptor.becomeRoot(string_literal74_tree, root_0);
 
-                            pushFollow(FOLLOW_type_in_expression1152);
+                            pushFollow(FOLLOW_type_in_expression1151);
                             type75=type();
 
                             state._fsp--;
@@ -1902,13 +1908,13 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal76=(Token)match(input,52,FOLLOW_52_in_let1170); 
-            ID77=(Token)match(input,ID,FOLLOW_ID_in_let1173); 
+            string_literal76=(Token)match(input,52,FOLLOW_52_in_let1169); 
+            ID77=(Token)match(input,ID,FOLLOW_ID_in_let1172); 
             ID77_tree = (CommonTree)adaptor.create(ID77);
             root_0 = (CommonTree)adaptor.becomeRoot(ID77_tree, root_0);
 
-            char_literal78=(Token)match(input,44,FOLLOW_44_in_let1176); 
-            pushFollow(FOLLOW_expression_in_let1179);
+            char_literal78=(Token)match(input,44,FOLLOW_44_in_let1175); 
+            pushFollow(FOLLOW_expression_in_let1178);
             expression79=expression();
 
             state._fsp--;
@@ -1960,7 +1966,7 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal80=(Token)match(input,53,FOLLOW_53_in_gather_statement1193); 
+            string_literal80=(Token)match(input,53,FOLLOW_53_in_gather_statement1192); 
             string_literal80_tree = (CommonTree)adaptor.create(string_literal80);
             root_0 = (CommonTree)adaptor.becomeRoot(string_literal80_tree, root_0);
 
@@ -1980,7 +1986,7 @@ public class DQLGrammarParser extends Parser {
             	case 1 :
             	    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:169:17: let
             	    {
-            	    pushFollow(FOLLOW_let_in_gather_statement1196);
+            	    pushFollow(FOLLOW_let_in_gather_statement1195);
             	    let81=let();
 
             	    state._fsp--;
@@ -2053,7 +2059,7 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal82=(Token)match(input,54,FOLLOW_54_in_forward_statement1207); 
+            string_literal82=(Token)match(input,54,FOLLOW_54_in_forward_statement1206); 
             string_literal82_tree = (CommonTree)adaptor.create(string_literal82);
             root_0 = (CommonTree)adaptor.becomeRoot(string_literal82_tree, root_0);
 
@@ -2068,9 +2074,9 @@ public class DQLGrammarParser extends Parser {
                 case 1 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:172:17: 'MAX' 'DEPTH' INT
                     {
-                    string_literal83=(Token)match(input,55,FOLLOW_55_in_forward_statement1211); 
-                    string_literal84=(Token)match(input,56,FOLLOW_56_in_forward_statement1214); 
-                    INT85=(Token)match(input,INT,FOLLOW_INT_in_forward_statement1217); 
+                    string_literal83=(Token)match(input,55,FOLLOW_55_in_forward_statement1210); 
+                    string_literal84=(Token)match(input,56,FOLLOW_56_in_forward_statement1213); 
+                    INT85=(Token)match(input,INT,FOLLOW_INT_in_forward_statement1216); 
                     INT85_tree = (CommonTree)adaptor.create(INT85);
                     adaptor.addChild(root_0, INT85_tree);
 
@@ -2080,8 +2086,8 @@ public class DQLGrammarParser extends Parser {
 
             }
 
-            string_literal86=(Token)match(input,57,FOLLOW_57_in_forward_statement1221); 
-            pushFollow(FOLLOW_expression_in_forward_statement1224);
+            string_literal86=(Token)match(input,57,FOLLOW_57_in_forward_statement1220); 
+            pushFollow(FOLLOW_expression_in_forward_statement1223);
             expression87=expression();
 
             state._fsp--;
@@ -2135,17 +2141,17 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal88=(Token)match(input,58,FOLLOW_58_in_reduce_statement1234); 
+            string_literal88=(Token)match(input,58,FOLLOW_58_in_reduce_statement1233); 
             string_literal88_tree = (CommonTree)adaptor.create(string_literal88);
             root_0 = (CommonTree)adaptor.becomeRoot(string_literal88_tree, root_0);
 
-            pushFollow(FOLLOW_expression_in_reduce_statement1237);
+            pushFollow(FOLLOW_expression_in_reduce_statement1236);
             expression89=expression();
 
             state._fsp--;
 
             adaptor.addChild(root_0, expression89.getTree());
-            EOF90=(Token)match(input,EOF,FOLLOW_EOF_in_reduce_statement1239); 
+            EOF90=(Token)match(input,EOF,FOLLOW_EOF_in_reduce_statement1238); 
             EOF90_tree = (CommonTree)adaptor.create(EOF90);
             adaptor.addChild(root_0, EOF90_tree);
 
@@ -2197,19 +2203,19 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_gather_statement_in_query1250);
+            pushFollow(FOLLOW_gather_statement_in_query1249);
             gather_statement91=gather_statement();
 
             state._fsp--;
 
             adaptor.addChild(root_0, gather_statement91.getTree());
-            pushFollow(FOLLOW_forward_statement_in_query1255);
+            pushFollow(FOLLOW_forward_statement_in_query1254);
             forward_statement92=forward_statement();
 
             state._fsp--;
 
             adaptor.addChild(root_0, forward_statement92.getTree());
-            pushFollow(FOLLOW_reduce_statement_in_query1260);
+            pushFollow(FOLLOW_reduce_statement_in_query1259);
             reduce_statement93=reduce_statement();
 
             state._fsp--;
@@ -2318,83 +2324,83 @@ public class DQLGrammarParser extends Parser {
     public static final BitSet FOLLOW_call_parameter_in_function_call_parameters682 = new BitSet(new long[]{0x0000000000040002L});
     public static final BitSet FOLLOW_ID_in_function_call697 = new BitSet(new long[]{0x0000000000200000L});
     public static final BitSet FOLLOW_21_in_function_call700 = new BitSet(new long[]{0x000001F0006A0160L});
-    public static final BitSet FOLLOW_function_call_parameters_in_function_call703 = new BitSet(new long[]{0x0000000000400000L});
-    public static final BitSet FOLLOW_22_in_function_call706 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_function_call_parameters_in_function_call702 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_22_in_function_call705 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_privacy_decl0 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_type_in_type_list792 = new BitSet(new long[]{0x0000000000040002L});
-    public static final BitSet FOLLOW_18_in_type_list796 = new BitSet(new long[]{0x0000000CF0000000L});
-    public static final BitSet FOLLOW_type_in_type_list799 = new BitSet(new long[]{0x0000000000040002L});
-    public static final BitSet FOLLOW_28_in_type813 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_29_in_type819 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_30_in_type825 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_31_in_type831 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_32_in_type834 = new BitSet(new long[]{0x0000000CF0000000L});
-    public static final BitSet FOLLOW_type_list_in_type837 = new BitSet(new long[]{0x0000000200000000L});
-    public static final BitSet FOLLOW_33_in_type839 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_34_in_type846 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_32_in_type849 = new BitSet(new long[]{0x0000000CF0000000L});
-    public static final BitSet FOLLOW_type_in_type852 = new BitSet(new long[]{0x0000000200000000L});
-    public static final BitSet FOLLOW_33_in_type854 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_35_in_type862 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_term876 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_21_in_term882 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_expression_in_term885 = new BitSet(new long[]{0x0000000000400000L});
-    public static final BitSet FOLLOW_22_in_term887 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_term894 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DOUBLE_in_term900 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_term907 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_function_call_in_term913 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_lambda_function_in_term919 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_36_in_term926 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_37_in_term932 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_38_in_negation948 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_term_in_negation953 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_39_in_unary969 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_unary_negation_rewrite_in_unary974 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_negation_in_unary979 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_40_in_unary_negation_rewrite994 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_unary_in_mult1013 = new BitSet(new long[]{0x00000E0000000002L});
-    public static final BitSet FOLLOW_41_in_mult1017 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_42_in_mult1022 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_43_in_mult1027 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_unary_in_mult1031 = new BitSet(new long[]{0x00000E0000000002L});
-    public static final BitSet FOLLOW_mult_in_add1046 = new BitSet(new long[]{0x0000018000000002L});
-    public static final BitSet FOLLOW_39_in_add1050 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_40_in_add1055 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_mult_in_add1059 = new BitSet(new long[]{0x0000018000000002L});
-    public static final BitSet FOLLOW_add_in_relation1074 = new BitSet(new long[]{0x0000F00300000002L});
-    public static final BitSet FOLLOW_44_in_relation1078 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_45_in_relation1083 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_32_in_relation1088 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_46_in_relation1093 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_47_in_relation1098 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_33_in_relation1103 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_add_in_relation1107 = new BitSet(new long[]{0x0000F00300000002L});
-    public static final BitSet FOLLOW_relation_in_expression1124 = new BitSet(new long[]{0x0007000000000002L});
-    public static final BitSet FOLLOW_48_in_expression1128 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_49_in_expression1133 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_relation_in_expression1137 = new BitSet(new long[]{0x0007000000000002L});
-    public static final BitSet FOLLOW_50_in_expression1142 = new BitSet(new long[]{0x000000000F800000L});
-    public static final BitSet FOLLOW_privacy_decl_in_expression1145 = new BitSet(new long[]{0x0008000000000002L});
-    public static final BitSet FOLLOW_51_in_expression1149 = new BitSet(new long[]{0x0000000CF0000000L});
-    public static final BitSet FOLLOW_type_in_expression1152 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_52_in_let1170 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_ID_in_let1173 = new BitSet(new long[]{0x0000100000000000L});
-    public static final BitSet FOLLOW_44_in_let1176 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_expression_in_let1179 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_53_in_gather_statement1193 = new BitSet(new long[]{0x0010000000000000L});
-    public static final BitSet FOLLOW_let_in_gather_statement1196 = new BitSet(new long[]{0x0010000000000002L});
-    public static final BitSet FOLLOW_54_in_forward_statement1207 = new BitSet(new long[]{0x0280000000000000L});
-    public static final BitSet FOLLOW_55_in_forward_statement1211 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_56_in_forward_statement1214 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_INT_in_forward_statement1217 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_57_in_forward_statement1221 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_expression_in_forward_statement1224 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_58_in_reduce_statement1234 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_expression_in_reduce_statement1237 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_reduce_statement1239 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_gather_statement_in_query1250 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_forward_statement_in_query1255 = new BitSet(new long[]{0x0400000000000000L});
-    public static final BitSet FOLLOW_reduce_statement_in_query1260 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_type_in_type_list790 = new BitSet(new long[]{0x0000000000040002L});
+    public static final BitSet FOLLOW_18_in_type_list794 = new BitSet(new long[]{0x0000000CF0000000L});
+    public static final BitSet FOLLOW_type_in_type_list797 = new BitSet(new long[]{0x0000000000040002L});
+    public static final BitSet FOLLOW_28_in_type811 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_29_in_type817 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_30_in_type823 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_31_in_type829 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_32_in_type832 = new BitSet(new long[]{0x0000000CF0000000L});
+    public static final BitSet FOLLOW_type_list_in_type835 = new BitSet(new long[]{0x0000000200000000L});
+    public static final BitSet FOLLOW_33_in_type837 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_34_in_type844 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_32_in_type847 = new BitSet(new long[]{0x0000000CF0000000L});
+    public static final BitSet FOLLOW_type_in_type850 = new BitSet(new long[]{0x0000000200000000L});
+    public static final BitSet FOLLOW_33_in_type852 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_35_in_type860 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_term874 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_21_in_term880 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_expression_in_term883 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_22_in_term885 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_term892 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DOUBLE_in_term898 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_term905 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_function_call_in_term911 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_lambda_function_in_term917 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_36_in_term924 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_37_in_term930 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_38_in_negation946 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_term_in_negation951 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_39_in_unary967 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_unary_negation_rewrite_in_unary972 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_negation_in_unary977 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_40_in_unary_negation_rewrite992 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_unary_in_mult1011 = new BitSet(new long[]{0x00000E0000000002L});
+    public static final BitSet FOLLOW_41_in_mult1015 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_42_in_mult1020 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_43_in_mult1025 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_unary_in_mult1029 = new BitSet(new long[]{0x00000E0000000002L});
+    public static final BitSet FOLLOW_mult_in_add1044 = new BitSet(new long[]{0x0000018000000002L});
+    public static final BitSet FOLLOW_39_in_add1048 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_40_in_add1053 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_mult_in_add1057 = new BitSet(new long[]{0x0000018000000002L});
+    public static final BitSet FOLLOW_add_in_relation1072 = new BitSet(new long[]{0x0000F00300000002L});
+    public static final BitSet FOLLOW_44_in_relation1076 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_45_in_relation1081 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_32_in_relation1086 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_46_in_relation1091 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_47_in_relation1096 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_33_in_relation1101 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_add_in_relation1105 = new BitSet(new long[]{0x0000F00300000002L});
+    public static final BitSet FOLLOW_relation_in_expression1122 = new BitSet(new long[]{0x0007000000000002L});
+    public static final BitSet FOLLOW_48_in_expression1126 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_49_in_expression1131 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_relation_in_expression1135 = new BitSet(new long[]{0x0007000000000002L});
+    public static final BitSet FOLLOW_50_in_expression1141 = new BitSet(new long[]{0x000000000F800000L});
+    public static final BitSet FOLLOW_privacy_decl_in_expression1144 = new BitSet(new long[]{0x0008000000000002L});
+    public static final BitSet FOLLOW_51_in_expression1148 = new BitSet(new long[]{0x0000000CF0000000L});
+    public static final BitSet FOLLOW_type_in_expression1151 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_52_in_let1169 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_ID_in_let1172 = new BitSet(new long[]{0x0000100000000000L});
+    public static final BitSet FOLLOW_44_in_let1175 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_expression_in_let1178 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_53_in_gather_statement1192 = new BitSet(new long[]{0x0010000000000000L});
+    public static final BitSet FOLLOW_let_in_gather_statement1195 = new BitSet(new long[]{0x0010000000000002L});
+    public static final BitSet FOLLOW_54_in_forward_statement1206 = new BitSet(new long[]{0x0280000000000000L});
+    public static final BitSet FOLLOW_55_in_forward_statement1210 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_56_in_forward_statement1213 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_INT_in_forward_statement1216 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_57_in_forward_statement1220 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_expression_in_forward_statement1223 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_58_in_reduce_statement1233 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_expression_in_reduce_statement1236 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_reduce_statement1238 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_gather_statement_in_query1249 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_forward_statement_in_query1254 = new BitSet(new long[]{0x0400000000000000L});
+    public static final BitSet FOLLOW_reduce_statement_in_query1259 = new BitSet(new long[]{0x0000000000000002L});
 
 }

@@ -36,7 +36,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class XPath extends DQLFunction {
 
-  private static Log log = LogFactory.getLog(XPath.class);
+  private static Log logger_ = LogFactory.getLog(XPath.class);
 
   private static CallParametersConditions conditions_ = CallParametersConditions
       .newBuilder()
@@ -61,7 +61,7 @@ public class XPath extends DQLFunction {
     try {
       builder = factory.newDocumentBuilder();
     } catch (ParserConfigurationException e) {
-      log.error(e);
+      logger_.error(e);
       throw new FunctionCallException(e);
     }
     Document doc;
@@ -69,10 +69,10 @@ public class XPath extends DQLFunction {
       doc = builder.parse(new ByteArrayInputStream(fileValue.getValue()
           .getBytes()));
     } catch (SAXException e) {
-      log.error(e);
+      logger_.error(e);
       throw new FunctionCallException(e);
     } catch (IOException e) {
-      log.error(e);
+      logger_.error(e);
       throw new FunctionCallException(e);
     }
 
@@ -82,14 +82,14 @@ public class XPath extends DQLFunction {
     try {
       expression = xpath.compile(((StringValue) params.get(0)).getValue());
     } catch (XPathExpressionException e) {
-      log.error(e);
+      logger_.error(e);
       throw new FunctionCallException(e);
     }
     NodeList results = null;
     try {
       results = (NodeList) expression.evaluate(doc, XPathConstants.NODESET);
     } catch (XPathExpressionException e) {
-      log.error(e);
+      logger_.error(e);
       throw new FunctionCallException(e);
     }
 

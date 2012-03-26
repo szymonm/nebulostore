@@ -15,6 +15,11 @@ import org.nebulostore.query.language.interpreter.exceptions.InterpreterExceptio
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+/**
+ * Implementation of functional IF function in DQL language.
+ * 
+ * @author Marcin Walas
+ */
 public class If extends DQLFunction {
 
   // TODO: finish call parameters

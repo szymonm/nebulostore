@@ -20,11 +20,11 @@ public class PrivateMy extends PrivacyLevel {
 
   @Override
   public String toString() {
-    return "PrivateMy";
+    return "PrivateMy " + super.toString();
   }
 
   @Override
-  protected PrivacyLevel freshCopy() {
+  public PrivacyLevel freshCopy() {
     return new PrivateMy(dataSources_);
   }
 

@@ -55,10 +55,12 @@ public abstract class PrivacyLevel implements Serializable {
     return this;
   }
 
-  protected abstract PrivacyLevel freshCopy();
+  public abstract PrivacyLevel freshCopy();
 
   @Override
-  public abstract String toString();
+  public String toString() {
+    return "[" + dataSources_.toString() + "]";
+  }
 
   @Override
   public abstract boolean equals(Object o);

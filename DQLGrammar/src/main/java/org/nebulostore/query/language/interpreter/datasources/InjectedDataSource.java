@@ -46,4 +46,9 @@ public class InjectedDataSource extends DQLDataSource {
     return false;
   }
 
+  @Override
+  public String toString() {
+    return "InjectedDataSource(" + varName_ + ")";
+  }
+
 }

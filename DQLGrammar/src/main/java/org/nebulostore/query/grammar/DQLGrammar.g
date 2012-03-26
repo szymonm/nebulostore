@@ -92,7 +92,7 @@ function_call_parameters :
 
 
 function_call :
-  ID^ '('! function_call_parameters? ')'!;
+  ID^ '(' function_call_parameters? ')';
 
 // http://javadude.com/articles/antlr3xtut/
 
@@ -103,7 +103,7 @@ STRING_LITERAL
 privacy_decl 
   : 'PRIVATE_MY'
   | 'PUBLIC_MY'
-  | 'PRIVATE_COND_MY' 
+  | 'PRIVATE_COND' 
   | 'PUBLIC_OTHER'
   | 'PUBLIC_COND'
   ;
@@ -159,7 +159,7 @@ relation
   ;
   
 expression
-  : relation (('&&'^ | '||'^) relation)* ('IS'^ privacy_decl ( 'AS'^ type )? )?
+  : relation (('&&'^ | '||'^) relation)* ( 'IS'^ privacy_decl ( 'AS'^ type )? )?
   ;
 
 
