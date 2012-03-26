@@ -1,4 +1,4 @@
-package tests.org.nebulostore.api;
+package org.nebulostore.api;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,7 +25,7 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
 
-import tests.org.nebulostore.TestUtils;
+import org.nebulostore.TestUtils;
 
 import static org.junit.Assert.assertTrue;
 

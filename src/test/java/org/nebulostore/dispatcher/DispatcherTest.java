@@ -1,4 +1,4 @@
-package org.nebulostore.dispatcher.tests;
+package org.nebulostore.dispatcher;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

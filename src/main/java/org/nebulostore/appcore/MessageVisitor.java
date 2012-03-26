@@ -22,10 +22,12 @@ import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
+/*
 import org.nebulostore.communication.messages.testing.FinishTestMessage;
 import org.nebulostore.communication.messages.testing.NewPhaseMessage;
 import org.nebulostore.communication.messages.testing.TicMessage;
 import org.nebulostore.communication.messages.testing.TocMessage;
+*/
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -148,6 +150,7 @@ public abstract class MessageVisitor<R> {
   }
 
   /* TestingModule. */
+  /*
   public R visit(FinishTestMessage message) throws NebuloException {
     return visitDefault(message);
   }
@@ -171,4 +174,5 @@ public abstract class MessageVisitor<R> {
   public R visit(PingMessage message) throws NebuloException {
     return visitDefault(message);
   }
+  */
 }

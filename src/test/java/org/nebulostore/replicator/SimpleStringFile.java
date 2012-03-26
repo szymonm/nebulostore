@@ -1,4 +1,4 @@
-package org.nebulostore.replicator.tests;
+package org.nebulostore.replicator;
 
 import java.math.BigInteger;
 

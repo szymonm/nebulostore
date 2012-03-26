@@ -1,4 +1,4 @@
-package tests.textinterface;
+package org.nebulostore.textinterface;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

@@ -1,4 +1,4 @@
-package org.nebulostore.communication.tests;
+package org.nebulostore.communication;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

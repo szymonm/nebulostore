@@ -1,4 +1,4 @@
-package tests.org.nebulostore.crypto;
+package org.nebulostore.crypto;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

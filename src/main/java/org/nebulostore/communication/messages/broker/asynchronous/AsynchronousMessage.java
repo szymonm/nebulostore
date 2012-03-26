@@ -15,7 +15,7 @@ public abstract class AsynchronousMessage extends Message implements Serializabl
   String id_;
 
   public AsynchronousMessage() {
-    id_ = CryptoUtils.getRandomName();
+    id_ = CryptoUtils.getRandomId().toString();
   }
 
   public AsynchronousMessage(String id) {

@@ -1,4 +1,4 @@
-package tests.org.nebulostore;
+package org.nebulostore;
 
 /**
  * Testing utilities.

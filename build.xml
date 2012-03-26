@@ -89,7 +89,7 @@
 
   <target name="text-interface">
     <antcall target="jar">
-      <param name="main-class" value="tests.textinterface.TextInterface" />
+      <param name="main-class" value="org.nebulostore.textinterface.TextInterface" />
     </antcall>
   </target>
 	
