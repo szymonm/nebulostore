@@ -27,7 +27,6 @@
 #    TextInterface.java - feel free to experiment!
 
 
-
 # Instructions to run on BDB DHT:
 #
 # 1. Change provider to "bdb" in resources/conf/communication/CommunicationPeer.xml
@@ -41,14 +40,30 @@ JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
 PEERS_NUM=3
 
+platform='unknown'
+unamestr=`uname`
+if [[ "$unamestr" == 'Darwin' ]]; then
+  platform='mac'
+else
+  platform='linux'
+fi
+
+sequence='unknown'
+if [[ $platform=='mac' ]]; then
+  sequence=`jot $PEERS_NUM`
+else
+  sequence=`seq 1 $PEERS_NUM`
+fi
+
 rm -rf $BUILD_DIR
 ant text-interface
 
 
 echo "Building done. Copying..."
 
-for i in `seq 1 $PEERS_NUM`
+for i in $sequence
 do
+    echo $i
     path="./$JAR_DIR/$i"
     mkdir $path
     cp ./$JAR_DIR/*.jar ./$JAR_DIR/$i/

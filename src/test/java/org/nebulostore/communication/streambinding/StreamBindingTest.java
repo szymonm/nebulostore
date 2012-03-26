@@ -19,7 +19,7 @@ import org.nebulostore.communication.messages.streambinding.StreamBindingMessage
 import org.nebulostore.communication.messages.streambinding.StreamBindingReadyMessage;
 
 /**
- * Test of StreamBinding protocol
+ * Test of StreamBinding protocol.
  *
  * @author Marcin Walas
  *
@@ -77,7 +77,8 @@ public final class StreamBindingTest {
 
         if (msg instanceof StreamBindingReadyMessage) {
           StreamBindingReadyMessage casted = (StreamBindingReadyMessage) msg;
-          logger.info("stream binding ready message received with id: " + casted.getStreamId() + " isOutput:" + casted.isOutput());
+          logger.info("stream binding ready message received with id: " + casted.getStreamId() +
+              " isOutput:" + casted.isOutput());
           if (casted.isOutput()) {
             OutputStream stream = casted.getOutput();
             String message = "hmmm.. fajnie jest";
@@ -98,7 +99,7 @@ public final class StreamBindingTest {
 
             try {
               int len = stream.read();
-              byte[] val= new byte[len];
+              byte[] val = new byte[len];
               stream.read(val, 0, len);
               logger.info("Readed successfully message: " + new String(val));
               logger.info("Closing...");

@@ -35,6 +35,30 @@ public class KeyDHT implements Serializable {
     return key_;
   }
 
+  @Override
+  public int hashCode() {
+    int result = 1;
+    result = 37 * result + ((key_ == null) ? 0 : key_.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    KeyDHT other = (KeyDHT) obj;
+    if (key_ == null) {
+      if (other.key_ != null)
+        return false;
+    } else if (!key_.equals(other.key_))
+      return false;
+    return true;
+  }
+
   public static KeyDHT fromSerializableObject(Serializable object)  {
     // TODO: This - getBytes() is platform dependent, change this
 

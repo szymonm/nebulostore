@@ -41,4 +41,8 @@ public abstract class JobModule extends Module {
     // Inform run() (in base class) that this thread is ready to die.
     endModule();
   }
+
+  public String getJobId() {
+    return jobId_;
+  }
 }

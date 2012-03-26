@@ -9,6 +9,7 @@ import org.nebulostore.communication.dht.ValueDHT;
  * @author marcin
  */
 public class ValueDHTMessage extends OutDHTMessage {
+  private static final long serialVersionUID = -4386207060074126596L;
 
   private final KeyDHT key_;
   private final ValueDHT value_;

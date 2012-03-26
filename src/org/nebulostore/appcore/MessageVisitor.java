@@ -6,6 +6,11 @@ import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.CommSendDataMessage;
 import org.nebulostore.communication.messages.DiscoveryMessage;
+import org.nebulostore.communication.messages.broker.AsynchronousMessagesMessage;
+import org.nebulostore.communication.messages.broker.BrokerErrorMessage;
+import org.nebulostore.communication.messages.broker.GetAsynchronousMessagesMessage;
+import org.nebulostore.communication.messages.broker.GotAsynchronousMessagesMessage;
+import org.nebulostore.communication.messages.broker.StoreAsynchronousMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.DelDHTMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -15,6 +20,12 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
+import org.nebulostore.communication.messages.pingpong.PingMessage;
+import org.nebulostore.communication.messages.pingpong.PongMessage;
+import org.nebulostore.communication.messages.testing.FinishTestMessage;
+import org.nebulostore.communication.messages.testing.NewPhaseMessage;
+import org.nebulostore.communication.messages.testing.TicMessage;
+import org.nebulostore.communication.messages.testing.TocMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -112,6 +123,52 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
   public R visit(ValueDHTMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  /* Broker Asynchronous Messaging messages. */
+  public R visit(AsynchronousMessagesMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(BrokerErrorMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(GetAsynchronousMessagesMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(GotAsynchronousMessagesMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(StoreAsynchronousMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  /* TestingModule. */
+  public R visit(FinishTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(NewPhaseMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(TicMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(TocMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(PongMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(PingMessage message) throws NebuloException {
     return visitDefault(message);
   }
 }
