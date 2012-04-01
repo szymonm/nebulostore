@@ -79,7 +79,7 @@ public final class KademliaPeerTest {
         logger.debug("msg is not null ");
         if (msg instanceof CommPeerFoundMessage) {
           logger.info("peer found, getting its number...");
-          inQueue.add(new PingMessage(((CommPeerFoundMessage) msg)
+          inQueue.add(new PingMessage(null, ((CommPeerFoundMessage) msg)
               .getSourceAddress(), peerNum));
         }
 
@@ -90,7 +90,7 @@ public final class KademliaPeerTest {
             foundPeers.add(ping.getNumber());
 
           }
-          inQueue.add(new PongMessage(ping.getSourceAddress(), peerNum));
+          inQueue.add(new PongMessage(null, ping.getSourceAddress(), peerNum));
         }
         if (msg instanceof PongMessage) {
           PongMessage pong = (PongMessage) msg;

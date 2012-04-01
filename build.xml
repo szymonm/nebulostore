@@ -4,6 +4,7 @@
   <property name="src.dir" value="src" />
 
   <property name="build.dir" value="build" />
+  <property name="build.dir.testServer" value="build_server" />
   <property name="classes.dir" value="${build.dir}/classes" />
   <property name="jar.dir" value="${build.dir}/jar" />
 
@@ -108,4 +109,17 @@
   </target>
 
   <target name="main" depends="clean,run-pingpong" />
+
+  <target name="test-server">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.appcore.TestingPeer" />
+    </antcall>
+  </target>
+
+  <target name="test-client">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.appcore.Peer" />
+    </antcall>
+  </target>
+  
 </project>

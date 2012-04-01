@@ -7,8 +7,6 @@ import org.junit.Test;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.NebuloFile;
-import org.nebulostore.crypto.CryptoException;
-import org.nebulostore.crypto.CryptoUtils;
 
 import static org.junit.Assert.assertTrue;
 

@@ -8,6 +8,13 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
   </appender>
+  
+  <appender name="CA-testing" class="org.apache.log4j.ConsoleAppender">
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
 
   <!--  TODO MBW: Remove this repetitions -->  
   <appender name="FA" class="org.apache.log4j.FileAppender">
@@ -67,6 +74,15 @@
     <appender-ref ref="FA-comm"/>
   </logger> 
   
+  <logger name="org.nebulostore.testing">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing"/>
+  </logger>
+  
+  <logger name="org.nebulostore.appcore.TestingPeer">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing"/>
+  </logger>
   
   <root>
     <appender-ref ref="CA" />

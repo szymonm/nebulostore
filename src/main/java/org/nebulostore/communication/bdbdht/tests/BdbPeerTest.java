@@ -76,7 +76,8 @@ public final class BdbPeerTest {
       if (msg != null) {
         if (msg instanceof CommPeerFoundMessage) {
           logger.info("peer found, getting its number...");
-          inQueue.add(new PingMessage(((CommPeerFoundMessage) msg).getSourceAddress(), peerNum));
+          inQueue.add(new PingMessage(null, ((CommPeerFoundMessage) msg).getSourceAddress(),
+              peerNum));
         }
 
         if (msg instanceof PingMessage) {
@@ -86,7 +87,7 @@ public final class BdbPeerTest {
             foundPeers.add(ping.getNumber());
 
           }
-          inQueue.add(new PongMessage(ping.getSourceAddress(), peerNum));
+          inQueue.add(new PongMessage(null, ping.getSourceAddress(), peerNum));
         }
         if (msg instanceof PongMessage) {
           PongMessage pong = (PongMessage) msg;

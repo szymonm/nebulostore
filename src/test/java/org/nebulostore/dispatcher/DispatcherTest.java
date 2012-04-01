@@ -6,10 +6,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 

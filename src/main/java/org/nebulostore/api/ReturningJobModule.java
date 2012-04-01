@@ -8,15 +8,15 @@ import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
- * ApiModule - base class for all API methods.
+ * ReturningJobModule - base class for JobModules that return a resulat(ex. all API methods).
  * @param <R>
  *    return type.
  */
-public abstract class ApiModule<R> extends JobModule {
+public abstract class ReturningJobModule<R> extends JobModule {
 
-  private static Logger logger_ = Logger.getLogger(ApiModule.class);
+  private static Logger logger_ = Logger.getLogger(ReturningJobModule.class);
 
-  protected ApiModule() {
+  protected ReturningJobModule() {
     mutex_ = new Semaphore(1);
     mutex_.tryAcquire();
     if (mutex_.availablePermits() != 0) {

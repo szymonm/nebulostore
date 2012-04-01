@@ -24,7 +24,7 @@ import org.nebulostore.replicator.messages.StoreObjectMessage;
 /**
  * @author bolek
  */
-public class WriteNebuloFileModule extends ApiModule<Void> {
+public class WriteNebuloFileModule extends ReturningJobModule<Void> {
 
   private NebuloAddress address_;
   private NebuloObject object_;

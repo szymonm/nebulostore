@@ -25,7 +25,7 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
  * @author bolek
  * Job module that realizes putKey() API function.
  */
-public class PutKeyModule extends ApiModule<Void> {
+public class PutKeyModule extends ReturningJobModule<Void> {
 
   private final AppKey appKey_;
   private final StateMachineVisitor visitor_;

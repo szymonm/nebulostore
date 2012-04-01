@@ -27,7 +27,7 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
  * Job module that fetches an existing object from NebuloStore.
  * TODO(bolek): Change name into GetNebuloObjectModule?
  */
-public class GetNebuloFileModule extends ApiModule<NebuloObject> {
+public class GetNebuloFileModule extends ReturningJobModule<NebuloObject> {
 
   private final NebuloAddress address_;
   private final StateMachineVisitor visitor_;

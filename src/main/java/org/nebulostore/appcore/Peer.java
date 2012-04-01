@@ -14,12 +14,14 @@ import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
  * @author marcin This is the entry point for a regular peer with full
  *         functionality.
  */
-public final class Peer {
+public class Peer {
   private static Logger logger_ = Logger.getLogger(Peer.class);
-  private static BlockingQueue<Message> networkInQueue_;
-  private static BlockingQueue<Message> dispatcherInQueue_;
+  protected static BlockingQueue<Message> networkInQueue_;
+  protected static BlockingQueue<Message> dispatcherInQueue_;
+  private static Thread dispatcherThread_;
+  private static Thread networkThread_;
 
-  private Peer() { }
+  protected Peer() { }
 
   /**
    * @param args
@@ -30,30 +32,36 @@ public final class Peer {
   }
 
   public static void runPeer() {
+    startPeer();
+    finishPeer();
+  }
+
+  protected static void startPeer() {
     networkInQueue_ = new LinkedBlockingQueue<Message>();
     dispatcherInQueue_ = new LinkedBlockingQueue<Message>();
     ApiFacade.initApi(dispatcherInQueue_);
     NebuloObject.initObjectApi(dispatcherInQueue_);
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
-    Thread dispatcherThread = new Thread(new Dispatcher(dispatcherInQueue_, networkInQueue_));
+    dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_, networkInQueue_));
     // Create network module.
-    Thread networkThread = null;
     try {
-      networkThread = new Thread(new CommunicationPeer(networkInQueue_, dispatcherInQueue_));
+      networkThread_ = new Thread(new CommunicationPeer(networkInQueue_, dispatcherInQueue_));
     } catch (NebuloException exception) {
       logger_.fatal("Error while creating CommunicationPeer");
       exception.printStackTrace();
       System.exit(-1);
     }
-    networkThread.start();
-    dispatcherThread.start();
+    networkThread_.start();
+    dispatcherThread_.start();
+  }
 
+  protected static void finishPeer() {
     // Wait for threads to finish execution.
     try {
       // TODO: Make CommunicationPeer exit cleanly.
-      //networkThread.join();
-      dispatcherThread.join();
+      //networkThread_.join();
+      dispatcherThread_.join();
     } catch (InterruptedException exception) {
       logger_.fatal("Interrupted");
       return;

@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.EncryptedEntity;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.replicator.Replicator;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
 import org.nebulostore.replicator.messages.ReplicatorErrorMessage;

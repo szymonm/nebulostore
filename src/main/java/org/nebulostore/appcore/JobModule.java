@@ -35,6 +35,14 @@ public abstract class JobModule extends Module {
     dispatcherQueue.add(new JobInitMessage(jobId_, this));
   }
 
+  /*
+   * Usefull for testing purposes.
+   */
+  protected void runThroughDispatcher(BlockingQueue<Message> dispatcherQueue, String jobId) {
+    jobId_ = jobId;
+    dispatcherQueue.add(new JobInitMessage(jobId_, this));
+  }
+
   protected void endJobModule() {
     // Inform dispatcher that we are going to die.
     outQueue_.add(new JobEndedMessage(jobId_));

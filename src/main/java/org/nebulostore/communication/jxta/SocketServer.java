@@ -111,7 +111,6 @@ public class SocketServer implements Runnable, IStreamBindingDriver {
 
   /*
    * (non-Javadoc)
-   * 
    * @see
    * org.nebulostore.communication.streambinding.IStreamBindingDriver#bindStream
    * (org.nebulostore.communication.address.CommAddress, java.lang.String,

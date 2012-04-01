@@ -21,5 +21,5 @@ public interface IStreamBindingDriver {
    * @throws IOException
    */
   OutputStream bindStream(CommAddress address, String jobId, String streamId, long timeout)
-      throws IOException;
+    throws IOException;
 }

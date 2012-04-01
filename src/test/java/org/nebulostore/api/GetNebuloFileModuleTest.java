@@ -1,33 +1,13 @@
 package org.nebulostore.api;
 
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.api.GetNebuloFileModule;
-import org.nebulostore.appcore.EncryptedEntity;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.NebuloList;
-import org.nebulostore.appcore.NebuloFile;
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.ValueDHT;
-import org.nebulostore.communication.messages.dht.GetDHTMessage;
-import org.nebulostore.communication.messages.dht.ValueDHTMessage;
-import org.nebulostore.crypto.CryptoException;
-import org.nebulostore.crypto.CryptoUtils;
-import org.nebulostore.dispatcher.messages.JobEndedMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
-import org.nebulostore.replicator.messages.GetObjectMessage;
-import org.nebulostore.replicator.messages.SendObjectMessage;
 
-import org.nebulostore.TestUtils;
 
-import static org.junit.Assert.assertTrue;
 
 /**
  * getNebuloFile() API call test class.

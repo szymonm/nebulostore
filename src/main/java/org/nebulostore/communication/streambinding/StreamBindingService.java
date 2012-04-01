@@ -43,7 +43,7 @@ public class StreamBindingService extends Module {
 
         logger_.debug("Sending ready response");
 
-        outQueue_.add(new StreamBindingReadyMessage(casted.getId(), 
+        outQueue_.add(new StreamBindingReadyMessage(casted.getId(),
             casted.getStreamId(), outStream));
       } catch (IOException e) {
         logger_.error(e);
