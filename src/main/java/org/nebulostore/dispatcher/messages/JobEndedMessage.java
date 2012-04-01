@@ -10,9 +10,12 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  *
  */
 public class JobEndedMessage extends Message {
+  private static final long serialVersionUID = 575456984015987666L;
+
   public JobEndedMessage(String jobID) {
     super(jobID);
   }
+
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }

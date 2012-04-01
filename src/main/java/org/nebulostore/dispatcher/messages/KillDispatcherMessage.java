@@ -9,6 +9,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * This message causes dispatcher termination.
  */
 public class KillDispatcherMessage extends Message {
+  private static final long serialVersionUID = -6650450197366063482L;
+
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }

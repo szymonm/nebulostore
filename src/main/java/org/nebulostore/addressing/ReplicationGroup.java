@@ -12,6 +12,8 @@ import org.nebulostore.communication.address.CommAddress;
  * A list of addresses of peers that share the same contract.
  */
 public class ReplicationGroup implements Serializable, Comparable<ObjectId> {
+  private static final long serialVersionUID = -2519006213860783596L;
+
   private ArrayList<CommAddress> replicators_;
 
   // This group replicates objects with keys in [lowerBound_, upperBound_).

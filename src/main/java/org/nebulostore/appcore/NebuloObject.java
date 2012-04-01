@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.util.concurrent.BlockingQueue;
 
 import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.api.GetNebuloFileModule;
+import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
+ * NebuloObject - object that is stored in replicas and identified by NabuloAddress
+ * (currently NebuloFile, NebuloList or FileChunk).
  * @author bolek
- * Abstract base class for NebuloFile and NebuloList.
  */
 public abstract class NebuloObject implements Serializable {
 
@@ -29,7 +30,7 @@ public abstract class NebuloObject implements Serializable {
 
   public static NebuloObject fromAddress(NebuloAddress key) throws NebuloException {
     // Create a handler and run it through dispatcher.
-    GetNebuloFileModule module = new GetNebuloFileModule(key, dispatcherQueue_);
+    GetNebuloObjectModule module = new GetNebuloObjectModule(key, dispatcherQueue_);
     // Exception from getResult() is simply passed to the user.
     return module.getResult(TIMEOUT_SEC);
   }

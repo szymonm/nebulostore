@@ -1,15 +1,17 @@
 package org.nebulostore.appcore;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
- * Metadata stored in DHT for Nebulostore instace.
+ * Metadata stored in DHT for Nebulostore instance.
  * @author szymonmatejczyk
  */
-public class InstanceMetadata {
+public class InstanceMetadata implements Serializable {
+  private static final long serialVersionUID = -2246471507395388278L;
 
   /* Id of user, that this metadata applies to.*/
   private final AppKey owner_;
@@ -29,8 +31,6 @@ public class InstanceMetadata {
     currentAddress_ = currentAddress;
     inboxHolders_ = inboxHolders;
   }
-
-  private static final long serialVersionUID = -2246471507395388278L;
 
   public LinkedList<InstanceID> getInboxHolders() {
     return inboxHolders_;

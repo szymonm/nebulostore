@@ -5,7 +5,7 @@ package org.nebulostore.appcore.exceptions;
  * Base class for NebuloStore exceptions.
  */
 public class NebuloException extends Exception {
-
+  private static final long serialVersionUID = 2550482529210695435L;
   protected final Exception cause_;
 
   public NebuloException() {

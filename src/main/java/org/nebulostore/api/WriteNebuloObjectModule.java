@@ -10,6 +10,7 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.NebuloObject;
+import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
@@ -24,18 +25,18 @@ import org.nebulostore.replicator.messages.StoreObjectMessage;
 /**
  * @author bolek
  */
-public class WriteNebuloFileModule extends ReturningJobModule<Void> {
+public class WriteNebuloObjectModule extends ReturningJobModule<Void> {
 
   private NebuloAddress address_;
   private NebuloObject object_;
   private StateMachineVisitor visitor_;
 
-  private static Logger logger_ = Logger.getLogger(GetNebuloFileModule.class);
+  private static Logger logger_ = Logger.getLogger(GetNebuloObjectModule.class);
 
   /*
    * Constructor that runs newly created module.
    */
-  public WriteNebuloFileModule(NebuloAddress nebuloKey, NebuloObject object,
+  public WriteNebuloObjectModule(NebuloAddress nebuloKey, NebuloObject object,
       BlockingQueue<Message> dispatcherQueue) {
     address_ = nebuloKey;
     object_ = object;
@@ -93,7 +94,7 @@ public class WriteNebuloFileModule extends ReturningJobModule<Void> {
         // Source address will be added by Network module.
         try {
           networkQueue_.add(new StoreObjectMessage(jobId_, null, group.getReplicator(0),
-              address_.getObjectId(), CryptoUtils.encryptNebuloObject(object_)));
+              address_.getObjectId(), CryptoUtils.encryptObject(object_)));
         } catch (CryptoException exception) {
           endWithError(new NebuloException("Unable to encrypt object.", exception));
         }

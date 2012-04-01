@@ -31,7 +31,7 @@ public class CryptoUtilsTest {
   public void testNebuloFileEncryption() throws CryptoException {
     NebuloFile file = new NebuloFile(new AppKey(new BigInteger("2222")),
         new ObjectId(new BigInteger("123")));
-    Object object = CryptoUtils.decryptNebuloObject(CryptoUtils.encryptNebuloObject(file));
+    Object object = CryptoUtils.decryptObject(CryptoUtils.encryptObject(file));
     assertTrue(object instanceof NebuloFile);
     NebuloFile file2 = (NebuloFile) object;
     assertTrue(file2.getAddress().getAppKey().getKey().equals(new BigInteger("2222")));

@@ -3,9 +3,9 @@ package org.nebulostore.testing;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.api.ReturningJobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.address.CommAddress;

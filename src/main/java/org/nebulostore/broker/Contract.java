@@ -21,7 +21,7 @@ public class Contract {
   public Contract(String contractId, InstanceID peer) {
     super();
     contractId_ = contractId;
-    peer_ = peer_;
+    peer_ = peer;
   }
 
   @Override

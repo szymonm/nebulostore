@@ -9,7 +9,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.appcore.EncryptedEntity;
+import org.nebulostore.appcore.EncryptedObject;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
@@ -44,7 +44,7 @@ public class ReplicatorTest {
   public void testStoreGetMessages() {
     ObjectId objectId1 = new ObjectId(new BigInteger("3"));
     byte[] enc = {33, 12};
-    EncryptedEntity entity1 = new EncryptedEntity(enc);
+    EncryptedObject entity1 = new EncryptedObject(enc);
     StoreObjectMessage storeMessage = new StoreObjectMessage("job1", null,
         null,
         objectId1, entity1);

@@ -1,14 +1,13 @@
-package org.nebulostore.api;
+package org.nebulostore.appcore;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
- * ReturningJobModule - base class for JobModules that return a resulat(ex. all API methods).
+ * ReturningJobModule - base class for JobModules that return a result (e.g. all API methods).
  * @param <R>
  *    return type.
  */

@@ -5,6 +5,8 @@ package org.nebulostore.appcore.exceptions;
  * Exception thrown from visitor after receiving message of unsupported type.
  */
 public class UnsupportedMessageException extends NebuloException {
+  private static final long serialVersionUID = 8031917232378781743L;
+
   public UnsupportedMessageException(String message) {
     super(message);
   }

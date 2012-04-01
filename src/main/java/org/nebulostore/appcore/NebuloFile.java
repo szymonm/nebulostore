@@ -7,8 +7,8 @@ import java.util.Vector;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.api.GetNebuloFileModule;
-import org.nebulostore.api.WriteNebuloFileModule;
+import org.nebulostore.api.GetNebuloObjectModule;
+import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 
@@ -44,7 +44,8 @@ public class NebuloFile extends NebuloObject {
       if (chunk_ == null) {
         // Use metadata holder for chunk query.
         // TODO(bolek): Retry with full address if unsuccessful.
-        GetNebuloFileModule module = new GetNebuloFileModule(address_, sender_, dispatcherQueue_);
+        GetNebuloObjectModule module =
+            new GetNebuloObjectModule(address_, sender_, dispatcherQueue_);
         // Exception from getResult() is simply passed to the user.
         chunk_ = (FileChunk) module.getResult(TIMEOUT_SEC);
       }
@@ -56,9 +57,9 @@ public class NebuloFile extends NebuloObject {
       isChanged_ = true;
     }
 
-    public WriteNebuloFileModule sync() {
+    public WriteNebuloObjectModule sync() {
       if (isChanged_) {
-        WriteNebuloFileModule syncModule = new WriteNebuloFileModule(address_, chunk_,
+        WriteNebuloObjectModule syncModule = new WriteNebuloObjectModule(address_, chunk_,
             dispatcherQueue_);
         return syncModule;
       } else {
@@ -155,9 +156,9 @@ public class NebuloFile extends NebuloObject {
 
   @Override
   protected void runSync() throws NebuloException {
-    Vector<WriteNebuloFileModule> updateModules = new Vector<WriteNebuloFileModule>();
+    Vector<WriteNebuloObjectModule> updateModules = new Vector<WriteNebuloObjectModule>();
     // Run sync for NebuloFile (metadata).
-    updateModules.add(new WriteNebuloFileModule(address_, this, dispatcherQueue_));
+    updateModules.add(new WriteNebuloObjectModule(address_, this, dispatcherQueue_));
     // Run sync for all chunks in parallel.
     for (int i = 0; i < chunks_.size(); ++i) {
       updateModules.add(chunks_.get(i).sync());

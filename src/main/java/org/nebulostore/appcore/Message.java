@@ -8,6 +8,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * Base class for messages.
  */
 public abstract class Message implements Serializable {
+  private static final long serialVersionUID = -2032656006415029507L;
 
   public Message() {
     jobId_ = "unnamed_message";

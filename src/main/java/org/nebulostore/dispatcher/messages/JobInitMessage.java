@@ -9,6 +9,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * This is a generic message to start a job via dispatcher.
  */
 public class JobInitMessage extends Message {
+  private static final long serialVersionUID = 2482967055598180345L;
+
   public JobInitMessage(String jobId, JobModule jobModule) {
     super(jobId);
     jobModule_ = jobModule;

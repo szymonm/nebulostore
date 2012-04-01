@@ -10,7 +10,7 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.appcore.EncryptedEntity;
+import org.nebulostore.appcore.EncryptedObject;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
@@ -62,7 +62,7 @@ public class Replicator extends JobModule {
     }
 
     public Void visit(GetObjectMessage message) {
-      EncryptedEntity enc = getObject(message.objectId_);
+      EncryptedObject enc = getObject(message.objectId_);
 
       if (enc == null) {
         dieWithError(message.getId(), message.getDestinationAddress(),
@@ -103,7 +103,7 @@ public class Replicator extends JobModule {
   /*
    * Static methods.
    */
-  public static void storeObject(ObjectId objectId, EncryptedEntity encryptedEntity)
+  public static void storeObject(ObjectId objectId, EncryptedObject encryptedEntity)
     throws SaveException {
     String location = filesLocations_.get(objectId);
     if (location == null) {
@@ -125,7 +125,7 @@ public class Replicator extends JobModule {
     }
   }
 
-  public static EncryptedEntity getObject(ObjectId objectId) {
+  public static EncryptedObject getObject(ObjectId objectId) {
     String location = filesLocations_.get(objectId);
     if (location == null) {
       return null;
@@ -139,7 +139,7 @@ public class Replicator extends JobModule {
 
       fis.read(content);
 
-      return new EncryptedEntity(content);
+      return new EncryptedObject(content);
     } catch (FileNotFoundException exception) {
       logger_.warn("Object file not found.");
       return null;

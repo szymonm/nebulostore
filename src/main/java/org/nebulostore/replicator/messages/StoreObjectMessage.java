@@ -1,7 +1,7 @@
 package org.nebulostore.replicator.messages;
 
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.appcore.EncryptedEntity;
+import org.nebulostore.appcore.EncryptedObject;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -15,7 +15,7 @@ import org.nebulostore.replicator.Replicator;
  */
 public class StoreObjectMessage extends CommMessage {
   ObjectId objectId_;
-  EncryptedEntity encryptedEntity_;
+  EncryptedObject encryptedEntity_;
 
   public StoreObjectMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress) {
@@ -24,7 +24,7 @@ public class StoreObjectMessage extends CommMessage {
 
   public StoreObjectMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress,
-      ObjectId objectId, EncryptedEntity encryptedEntity) {
+      ObjectId objectId, EncryptedObject encryptedEntity) {
     this(jobId, sourceAddress, destAddress);
     objectId_ = objectId;
     encryptedEntity_ = encryptedEntity;
@@ -34,7 +34,7 @@ public class StoreObjectMessage extends CommMessage {
     return visitor.visit(this);
   }
 
-  public EncryptedEntity getEncryptedEntity() {
+  public EncryptedObject getEncryptedEntity() {
     return encryptedEntity_;
   }
 

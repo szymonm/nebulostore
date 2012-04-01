@@ -11,8 +11,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-import org.nebulostore.appcore.EncryptedEntity;
-import org.nebulostore.appcore.NebuloObject;
+import org.nebulostore.appcore.EncryptedObject;
 
 /**
  * @author bolek
@@ -25,13 +24,13 @@ public final class CryptoUtils {
   }
 
   // TODO: Encryption must use cryptographic keys (add parameters?)
-  public static EncryptedEntity encryptNebuloObject(NebuloObject object) throws CryptoException {
-    return new EncryptedEntity(serializeObject(object));
+  public static EncryptedObject encryptObject(Serializable object) throws CryptoException {
+    return new EncryptedObject(serializeObject(object));
   }
 
-  public static NebuloObject decryptNebuloObject(EncryptedEntity encryptedObject) throws
+  public static Object decryptObject(EncryptedObject encryptedObject) throws
       CryptoException {
-    return (NebuloObject) deserializeObject(encryptedObject.getEncryptedData());
+    return deserializeObject(encryptedObject.getEncryptedData());
   }
 
   public static byte[] encryptData(byte[] data) {

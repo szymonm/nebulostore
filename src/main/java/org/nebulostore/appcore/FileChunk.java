@@ -7,6 +7,7 @@ public class FileChunk extends NebuloObject {
 
   private static final long serialVersionUID = -8992804393601229112L;
 
+  // Plain, unencrypted data.
   protected byte[] data_;
 
   public FileChunk() {

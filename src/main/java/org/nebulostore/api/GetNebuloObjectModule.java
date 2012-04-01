@@ -10,6 +10,7 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.NebuloObject;
+import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
@@ -25,17 +26,16 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
 /**
  * @author bolek
  * Job module that fetches an existing object from NebuloStore.
- * TODO(bolek): Change name into GetNebuloObjectModule?
  */
-public class GetNebuloFileModule extends ReturningJobModule<NebuloObject> {
+public class GetNebuloObjectModule extends ReturningJobModule<NebuloObject> {
 
   private final NebuloAddress address_;
   private final StateMachineVisitor visitor_;
   private CommAddress queryAddress_;
 
-  private static Logger logger_ = Logger.getLogger(GetNebuloFileModule.class);
+  private static Logger logger_ = Logger.getLogger(GetNebuloObjectModule.class);
 
-  public GetNebuloFileModule(NebuloAddress nebuloKey) {
+  public GetNebuloObjectModule(NebuloAddress nebuloKey) {
     address_ = nebuloKey;
     visitor_ = new StateMachineVisitor();
   }
@@ -43,7 +43,7 @@ public class GetNebuloFileModule extends ReturningJobModule<NebuloObject> {
   /*
    * Constructor that runs newly created module.
    */
-  public GetNebuloFileModule(NebuloAddress nebuloKey, BlockingQueue<Message> dispatcherQueue) {
+  public GetNebuloObjectModule(NebuloAddress nebuloKey, BlockingQueue<Message> dispatcherQueue) {
     address_ = nebuloKey;
     visitor_ = new StateMachineVisitor();
     runThroughDispatcher(dispatcherQueue);
@@ -52,7 +52,7 @@ public class GetNebuloFileModule extends ReturningJobModule<NebuloObject> {
   /*
    * Constructor that runs newly created module in the ADDRESS_GIVEN mode.
    */
-  public GetNebuloFileModule(NebuloAddress nebuloKey, CommAddress replicaAddress,
+  public GetNebuloObjectModule(NebuloAddress nebuloKey, CommAddress replicaAddress,
       BlockingQueue<Message> dispatcherQueue) {
     address_ = nebuloKey;
     queryAddress_ = replicaAddress;
@@ -127,7 +127,7 @@ public class GetNebuloFileModule extends ReturningJobModule<NebuloObject> {
       if (state_ == STATE.REPLICA_FETCH) {
         NebuloObject nebuloObject;
         try {
-          nebuloObject = CryptoUtils.decryptNebuloObject(message.encryptedEntity_);
+          nebuloObject = (NebuloObject) CryptoUtils.decryptObject(message.encryptedEntity_);
           nebuloObject.setSender(message.getSourceAddress());
         } catch (CryptoException exception) {
           // TODO(bolek): Error not fatal? Retry?
