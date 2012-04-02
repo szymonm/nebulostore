@@ -2,16 +2,16 @@ package org.nebulostore.appcore;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
+import org.nebulostore.async.messages.AsynchronousMessagesMessage;
+import org.nebulostore.async.messages.BrokerErrorMessage;
+import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
+import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
+import org.nebulostore.async.messages.NetworkContextChangedMessage;
+import org.nebulostore.async.messages.StoreAsynchronousMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.CommSendDataMessage;
 import org.nebulostore.communication.messages.DiscoveryMessage;
-import org.nebulostore.communication.messages.broker.AsynchronousMessagesMessage;
-import org.nebulostore.communication.messages.broker.BrokerErrorMessage;
-import org.nebulostore.communication.messages.broker.GetAsynchronousMessagesMessage;
-import org.nebulostore.communication.messages.broker.GotAsynchronousMessagesMessage;
-import org.nebulostore.communication.messages.broker.NetworkContextChangedMessage;
-import org.nebulostore.communication.messages.broker.StoreAsynchronousMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.DelDHTMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -23,12 +23,6 @@ import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
-import org.nebulostore.communication.messages.testing.ErrorTestMessage;
-import org.nebulostore.communication.messages.testing.FinishTestMessage;
-import org.nebulostore.communication.messages.testing.NewPhaseMessage;
-import org.nebulostore.communication.messages.testing.TestInitMessage;
-import org.nebulostore.communication.messages.testing.TicMessage;
-import org.nebulostore.communication.messages.testing.TocMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -38,6 +32,12 @@ import org.nebulostore.replicator.messages.GetObjectMessage;
 import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.StoreObjectMessage;
+import org.nebulostore.testing.messages.ErrorTestMessage;
+import org.nebulostore.testing.messages.FinishTestMessage;
+import org.nebulostore.testing.messages.NewPhaseMessage;
+import org.nebulostore.testing.messages.TestInitMessage;
+import org.nebulostore.testing.messages.TicMessage;
+import org.nebulostore.testing.messages.TocMessage;
 
 /**
  * Generic Message visitor class.

@@ -1,4 +1,4 @@
-package org.nebulostore.broker;
+package org.nebulostore.async;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.InstanceID;
@@ -7,11 +7,12 @@ import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.async.messages.AsynchronousMessage;
+import org.nebulostore.async.messages.AsynchronousMessagesMessage;
+import org.nebulostore.async.messages.BrokerErrorMessage;
+import org.nebulostore.async.messages.UpdateFileMessage;
+import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.dht.KeyDHT;
-import org.nebulostore.communication.messages.broker.AsynchronousMessagesMessage;
-import org.nebulostore.communication.messages.broker.BrokerErrorMessage;
-import org.nebulostore.communication.messages.broker.asynchronous.AsynchronousMessage;
-import org.nebulostore.communication.messages.broker.asynchronous.UpdateFileMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;

@@ -7,14 +7,14 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.async.messages.NetworkContextChangedMessage;
 import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.broker.NetworkContextChangedMessage;
-import org.nebulostore.communication.messages.testing.ErrorTestMessage;
-import org.nebulostore.communication.messages.testing.FinishTestMessage;
-import org.nebulostore.communication.messages.testing.TicMessage;
-import org.nebulostore.communication.messages.testing.TocMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.testing.messages.ErrorTestMessage;
+import org.nebulostore.testing.messages.FinishTestMessage;
+import org.nebulostore.testing.messages.TicMessage;
+import org.nebulostore.testing.messages.TocMessage;
 
 /**
  * Testing module that acts as a Test Server.

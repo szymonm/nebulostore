@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.testing;
+package org.nebulostore.testing.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;

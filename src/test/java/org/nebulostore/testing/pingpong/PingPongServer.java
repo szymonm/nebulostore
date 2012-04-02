@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.testing.TestInitMessage;
 import org.nebulostore.testing.ServerTestingModule;
+import org.nebulostore.testing.messages.TestInitMessage;
 
 /**
  * Sets up PingPong test.

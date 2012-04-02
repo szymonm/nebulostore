@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.broker;
+package org.nebulostore.async.messages;
 
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;

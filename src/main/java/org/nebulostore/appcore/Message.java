@@ -3,6 +3,7 @@ package org.nebulostore.appcore;
 import java.io.Serializable;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.crypto.CryptoUtils;
 
 /**
  * Base class for messages.
@@ -11,7 +12,7 @@ public abstract class Message implements Serializable {
   private static final long serialVersionUID = -2032656006415029507L;
 
   public Message() {
-    jobId_ = "unnamed_message";
+    jobId_ = CryptoUtils.getRandomString();
   }
 
   public Message(String jobID) {

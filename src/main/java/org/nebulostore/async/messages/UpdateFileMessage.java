@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.broker.asynchronous;
+package org.nebulostore.async.messages;
 
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.communication.address.CommAddress;

@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.testing;
+package org.nebulostore.testing.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -6,18 +6,18 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
 /**
- * Message used to finish tests immediatelly. Send by TestingServer to clients.
+ * Tests server sends this message when phase begins.
  * @author szymonmatejczyk
- *
  */
-public class FinishTestMessage extends CommMessage {
-  private static final long serialVersionUID = -1391650791568026886L;
+public class TicMessage extends CommMessage {
 
-  public FinishTestMessage(CommAddress sourceAddress, CommAddress destAddress) {
+  private static final long serialVersionUID = 8482635420673217310L;
+
+  public TicMessage(CommAddress sourceAddress, CommAddress destAddress) {
     super(sourceAddress, destAddress);
   }
 
-  public FinishTestMessage(String jobId, CommAddress sourceAddress,
+  public TicMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress) {
     super(jobId, sourceAddress, destAddress);
   }
@@ -26,4 +26,5 @@ public class FinishTestMessage extends CommMessage {
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }
+
 }

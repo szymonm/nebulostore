@@ -5,8 +5,8 @@ import java.io.Serializable;
 import org.apache.log4j.Logger;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
-import org.nebulostore.communication.messages.testing.NewPhaseMessage;
 import org.nebulostore.testing.TestingModule;
+import org.nebulostore.testing.messages.NewPhaseMessage;
 
 /**
  * Pong.

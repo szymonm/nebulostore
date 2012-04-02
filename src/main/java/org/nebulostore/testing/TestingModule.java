@@ -9,13 +9,13 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.testing.ErrorTestMessage;
-import org.nebulostore.communication.messages.testing.FinishTestMessage;
-import org.nebulostore.communication.messages.testing.NewPhaseMessage;
-import org.nebulostore.communication.messages.testing.TestInitMessage;
-import org.nebulostore.communication.messages.testing.TicMessage;
-import org.nebulostore.communication.messages.testing.TocMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.testing.messages.ErrorTestMessage;
+import org.nebulostore.testing.messages.FinishTestMessage;
+import org.nebulostore.testing.messages.NewPhaseMessage;
+import org.nebulostore.testing.messages.TestInitMessage;
+import org.nebulostore.testing.messages.TicMessage;
+import org.nebulostore.testing.messages.TocMessage;
 
 /**
  * Base class for all TestingModules(test cases run on peers).

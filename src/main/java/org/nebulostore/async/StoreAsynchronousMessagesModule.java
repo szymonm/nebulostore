@@ -1,4 +1,4 @@
-package org.nebulostore.broker;
+package org.nebulostore.async;
 
 import java.util.LinkedList;
 
@@ -6,8 +6,9 @@ import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.messages.broker.StoreAsynchronousMessage;
-import org.nebulostore.communication.messages.broker.asynchronous.AsynchronousMessage;
+import org.nebulostore.async.messages.AsynchronousMessage;
+import org.nebulostore.async.messages.StoreAsynchronousMessage;
+import org.nebulostore.broker.BrokerContext;
 
 /**
  * Module responsible for storing asynchrounous messages in this instance.

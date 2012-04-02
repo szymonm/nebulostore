@@ -1,11 +1,11 @@
-package org.nebulostore.communication.messages.broker;
+package org.nebulostore.async.messages;
 
 import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.async.ResponseWithAsynchronousMessagesModule;
 import org.nebulostore.broker.BrokerContext;
-import org.nebulostore.broker.ResponseWithAsynchronousMessagesModule;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 

@@ -1,4 +1,4 @@
-package org.nebulostore.broker;
+package org.nebulostore.async;
 
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
@@ -9,11 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.async.messages.AsynchronousMessage;
+import org.nebulostore.async.messages.AsynchronousMessagesMessage;
+import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
+import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
+import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.broker.AsynchronousMessagesMessage;
-import org.nebulostore.communication.messages.broker.GetAsynchronousMessagesMessage;
-import org.nebulostore.communication.messages.broker.GotAsynchronousMessagesMessage;
-import org.nebulostore.communication.messages.broker.asynchronous.AsynchronousMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.InstanceID;
-import org.nebulostore.communication.messages.broker.asynchronous.AsynchronousMessage;
+import org.nebulostore.async.messages.AsynchronousMessage;
 
 /**
  * All persistent data hold by Broker.

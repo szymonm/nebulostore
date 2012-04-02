@@ -1,10 +1,10 @@
-package org.nebulostore.communication.messages.broker;
+package org.nebulostore.async.messages;
 
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.broker.RetrieveAsynchronousMessagesModule;
+import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
 
 
 /**

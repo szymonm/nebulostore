@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.testing;
+package org.nebulostore.testing.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -6,18 +6,18 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
 /**
- * Tests server sends this message when phase begins.
+ * Message send when TestModule has successfully finished his execution in current phase.
  * @author szymonmatejczyk
  */
-public class TicMessage extends CommMessage {
+public class TocMessage extends CommMessage {
 
-  private static final long serialVersionUID = 8482635420673217310L;
+  private static final long serialVersionUID = 8214780097258463061L;
 
-  public TicMessage(CommAddress sourceAddress, CommAddress destAddress) {
+  public TocMessage(CommAddress sourceAddress, CommAddress destAddress) {
     super(sourceAddress, destAddress);
   }
 
-  public TicMessage(String jobId, CommAddress sourceAddress,
+  public TocMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress) {
     super(jobId, sourceAddress, destAddress);
   }
@@ -26,5 +26,4 @@ public class TicMessage extends CommMessage {
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }
-
 }

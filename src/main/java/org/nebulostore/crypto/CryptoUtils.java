@@ -23,6 +23,10 @@ public final class CryptoUtils {
     return new BigInteger(130, RANDOM);
   }
 
+  public static String getRandomString() {
+    return getRandomId().toString();
+  }
+
   // TODO: Encryption must use cryptographic keys (add parameters?)
   public static EncryptedObject encryptObject(Serializable object) throws CryptoException {
     return new EncryptedObject(serializeObject(object));

@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.broker;
+package org.nebulostore.async.messages;
 
 import java.util.List;
 
@@ -6,7 +6,6 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.communication.messages.broker.asynchronous.AsynchronousMessage;
 
 /**
  * Collection of messages that are to be delivered.
