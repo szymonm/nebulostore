@@ -5,21 +5,19 @@
 # 1. Run ./console-test.sh
 # 2. On first terminal:
 #       cd build/jar/1/
-#       java -jar Nebulostore.jar
+#       java -jar Nebulostore.jar 11
 # 3. On second terminal:
 #       cd build/jar/2/
-#       java -jar Nebulostore.jar
-#       (wait a few seconds)
-#       (press enter to see the command prompt)
-#       type "putkey" and press enter
-#       (expect message "Successfully executed putKey(9999).")
+#       java -jar Nebulostore.jar 22
 # 4. On third terminal (not on terminal 2!):
+#       cd build/jar/3/
+#       java -jar Nebulostore.jar 33
 #       (press enter to see the command prompt)
-#       type "write" and press enter
-#       (expect messages "Successfully created new file." and "Successfully written 24 bytes.")
-# 5. On terminal 1 or 3 (not on terminal 2!):
+#       type "write 22 123 zawartosc" and press enter
+#       (expect messages "Successfully created new file." and "Successfully written x bytes.")
+# 5. On terminal 2:
 #       (press enter to see the command prompt)
-#       type "read" and press enter
+#       type "read 22 123 pliczek" and press enter
 #       (expect message "Successfully received file!")
 # 6. The file is saved into "pliczek" - check if it contains reasonable data.
 #
@@ -72,4 +70,6 @@ do
 done
 
 cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR/1/resources/conf/communication/BdbPeer.xml
+rm -rf /Users/bolek/tmp/baza_nebulo/
+mkdir /Users/bolek/tmp/baza_nebulo/
 

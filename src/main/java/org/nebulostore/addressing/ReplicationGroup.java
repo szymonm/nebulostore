@@ -26,6 +26,10 @@ public class ReplicationGroup implements Serializable, Comparable<ObjectId> {
     upperBound_ = uBound;
   }
 
+  public int getSize() {
+    return replicators_.size();
+  }
+
   public CommAddress getReplicator(int index) {
     return replicators_.get(index);
   }

@@ -1,8 +1,12 @@
 package org.nebulostore.appcore;
 
+import java.math.BigInteger;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.nebulostore.addressing.AppKey;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.testing.ServerTestingModule;
 import org.nebulostore.testing.pingpong.PingPongServer;
@@ -20,8 +24,14 @@ public final class TestingPeer extends Peer {
 
   public static void main(String[] args) {
     DOMConfigurator.configure("resources/conf/log4j.xml");
-
-    startPeer();
+    BigInteger appKey = BigInteger.ZERO;
+    if (args.length < 1) {
+      // Random AppKey if not provided.
+      appKey = CryptoUtils.getRandomId();
+    } else {
+      appKey = new BigInteger(args[0]);
+    }
+    startPeer(new AppKey(appKey));
     try {
       // Waiting for peer initialization
       Thread.sleep(5000);

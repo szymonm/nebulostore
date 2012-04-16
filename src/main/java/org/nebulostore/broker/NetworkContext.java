@@ -1,9 +1,11 @@
 package org.nebulostore.broker;
 
 import java.util.HashSet;
+import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.addressing.AppKey;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
@@ -16,12 +18,12 @@ import org.nebulostore.communication.address.CommAddress;
  */
 public final class NetworkContext {
   private static Logger logger_ = Logger.getLogger(NetworkContext.class);
-
   private static NetworkContext instance_;
+  private static AppKey appKey_;
 
   private BlockingQueue<Message> dispatcherQueue_;
-
   private HashSet<CommAddress> knownPeers_;
+  private Vector<CommAddress> knownPeersVector_;
 
   //TODO(szm): complete events module
   /**
@@ -38,6 +40,8 @@ public final class NetworkContext {
   private NetworkContext() {
     knownPeers_ = new HashSet<CommAddress>();
     knownPeers_.add(CommunicationPeer.getPeerAddress());
+    knownPeersVector_ = new Vector<CommAddress>();
+    knownPeersVector_.add(CommunicationPeer.getPeerAddress());
   }
 
   private void contextChanged() {
@@ -54,13 +58,22 @@ public final class NetworkContext {
     contextChangeMessages_.remove(message);
   }
 
-  public HashSet<CommAddress> getKnownPeers() {
-    return knownPeers_;
+  public Vector<CommAddress> getKnownPeers() {
+    return knownPeersVector_;
   }
 
   protected void addFoundPeer(CommAddress address) {
     knownPeers_.add(address);
+    knownPeersVector_.add(address);
     contextChanged();
+  }
+
+  public void setAppKey(AppKey appKey) {
+    appKey_ = appKey;
+  }
+
+  public static AppKey getAppKey() {
+    return appKey_;
   }
 
   private BlockingQueue<Message> getDispatcherQueue() {

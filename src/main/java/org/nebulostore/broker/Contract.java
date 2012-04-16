@@ -1,14 +1,27 @@
 package org.nebulostore.broker;
 
+import java.io.Serializable;
+
 import org.nebulostore.appcore.InstanceID;
 
 /**
- * @author szymonmatejczyk
  * Contract between peers.
+ * NOTE: for now contracts are one-sided, i.e. accepting the contract means agreeing to replicate
+ * sb's files.
+ * @author szymonmatejczyk
  */
-public class Contract {
+public class Contract implements Serializable {
+  private static final long serialVersionUID = 8104248584725231818L;
+
   private String contractId_;
   private InstanceID peer_;
+  private int sizeKb_;
+
+  public Contract(String contractId, InstanceID peer, int sizeKb) {
+    contractId_ = contractId;
+    peer_ = peer;
+    sizeKb_ = sizeKb;
+  }
 
   public String getContractId() {
     return contractId_;
@@ -18,10 +31,8 @@ public class Contract {
     return peer_;
   }
 
-  public Contract(String contractId, InstanceID peer) {
-    super();
-    contractId_ = contractId;
-    peer_ = peer;
+  public int getSize() {
+    return sizeKb_;
   }
 
   @Override
@@ -53,6 +64,9 @@ public class Contract {
         return false;
     } else if (!peer_.equals(other.peer_))
       return false;
+    if (sizeKb_ != other.sizeKb_) {
+      return false;
+    }
     return true;
   }
 
@@ -60,5 +74,4 @@ public class Contract {
   public String toString() {
     return "Contract [contractId=" + contractId_ + ", instanceID_=" + peer_ + "]";
   }
-
 }

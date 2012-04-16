@@ -8,6 +8,8 @@ import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.NetworkContextChangedMessage;
 import org.nebulostore.async.messages.StoreAsynchronousMessage;
+import org.nebulostore.broker.messages.ContractOfferMessage;
+import org.nebulostore.broker.messages.OfferReplyMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.CommSendDataMessage;
@@ -126,6 +128,14 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
   public R visit(ValueDHTMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  /* Broker messages. */
+  public R visit(ContractOfferMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+  public R visit(OfferReplyMessage message) throws NebuloException {
     return visitDefault(message);
   }
 

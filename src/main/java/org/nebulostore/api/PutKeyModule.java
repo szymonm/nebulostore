@@ -1,6 +1,5 @@
 package org.nebulostore.api;
 
-import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
@@ -13,8 +12,6 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.CommunicationPeer;
-import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -30,6 +27,7 @@ public class PutKeyModule extends ReturningJobModule<Void> {
 
   private final AppKey appKey_;
   private final StateMachineVisitor visitor_;
+  private ReplicationGroup replicationGroup_;
 
   private static Logger logger_ = Logger.getLogger(PutKeyModule.class);
 
@@ -41,9 +39,11 @@ public class PutKeyModule extends ReturningJobModule<Void> {
   /*
    * Constructor that runs newly created module.
    */
-  public PutKeyModule(AppKey appKey, BlockingQueue<Message> dispatcherQueue) {
+  public PutKeyModule(AppKey appKey, ReplicationGroup replicationGroup,
+      BlockingQueue<Message> dispatcherQueue) {
     appKey_ = appKey;
     visitor_ = new StateMachineVisitor();
+    replicationGroup_ = replicationGroup;
     runThroughDispatcher(dispatcherQueue);
   }
 
@@ -73,10 +73,8 @@ public class PutKeyModule extends ReturningJobModule<Void> {
         // List of top-dir replicators stored in DHT.
         ContractList contractList = new ContractList();
         try {
-          // TODO(bolek): Remove this - it adds a single group with owner's address (testing).
-          CommAddress myAddr = CommunicationPeer.getPeerAddress();
-          contractList.addGroup(new ReplicationGroup(new CommAddress[]{myAddr}, new BigInteger("0"),
-              new BigInteger("1000000")));
+          // TODO(bolek, marcin): This will be replaced with a DHT update function.
+          contractList.addGroup(replicationGroup_);
         } catch (IntervalCollisionException exception) {
           endWithError(new NebuloException("Error while creating replication group", exception));
         }

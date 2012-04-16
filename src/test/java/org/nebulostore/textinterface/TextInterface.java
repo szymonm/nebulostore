@@ -46,10 +46,15 @@ public final class TextInterface {
   }
 
   public static void main(String[] args) {
+    if (args.length < 1) {
+      System.out.println("Provide Peer AppKey (number)!");
+      return;
+    }
+    final AppKey appKey = new AppKey(new BigInteger(args[0]));
     // Run NebuloStore in a separate thread.
     Thread nebuloThread = new Thread(new Runnable() {
       public void run() {
-        Peer.runPeer();
+        Peer.runPeer(appKey);
       }
     });
     DOMConfigurator.configure("resources/conf/log4j.xml");

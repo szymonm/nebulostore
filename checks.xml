@@ -30,10 +30,10 @@
 
     <!-- RULE 4: Naming conventions local variables. -->
     <module name="LocalVariableName"/>
-    <module name="LocalFinalVariableName"/> 
+    <module name="LocalFinalVariableName"/>
 
     <!-- RULE 5: Naming conventions for final variables. -->
-    <module name="ConstantName"/>   
+    <module name="ConstantName"/>
 
     <!-- RULE 6: Naming conventions local methods. -->
     <module name="MethodName"/>
@@ -350,12 +350,12 @@
     <module name="MutableException"/>
 
     <!-- Flag overly complex constructions -->
-    <module name="ClassFanOutComplexity">
+    <!--<module name="ClassFanOutComplexity">
         <property name="max" value="40"/>
     </module>
     <module name="CyclomaticComplexity">
         <property name="max" value="40"/>
-    </module>
+    </module>-->
     <!-- <module name="NPathComplexity"/> -->
 
     <!-- Flag uncommented main() methods (debugging left-overs) -->

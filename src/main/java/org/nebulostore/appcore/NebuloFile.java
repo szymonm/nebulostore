@@ -157,19 +157,21 @@ public class NebuloFile extends NebuloObject {
   @Override
   protected void runSync() throws NebuloException {
     Vector<WriteNebuloObjectModule> updateModules = new Vector<WriteNebuloObjectModule>();
-    // Run sync for NebuloFile (metadata).
-    updateModules.add(new WriteNebuloObjectModule(address_, this, dispatcherQueue_));
     // Run sync for all chunks in parallel.
     for (int i = 0; i < chunks_.size(); ++i) {
       updateModules.add(chunks_.get(i).sync());
     }
+    // Run sync for NebuloFile (metadata).
+    updateModules.add(new WriteNebuloObjectModule(address_, this, dispatcherQueue_));
     // Wait for all results.
     NebuloException caughtException = null;
     for (int i = 0; i < updateModules.size(); ++i) {
       try {
         if (updateModules.get(i) != null) {
           updateModules.get(i).getResult(TIMEOUT_SEC);
-          chunks_.get(i).setSynced();
+          if (i < chunks_.size()) {
+            chunks_.get(i).setSynced();
+          }
         }
       } catch (NebuloException exception) {
         caughtException = exception;

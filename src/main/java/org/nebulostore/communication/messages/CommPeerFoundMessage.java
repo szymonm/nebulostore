@@ -16,6 +16,10 @@ public class CommPeerFoundMessage extends CommMessage {
     super(sourceAddress, destAddress);
   }
 
+  public CommPeerFoundMessage(String jobId, CommAddress sourceAddress, CommAddress destAddress) {
+    super(jobId, sourceAddress, destAddress);
+  }
+
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }

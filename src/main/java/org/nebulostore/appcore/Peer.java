@@ -1,13 +1,19 @@
 package org.nebulostore.appcore;
 
+import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.broker.Broker;
+import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.CommunicationPeer;
+import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
+import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
 /**
@@ -28,15 +34,22 @@ public class Peer {
    *          Command line arguments.
    */
   public static void main(String[] args) {
-    runPeer();
+    BigInteger appKey = BigInteger.ZERO;
+    if (args.length < 1) {
+      // Random AppKey if not provided.
+      appKey = CryptoUtils.getRandomId();
+    } else {
+      appKey = new BigInteger(args[0]);
+    }
+    runPeer(new AppKey(appKey));
   }
 
-  public static void runPeer() {
-    startPeer();
+  public static void runPeer(AppKey appKey) {
+    startPeer(appKey);
     finishPeer();
   }
 
-  protected static void startPeer() {
+  protected static void startPeer(AppKey appKey) {
     networkInQueue_ = new LinkedBlockingQueue<Message>();
     dispatcherInQueue_ = new LinkedBlockingQueue<Message>();
     ApiFacade.initApi(dispatcherInQueue_);
@@ -52,7 +65,20 @@ public class Peer {
       exception.printStackTrace();
       System.exit(-1);
     }
+    // Create Broker.
+    String brokerJobId = CryptoUtils.getRandomId().toString();
+    dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(brokerJobId, true)));
+    NetworkContext.getInstance().setAppKey(appKey);
+    NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
+
+    // Run everything.
     networkThread_.start();
+    // Give network module some time to initialize.
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
     dispatcherThread_.start();
   }
 

@@ -1,10 +1,14 @@
 package org.nebulostore.api;
 
+import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
 
 import org.nebulostore.addressing.AppKey;
+import org.nebulostore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.communication.CommunicationPeer;
+import org.nebulostore.communication.address.CommAddress;
 
 /**
  * @author bolek
@@ -22,7 +26,9 @@ public final class ApiFacade {
 
   public static void putKey(AppKey appKey) throws NebuloException {
     // Create a handler and run it through dispatcher.
-    PutKeyModule module = new PutKeyModule(appKey, dispatcherQueue_);
+    PutKeyModule module = new PutKeyModule(appKey,
+        new ReplicationGroup(new CommAddress[]{CommunicationPeer.getPeerAddress()},
+        new BigInteger("0"), new BigInteger("1000000")), dispatcherQueue_);
     // Exception from getResult() is simply passed to the user.
     module.getResult(TIMEOUT_SEC);
   }
