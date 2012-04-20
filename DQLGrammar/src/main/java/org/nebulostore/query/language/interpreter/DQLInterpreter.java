@@ -14,6 +14,7 @@ import org.nebulostore.query.language.interpreter.datasources.InjectedDataSource
 import org.nebulostore.query.language.interpreter.datatypes.values.BooleanValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
+import org.nebulostore.query.privacy.level.PublicConditionalMy;
 import org.nebulostore.query.privacy.level.PublicMy;
 
 public class DQLInterpreter {
@@ -101,11 +102,13 @@ public class DQLInterpreter {
     try {
       IDQLValue returned = walker.reduce_statement();
       log.info("Returned: " + returned);
-      if (!returned.getPrivacyLevel().isMorePublicThan(new PublicMy())) {
+      if (!returned.getPrivacyLevel().isMorePublicThan(
+          new PublicConditionalMy())) {
         throw new InterpreterException(
             "Returned value must be public, but is: " +
                 returned.getPrivacyLevel());
       }
+      state.setReduceResult(returned);
     } catch (RecognitionException e) {
       throw new InterpreterException(e);
     } catch (Throwable t) {

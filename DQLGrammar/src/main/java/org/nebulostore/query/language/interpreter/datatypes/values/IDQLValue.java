@@ -46,5 +46,8 @@ public interface IDQLValue extends Serializable {
 
   void checkType(DQLType type) throws InterpreterException;
 
-  void setPrivacyLevel(PrivacyLevel level) throws InterpreterException;
+  void setToHigherOrEqualsPrivacyLevel(PrivacyLevel level) throws InterpreterException;
+
+  @Override
+  public boolean equals(Object o);
 }

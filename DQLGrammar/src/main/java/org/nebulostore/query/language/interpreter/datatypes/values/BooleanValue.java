@@ -19,20 +19,31 @@ public class BooleanValue extends DQLValue {
     value_ = value;
   }
 
+  public BooleanValue(boolean value) {
+    super(null);
+    value_ = value;
+  }
+
   @Override
   public IDQLValue equals(IDQLValue arg) throws InterpreterException {
-    if (arg instanceof BooleanValue)
-      return new BooleanValue(value_ == ((BooleanValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
-    else
+    if (arg instanceof BooleanValue) {
+      BooleanValue ret = new BooleanValue(
+          value_ == ((BooleanValue) arg).getValue());
+      ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+          arg, ret));
+      return ret;
+    } else
       throw new TypeException("Unable to determine equality between " +
           this.toString() + " and " + arg.toString());
   }
 
   @Override
   public IDQLValue notEquals(IDQLValue arg) throws InterpreterException {
-    return new BooleanValue(!((BooleanValue) equals(arg)).getValue(),
-        privacyLevel_.generalize(arg.getPrivacyLevel()));
+    BooleanValue ret = new BooleanValue(
+        !((BooleanValue) equals(arg)).getValue());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
@@ -48,5 +59,10 @@ public class BooleanValue extends DQLValue {
   @Override
   public DQLType getType() {
     return new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLBoolean);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return (o instanceof BooleanValue) && ((BooleanValue) o).value_ == value_;
   }
 }

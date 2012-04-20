@@ -102,8 +102,12 @@ public abstract class DQLValue implements IDQLValue {
     }
   }
 
+  protected void setPrivacyLevel(PrivacyLevel level) {
+    privacyLevel_ = level;
+  }
+
   @Override
-  public void setPrivacyLevel(PrivacyLevel level) throws InterpreterException {
+  public void setToHigherOrEqualsPrivacyLevel(PrivacyLevel level) throws InterpreterException {
     if (!getPrivacyLevel().isMorePublicThan(level)) {
       throw new InterpreterException("Unable to set privacy level as " + level +
           " for value " + toString() + " due to privacy algebra violation.");
@@ -111,5 +115,8 @@ public abstract class DQLValue implements IDQLValue {
       privacyLevel_ = level;
     }
   }
+
+  @Override
+  public abstract boolean equals(Object o);
 
 }

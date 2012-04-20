@@ -1,6 +1,8 @@
 package org.nebulostore.query.privacy;
 
+import org.nebulostore.query.privacy.level.PrivateConditionalMy;
 import org.nebulostore.query.privacy.level.PrivateMy;
+import org.nebulostore.query.privacy.level.PublicConditionalMy;
 import org.nebulostore.query.privacy.level.PublicMy;
 import org.nebulostore.query.privacy.level.PublicOthers;
 
@@ -33,18 +35,19 @@ public class PrivacyController {
     if (start.equals(end))
       return true;
 
-    if ((end instanceof PublicOthers) || (end instanceof PublicMy))
+    if (end instanceof PublicOthers)
+      return true;
+
+    if (start instanceof PublicConditionalMy && end instanceof PublicMy)
       return true;
 
     if (start instanceof PrivateMy)
       return true;
-    /*
-     * if (start instanceof PrivateConditionalOthers && end instanceof
-     * PrivateConditionalMy) return true;
-     * 
-     * if (start instanceof PrivateConditionalOthers && end instanceof
-     * PublicOthers) return true;
-     */
+
+    if (start instanceof PrivateConditionalMy &&
+        (end instanceof PublicConditionalMy || end instanceof PublicMy))
+      return true;
+
     return false;
   }
 

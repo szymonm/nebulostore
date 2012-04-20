@@ -34,7 +34,7 @@ public class If extends DQLFunction {
 
   @Override
   public IDQLValue call(List<IDQLValue> params) throws FunctionCallException,
-      InterpreterException, RecognitionException {
+  InterpreterException, RecognitionException {
     BooleanValue condition = (BooleanValue) params.get(0);
     IDQLValue ret;
     if (condition.getValue()) {
@@ -42,8 +42,9 @@ public class If extends DQLFunction {
     } else {
       ret = params.get(2);
     }
-    ret.setPrivacyLevel(condition.getPrivacyLevel().generalize(
-        ret.getPrivacyLevel()));
+    //TODO: Czy tutaj powinna byc kompozycja
+    ret.setToHigherOrEqualsPrivacyLevel(condition.getPrivacyLevel().compose(
+        ret.getPrivacyLevel(), condition, ret, ret));
     return ret;
   }
 

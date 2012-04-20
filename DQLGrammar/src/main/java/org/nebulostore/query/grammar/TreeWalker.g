@@ -238,7 +238,7 @@ expression returns [IDQLValue result]
     
   // privacy handling
   | ^('AS' e=expression type=type_rule)        { e.checkType(type); result = e; }
-  | ^('IS' e=expression level=privacy_decl)    { e.setPrivacyLevel(e.getPrivacyLevel().generalize(level)); result = e; }
+  | ^('IS' e=expression level=privacy_decl)    { e.setToHigherOrEqualsPrivacyLevel(level.mergeSources(e.getPrivacyLevel())); result = e; }
   ;
   catch[InterpreterException exc] {    
     System.out.println("Error catch at query level"); 

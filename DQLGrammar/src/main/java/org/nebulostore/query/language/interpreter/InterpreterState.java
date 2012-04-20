@@ -23,6 +23,7 @@ public class InterpreterState {
   private final Map<String, IDQLValue> environment_;
   private final List<IDQLValue> fromForward_;
   private Iterable<DQLFunction> libraryFunctions_;
+  private IDQLValue reduceReturn_;
 
   public InterpreterState(ExecutorContext context) {
     environment_ = new HashMap<String, IDQLValue>(32);
@@ -82,5 +83,13 @@ public class InterpreterState {
       newLibraryFunctions.add(mockFunction);
     }
     libraryFunctions_ = newLibraryFunctions;
+  }
+
+  public void setReduceResult(IDQLValue returned) {
+    reduceReturn_ = returned;
+  }
+
+  public IDQLValue getReduceResult() {
+    return reduceReturn_;
   }
 }

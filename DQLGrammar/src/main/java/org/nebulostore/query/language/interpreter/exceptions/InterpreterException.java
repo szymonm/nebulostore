@@ -14,4 +14,8 @@ public class InterpreterException extends Exception {
   public InterpreterException(Throwable t) {
     super(t);
   }
+
+  public InterpreterException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

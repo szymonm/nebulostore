@@ -24,4 +24,10 @@ public class FileValue extends DQLValue {
     return new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLFile);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
 }

@@ -74,4 +74,10 @@ public class TupleValue extends DQLValue {
     }
     return ret + ") : " + getPrivacyLevel() + " ]";
   }
+
+  @Override
+  public boolean equals(Object o) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

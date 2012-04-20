@@ -60,13 +60,76 @@ public class ListValue extends DQLValue implements Iterable<IDQLValue> {
   }
 
   public boolean add(IDQLValue e) throws InterpreterException {
-    privacyLevel_ = privacyLevel_.generalize(e.getPrivacyLevel());
+    // TODO: Czy to jest OK ? (this, e, this)?
+    privacyLevel_ = privacyLevel_.compose(e.getPrivacyLevel(), this, e, this);
     return value_.add(e);
   }
 
   public void add(int index, IDQLValue element) throws InterpreterException {
-    privacyLevel_ = privacyLevel_.generalize(element.getPrivacyLevel());
+    // TODO: Czy to jest OK ? (this, e, this)?
+    privacyLevel_ = privacyLevel_.compose(element.getPrivacyLevel(), this,
+        element, this);
     value_.add(index, element);
+  }
+
+  /**
+   * Removes element from ListValue at the specified index
+   * 
+   * @param index
+   * @throws InterpreterException
+   */
+  public void remove(int index) throws InterpreterException {
+    // TODO: Should I move to less-strict privacy level?
+    try {
+      value_.remove(index);
+    } catch (IndexOutOfBoundsException exc) {
+      throw new InterpreterException("Unable to remove value from list.", exc);
+    }
+  }
+
+  /**
+   * @param index
+   * @return
+   */
+  public IDQLValue get(int index) throws InterpreterException {
+    try {
+      return value_.get(index);
+    } catch (IndexOutOfBoundsException exc) {
+      throw new InterpreterException("Unable to get value from list.", exc);
+    }
+  }
+
+  /**
+   * @param index
+   * @param element
+   * @return
+   */
+  public void set(int index, IDQLValue element) throws InterpreterException {
+    try {
+      value_.set(index, element);
+      // TODO: Czy to jest OK ? (this, e, this)?
+      privacyLevel_ = privacyLevel_.compose(element.getPrivacyLevel(), this,
+          element, this);
+    } catch (IndexOutOfBoundsException exc) {
+      throw new InterpreterException("Unable to get value from list.", exc);
+    }
+
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return false;
+    /*
+    if ((o instanceof ListValue) && (value_.size() == ((ListValue)o).size_)) {
+      for (int i = 0; i < value_.size(); i++)
+        if (value_.get(i).equals(((ListValue)o).value_.get(i))) {
+          return false;
+        }
+
+      return true;
+    }
+    return false;
+     */
   }
   /*
    * @Override public boolean addAll(Collection<? extends IDQLValue> c) { return

@@ -16,70 +16,86 @@ public class IntegerValue extends DQLValue {
     value_ = value;
   }
 
+  public IntegerValue(int value) {
+    super(null);
+    value_ = value;
+  }
+
   public int getValue() {
     return value_;
   }
 
   @Override
   public IDQLValue addNum(IDQLValue arg) throws InterpreterException {
+    DQLValue ret;
     if (arg instanceof IntegerValue) {
-      return new IntegerValue(((IntegerValue) arg).value_ + value_,
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new IntegerValue(((IntegerValue) arg).value_ + value_);
     } else if (arg instanceof DoubleValue) {
-      return new DoubleValue(((DoubleValue) arg).getValue() + value_,
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new DoubleValue(((DoubleValue) arg).getValue() + value_);
     } else
       throw new TypeException("Unable to add " + this.toString() + " to " +
           arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue subNum(IDQLValue arg) throws InterpreterException {
+    DQLValue ret;
     if (arg instanceof IntegerValue) {
-      return new IntegerValue(value_ - ((IntegerValue) arg).value_,
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new IntegerValue(value_ - ((IntegerValue) arg).value_);
     } else if (arg instanceof DoubleValue) {
-      return new DoubleValue(value_ - ((DoubleValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new DoubleValue(value_ - ((DoubleValue) arg).getValue());
     } else
       throw new TypeException("Unable to substract " + this.toString() +
           " to " + arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue multNum(IDQLValue arg) throws InterpreterException {
+    DQLValue ret;
     if (arg instanceof IntegerValue) {
-      return new IntegerValue(((IntegerValue) arg).value_ * value_,
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new IntegerValue(((IntegerValue) arg).value_ * value_);
     } else if (arg instanceof DoubleValue) {
-      return new DoubleValue(((DoubleValue) arg).getValue() * value_,
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new DoubleValue(((DoubleValue) arg).getValue() * value_);
     } else
       throw new TypeException("Unable to multiply " + this.toString() + " to " +
           arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue divNum(IDQLValue arg) throws InterpreterException {
+    DQLValue ret;
     if (arg instanceof IntegerValue) {
-      return new IntegerValue(value_ / ((IntegerValue) arg).value_,
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new IntegerValue(value_ / ((IntegerValue) arg).value_);
     } else if (arg instanceof DoubleValue) {
-      return new DoubleValue(value_ / ((DoubleValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new DoubleValue(value_ / ((DoubleValue) arg).getValue());
     } else
       throw new TypeException("Unable to substract " + this.toString() +
           " to " + arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue modNum(IDQLValue arg) throws InterpreterException {
+    IntegerValue ret;
     if (arg instanceof IntegerValue) {
-      return new IntegerValue(value_ % ((IntegerValue) arg).value_,
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new IntegerValue(value_ % ((IntegerValue) arg).value_);
     } else
       throw new TypeException("Unable to substract " + this.toString() +
           " to " + arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
@@ -89,73 +105,86 @@ public class IntegerValue extends DQLValue {
 
   @Override
   public IDQLValue equals(IDQLValue arg) throws InterpreterException {
+    BooleanValue ret;
     if (arg instanceof IntegerValue)
-      return new BooleanValue(value_ == ((IntegerValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ == ((IntegerValue) arg).getValue());
     else if (arg instanceof DoubleValue)
-      return new BooleanValue(value_ == ((DoubleValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ == ((DoubleValue) arg).getValue());
     else
       throw new TypeException("Unable to determine equality between " +
           this.toString() + " and " + arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue less(IDQLValue arg) throws InterpreterException {
+    BooleanValue ret;
     if (arg instanceof IntegerValue)
-      return new BooleanValue(value_ < ((IntegerValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ < ((IntegerValue) arg).getValue());
     else if (arg instanceof DoubleValue)
-      return new BooleanValue(value_ < ((DoubleValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ < ((DoubleValue) arg).getValue());
     else
       throw new TypeException("Unable to determine less between " +
           this.toString() + " and " + arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue lessEquals(IDQLValue arg) throws InterpreterException {
+    BooleanValue ret;
     if (arg instanceof IntegerValue)
-      return new BooleanValue(value_ <= ((IntegerValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ <= ((IntegerValue) arg).getValue());
     else if (arg instanceof DoubleValue)
-      return new BooleanValue(value_ <= ((DoubleValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ <= ((DoubleValue) arg).getValue());
     else
       throw new TypeException("Unable to determine less equals between " +
           this.toString() + " and " + arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue greater(IDQLValue arg) throws InterpreterException {
+    BooleanValue ret;
     if (arg instanceof IntegerValue)
-      return new BooleanValue(value_ > ((IntegerValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ > ((IntegerValue) arg).getValue());
     else if (arg instanceof DoubleValue)
-      return new BooleanValue(value_ > ((DoubleValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ > ((DoubleValue) arg).getValue());
     else
       throw new TypeException("Unable to determine greater between " +
           this.toString() + " and " + arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue greaterEquals(IDQLValue arg) throws InterpreterException {
+    BooleanValue ret;
     if (arg instanceof IntegerValue)
-      return new BooleanValue(value_ >= ((IntegerValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ >= ((IntegerValue) arg).getValue());
     else if (arg instanceof DoubleValue)
-      return new BooleanValue(value_ >= ((DoubleValue) arg).getValue(),
-          privacyLevel_.generalize(arg.getPrivacyLevel()));
+      ret = new BooleanValue(value_ >= ((DoubleValue) arg).getValue());
     else
       throw new TypeException("Unable to determine greater equals between " +
           this.toString() + " and " + arg.toString());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
   public IDQLValue notEquals(IDQLValue arg) throws InterpreterException {
-    return new BooleanValue(!((BooleanValue) equals(arg)).getValue(),
-        privacyLevel_.generalize(arg.getPrivacyLevel()));
+    BooleanValue ret = new BooleanValue(
+        !((BooleanValue) equals(arg)).getValue());
+    ret.setPrivacyLevel(privacyLevel_.generalize(arg.getPrivacyLevel(), this,
+        arg, ret));
+    return ret;
   }
 
   @Override
@@ -171,5 +200,10 @@ public class IntegerValue extends DQLValue {
   @Override
   public DQLType getType() {
     return new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return (o instanceof IntegerValue) && ((IntegerValue) o).value_ == value_;
   }
 }

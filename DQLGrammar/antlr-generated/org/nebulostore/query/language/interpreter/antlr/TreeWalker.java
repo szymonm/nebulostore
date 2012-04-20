@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g 2012-03-26 23:49:07
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g 2012-04-20 20:30:48
 
   package org.nebulostore.query.language.interpreter.antlr;
 
@@ -1354,7 +1354,7 @@ public class TreeWalker extends TreeParser {
 
 
                     match(input, Token.UP, null); 
-                     e.setPrivacyLevel(e.getPrivacyLevel().generalize(level)); result = e; 
+                     e.setToHigherOrEqualsPrivacyLevel(level.mergeSources(e.getPrivacyLevel())); result = e; 
 
                     }
                     break;

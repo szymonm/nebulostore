@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.nebulostore.query.executor.ExecutorContext;
+import org.nebulostore.query.functions.dql.Append;
 import org.nebulostore.query.functions.dql.CreateList;
 import org.nebulostore.query.functions.dql.CreateTuple;
 import org.nebulostore.query.functions.dql.Filter;
@@ -11,6 +12,7 @@ import org.nebulostore.query.functions.dql.FoldL;
 import org.nebulostore.query.functions.dql.FoldR;
 import org.nebulostore.query.functions.dql.Get;
 import org.nebulostore.query.functions.dql.If;
+import org.nebulostore.query.functions.dql.Length;
 import org.nebulostore.query.functions.dql.Sum;
 import org.nebulostore.query.functions.ql.xml.Load;
 import org.nebulostore.query.functions.ql.xml.XPath;
@@ -34,7 +36,8 @@ public class FunctionsLibrary {
     functions_ = new DQLFunction[] { new Load(context_), new XPath(context_),
         new XPathNoise(context_), new Filter(context_), new Sum(context_),
         new FoldL(context_), new FoldR(context_), new CreateTuple(context_),
-        new CreateList(context_), new Get(context_), new If(context_) };
+        new CreateList(context_), new Get(context_), new If(context_),
+        new Append(context_), new Length(context_) };
   }
 
   private final DQLFunction[] functions_;

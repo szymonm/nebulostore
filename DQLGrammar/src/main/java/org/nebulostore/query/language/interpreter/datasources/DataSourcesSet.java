@@ -53,4 +53,13 @@ public class DataSourcesSet implements Iterable<DQLDataSource> {
     }
     return ret;
   }
+
+  public DataSourcesSet freshCopy() {
+    DataSourcesSet ret = new DataSourcesSet();
+    for (DQLDataSource source : this) {
+      ret.add(source);
+    }
+    return ret;
+  }
+
 }

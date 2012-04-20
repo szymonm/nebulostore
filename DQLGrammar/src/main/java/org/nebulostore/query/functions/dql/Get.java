@@ -25,9 +25,10 @@ public class Get extends DQLFunction {
 
   @Override
   public IDQLValue call(List<IDQLValue> params) throws FunctionCallException,
-      InterpreterException, RecognitionException {
+  InterpreterException, RecognitionException {
     checkParams(params);
 
+    // TODO: List values get??
     return ((TupleValue) params.get(0)).get(((IntegerValue) params.get(1))
         .getValue());
   }

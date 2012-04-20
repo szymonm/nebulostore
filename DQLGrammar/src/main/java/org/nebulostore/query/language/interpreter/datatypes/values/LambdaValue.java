@@ -55,9 +55,10 @@ public class LambdaValue extends DQLValue {
     } catch (RecognitionException e) {
       throw new InterpreterException(e);
     }
+    CommonTree lambdaTree = (CommonTree) lambdaFunctionReturn.getTree();
 
     expression_ = (CommonTree) ((CommonTree) lambdaFunctionReturn.getTree())
-        .getChild(1);
+        .getChild(lambdaTree.getChildCount() - 1);
     paramsDecls_ = new LinkedList<String>();
     CommonTree paramsDeclsTree = ((CommonTree) lambdaFunctionReturn.getTree());
     for (int i = 0; i < paramsDeclsTree.getChildCount() - 2; i++) {
@@ -98,5 +99,11 @@ public class LambdaValue extends DQLValue {
   @Override
   public DQLType getType() {
     return new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLLambda);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

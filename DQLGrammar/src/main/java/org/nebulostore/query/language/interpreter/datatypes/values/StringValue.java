@@ -32,4 +32,10 @@ public class StringValue extends DQLValue {
   public String toString() {
     return "[ StringValue(" + value_ + ") : " + getPrivacyLevel() + " ]";
   }
+
+  @Override
+  public boolean equals(Object o) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }
