@@ -45,6 +45,10 @@ public abstract class NebuloObject implements Serializable {
     sender_ = sender;
   }
 
+  public void delete() {
+    // TODO(bolek).
+  }
+
   /**
    * Commits all operations - invoked by user.
    * @throws NebuloException
