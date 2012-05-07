@@ -69,7 +69,7 @@ public class Peer {
     String brokerJobId = CryptoUtils.getRandomId().toString();
     dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(brokerJobId, true)));
     NetworkContext.getInstance().setAppKey(appKey);
-    NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
+    GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
 
     // Run everything.
     networkThread_.start();

@@ -40,6 +40,8 @@ import org.nebulostore.testing.messages.NewPhaseMessage;
 import org.nebulostore.testing.messages.TestInitMessage;
 import org.nebulostore.testing.messages.TicMessage;
 import org.nebulostore.testing.messages.TocMessage;
+import org.nebulostore.timer.InitSimpleTimerTestMessage;
+import org.nebulostore.timer.TimerTestMessage;
 
 /**
  * Generic Message visitor class.
@@ -196,4 +198,14 @@ public abstract class MessageVisitor<R> {
   public R visit(ErrorTestMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
+  // Timer module tests.
+  public R visit(TimerTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(InitSimpleTimerTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
 }

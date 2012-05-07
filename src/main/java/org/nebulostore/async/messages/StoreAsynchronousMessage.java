@@ -13,6 +13,7 @@ import org.nebulostore.communication.messages.CommMessage;
  * @author szymonmatejczyk
  */
 public class StoreAsynchronousMessage extends CommMessage {
+  private static final long serialVersionUID = -491541878523453225L;
   InstanceID recipient_;
   AsynchronousMessage message_;
 

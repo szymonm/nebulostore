@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
+import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
@@ -21,7 +22,6 @@ public final class NetworkContext {
   private static NetworkContext instance_;
   private static AppKey appKey_;
 
-  private BlockingQueue<Message> dispatcherQueue_;
   private HashSet<CommAddress> knownPeers_;
   private Vector<CommAddress> knownPeersVector_;
 
@@ -77,13 +77,9 @@ public final class NetworkContext {
   }
 
   private BlockingQueue<Message> getDispatcherQueue() {
-    if (dispatcherQueue_ == null) {
+    if (GlobalContext.getInstance().getDispatcherQueue() == null) {
       logger_.error("Dispatcher queue not set up.");
     }
-    return dispatcherQueue_;
-  }
-
-  public void setDispatcherQueue(BlockingQueue<Message> dispatcherQueue) {
-    dispatcherQueue_ = dispatcherQueue;
+    return GlobalContext.getInstance().getDispatcherQueue();
   }
 }

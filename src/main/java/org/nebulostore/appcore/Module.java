@@ -47,7 +47,7 @@ public abstract class Module implements Runnable {
         logger_.warn("Received InterruptedException from inQueue.");
         continue;
       } catch (NebuloException exception) {
-        logger_.warn("Received NebuloException from processMessage(): " + exception.getMessage());
+        logger_.error("Received NebuloException from processMessage(): " + exception.getMessage());
         continue;
       }
     }

@@ -71,6 +71,7 @@ public class SocketServer implements Runnable, IStreamBindingDriver {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
+        logger_.debug("Sleep interrupted");
       }
     }
 

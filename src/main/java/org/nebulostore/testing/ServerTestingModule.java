@@ -3,6 +3,7 @@ package org.nebulostore.testing;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ReturningJobModule;
@@ -95,7 +96,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
         initClients();
       } else {
         /* wait for enough peers to perform the test - start to listen for NetworkContext changes.*/
-        context_.setDispatcherQueue(outQueue_);
+        GlobalContext.getInstance().setDispatcherQueue(outQueue_);
         notificationMessage_ = new NetworkContextChangedMessage(message.getId());
         context_.addContextChangeMessage(notificationMessage_);
         logger_.debug("Waiting for peer discovery.");
