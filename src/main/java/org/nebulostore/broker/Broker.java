@@ -29,7 +29,7 @@ public class Broker extends JobModule {
   private static Logger logger_ = Logger.getLogger(Broker.class);
 
   private static final int TIMEOUT_SEC = 10;
-  private BrokerVisitor visitor_;
+  private final BrokerVisitor visitor_;
 
   public Broker(String jobId, boolean permanentInstance) {
     super(jobId);
@@ -51,15 +51,18 @@ public class Broker extends JobModule {
       return null;
     }
 
+    @Override
     public Void visit(ContractOfferMessage message) {
       // Accept every offer!
       logger_.debug("Accepting offer from: " + message.getSourceAddress());
+      NetworkContext.getInstance().addFoundPeer(message.getSourceAddress());
       networkQueue_.add(new OfferReplyMessage(message.getId(), message.getDestinationAddress(),
           message.getSourceAddress(), message.getContract(), true));
       endJobModule();
       return null;
     }
 
+    @Override
     public Void visit(OfferReplyMessage message) {
       if (message.getResult()) {
         // Offer was accepted, add new replica to our DHT entry.
@@ -82,6 +85,7 @@ public class Broker extends JobModule {
       return null;
     }
 
+    @Override
     public Void visit(CommPeerFoundMessage message) {
       // New peer found, send an offer.
       Vector<CommAddress> knownPeers = NetworkContext.getInstance().getKnownPeers();

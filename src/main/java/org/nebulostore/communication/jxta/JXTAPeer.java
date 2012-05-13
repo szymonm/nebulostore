@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -20,7 +23,6 @@ import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
-import net.jxta.protocol.DiscoveryResponseMsg;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -31,6 +33,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
+import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.streambinding.IStreamBindingDriver;
 import org.nebulostore.communication.streambinding.StreamBindingService;
 
@@ -39,8 +42,8 @@ import org.nebulostore.communication.streambinding.StreamBindingService;
  */
 public class JXTAPeer extends Module implements DiscoveryListener {
 
-  private String bootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap.rdv";
-  private String fallbackBootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap.rdv";
+  private String bootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap2.rdv";
+  private String fallbackBootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap2.rdv";
 
   private static final int PEER_ROLES = NetworkConfigurator.RDV_SERVER |
       NetworkConfigurator.RDV_CLIENT | NetworkConfigurator.RELAY_CLIENT |
@@ -65,9 +68,10 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   private static Logger logger_ = Logger.getLogger(JXTAPeer.class);
 
-  private final List<String> knownPeers_;
+  private final List<CommAddress> knownPeers_;
 
   private List<String> seedingURIs_;
+  public static boolean startFeeding_ = false;
 
   public JXTAPeer(BlockingQueue<Message> jxtaPeerIn,
       BlockingQueue<Message> jxtaPeerOut) {
@@ -94,7 +98,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
     // discovery init
     discoveryService_.addDiscoveryListener(this);
-    knownPeers_ = new LinkedList<String>();
+    knownPeers_ = new LinkedList<CommAddress>();
 
     // socket server
     logger_.info("Starting socket server");
@@ -126,6 +130,9 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     (new Thread(peerDiscoveryService_,
         "Nebulostore.Communication.PeerDiscoveryService")).start();
 
+    knownPeers_.add(getPeerAddress());
+    (new Timer()).schedule(new GossipPeers(), 2000, 1000);
+
     logger_.info("fully initialised");
   }
 
@@ -145,10 +152,9 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   /**
    * Initializes and saves to hard drive configuration of JXTA, NetworkManager
-   * providing peer unique identity.
-   *
-   * All errors here are treated as fatal and result in application unclean shutdown.
-   *
+   * providing peer unique identity. All errors here are treated as fatal and
+   * result in application unclean shutdown.
+   * 
    * @throws NebuloException
    */
   private void initNetworkManager() throws NebuloException {
@@ -201,7 +207,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
       seedingURIs_.add(fallbackBootstrapUrl_);
 
       networkConfigurator_.setName(peerName_);
-
+      networkConfigurator_.setTcpPort(9766);
 
       networkConfigurator_.setMode(PEER_ROLES);
       networkConfigurator_.setRendezvousSeedingURIs(seedingURIs_);
@@ -236,15 +242,21 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     discoveryService_ = netPeerGroup.getDiscoveryService();
   }
 
-
   @Override
   protected void processMessage(Message msg) {
+
+    if (msg instanceof DiscoveryMessage) {
+      logger_.debug("DiscoveryMessage message : emitting events");
+      newPeersFound(((DiscoveryMessage) msg).getKnownPeers());
+      return;
+    }
 
     if (msg instanceof CommMessage) {
       logger_.debug("message of class: " + msg.getClass() +
           " forwarded to MessengerService");
       ((CommMessage) msg).setSourceAddress(getPeerAddress());
       messengerServiceInQueue_.add(msg);
+      return;
     }
   }
 
@@ -252,28 +264,60 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     socketServer_.setStreamBindingService(service);
   }
 
-  /* (non-Javadoc)
-   * @see net.jxta.discovery.DiscoveryListener#discoveryEvent(net.jxta.discovery.DiscoveryEvent)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * net.jxta.discovery.DiscoveryListener#discoveryEvent(net.jxta.discovery.
+   * DiscoveryEvent)
    */
   @Override
   public void discoveryEvent(DiscoveryEvent ev) {
-    logger_.debug("DiscoveryEvent: " + ev.getQueryID());
+    logger_.info("DiscoveryEvent received with address: " + ev.getSource());
 
-    DiscoveryResponseMsg res = ev.getResponse();
+    try {
+      // TODO: move this URI mod to communication.utils
+      CommAddress discoveredAddress = new CommAddress(PeerID.create(new URI(
+          "urn:" + ("" + ev.getSource()).replace("//", ""))));
+      List<CommAddress> tmp = new LinkedList<CommAddress>();
+      tmp.add(discoveredAddress);
+      newPeersFound(tmp);
+    } catch (URISyntaxException e) {
+      logger_.error("URISyntaxException", e);
+    }
 
-    if (!knownPeers_.contains("" + ev.getSource())) {
-      knownPeers_.add("" + ev.getSource());
-      logger_.info("new peer found with address: " + ev.getSource());
+  }
 
-      try {
-        // TODO: move this URI mod to communication.utils
-        outQueue_.add(new CommPeerFoundMessage(
-            new CommAddress(PeerID.create(new URI("urn:" +
-                ("" + ev.getSource()).replace("//", "")))), getPeerAddress()));
-      } catch (URISyntaxException e) {
-        logger_.error("URISyntaxException", e);
+  private class GossipPeers extends TimerTask {
+
+    @Override
+    public void run() {
+      logger_.info("Gossiping known peers...");
+      synchronized (knownPeers_) {
+        for (CommAddress address : knownPeers_) {
+          if (!address.toString().equals(getPeerAddress().toString())) {
+            messengerServiceInQueue_.add(new DiscoveryMessage(getPeerAddress(),
+                address, new LinkedList<CommAddress>(knownPeers_)));
+          }
+        }
       }
-      logger_.debug("out queue added");
+    }
+
+  }
+
+  private void newPeersFound(List<CommAddress> addresses) {
+    synchronized (knownPeers_) {
+      for (CommAddress address : addresses) {
+        if (startFeeding_ && !knownPeers_.contains(address)) {
+          logger_.info("New peer found with address: " + address);
+          knownPeers_.add(address);
+          if (!address.toString().equals(getPeerAddress().toString())) {
+            messengerServiceInQueue_.add(new DiscoveryMessage(getPeerAddress(),
+                address, new ArrayList<CommAddress>(knownPeers_)));
+          }
+          outQueue_.add(new CommPeerFoundMessage(address, getPeerAddress()));
+        }
+      }
     }
   }
 

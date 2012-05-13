@@ -13,7 +13,11 @@ import org.nebulostore.broker.messages.OfferReplyMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.CommSendDataMessage;
+import org.nebulostore.communication.messages.DataExchangeMessage;
 import org.nebulostore.communication.messages.DiscoveryMessage;
+import org.nebulostore.communication.messages.ErrorCommMessage;
+import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
+import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.DelDHTMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -36,8 +40,11 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.StoreObjectMessage;
 import org.nebulostore.testing.messages.ErrorTestMessage;
 import org.nebulostore.testing.messages.FinishTestMessage;
+import org.nebulostore.testing.messages.GatherStatsMessage;
 import org.nebulostore.testing.messages.NewPhaseMessage;
+import org.nebulostore.testing.messages.ReconfigureTestMessage;
 import org.nebulostore.testing.messages.TestInitMessage;
+import org.nebulostore.testing.messages.TestStatsMessage;
 import org.nebulostore.testing.messages.TicMessage;
 import org.nebulostore.testing.messages.TocMessage;
 import org.nebulostore.timer.InitSimpleTimerTestMessage;
@@ -195,7 +202,35 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
 
+  public R visit(ReconfigureTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
   public R visit(ErrorTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(TestStatsMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(GatherStatsMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(ReconfigureDHTAckMessage message) throws NebuloException{
+    return visitDefault(message);
+  }
+
+  public R visit(ReconfigureDHTMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(DataExchangeMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(ErrorCommMessage message) throws NebuloException {
     return visitDefault(message);
   }
 
@@ -207,5 +242,4 @@ public abstract class MessageVisitor<R> {
   public R visit(InitSimpleTimerTestMessage message) throws NebuloException {
     return visitDefault(message);
   }
-
 }

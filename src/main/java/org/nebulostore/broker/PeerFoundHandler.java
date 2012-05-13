@@ -12,7 +12,7 @@ import org.nebulostore.communication.messages.CommPeerFoundMessage;
  */
 public class PeerFoundHandler extends JobModule {
 
-  private PeerFoundHandlerVisitor visitor_ = new PeerFoundHandlerVisitor();
+  private final PeerFoundHandlerVisitor visitor_ = new PeerFoundHandlerVisitor();
 
   @Override
   protected void processMessage(Message message) throws NebuloException {
@@ -24,6 +24,7 @@ public class PeerFoundHandler extends JobModule {
    * @author szymonmatejczyk
    */
   private class PeerFoundHandlerVisitor extends MessageVisitor<Void> {
+    @Override
     public Void visit(CommPeerFoundMessage message) {
       jobId_ = message.getId();
       NetworkContext context = NetworkContext.getInstance();

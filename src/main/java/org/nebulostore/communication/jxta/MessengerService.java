@@ -23,20 +23,21 @@ import net.jxta.protocol.PipeAdvertisement;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
+import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 
 /**
  * Module responsible for sending data over JXTA Network.
- *
+ * 
  * @author Marcin Walas
  */
 public class MessengerService extends Module {
 
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
 
-  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-" +
-      "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
+  private static final String MESSAGE_PIPE_ID_STR = "urn:jxta:uuid-"
+      + "59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C284104";
   private static final int MAX_RETRIES = 3;
   private static final int PIPE_TIMEOUT = 3000;
 
@@ -74,6 +75,14 @@ public class MessengerService extends Module {
 
   private void processMessageRetry(Message msg, int retries, Exception lastError) {
     if (retries < MAX_RETRIES) {
+      if (((CommMessage) msg).getDestinationAddress() == null) {
+        outQueue_.add(new ErrorCommMessage((CommMessage) msg,
+            new CommException("Message " + msg.toString() +
+                " with null destination address")));
+        logger_.error("Message with null destination address");
+        return;
+      }
+
       PeerID destAddress = ((CommMessage) msg).getDestinationAddress()
           .getPeerId();
 

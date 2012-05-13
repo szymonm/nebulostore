@@ -24,10 +24,6 @@ import org.nebulostore.communication.messages.kademlia.KademliaMessage;
  * that listens for incoming messages and one that handles timeout events.
  **/
 public class MessageServer {
-  /**
-   * Maximum size of a received datagram packet. Could probably be less, but is
-   * set too high to be on the safe side.
-   **/
 
   private static Logger logger_ = Logger.getLogger(MessageServer.class);
 

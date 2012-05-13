@@ -34,4 +34,5 @@ public abstract class Message implements Serializable {
 
   // ID used by Dispatcher to forward the message to proper thread (= running JobModule).
   protected String jobId_;
+
 }

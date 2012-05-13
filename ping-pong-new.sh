@@ -18,11 +18,11 @@ else
 fi
 
 sequence='unknown'
-if [[ $platform=='mac' ]]; then
-  sequence=`jot $PEERS_NUM`
-else
-  sequence=`seq 1 $PEERS_NUM`
-fi
+#if [[ $platform=='mac' ]]; then
+#  sequence=`jot $PEERS_NUM`
+#else
+sequence=`seq 1 $PEERS_NUM`
+#fi
 
 rm -rf $BUILD_DIR
 ant test-server

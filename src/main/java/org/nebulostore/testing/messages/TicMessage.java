@@ -12,14 +12,21 @@ import org.nebulostore.communication.messages.CommMessage;
 public class TicMessage extends CommMessage {
 
   private static final long serialVersionUID = 8482635420673217310L;
+  private final int phase_;
 
-  public TicMessage(CommAddress sourceAddress, CommAddress destAddress) {
+  public TicMessage(CommAddress sourceAddress, CommAddress destAddress, int phase) {
     super(sourceAddress, destAddress);
+    phase_ = phase;
   }
 
   public TicMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress) {
+      CommAddress destAddress, int phase) {
     super(jobId, sourceAddress, destAddress);
+    phase_ = phase;
+  }
+
+  public int getPhase() {
+    return phase_;
   }
 
   @Override

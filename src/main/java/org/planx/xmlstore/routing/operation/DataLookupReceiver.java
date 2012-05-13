@@ -33,18 +33,20 @@ public class DataLookupReceiver extends OriginReceiver {
 
     // Is data located here?
     Identifier key = mess.getLookupId();
-    if (localMap.containsKey(key)) {
-      super.receive(incoming, comm);
+    synchronized (localMap) {
+      if (localMap.containsKey(key)) {
+        super.receive(incoming, comm);
 
-      // Return mapping for key
-      Node origin = mess.getOrigin();
-      KademliaInternalMessage reply = new DataMessage(local, key,
-          (TimestampedValue) localMap.get(key));
-      server.reply(comm, reply, origin.getAddress());
-    } else {
-      // Return message with list of closest nodes
-      Receiver recv = new NodeLookupReceiver(server, local, space);
-      recv.receive(incoming, comm);
+        // Return mapping for key
+        Node origin = mess.getOrigin();
+        KademliaInternalMessage reply = new DataMessage(local, key,
+            (TimestampedValue) localMap.get(key));
+        server.reply(comm, reply, origin.getAddress());
+      } else {
+        // Return message with list of closest nodes
+        Receiver recv = new NodeLookupReceiver(server, local, space);
+        recv.receive(incoming, comm);
+      }
     }
   }
 }

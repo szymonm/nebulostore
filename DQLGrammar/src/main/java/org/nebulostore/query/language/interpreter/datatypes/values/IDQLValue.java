@@ -48,6 +48,5 @@ public interface IDQLValue extends Serializable {
 
   void setToHigherOrEqualsPrivacyLevel(PrivacyLevel level) throws InterpreterException;
 
-  @Override
-  public boolean equals(Object o);
+  boolean equal(Object o);
 }

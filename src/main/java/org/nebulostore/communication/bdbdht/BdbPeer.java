@@ -3,7 +3,19 @@ package org.nebulostore.communication.bdbdht;
 import java.io.File;
 import java.net.URI;
 import java.util.Enumeration;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
+
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.Durability;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
+import com.sleepycat.je.Transaction;
 
 import net.jxta.discovery.DiscoveryEvent;
 import net.jxta.discovery.DiscoveryListener;
@@ -21,29 +33,27 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.broker.NetworkContext;
+import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
+import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.jxta.PeerDiscoveryService;
+import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
+import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
+import org.nebulostore.communication.messages.bdbdht.HolderAdvertisementMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
+import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.Durability;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
-import com.sleepycat.je.Transaction;
-
 /**
  * Implementation of berkely db based engine for...
+ * 
  * @author marcin
  */
 public class BdbPeer extends Module implements DiscoveryListener {
@@ -51,8 +61,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
   private static String configurationPath_ = "resources/conf/communication/BdbPeer.xml";
   private static Logger logger_ = Logger.getLogger(BdbPeer.class);
 
-  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:" +
-      "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
+  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:"
+      + "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
 
   private String storagePath_;
   private String storeName_;
@@ -66,6 +76,9 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
   private final BlockingQueue<Message> jxtaInQueue_;
   private CommAddress peerAddress_;
+  private final PeerDiscoveryService peerDiscoveryService_;
+  private final ReconfigureDHTMessage reconfigureRequest_;
+  private Timer advertisementsTimer_;
 
   /**
    * @param inQueue
@@ -77,10 +90,13 @@ public class BdbPeer extends Module implements DiscoveryListener {
   public BdbPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue,
       PeerDiscoveryService peerDiscoveryService, CommAddress peerAddress,
-      BlockingQueue<Message> jxtaInQueue) {
+      BlockingQueue<Message> jxtaInQueue,
+      ReconfigureDHTMessage reconfigureRequest) {
     super(inQueue, outQueue);
 
+    peerDiscoveryService_ = peerDiscoveryService;
     jxtaInQueue_ = jxtaInQueue;
+    reconfigureRequest_ = reconfigureRequest;
 
     // TODO: move to factory in appcore
     XMLConfiguration config = null;
@@ -109,15 +125,54 @@ public class BdbPeer extends Module implements DiscoveryListener {
       database_ = env_.openDatabase(null, storeName_, dbConfig);
 
       peerAddress_ = peerAddress;
-      peerDiscoveryService.addAdvertisement(getBdbAdvertisement());
+      // peerDiscoveryService_.addAdvertisement(getBdbAdvertisement());
+
+      advertisementsTimer_ = new Timer();
+      advertisementsTimer_.schedule(new SendAdvertisement(), 2000, 1000);
+
+      if (reconfigureRequest_ != null) {
+        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
+      }
+
+      holderCommAddress_ = CommunicationPeer.getPeerAddress();
 
     } else {
       logger_.info("Configuring as proxy");
       isProxy_ = true;
-      peerDiscoveryService.getDiscoveryService().addDiscoveryListener(this);
+      // peerDiscoveryService_.getDiscoveryService().addDiscoveryListener(this);
     }
     logger_.info("fully initialized");
+  }
 
+  public class SendAdvertisement extends TimerTask {
+
+    @Override
+    public void run() {
+      logger_.info("Sending holder advertisements to remote hosts...");
+      for (CommAddress address : NetworkContext.getInstance().getKnownPeers()) {
+        jxtaInQueue_.add(new HolderAdvertisementMessage(address));
+      }
+    }
+
+  }
+
+  @Override
+  public void endModule() {
+    logger_.info("Ending bdb peer");
+
+
+    if (isProxy_) {
+      peerDiscoveryService_.getDiscoveryService().removeDiscoveryListener(this);
+    } else {
+      advertisementsTimer_.cancel();
+      peerDiscoveryService_.removeAdvertisement(getBdbAdvertisement());
+      logger_.info("Closing database...");
+      database_.close();
+      env_.close();
+    }
+
+
+    super.endModule();
   }
 
   private Environment createEnvironment(File dir) {
@@ -174,8 +229,10 @@ public class BdbPeer extends Module implements DiscoveryListener {
     KeyDHT key = getMsg.getKey();
     DatabaseEntry data = new DatabaseEntry();
 
-    if (database_.get(null, new DatabaseEntry(key.toString().getBytes()), data,
-        LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+    OperationStatus operationStatus = database_.get(null, new DatabaseEntry(key.toString().getBytes()), data,
+        LockMode.DEFAULT);
+
+    if (operationStatus == OperationStatus.SUCCESS) {
       ValueDHT value = ValueDHT.build(new String(data.getData()));
 
       if (fromNetwork) {
@@ -188,7 +245,9 @@ public class BdbPeer extends Module implements DiscoveryListener {
     } else {
       // TODO: Error handling
       logger_
-          .error("Unable to read from database. Should send an ErrorDHTMessage back");
+      .error("Unable to read from database. Should send an ErrorDHTMessage back");
+      outQueue_.add(new ErrorDHTMessage(getMsg, new CommException(
+          "Unable to read from bdb database. Operation status: " + operationStatus)));
     }
     logger_.info("GetDHTMessage processing finished");
 
@@ -198,6 +257,17 @@ public class BdbPeer extends Module implements DiscoveryListener {
   protected void processMessage(Message msg) throws NebuloException {
     logger_.info("Message accepted.");
     Message message;
+
+    if (msg instanceof HolderAdvertisementMessage) {
+
+      if (holderCommAddress_ == null && reconfigureRequest_ != null) {
+        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
+      }
+      holderCommAddress_ = ((HolderAdvertisementMessage) msg)
+          .getSourceAddress();
+      logger_.info("Holder detected at " + holderCommAddress_.toString());
+      return;
+    }
 
     if (isProxy_) {
       logger_.info("Putting message to be sent to holder (taskId = " +
@@ -237,6 +307,9 @@ public class BdbPeer extends Module implements DiscoveryListener {
         adv = en.nextElement();
         String id = adv.getID() == null ? "null" : adv.getID().toString();
         if (BDB_HOLDER_ADV_ID_STR.equals(id) /* && holderCommAddress_ == null */) {
+          if (holderCommAddress_ == null && reconfigureRequest_ != null) {
+            outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
+          }
           holderCommAddress_ = new CommAddress(PeerID.create(URI
               .create(((PipeAdv) adv).getDescription())));
           logger_.info("Holder detected at " + holderCommAddress_.toString());
@@ -246,5 +319,9 @@ public class BdbPeer extends Module implements DiscoveryListener {
       logger_.debug("discoveryEvent empty...");
     }
 
+  }
+
+  public CommAddress getHolderAddress() {
+    return holderCommAddress_;
   }
 }

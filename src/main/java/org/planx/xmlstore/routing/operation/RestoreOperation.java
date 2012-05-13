@@ -57,30 +57,33 @@ public class RestoreOperation extends Operation {
     // mappings and looks at closestNodes. This should only be done once.
 
     Set nodes = new HashSet();
-    Iterator it = localMap.keySet().iterator();
-    while (it.hasNext()) {
-      Identifier key = (Identifier) it.next();
-      List closest = space.getClosestNodes(key);
+    synchronized (localMap) {
+      Iterator it = localMap.keySet().iterator();
+      while (it.hasNext()) {
+        Identifier key = (Identifier) it.next();
+        List closest = space.getClosestNodes(key);
 
-      // No longer closest to mapping?
-      if (!closest.contains(local)) {
-        it.remove();
-      } else {
-        nodes.addAll(closest);
+        // No longer closest to mapping?
+        if (!closest.contains(local)) {
+          it.remove();
+        } else {
+          nodes.addAll(closest);
+        }
       }
-    }
-    // Do not send to self
-    nodes.remove(local);
 
-    // Calculate hashes and send HashMessage
-    long now = System.currentTimeMillis();
-    it = nodes.iterator();
-    while (it.hasNext()) {
-      Node node = (Node) it.next();
-      List hashes = hasher.logarithmicHashes(node, now);
-      if (hashes.size() > 0) {
-        KademliaInternalMessage mess = new HashMessage(local, now, hashes);
-        server.send(mess, node.getAddress(), null);
+      // Do not send to self
+      nodes.remove(local);
+
+      // Calculate hashes and send HashMessage
+      long now = System.currentTimeMillis();
+      it = nodes.iterator();
+      while (it.hasNext()) {
+        Node node = (Node) it.next();
+        List hashes = hasher.logarithmicHashes(node, now);
+        if (hashes.size() > 0) {
+          KademliaInternalMessage mess = new HashMessage(local, now, hashes);
+          server.send(mess, node.getAddress(), null);
+        }
       }
     }
     return null;

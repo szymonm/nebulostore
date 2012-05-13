@@ -1,6 +1,8 @@
 package org.nebulostore.communication.messages;
 
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
  * Message returned by the communication layer to Dispatcher if for some reason
@@ -32,5 +34,10 @@ public class ErrorCommMessage extends Message {
 
   public Exception getNetworkException() {
     return networkException_;
+  }
+
+  @Override
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 }

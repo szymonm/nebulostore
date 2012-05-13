@@ -22,14 +22,14 @@ public final class NetworkContext {
   private static NetworkContext instance_;
   private static AppKey appKey_;
 
-  private HashSet<CommAddress> knownPeers_;
-  private Vector<CommAddress> knownPeersVector_;
+  private final HashSet<CommAddress> knownPeers_;
+  private final Vector<CommAddress> knownPeersVector_;
 
   //TODO(szm): complete events module
   /**
    * Messages to be send to dispatcher when context changes.
    */
-  private HashSet<Message> contextChangeMessages_ = new HashSet<Message>();
+  private final HashSet<Message> contextChangeMessages_ = new HashSet<Message>();
 
   public static NetworkContext getInstance() {
     if (instance_ == null)
@@ -63,9 +63,13 @@ public final class NetworkContext {
   }
 
   protected void addFoundPeer(CommAddress address) {
-    knownPeers_.add(address);
-    knownPeersVector_.add(address);
-    contextChanged();
+    // TODO(mbw): address != null, because of Broker.java:40
+    if (!knownPeers_.contains(address) && address != null) {
+      logger_.debug("Adding a CommAddress: " + address);
+      knownPeers_.add(address);
+      knownPeersVector_.add(address);
+      contextChanged();
+    }
   }
 
   public void setAppKey(AppKey appKey) {

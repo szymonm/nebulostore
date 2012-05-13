@@ -3,7 +3,6 @@ package org.nebulostore.query.privacy.level;
 import java.util.List;
 
 import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
-import org.nebulostore.query.language.interpreter.datatypes.values.BooleanValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
 import org.nebulostore.query.privacy.PrivacyLevel;
@@ -45,13 +44,11 @@ public class PrivateConditionalMy extends PrivacyLevel {
     try {
       boolean ret = false;
       if (first != null && result != null)
-        ret = ret || ((BooleanValue)first.equals(result)).getValue();
+        ret = ret || first.equal(result);
       if (second != null && result != null)
-        ret = ret || ((BooleanValue)second.equals(result)).getValue();
+        ret = ret || second.equal(result);
       return ret;
     } catch (NotImplementedException ex) {
-      return true;
-    } catch (InterpreterException e) {
       return true;
     }
 

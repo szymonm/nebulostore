@@ -34,17 +34,20 @@ public class StoreReceiver extends OriginReceiver {
     Node origin = mess.getOrigin();
     Identifier key = mess.getKey();
     TimestampedValue incmValue = mess.getValue();
-    TimestampedValue exstValue = (TimestampedValue) localMap.get(key);
+    synchronized (localMap) {
+      TimestampedValue exstValue = (TimestampedValue) localMap.get(key);
 
-    if ((exstValue == null) || (incmValue.timestamp() > exstValue.timestamp())) {
-      // Incoming mapping was newer
-      localMap.put(key, incmValue);
-    } else if ((exstValue != null) && mess.updateRequested() &&
-        (exstValue.timestamp() > incmValue.timestamp())) {
-      // Existing mapping newer and update message requested
-      KademliaInternalMessage updmess = new StoreMessage(local, key, exstValue,
-          false);
-      server.send(updmess, origin.getAddress(), null);
+      if ((exstValue == null) ||
+          (incmValue.timestamp() > exstValue.timestamp())) {
+        // Incoming mapping was newer
+        localMap.put(key, incmValue);
+      } else if ((exstValue != null) && mess.updateRequested() &&
+          (exstValue.timestamp() > incmValue.timestamp())) {
+        // Existing mapping newer and update message requested
+        KademliaInternalMessage updmess = new StoreMessage(local, key,
+            exstValue, false);
+        server.send(updmess, origin.getAddress(), null);
+      }
     }
   }
 }

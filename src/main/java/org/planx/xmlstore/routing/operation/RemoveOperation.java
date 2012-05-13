@@ -52,12 +52,14 @@ public class RemoveOperation extends Operation {
 
     // Send remove message to K closest nodes
     KademliaInternalMessage message = new RemoveMessage(local, key);
-    for (int i = 0, max = nodes.size(); i < max; i++) {
-      Node node = (Node) nodes.get(i);
-      if (node.equals(local)) {
-        localMap.remove(key);
-      } else {
-        server.send(message, node.getAddress(), null);
+    synchronized (localMap) {
+      for (int i = 0, max = nodes.size(); i < max; i++) {
+        Node node = (Node) nodes.get(i);
+        if (node.equals(local)) {
+          localMap.remove(key);
+        } else {
+          server.send(message, node.getAddress(), null);
+        }
       }
     }
     return null;

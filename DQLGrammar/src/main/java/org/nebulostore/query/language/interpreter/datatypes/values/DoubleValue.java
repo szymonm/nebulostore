@@ -192,7 +192,7 @@ public class DoubleValue extends DQLValue {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equal(Object o) {
     return (o instanceof DoubleValue) && ((DoubleValue) o).value_ == value_;
   }
 }

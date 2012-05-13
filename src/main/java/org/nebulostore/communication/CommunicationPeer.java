@@ -16,7 +16,12 @@ import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.communication.kademlia.KademliaPeer;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
+import org.nebulostore.communication.messages.DiscoveryMessage;
+import org.nebulostore.communication.messages.ErrorCommMessage;
+import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
+import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
+import org.nebulostore.communication.messages.bdbdht.HolderAdvertisementMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.InDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
@@ -32,19 +37,19 @@ import org.nebulostore.communication.streambinding.StreamBindingService;
 public class CommunicationPeer extends Module {
 
   private final JXTAPeer jxtaPeer_;
-  private final Module dhtPeer_;
+  private Module dhtPeer_;
 
   private final BlockingQueue<Message> jxtaPeerInQueue_;
   private final BlockingQueue<Message> dhtInQueue_;
 
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
-  private static final String CONFIGURATION_PATH =
-      "resources/conf/communication/CommunicationPeer.xml";
+  private static final String CONFIGURATION_PATH = "resources/conf/communication/CommunicationPeer.xml";
 
   private static JXTAPeer currJxtaPeer_;
 
   private final BlockingQueue<Message> streamBindingInQueue_;
   private final StreamBindingService streamBindingService_;
+  private Thread dhtPeerThread_;
 
   public CommunicationPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue) throws NebuloException {
@@ -74,26 +79,80 @@ public class CommunicationPeer extends Module {
     new Thread(jxtaPeer_, "Nebulostore.Communication.Jxta").start();
 
     if (!config.getString("dht.provider", "bdb").equals("none")) {
-      if (config.getString("dht.provider", "bdb").equals("bdb")) {
-        dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue,
-            jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
-            jxtaPeerInQueue_);
-      } else if (config.getString("dht.provider", "bdb").equals("kademlia")) {
-        dhtPeer_ = new KademliaPeer(dhtInQueue_, outQueue,
-            jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
-            jxtaPeerInQueue_);
-      } else {
-        throw new CommException("Unsupported DHT Provider in configuration");
-      }
-      new Thread(dhtPeer_, "Nebulostore.Communication.DHT").start();
+      reconfigureDHT(config.getString("dht.provider", "bdb"), null);
     } else {
       dhtPeer_ = null;
     }
   }
 
+  private void reconfigureDHT(String dhtProvider,
+      ReconfigureDHTMessage reconfigureRequest) throws NebuloException {
+
+    if (dhtProvider.equals("bdb") && (dhtPeer_ instanceof BdbPeer)) {
+      if (reconfigureRequest != null && ((BdbPeer)dhtPeer_).getHolderAddress() != null) {
+        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest));
+      }
+      return;
+    }
+
+    if (dhtProvider.equals("kademlia") && (dhtPeer_ instanceof KademliaPeer)) {
+      if (reconfigureRequest != null) {
+        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest));
+      }
+      return;
+    }
+
+    if (dhtPeerThread_ != null) {
+      dhtPeer_.endModule();
+      dhtPeerThread_.interrupt();
+    }
+
+    if (dhtProvider.equals("bdb")) {
+      dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue_,
+          jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
+          jxtaPeerInQueue_, reconfigureRequest);
+    } else if (dhtProvider.equals("kademlia")) {
+      dhtPeer_ = new KademliaPeer(dhtInQueue_, outQueue_,
+          jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
+          jxtaPeerInQueue_, reconfigureRequest);
+
+    } else {
+      throw new CommException("Unsupported DHT Provider in configuration");
+    }
+    dhtPeerThread_ = new Thread(dhtPeer_, "Nebulostore.Communication.DHT");
+    dhtPeerThread_.start();
+  }
+
   @Override
   protected void processMessage(Message msg) {
     logger_.debug("Processing message..");
+
+    if (msg instanceof ErrorCommMessage) {
+      logger_.info("Error comm message. Returning it to Dispatcher");
+      outQueue_.add(msg);
+      return;
+    }
+
+    if (msg instanceof ReconfigureDHTMessage) {
+      try {
+        logger_.info("Got reconfigure request with jobId: " + msg.getId());
+        reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
+            (ReconfigureDHTMessage) msg);
+      } catch (NebuloException e) {
+        logger_.error(e);
+      }
+      return;
+    }
+
+    if (msg instanceof HolderAdvertisementMessage) {
+      dhtInQueue_.add(msg);
+      return;
+    }
+
+    if (msg instanceof DiscoveryMessage) {
+      jxtaPeerInQueue_.add(msg);
+      return;
+    }
 
     if (msg instanceof CommPeerFoundMessage) {
       logger_.debug("CommPeerFound message forwarded to Dispatcher");
@@ -162,6 +221,8 @@ public class CommunicationPeer extends Module {
       }
       return;
     }
+
+    logger_.warn("Unrecognized message of type " + msg.toString());
 
   }
 

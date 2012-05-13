@@ -102,7 +102,7 @@ public class LambdaValue extends DQLValue {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equal(Object o) {
     // TODO Auto-generated method stub
     return false;
   }

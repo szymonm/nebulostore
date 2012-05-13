@@ -117,7 +117,7 @@ public class ListValue extends DQLValue implements Iterable<IDQLValue> {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equal(Object o) {
     return false;
     /*
     if ((o instanceof ListValue) && (value_.size() == ((ListValue)o).size_)) {

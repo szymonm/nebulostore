@@ -203,7 +203,7 @@ public class IntegerValue extends DQLValue {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equal(Object o) {
     return (o instanceof IntegerValue) && ((IntegerValue) o).value_ == value_;
   }
 }

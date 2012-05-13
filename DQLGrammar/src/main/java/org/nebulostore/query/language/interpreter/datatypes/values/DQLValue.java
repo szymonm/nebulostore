@@ -117,6 +117,7 @@ public abstract class DQLValue implements IDQLValue {
   }
 
   @Override
-  public abstract boolean equals(Object o);
+  public abstract boolean equal(Object o);
+
 
 }

@@ -5,12 +5,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.CommunicationPeer;
+import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
@@ -34,6 +36,9 @@ public class Peer {
    *          Command line arguments.
    */
   public static void main(String[] args) {
+
+    DOMConfigurator.configure("resources/conf/log4j.xml");
+
     BigInteger appKey = BigInteger.ZERO;
     if (args.length < 1) {
       // Random AppKey if not provided.
@@ -80,6 +85,8 @@ public class Peer {
       e.printStackTrace();
     }
     dispatcherThread_.start();
+
+    JXTAPeer.startFeeding_ = true;
   }
 
   protected static void finishPeer() {

@@ -18,6 +18,7 @@ import org.nebulostore.query.executor.ExecutorContext;
 import org.nebulostore.query.functions.CallParametersConditions;
 import org.nebulostore.query.functions.DQLFunction;
 import org.nebulostore.query.functions.exceptions.FunctionCallException;
+import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
 import org.nebulostore.query.language.interpreter.datatypes.DQLPrimitiveType;
 import org.nebulostore.query.language.interpreter.datatypes.DQLPrimitiveType.DQLPrimitiveTypeEnum;
 import org.nebulostore.query.language.interpreter.datatypes.DQLType;
@@ -27,7 +28,11 @@ import org.nebulostore.query.language.interpreter.datatypes.values.IntegerValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.ListValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.StringValue;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
+import org.nebulostore.query.privacy.PrivacyLevel;
 import org.nebulostore.query.privacy.level.PrivateConditionalMy;
+import org.nebulostore.query.privacy.level.PrivateMy;
+import org.nebulostore.query.privacy.level.PublicConditionalMy;
+import org.nebulostore.query.privacy.level.PublicMy;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -45,42 +50,72 @@ public class XPath extends DQLFunction {
       .parameter(2, new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLBoolean))
       .parametersNumber(3).build();
 
+  private final XPathFactory xPathFactory_;
+
+  private final DocumentBuilderFactory documentFactory_;
+
   public XPath(ExecutorContext context) {
     super("xpath", conditions_, context);
+    xPathFactory_ = XPathFactory.newInstance();
+    documentFactory_ = DocumentBuilderFactory.newInstance();
+    documentFactory_.setNamespaceAware(true);
   }
 
   @Override
   public IDQLValue call(List<IDQLValue> params) throws FunctionCallException {
     checkParams(params);
 
+    String xPathString = ((StringValue) params.get(0)).getValue();
     StringValue fileValue = ((StringValue) params.get(1));
 
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setNamespaceAware(true);
-    DocumentBuilder builder;
+    Document doc = deserializeDocument(fileValue.getValue());
+    NodeList results = executeQueryOnDocument(doc, xPathString);
+
+    // TODO: A jak powinno być z levelami w funkcji z NOISE?
+    PrivacyLevel level = getLevel(doc, xPathString, fileValue.getPrivacyLevel()
+        .getDataSources().freshCopy());
+
+    boolean forceList = ((BooleanValue) params.get(2)).getValue();
     try {
-      builder = factory.newDocumentBuilder();
-    } catch (ParserConfigurationException e) {
-      logger_.error(e);
-      throw new FunctionCallException(e);
-    }
-    Document doc;
-    try {
-      doc = builder.parse(new ByteArrayInputStream(fileValue.getValue()
-          .getBytes()));
-    } catch (SAXException e) {
-      logger_.error(e);
-      throw new FunctionCallException(e);
-    } catch (IOException e) {
-      logger_.error(e);
+      return deserializeNodeList(results, forceList, level);
+    } catch (InterpreterException e) {
       throw new FunctionCallException(e);
     }
 
-    XPathFactory xPathFactory = XPathFactory.newInstance();
-    javax.xml.xpath.XPath xpath = xPathFactory.newXPath();
+  }
+
+  // TODO: Extract to superclass
+  private PrivacyLevel getLevel(Document doc, String xPathString,
+      DataSourcesSet fileValueSources) throws FunctionCallException {
+    String publicMyQuery = xPathString + "/parent::*/privacy/public-my";
+    String privateMyQuery = xPathString + "/parent::*/privacy/private-my";
+    String privateConditionalQuery = xPathString +
+        "/parent::*/privacy/private-cond-my";
+    String publicConditionalQuery = xPathString +
+        "/parent::*/privacy/public-cond-my";
+    if (executeQueryOnDocument(doc, privateMyQuery).getLength() > 0) {
+      return new PrivateMy(fileValueSources);
+    }
+    if (executeQueryOnDocument(doc, privateConditionalQuery).getLength() > 0) {
+      return new PrivateConditionalMy(fileValueSources);
+    }
+    if (executeQueryOnDocument(doc, publicConditionalQuery).getLength() > 0) {
+      return new PublicConditionalMy(fileValueSources);
+    }
+    if (executeQueryOnDocument(doc, publicMyQuery).getLength() > 0) {
+      return new PublicMy(fileValueSources);
+    }
+    return new PrivateMy(fileValueSources);
+  }
+
+  // TODO: Extract to superclass
+  private NodeList executeQueryOnDocument(Document doc, String query)
+      throws FunctionCallException {
+
+    javax.xml.xpath.XPath xpath = xPathFactory_.newXPath();
     XPathExpression expression;
     try {
-      expression = xpath.compile(((StringValue) params.get(0)).getValue());
+      expression = xpath.compile(query);
     } catch (XPathExpressionException e) {
       logger_.error(e);
       throw new FunctionCallException(e);
@@ -93,34 +128,50 @@ public class XPath extends DQLFunction {
       throw new FunctionCallException(e);
     }
 
-    boolean forceList = ((BooleanValue) params.get(2)).getValue();
+    return results;
+  }
+
+  // TODO: Extract to superclass
+  private Document deserializeDocument(String contents)
+      throws FunctionCallException {
+    DocumentBuilder builder;
+    Document doc;
     try {
-      return serializeNodeList(results, forceList, fileValue);
-    } catch (InterpreterException e) {
+      builder = documentFactory_.newDocumentBuilder();
+    } catch (ParserConfigurationException e) {
+      logger_.error(e);
+      throw new FunctionCallException(e);
+    }
+    try {
+      doc = builder.parse(new ByteArrayInputStream(contents.getBytes()));
+    } catch (SAXException e) {
+      logger_.error(e);
+      throw new FunctionCallException(e);
+    } catch (IOException e) {
+      logger_.error(e);
       throw new FunctionCallException(e);
     }
 
+    return doc;
   }
 
-  private static IDQLValue serializeNodeList(NodeList list, boolean forceList,
-      StringValue fileValue) throws InterpreterException {
+  private static IDQLValue deserializeNodeList(NodeList list, boolean forceList,
+      PrivacyLevel level) throws InterpreterException {
     if ((!forceList) && list.getLength() == 1) {
-      return serializePrimitive(list.item(0).getTextContent(), fileValue);
+      return deserializePrimitive(list.item(0).getTextContent(), level);
     } else {
-      // TODO: Proper support of privacy levels here
+
       if (list.getLength() == 0) {
         return new ListValue(new DQLPrimitiveType(
-            DQLPrimitiveTypeEnum.DQLDouble), new PrivateConditionalMy(fileValue
-            .getPrivacyLevel().getDataSources()));
+            DQLPrimitiveTypeEnum.DQLDouble), level);
       }
 
-      DQLType firstType = serializePrimitive(list.item(0).getTextContent(),
-          fileValue).getType();
+      DQLType firstType = deserializePrimitive(list.item(0).getTextContent(),
+          level).getType();
 
-      ListValue ret = new ListValue(firstType, new PrivateConditionalMy(
-          fileValue.getPrivacyLevel().getDataSources()));
+      ListValue ret = new ListValue(firstType, level);
       for (int i = 0; i < list.getLength(); i++) {
-        ret.add(serializePrimitive(list.item(i).getTextContent(), fileValue));
+        ret.add(deserializePrimitive(list.item(i).getTextContent(), level));
       }
 
       return ret;
@@ -128,18 +179,15 @@ public class XPath extends DQLFunction {
 
   }
 
-  private static IDQLValue serializePrimitive(String textContent,
-      StringValue fileValue) {
+  private static IDQLValue deserializePrimitive(String textContent,
+      PrivacyLevel level) {
+    // TODO: Double, Boolean??
     try {
-      // TODO: Proper support of privacy levels here
-      return new IntegerValue(
-          Integer.parseInt(textContent),
-          new PrivateConditionalMy(fileValue.getPrivacyLevel().getDataSources()));
+      return new IntegerValue(Integer.parseInt(textContent), level);
     } catch (Exception e) {
     }
     // TODO: Proper support of privacy levels here
-    return new StringValue(textContent, new PrivateConditionalMy(fileValue
-        .getPrivacyLevel().getDataSources()));
+    return new StringValue(textContent, level);
   }
 
   @Override

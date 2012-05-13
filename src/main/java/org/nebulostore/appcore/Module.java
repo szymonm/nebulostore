@@ -33,7 +33,7 @@ public abstract class Module implements Runnable {
     outQueue_ = outQueue;
   }
 
-  protected void endModule() {
+  public void endModule() {
     isFinished_ = true;
   }
 
@@ -54,4 +54,5 @@ public abstract class Module implements Runnable {
   }
 
   protected void processMessage(Message message) throws NebuloException { }
+
 }

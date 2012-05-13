@@ -12,14 +12,21 @@ import org.nebulostore.communication.messages.CommMessage;
 public class TocMessage extends CommMessage {
 
   private static final long serialVersionUID = 8214780097258463061L;
+  private final int phase_;
 
-  public TocMessage(CommAddress sourceAddress, CommAddress destAddress) {
+  public TocMessage(CommAddress sourceAddress, CommAddress destAddress, int phase) {
     super(sourceAddress, destAddress);
+    phase_ = phase;
   }
 
   public TocMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress) {
+      CommAddress destAddress, int phase) {
     super(jobId, sourceAddress, destAddress);
+    phase_ = phase;
+  }
+
+  public int getPhase() {
+    return phase_;
   }
 
   @Override
