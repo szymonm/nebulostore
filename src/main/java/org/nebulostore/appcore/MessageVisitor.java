@@ -32,6 +32,11 @@ import org.nebulostore.communication.messages.pingpong.PongMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.query.messages.GossipExecutorsMessage;
+import org.nebulostore.query.messages.QueryAcceptedMessage;
+import org.nebulostore.query.messages.QueryErrorMessage;
+import org.nebulostore.query.messages.QueryMessage;
+import org.nebulostore.query.messages.QueryResultsMessage;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.DeleteObjectMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
@@ -242,4 +247,25 @@ public abstract class MessageVisitor<R> {
   public R visit(InitSimpleTimerTestMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
+  public R visit(QueryMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(QueryAcceptedMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(QueryErrorMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(QueryResultsMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(GossipExecutorsMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
 }

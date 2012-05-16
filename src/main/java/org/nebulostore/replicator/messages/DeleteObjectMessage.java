@@ -14,22 +14,31 @@ import org.nebulostore.replicator.Replicator;
  */
 public class DeleteObjectMessage extends CommMessage {
   public ObjectId objectId_;
+  private final String sourceJobId_;
 
   public DeleteObjectMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress) {
+      CommAddress destAddress, String sourceJobId) {
     super(jobId, sourceAddress, destAddress);
+    sourceJobId_ = sourceJobId;
   }
 
   public ObjectId getObjectId() {
     return objectId_;
   }
 
+  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
+  }
+
+  public String getSourceJobId() {
+    return sourceJobId_;
   }
 
   @Override
   public JobModule getHandler() {
     return new Replicator(jobId_, null, null);
   }
+
+
 }

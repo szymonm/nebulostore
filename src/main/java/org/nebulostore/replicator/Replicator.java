@@ -28,7 +28,7 @@ import org.nebulostore.replicator.messages.StoreObjectMessage;
  */
 public class Replicator extends JobModule {
 
-  private MessageVisitor<Void> visitor_;
+  private final MessageVisitor<Void> visitor_;
 
   // Hashtable is synchronized.
   private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
@@ -36,6 +36,7 @@ public class Replicator extends JobModule {
 
   public Replicator(String jobId, BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
     super(jobId);
+    logger_.info("Replicator ctor");
     setInQueue(inQueue);
     setOutQueue(outQueue);
     visitor_ = new ReplicatorVisitor();
@@ -48,40 +49,45 @@ public class Replicator extends JobModule {
    */
   private class ReplicatorVisitor extends MessageVisitor<Void> {
 
+    @Override
     public Void visit(StoreObjectMessage message) {
+      logger_.info("StoreObjectMessage received");
       try {
         storeObject(message.getObjectId(), message.getEncryptedEntity());
-        networkQueue_.add(new ConfirmationMessage(message.getId(), message
+        networkQueue_.add(new ConfirmationMessage(message.getSourceJobId(), message
             .getDestinationAddress(), message.getSourceAddress()));
+        logger_.info("StoreObjectMessage finished successfully");
       } catch (SaveException exception) {
         logger_.warn(exception.toString());
-        dieWithError(message.getId(), message.getDestinationAddress(),
+        dieWithError(message.getSourceJobId(), message.getDestinationAddress(),
             message.getSourceAddress(), exception.getMessage());
       }
       return null;
     }
 
+    @Override
     public Void visit(GetObjectMessage message) {
       EncryptedObject enc = getObject(message.objectId_);
 
       if (enc == null) {
-        dieWithError(message.getId(), message.getDestinationAddress(),
+        dieWithError(message.getSourceJobId(), message.getDestinationAddress(),
             message.getSourceAddress(), "Unable to retrieve object.");
       } else {
-        networkQueue_.add(new SendObjectMessage(message.getId(), message.getDestinationAddress(),
+        networkQueue_.add(new SendObjectMessage(message.getSourceJobId(), message.getDestinationAddress(),
             message.getSourceAddress(), enc));
       }
       return null;
     }
 
+    @Override
     public Void visit(DeleteObjectMessage message) {
       try {
         deleteObject(message.getObjectId());
-        networkQueue_.add(new ConfirmationMessage(message.getId(), message
+        networkQueue_.add(new ConfirmationMessage(message.getSourceJobId(), message
             .getDestinationAddress(), message.getSourceAddress()));
       } catch (DeleteObjectException exception) {
         logger_.warn(exception.toString());
-        dieWithError(message.getId(), message.getDestinationAddress(),
+        dieWithError(message.getSourceJobId(), message.getDestinationAddress(),
             message.getSourceAddress(), exception.getMessage());
       }
       return null;
@@ -104,7 +110,9 @@ public class Replicator extends JobModule {
    * Static methods.
    */
   public static void storeObject(ObjectId objectId, EncryptedObject encryptedEntity)
-    throws SaveException {
+      throws SaveException {
+    logger_.info("Storing object");
+
     String location = filesLocations_.get(objectId);
     if (location == null) {
       location = getLocationPrefix() + objectId.toString();

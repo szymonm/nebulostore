@@ -269,6 +269,16 @@ public class BdbPeer extends Module implements DiscoveryListener {
       return;
     }
 
+    if (isProxy_ && holderCommAddress_ == null) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        logger_.error(e);
+      }
+      inQueue_.add(msg);
+      return;
+    }
+
     if (isProxy_) {
       logger_.info("Putting message to be sent to holder (taskId = " +
           msg.getId() + ")");

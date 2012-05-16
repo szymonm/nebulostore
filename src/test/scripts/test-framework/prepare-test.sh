@@ -26,7 +26,7 @@ IFS=$'\n';
 for HOST in $SLICE_HOSTS; do 
     echo "Copying to $HOST"
     bash scp.sh $HOST $BUILD_DIR $KEY_LOCATION $REMOTE_DIR &
-    sleep 3
+    sleep 5
 done
 
 
@@ -34,7 +34,7 @@ sleep 5
 echo "Copying to $PRIMARY_HOST"
 
 bash scp.sh $PRIMARY_HOST $PRIMARY_BUILD_DIR $KEY_LOCATION $REMOTE_DIR
-sleep 10
+sleep 30
 
 echo "Copying done"
 

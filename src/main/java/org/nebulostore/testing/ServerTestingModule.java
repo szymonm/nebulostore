@@ -72,12 +72,12 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   /**
    * Number of peers found to start handshake procedure.
    */
-  private final int peersFound_;
+  protected final int peersFound_;
 
   /**
    * Number of peers needed to perform this test.
    */
-  private final int peersNeeded_;
+  protected final int peersNeeded_;
 
   /**
    * Visitor state - either initializing peers or running the tests on constant

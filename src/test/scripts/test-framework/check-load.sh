@@ -1,13 +1,13 @@
 #!/bin/bash
 # usage number-of-slice-hosts out-file
 
-SLICE_HOSTS_FILE=all-hosts.txt
+SLICE_HOSTS_FILE=all-hosts-ext.sort.txt
 KEY_LOCATION_FILE=key-location.txt
 
 SLICE_HOSTS=`cat $SLICE_HOSTS_FILE | sort | uniq`
 KEY_LOCATION=`cat $KEY_LOCATION_FILE`
 
-CONNECTION_TIMEOUT=1
+CONNECTION_TIMEOUT=2
 
 
 function read_free_stats() {

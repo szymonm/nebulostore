@@ -27,11 +27,11 @@ import org.nebulostore.replicator.messages.StoreObjectMessage;
  */
 public class WriteNebuloObjectModule extends ReturningJobModule<Void> {
 
-  private NebuloAddress address_;
-  private NebuloObject object_;
-  private StateMachineVisitor visitor_;
+  private final NebuloAddress address_;
+  private final NebuloObject object_;
+  private final StateMachineVisitor visitor_;
 
-  private static Logger logger_ = Logger.getLogger(GetNebuloObjectModule.class);
+  private static Logger logger_ = Logger.getLogger(WriteNebuloObjectModule.class);
 
   /*
    * Constructor that runs newly created module.
@@ -93,8 +93,9 @@ public class WriteNebuloObjectModule extends ReturningJobModule<Void> {
         // TODO(bolek): Ask other replicas if first query is unsuccessful.
         // Source address will be added by Network module.
         try {
-          networkQueue_.add(new StoreObjectMessage(jobId_, null, group.getReplicator(0),
-              address_.getObjectId(), CryptoUtils.encryptObject(object_)));
+          logger_.info("Value DHT Message received. Sending StoreObjectMessage");
+          networkQueue_.add(new StoreObjectMessage(CryptoUtils.getRandomId().toString(), null, group.getReplicator(0),
+              address_.getObjectId(), CryptoUtils.encryptObject(object_), jobId_));
         } catch (CryptoException exception) {
           endWithError(new NebuloException("Unable to encrypt object.", exception));
         }

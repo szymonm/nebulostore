@@ -31,7 +31,7 @@ public class MessagesTestServer extends ServerTestingModule {
 
   public MessagesTestServer(int testPhases, int peersFound, int peersNeeded,
       int timeout, String testDescription, int messagesForPhase) {
-    super(testPhases - 1, peersFound, peersNeeded, timeout, 10, "Messages Test Client " + testDescription,
+    super(testPhases - 1, peersFound, peersNeeded, timeout, 20, "Messages Test Client " + testDescription,
         true, testDescription);
     peersInTest_ = peersFound;
     messagesForPhase_ = messagesForPhase;

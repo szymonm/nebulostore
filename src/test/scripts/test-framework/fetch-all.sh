@@ -23,12 +23,12 @@ mkdir $START_TIME/$PRIMARY_HOST
 echo "Copying logs from $PRIMARY_HOST"
 scp -i $KEY_LOCATION/planetlab-key -r mimuw_nebulostore@$PRIMARY_HOST:~/$REMOTE_DIR/$LOGS.log ./$START_TIME/$PRIMARY_HOST/
 
-for HOST in $SLICE_HOSTS; do
-    echo "Copying logs from $HOST"
-    mkdir $START_TIME/$HOST
-    scp -i $KEY_LOCATION/planetlab-key -r mimuw_nebulostore@$HOST:~/$REMOTE_DIR/$LOGS.log ./$START_TIME/$HOST/
-done
-cd ../
+#for HOST in $SLICE_HOSTS; do
+#    echo "Copying logs from $HOST"
+#    mkdir $START_TIME/$HOST
+#    scp -i $KEY_LOCATION/planetlab-key -r mimuw_nebulostore@$HOST:~/$REMOTE_DIR/$LOGS.log ./$START_TIME/$HOST/
+#done
+#cd ../
 
 
 

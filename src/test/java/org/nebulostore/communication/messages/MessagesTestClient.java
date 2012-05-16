@@ -29,7 +29,7 @@ public class MessagesTestClient extends TestingModule implements Serializable {
 
   private final int testPhases_;
   private final int messagesForPhase_;
-  private CommAddress[] allClients_;
+  private CommAddress[] allClients_ = new CommAddress[0];
   private final TestStatistics stats_ = new TestStatistics();
   private final String payload_;
 
@@ -102,11 +102,12 @@ public class MessagesTestClient extends TestingModule implements Serializable {
 
     Timer phaseCheckTimer_;
     private final PhaseCheckTask phaseCheckTask_;
+    private boolean checkNotInitialized_ = true;
 
     public MessagesVisitor() {
       phaseCheckTimer_ = new Timer();
       phaseCheckTask_ = new PhaseCheckTask();
-      phaseCheckTimer_.schedule(phaseCheckTask_, 700, 700);
+
     }
 
     public void close() {
@@ -152,6 +153,11 @@ public class MessagesTestClient extends TestingModule implements Serializable {
     }
 
     private void refreshVisitor() {
+      if (checkNotInitialized_ ) {
+        // 2000 ms set
+        phaseCheckTimer_.schedule(phaseCheckTask_, 700, 700);
+        checkNotInitialized_ = false;
+      }
       phaseFinished_ = false;
       receivedMessages_ = new HashSet<String>();
     }

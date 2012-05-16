@@ -17,6 +17,8 @@ import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.query.client.DQLClient;
+import org.nebulostore.query.executor.DQLExecutor;
 
 /**
  * @author marcin This is the entry point for a regular peer with full
@@ -29,7 +31,8 @@ public class Peer {
   private static Thread dispatcherThread_;
   private static Thread networkThread_;
 
-  protected Peer() { }
+  protected Peer() {
+  }
 
   /**
    * @param args
@@ -59,12 +62,15 @@ public class Peer {
     dispatcherInQueue_ = new LinkedBlockingQueue<Message>();
     ApiFacade.initApi(dispatcherInQueue_);
     NebuloObject.initObjectApi(dispatcherInQueue_);
+    DQLClient.setDispatcherQueue(dispatcherInQueue_);
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
-    dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_, networkInQueue_));
+    dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_,
+        networkInQueue_));
     // Create network module.
     try {
-      networkThread_ = new Thread(new CommunicationPeer(networkInQueue_, dispatcherInQueue_));
+      networkThread_ = new Thread(new CommunicationPeer(networkInQueue_,
+          dispatcherInQueue_));
     } catch (NebuloException exception) {
       logger_.fatal("Error while creating CommunicationPeer");
       exception.printStackTrace();
@@ -72,9 +78,15 @@ public class Peer {
     }
     // Create Broker.
     String brokerJobId = CryptoUtils.getRandomId().toString();
-    dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(brokerJobId, true)));
+    dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(
+        brokerJobId, true)));
     NetworkContext.getInstance().setAppKey(appKey);
     GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
+
+    // Create DQL Interpreter
+    String dqlJobId = CryptoUtils.getRandomId().toString();
+    dispatcherInQueue_.add(new JobInitMessage(dqlJobId, new DQLExecutor(
+        dqlJobId, true)));
 
     // Run everything.
     networkThread_.start();
@@ -93,7 +105,7 @@ public class Peer {
     // Wait for threads to finish execution.
     try {
       // TODO: Make CommunicationPeer exit cleanly.
-      //networkThread_.join();
+      // networkThread_.join();
       dispatcherThread_.join();
     } catch (InterruptedException exception) {
       logger_.fatal("Interrupted");

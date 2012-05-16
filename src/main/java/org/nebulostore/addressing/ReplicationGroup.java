@@ -14,13 +14,14 @@ import org.nebulostore.communication.address.CommAddress;
 public class ReplicationGroup implements Serializable, Comparable<ObjectId> {
   private static final long serialVersionUID = -2519006213860783596L;
 
-  private ArrayList<CommAddress> replicators_;
+  private final ArrayList<CommAddress> replicators_;
 
   // This group replicates objects with keys in [lowerBound_, upperBound_).
-  private BigInteger lowerBound_;
-  private BigInteger upperBound_;
+  private final BigInteger lowerBound_;
+  private final BigInteger upperBound_;
 
-  public ReplicationGroup(CommAddress[] replicators, BigInteger lBound, BigInteger uBound) {
+  public ReplicationGroup(CommAddress[] replicators, BigInteger lBound,
+      BigInteger uBound) {
     replicators_ = new ArrayList<CommAddress>(Arrays.asList(replicators));
     lowerBound_ = lBound;
     upperBound_ = uBound;
@@ -62,5 +63,13 @@ public class ReplicationGroup implements Serializable, Comparable<ObjectId> {
         return 0;
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    return " ReplicationGroup [ lowerBoud_: " + lowerBound_ +
+        ", upperBound_: " + upperBound_ + ", replicators_: " + replicators_ +
+        " ] ";
+
   }
 }

@@ -33,6 +33,10 @@ public class FileStorage {
   }
 
   private static String readFileInternal(String path) throws IOException {
+    // TODO: Fetching file from the Nebulostore
+    //    file = (NebuloFile) NebuloObject.fromAddress(new NebuloAddress(new AppKey(
+    //        new BigInteger(tokens[1])), new ObjectId(new BigInteger(tokens[2]))));
+
     FileInputStream stream = new FileInputStream(new File(path));
     try {
       FileChannel fc = stream.getChannel();

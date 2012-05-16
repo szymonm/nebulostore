@@ -42,14 +42,17 @@ import org.nebulostore.communication.streambinding.StreamBindingService;
  */
 public class JXTAPeer extends Module implements DiscoveryListener {
 
-  private String bootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap2.rdv";
-  private String fallbackBootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap2.rdv";
+  private static Logger logger_ = Logger.getLogger(JXTAPeer.class);
 
   private static final int PEER_ROLES = NetworkConfigurator.RDV_SERVER |
       NetworkConfigurator.RDV_CLIENT | NetworkConfigurator.RELAY_CLIENT |
       NetworkConfigurator.RELAY_SERVER | NetworkConfigurator.EDGE_NODE;
 
   private static final String CONFIGURATION_PATH = "resources/conf/communication/JxtaPeer.xml";
+
+  private String bootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap3.rdv";
+  private String fallbackBootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap3.rdv";
+  private int port_ = 9768;
 
   private static String peerName_ = "somepeername";
 
@@ -66,16 +69,18 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   private final BlockingQueue<Message> messengerServiceInQueue_;
 
-  private static Logger logger_ = Logger.getLogger(JXTAPeer.class);
-
   private final List<CommAddress> knownPeers_;
 
   private List<String> seedingURIs_;
+
   public static boolean startFeeding_ = false;
 
   public JXTAPeer(BlockingQueue<Message> jxtaPeerIn,
       BlockingQueue<Message> jxtaPeerOut) {
     super(jxtaPeerIn, jxtaPeerOut);
+
+
+    readConfig();
 
     logger_.info("Ctor invoked. Configuring Network manager.");
     try {
@@ -144,10 +149,10 @@ public class JXTAPeer extends Module implements DiscoveryListener {
       logger_.error("Configuration read error in: " + CONFIGURATION_PATH);
     }
 
-    bootstrapUrl_ = config.getString("jxta.boostrap-url", bootstrapUrl_);
-    fallbackBootstrapUrl_ = config.getString("jxta.fallback-boostrap-url",
+    bootstrapUrl_ = config.getString("jxta.bootstrap-url", bootstrapUrl_);
+    fallbackBootstrapUrl_ = config.getString("jxta.fallback-bootstrap-url",
         fallbackBootstrapUrl_);
-
+    port_ = config.getInt("jxta.port", port_);
   }
 
   /**
@@ -207,7 +212,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
       seedingURIs_.add(fallbackBootstrapUrl_);
 
       networkConfigurator_.setName(peerName_);
-      networkConfigurator_.setTcpPort(9766);
+      networkConfigurator_.setTcpPort(port_);
 
       networkConfigurator_.setMode(PEER_ROLES);
       networkConfigurator_.setRendezvousSeedingURIs(seedingURIs_);

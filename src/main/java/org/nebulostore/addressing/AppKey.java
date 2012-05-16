@@ -21,4 +21,14 @@ public class AppKey implements Serializable {
   public void setKey(BigInteger key) {
     key_ = key;
   }
+
+  @Override
+  public int hashCode() {
+    return key_.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return "AppKey [" + key_.toString() + "]";
+  }
 }

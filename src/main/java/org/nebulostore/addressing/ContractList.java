@@ -10,7 +10,7 @@ import java.util.Collections;
  */
 public class ContractList implements Serializable {
   private static final long serialVersionUID = 8829107129515732846L;
-  private ArrayList<ReplicationGroup> groups_;
+  private final ArrayList<ReplicationGroup> groups_;
 
   public ContractList() {
     groups_ = new ArrayList<ReplicationGroup>();
@@ -45,5 +45,10 @@ public class ContractList implements Serializable {
     } else {
       return groups_.get(where);
     }
+  }
+
+  @Override
+  public String toString() {
+    return " ContractList [ " + groups_ + " ] ";
   }
 }

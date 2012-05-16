@@ -9,7 +9,7 @@ KEY_LOCATION=`cat $KEY_LOCATION_FILE`
 
 IFS=$'\n';
 for HOST in $SLICE_HOSTS; do
-    echo "Pinging $HOST"
-    ping -c 3 $HOST | tail -n 1
+    RET=`ping -c 3 $HOST | tail -n 1`
+    echo -e "$RET\t$HOST"
 done
 

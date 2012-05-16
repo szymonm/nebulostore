@@ -10,4 +10,7 @@
   <filter name="FilesFromPackage" enabled="true">
     <filter-data value="src/org/planx"/>
   </filter>
+  <filter name="FilesFromPackage" enabled="true">
+    <filter-data value="src/org/nebulostore/query"/>
+  </filter>
 </fileset-config>

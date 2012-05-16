@@ -20,9 +20,9 @@ import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
  */
 public class Dispatcher extends Module {
 
-  private Map<String, BlockingQueue<Message>> workersQueues_;
-  private Map<String, Thread> workersThreads_;
-  private MessageVisitor<?> visitor_;
+  private final Map<String, BlockingQueue<Message>> workersQueues_;
+  private final Map<String, Thread> workersThreads_;
+  private final MessageVisitor<?> visitor_;
 
   private static Logger logger_ = Logger.getLogger(Dispatcher.class);
 
@@ -42,6 +42,7 @@ public class Dispatcher extends Module {
         workersQueues_.remove(jobId);
       }
       if (workersThreads_.containsKey(jobId)) {
+        //workersThreads_.get(jobId).interrupt();
         workersThreads_.remove(jobId);
       }
       return null;
@@ -107,7 +108,7 @@ public class Dispatcher extends Module {
    *                 created tasks (usually network's inQueue).
    */
   public Dispatcher(BlockingQueue<Message> inQueue,
-                    BlockingQueue<Message> outQueue) {
+      BlockingQueue<Message> outQueue) {
     super(inQueue, outQueue);
     visitor_ = new MessageDispatchVisitor();
     workersQueues_ = new TreeMap<String, BlockingQueue<Message>>();

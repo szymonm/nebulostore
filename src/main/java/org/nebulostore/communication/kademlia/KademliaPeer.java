@@ -107,10 +107,11 @@ public class KademliaPeer extends Module implements DiscoveryListener {
 
     (new Timer()).schedule(new BootstrapTask(), 1000);
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 16; i++) {
       MessageWorker tmp = new MessageWorker(workerInQueue_, this);
       new Thread(tmp, "Nebulostore.Communication.DHT.KademliaMsgWorker-" + i)
       .start();
+      messageWorkers_.add(tmp);
     }
   }
 

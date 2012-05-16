@@ -3,7 +3,7 @@
 CONNECTION_TIMEOUT=2
 
 BUILD_PRIMARY_LOCATION_FILE=primary-build-location.txt
-SLICE_HOSTS_FILE=slice-hosts.txt
+SLICE_HOSTS_FILE=all-hosts-ext.sort.txt
 KEY_LOCATION_FILE=key-location.txt
 
 

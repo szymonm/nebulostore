@@ -21,6 +21,8 @@ def plot_dht():
     commons.read_file(dht_bdb, bdb_results, all_phases, all_peers, all_keys_mult)
     commons.read_file(dht_kad, kad_results, all_phases, all_peers, all_keys_mult)
 
+    print "dht_bdb", bdb_results
+    print "dht_kad", kad_results
 
     bdb_stats = commons.calc_stats(bdb_results)
     kad_stats = commons.calc_stats(kad_results)
@@ -28,7 +30,7 @@ def plot_dht():
     print bdb_stats
     print kad_stats
 
-    pick_phases = 10.0
+    pick_phases = 5.0
 
     bdb_stats = dict(filter(lambda ((phases, a, b), c) : phases == pick_phases, bdb_stats.iteritems()))
     kad_stats = dict(filter(lambda ((phases, a, b), c) : phases == pick_phases, kad_stats.iteritems()))
@@ -41,6 +43,8 @@ def plot_dht():
     peers_set = set(map(lambda (a, peers, b): peers, bdb_stats.keys()))
     peers_set = list(peers_set)
     peers_set.sort()
+
+    print peers_set
 
     fig, axs = plt.subplots(nrows = (len(peers_set) + len(peers_set)%2)/2, ncols = 2, sharex = True)
     i = 0
@@ -85,7 +89,6 @@ def plot_dht():
         ax.set_title("Messages exchange time for " + str(int(peers)) + " peers")
         ax.set_ylabel("Time in ms")
         ax.set_xlabel("Number of DHT operations issued by a single peer")
-        i += 1
 
         lost_err_bdb = []
 
@@ -111,6 +114,8 @@ def plot_dht():
         ax_lost.set_ylabel("Percent of errors")
 
         ax.legend([times_bdb, lost_bdb, times_kad, lost_kad], [times_bdb.get_label(), lost_bdb.get_label(), times_kad.get_label(), lost_kad.get_label()])
+
+        i += 1
 
 
     fig.suptitle("Messages exchange time in setups of different numbers of peers")

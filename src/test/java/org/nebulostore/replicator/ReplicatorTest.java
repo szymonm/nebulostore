@@ -1,5 +1,7 @@
 package org.nebulostore.replicator;
 
+import static org.junit.Assert.assertTrue;
+
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
@@ -17,18 +19,16 @@ import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.StoreObjectMessage;
 
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author szymonmatejczyk
  */
 public class ReplicatorTest {
-  private SimpleStringFile file1_ = new SimpleStringFile("Test string");
-  private SimpleIntegerFile file2_ = new SimpleIntegerFile(273);
+  private final SimpleStringFile file1_ = new SimpleStringFile("Test string");
+  private final SimpleIntegerFile file2_ = new SimpleIntegerFile(273);
 
-  private BlockingQueue<Message> inQueue_ = new LinkedBlockingQueue<Message>();
-  private BlockingQueue<Message> networkQueue_ = new LinkedBlockingQueue<Message>();
-  private Replicator replicator_ = new Replicator(null, inQueue_, null);
+  private final BlockingQueue<Message> inQueue_ = new LinkedBlockingQueue<Message>();
+  private final BlockingQueue<Message> networkQueue_ = new LinkedBlockingQueue<Message>();
+  private final Replicator replicator_ = new Replicator(null, inQueue_, null);
 
   private Thread replicatorThread_;
 
@@ -47,7 +47,7 @@ public class ReplicatorTest {
     EncryptedObject entity1 = new EncryptedObject(enc);
     StoreObjectMessage storeMessage = new StoreObjectMessage("job1", null,
         null,
-        objectId1, entity1);
+        objectId1, entity1, "");
     inQueue_.add(storeMessage);
 
     replicator_.setNetworkQueue(networkQueue_);
@@ -68,7 +68,7 @@ public class ReplicatorTest {
       return;
     }
 
-    GetObjectMessage getMessage = new GetObjectMessage(null, null, objectId1);
+    GetObjectMessage getMessage = new GetObjectMessage(null, null, objectId1, "");
     inQueue_.add(getMessage);
 
     try {

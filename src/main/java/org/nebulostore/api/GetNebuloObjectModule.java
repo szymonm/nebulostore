@@ -119,7 +119,7 @@ public class GetNebuloObjectModule extends ReturningJobModule<NebuloObject> {
 
     public void queryReplica(CommAddress replicaAddress) {
       // Source address will be added by Network module.
-      networkQueue_.add(new GetObjectMessage(jobId_, null, replicaAddress, address_.getObjectId()));
+      networkQueue_.add(new GetObjectMessage(CryptoUtils.getRandomId().toString(), null, replicaAddress, address_.getObjectId(), jobId_));
     }
 
     @Override

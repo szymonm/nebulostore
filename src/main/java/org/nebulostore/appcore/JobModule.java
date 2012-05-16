@@ -44,10 +44,11 @@ public abstract class JobModule extends Module {
   }
 
   protected void endJobModule() {
-    // Inform dispatcher that we are going to die.
-    outQueue_.add(new JobEndedMessage(jobId_));
     // Inform run() (in base class) that this thread is ready to die.
     endModule();
+
+    // Inform dispatcher that we are going to die.
+    outQueue_.add(new JobEndedMessage(jobId_));
   }
 
   public String getJobId() {
