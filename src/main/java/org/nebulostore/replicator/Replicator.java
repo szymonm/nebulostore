@@ -10,6 +10,7 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.ObjectId;
+import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.EncryptedObject;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
@@ -173,6 +174,6 @@ public class Replicator extends JobModule {
 
   private static String getLocationPrefix() {
     // TODO: Read this from config file!
-    return "/tmp/nebulostore/store/";
+    return "/tmp/nebulostore/store/" + ApiFacade.getAppKey().getKey().intValue() + "/";
   }
 }

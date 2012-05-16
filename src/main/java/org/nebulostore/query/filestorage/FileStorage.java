@@ -1,13 +1,8 @@
 package org.nebulostore.query.filestorage;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,18 +36,6 @@ public class FileStorage {
     filesMapping_ = null;
   }
 
-  private static String readFileInternal(String path) throws IOException {
-    FileInputStream stream = new FileInputStream(new File(path));
-    try {
-      FileChannel fc = stream.getChannel();
-      MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-      /* Instead of using default, pass in a decoder. */
-      return Charset.defaultCharset().decode(bb).toString();
-    } finally {
-      stream.close();
-    }
-  }
-
   private void checkFilesMapping() throws InterpreterException {
     if (filesMapping_ == null) {
       try {
@@ -68,6 +51,8 @@ public class FileStorage {
         ObjectInputStream ois = null;
         ois = new ObjectInputStream(baos);
         filesMapping_ = (HashMap<String, ObjectId>) ois.readObject();
+
+        logger_.debug("readed mapping: " + filesMapping_);
 
       } catch (NebuloException e) {
         logger_.error(
@@ -91,7 +76,7 @@ public class FileStorage {
 
     checkFilesMapping();
 
-    if (!filesMapping_.containsKey("path")) {
+    if (!filesMapping_.containsKey(path)) {
       String exception = "Files mapping not contains the requested in query path: \"" + path + "\"";
       logger_.error(exception);
       throw new InterpreterException(exception);
@@ -100,8 +85,7 @@ public class FileStorage {
     ObjectId objectId = filesMapping_.get(path);
     try {
       NebuloFile dataFile = (NebuloFile) NebuloObject
-          .fromAddress(new NebuloAddress(context_.getAppKey(), context_
-              .getFilesMapObjectId()));
+          .fromAddress(new NebuloAddress(context_.getAppKey(), objectId));
       //TODO: Here also get size
       byte[] data = dataFile.read(0, 100000);
       return new String(data);

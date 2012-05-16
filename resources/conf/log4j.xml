@@ -76,12 +76,12 @@
   </logger>  
   
   <logger name="org.nebulostore.communication">
-    <level value="INFO"/>
+    <level value="DEBUG"/>
     <appender-ref ref="FA-comm"/>
   </logger>
   
   <logger name="org.nebulostore.communication.streambinding">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="FA-stream"/>
   </logger>
   
@@ -102,6 +102,12 @@
     <appender-ref ref="FA-testing"/>
   </logger>
   
+   <logger name="org.nebulostore.appcore">
+    <level value="DEBUG" />
+    <appender-ref ref="CA"/>
+    <appender-ref ref="FA"/>
+  </logger>
+  
   <logger name="org.nebulostore.communication.dht">
     <level value="INFO" />
     <appender-ref ref="CA-testing"/>
@@ -114,7 +120,7 @@
     <appender-ref ref="FA-testing"/>
   </logger>
   
-    <logger name="org.nebulostore.query">
+  <logger name="org.nebulostore.query">
     <level value="DEBUG" />
     <appender-ref ref="FA-query"/>
   </logger>

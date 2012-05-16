@@ -90,8 +90,9 @@ public class MessengerService extends Module {
         logger_.debug("Message to be sent over network to: " + destAddress);
 
         if (!pipes_.containsKey(destAddress.toString())) {
-          logger_.debug("Refreshing pipe..");
+          logger_.debug("Refreshing pipe.. for address: " + destAddress.toString());
           refreshPipe(destAddress);
+          logger_.debug("Refreshing pipe. Finished");
         }
         pipes_.get(destAddress.toString()).send(wrapMessage(msg));
         logger_.debug("sent to " + destAddress);

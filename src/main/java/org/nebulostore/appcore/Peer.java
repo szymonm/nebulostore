@@ -9,7 +9,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.broker.Broker;
 import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.jxta.JXTAPeer;
@@ -54,6 +53,13 @@ public class Peer {
 
   public static void runPeer(AppKey appKey) {
     startPeer(appKey);
+
+    try {
+      ApiFacade.putKey(appKey);
+    } catch (NebuloException e) {
+      logger_.error(e);
+    }
+
     finishPeer();
   }
 
@@ -77,9 +83,9 @@ public class Peer {
       System.exit(-1);
     }
     // Create Broker.
-    String brokerJobId = CryptoUtils.getRandomId().toString();
-    dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(
-        brokerJobId, true)));
+    //String brokerJobId = CryptoUtils.getRandomId().toString();
+    //dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(
+    //        brokerJobId, true)));
     NetworkContext.getInstance().setAppKey(appKey);
     GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
 

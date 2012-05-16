@@ -77,6 +77,7 @@ public class WriteNebuloObjectModule extends ReturningJobModule<Void> {
 
     @Override
     public Void visit(ValueDHTMessage message) {
+      logger_.debug("Got ValueDHTMessage " + message.toString());
       if (state_ == STATE.DHT_QUERY) {
 
         // State 2 - Receive reply from DHT and iterate over logical path segments asking
@@ -85,15 +86,19 @@ public class WriteNebuloObjectModule extends ReturningJobModule<Void> {
         // TODO(bolek): How to avoid casting here? Make ValueDHTMessage generic?
         // TODO(bolek): Merge this with similar part from GetNebuloFileModule?
         Metadata metadata = (Metadata) message.getValue().getValue();
+        logger_.debug("Metadata: " + metadata);
+
         ContractList contractList = metadata.getContractList();
+        logger_.debug("ContractList: " + contractList);
         ReplicationGroup group = contractList.getGroup(address_.getObjectId());
+        logger_.debug("Group: " + group);
         if (group == null) {
           endWithError(new NebuloException("No peers replicating this object."));
         }
         // TODO(bolek): Ask other replicas if first query is unsuccessful.
         // Source address will be added by Network module.
         try {
-          logger_.info("Value DHT Message received. Sending StoreObjectMessage");
+          logger_.info("Value DHT Message received. Sending StoreObjectMessage to: " + group.getReplicator(0));
           networkQueue_.add(new StoreObjectMessage(CryptoUtils.getRandomId().toString(), null, group.getReplicator(0),
               address_.getObjectId(), CryptoUtils.encryptObject(object_), jobId_));
         } catch (CryptoException exception) {

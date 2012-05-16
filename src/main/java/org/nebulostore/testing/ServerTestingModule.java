@@ -67,7 +67,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
    * Last phase of the test. If test moves to next, it is completed
    * successfully.
    */
-  private final int lastPhase_;
+  protected final int lastPhase_;
 
   /**
    * Number of peers found to start handshake procedure.

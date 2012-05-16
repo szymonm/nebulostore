@@ -19,19 +19,25 @@ public final class ApiFacade {
 
   private static final int TIMEOUT_SEC = 60;
   private static BlockingQueue<Message> dispatcherQueue_;
+  private static AppKey appKey_;
 
   public static void initApi(BlockingQueue<Message> queue) {
     dispatcherQueue_ = queue;
   }
 
   public static void putKey(AppKey appKey) throws NebuloException {
+    appKey_ = appKey;
     // Create a handler and run it through dispatcher.
     PutKeyModule module = new PutKeyModule(appKey,
         new ReplicationGroup(new CommAddress[]{CommunicationPeer.getPeerAddress()},
-        new BigInteger("0"), new BigInteger("1000000")), dispatcherQueue_);
+            new BigInteger("0"), new BigInteger("1000000")), dispatcherQueue_);
     // Exception from getResult() is simply passed to the user.
     module.getResult(TIMEOUT_SEC);
   }
 
   private ApiFacade() { }
+
+  public static AppKey getAppKey() {
+    return appKey_;
+  }
 }

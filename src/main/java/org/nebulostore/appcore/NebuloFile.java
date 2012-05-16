@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
@@ -19,10 +20,14 @@ import org.nebulostore.crypto.CryptoUtils;
 
 public class NebuloFile extends NebuloObject {
 
+  private static Logger logger_ = Logger.getLogger(NebuloFile.class);
+
   /**
    * File chunk meta data.
    */
   protected class FileChunkWrapper implements Serializable {
+
+
 
     private static final long serialVersionUID = -6723808968821818811L;
 
@@ -96,6 +101,8 @@ public class NebuloFile extends NebuloObject {
   }
 
   public byte[] read(int pos, int len) throws NebuloException {
+    logger_.info("read called");
+
     int trueLen = Math.min(len, size_ - pos);
     int truePos = pos;
     byte[] ret = new byte[trueLen];
@@ -103,6 +110,7 @@ public class NebuloFile extends NebuloObject {
 
     FileChunkWrapper chunk = null;
     for (int i = 0; i < chunks_.size() && trueLen > 0; ++i) {
+      logger_.debug("Fetching chunk... " + i);
       chunk = chunks_.get(i);
       if (chunk.startByte_ <= truePos && chunk.endByte_ > truePos) {
         int currLen = Math.min(trueLen, chunk.endByte_ - truePos);
@@ -156,9 +164,11 @@ public class NebuloFile extends NebuloObject {
 
   @Override
   protected void runSync() throws NebuloException {
+    logger_.info("Running sync on file ");
     Vector<WriteNebuloObjectModule> updateModules = new Vector<WriteNebuloObjectModule>();
     // Run sync for all chunks in parallel.
     for (int i = 0; i < chunks_.size(); ++i) {
+      logger_.debug("Creating update module for chunk " + i);
       updateModules.add(chunks_.get(i).sync());
     }
     // Run sync for NebuloFile (metadata).

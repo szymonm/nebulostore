@@ -5,8 +5,7 @@ import java.util.Map;
 
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.nebulostore.query.executor.ExecutorContext;
 import org.nebulostore.query.language.interpreter.antlr.TreeWalker;
 import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
@@ -23,7 +22,8 @@ import org.nebulostore.query.privacy.level.PublicMy;
 
 public class DQLInterpreter {
 
-  private static Log log = LogFactory.getLog(DQLInterpreter.class);
+  private static Logger logger_ = Logger.getLogger(DQLInterpreter.class);
+
   private final ExecutorContext context_;
 
   public DQLInterpreter(ExecutorContext context) {
@@ -42,7 +42,7 @@ public class DQLInterpreter {
   public InterpreterState runGather(PreparedQuery query, InterpreterState state)
       throws InterpreterException {
     // TODO: Query ID here
-    log.info("called for query ");
+    logger_.info("runGather called for query ");
 
     // TODO: Maybe introduce statefulQuery?
     DataSourcesSet set = new DataSourcesSet();
@@ -56,10 +56,14 @@ public class DQLInterpreter {
     try {
       walker.gather_statement();
     } catch (RecognitionException e) {
+      logger_.error("Error occured in walker: ", e);
       throw new InterpreterException(e);
     } catch (Throwable t) {
+      logger_.error("Error occured in walker: ", t);
       throw new InterpreterException(t);
     }
+
+    logger_.info("runGather finished. Updateing execution state.");
     state.modify(walker.getEnvironmentContents());
     return state;
   }
@@ -67,31 +71,50 @@ public class DQLInterpreter {
   public InterpreterState runForward(PreparedQuery query, InterpreterState state)
       throws InterpreterException {
 
-    log.info("called for query ");
-    log.info(state.toString());
+    logger_.info("runForward called for query.");
+    logger_.info(state.toString());
 
     TreeWalker walker = state.prepareEnvironment(new TreeWalker(
         new CommonTreeNodeStream(query.getForwardTree())));
+
+    logger_.debug("Walker created.");
     try {
       IDQLValue forward_statement = walker.forward_statement();
+
+      logger_.info("Walker executed on forward statement. ");
+
+      logger_.debug("Checking the returned value.");
+
+      if (forward_statement == null) {
+        String errReason = "Null returned from walker: " +
+            forward_statement;
+        logger_.error(errReason);
+        throw new InterpreterException(errReason);
+      }
+
       if (!(forward_statement instanceof ListValue)) {
         throw new InterpreterException("Forward list corrupted. " +
             forward_statement.toString());
       }
+
       ListValue peersToForward = (ListValue) forward_statement;
       DQLComplexType type = (DQLComplexType) peersToForward.getType();
       if (type.getComplexTypeContents().size() != 1 ||
           !(type.getComplexTypeContents().get(0) instanceof DQLPrimitiveType) ||
           ((DQLPrimitiveType) type.getComplexTypeContents().get(0))
           .getTypeEnum() != DQLPrimitiveTypeEnum.DQLInteger) {
-        throw new InterpreterException(
-            "Wrong type of value returned from forward stage: " +
-                peersToForward.toString());
+        String errReason = "Wrong type of value returned from forward stage: " +
+            peersToForward.toString();
+        logger_.error(errReason);
+        throw new InterpreterException(errReason);
       }
+      logger_.debug("Updateing state with peers to forward.");
       state.setPeersToForward(peersToForward);
     } catch (RecognitionException e) {
+      logger_.error(e);
       throw new InterpreterException(e);
     } catch (Throwable t) {
+      logger_.error(t);
       throw new InterpreterException(t);
     }
     state.modify(walker.getEnvironmentContents());
@@ -102,9 +125,9 @@ public class DQLInterpreter {
   public InterpreterState runReduce(PreparedQuery query, InterpreterState state)
       throws InterpreterException {
     // TODO: Query ID here
-    log.info("called for query ");
+    logger_.info("called for query ");
 
-    log.info(state.toString());
+    logger_.info(state.toString());
 
     TreeWalker walker = state.prepareEnvironment(new TreeWalker(
         new CommonTreeNodeStream(query.getReduceTree())));
@@ -116,7 +139,7 @@ public class DQLInterpreter {
 
     try {
       IDQLValue returned = walker.reduce_statement();
-      log.info("Returned: " + returned);
+      logger_.info("Returned: " + returned);
       if (!returned.getPrivacyLevel().isMorePublicThan(
           new PublicConditionalMy())) {
         throw new InterpreterException(

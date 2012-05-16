@@ -11,11 +11,13 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
+import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.broker.NetworkContext;
+import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.crypto.CryptoUtils;
@@ -92,6 +94,9 @@ public class DQLExecutor extends JobModule {
     @Override
     public Void visit(QueryMessage message) {
 
+      logger_.info("Got QueryMessage for QueryId: " + message.getQueryId() +
+          " and query: " + message.getQuery() + " depth (" +
+          message.getCurrentDepth() + "/" + message.getMaxDepth() + ")");
       synchronized (queryThreads_) {
         if (runningQueries_ < THREAD_POOL_SIZE &&
             !executedQueries_.contains(message.getQueryId())) {
@@ -121,6 +126,8 @@ public class DQLExecutor extends JobModule {
 
     @Override
     public Void visit(QueryAcceptedMessage message) {
+      logger_.info("Got QueryAcceptedMessage for QueryId: " +
+          message.getQueryId() + " from : " + message.getSourceAddress());
       synchronized (queryThreads_) {
         if (!queryThreads_.containsKey(message.getQueryId())) {
           logger_.warn("Got " + message.toString() + " and query for " +
@@ -134,6 +141,8 @@ public class DQLExecutor extends JobModule {
 
     @Override
     public Void visit(QueryErrorMessage message) {
+      logger_.info("Got QueryErrorMessage for QueryId: " +
+          message.getQueryId() + " and reason: " + message.getReason());
       synchronized (queryThreads_) {
         if (!queryThreads_.containsKey(message.getQueryId())) {
           logger_.warn("Got " + message.toString() + " and query for " +
@@ -147,6 +156,8 @@ public class DQLExecutor extends JobModule {
 
     @Override
     public Void visit(QueryResultsMessage message) {
+      logger_.info("Got QueryResultsMessage for QueryId: " +
+          message.getQueryId() + " and contents: " + message.getResult());
       synchronized (queryThreads_) {
         if (!queryThreads_.containsKey(message.getQueryId())) {
           logger_.warn("Got " + message.toString() + " and query for " +
@@ -162,8 +173,14 @@ public class DQLExecutor extends JobModule {
     public Void visit(CommPeerFoundMessage message) {
       Vector<CommAddress> knownPeers = NetworkContext.getInstance()
           .getKnownPeers();
+      // adding myself
+      addRemoteExecutor(ApiFacade.getAppKey(), jobId_,
+          CommunicationPeer.getPeerAddress());
+
       logger_.info("Gossping known executors: " +
-          dqlExecutor_.remoteExecutorsJobIds_);
+          dqlExecutor_.remoteExecutorsJobIds_ + "; " +
+          dqlExecutor_.remoteExecutorsAddresses_);
+
       for (CommAddress address : knownPeers) {
         networkQueue_.add(new GossipExecutorsMessage(CryptoUtils.getRandomId()
             .toString(), null, address, dqlExecutor_.remoteExecutorsAddresses_,
@@ -209,10 +226,14 @@ public class DQLExecutor extends JobModule {
   }
 
   public CommAddress getExecutorCommAddress(AppKey appKey) {
+    logger_.debug("Getting commAddress for appKey: " + appKey);
+    logger_.debug("remoteCommAddresses_: " + remoteExecutorsAddresses_);
     return remoteExecutorsAddresses_.get(appKey);
   }
 
   public String getExecutorJobId(AppKey appKey) {
+    logger_.debug("Getting jobId for appKey: " + appKey);
+    logger_.debug("remoteJobIds: " + remoteExecutorsJobIds_);
     return remoteExecutorsJobIds_.get(appKey);
   }
 

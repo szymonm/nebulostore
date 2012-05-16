@@ -48,4 +48,9 @@ public class ObjectId implements Serializable {
       return false;
     return true;
   }
+
+  @Override
+  public String toString() {
+    return "NebuloObjectId-" + key_.toString();
+  }
 }

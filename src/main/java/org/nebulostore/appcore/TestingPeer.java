@@ -36,11 +36,13 @@ public final class TestingPeer extends Peer {
       appKey = new BigInteger(args[0]);
     }
     startPeer(new AppKey(appKey));
+
     try {
       ApiFacade.putKey(new AppKey(appKey));
     } catch (NebuloException e) {
       logger_.error(e);
     }
+
     try {
       // Waiting for peer initialization
       Thread.sleep(7000);

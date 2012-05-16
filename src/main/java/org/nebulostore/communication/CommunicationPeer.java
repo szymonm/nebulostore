@@ -211,6 +211,15 @@ public class CommunicationPeer extends Module {
     }
 
     if (msg instanceof CommMessage) {
+      if (((CommMessage) msg).getSourceAddress() == null) {
+        ((CommMessage)msg).setSourceAddress(getPeerAddress());
+      }
+
+      if (((CommMessage) msg).getDestinationAddress() == null) {
+        logger_.error("Null destination address set for " + msg + ". Dropping the message.");
+        return;
+      }
+
       if (((CommMessage) msg).getDestinationAddress().equals(
           jxtaPeer_.getPeerAddress())) {
         logger_.debug("message forwarded to Dispatcher");

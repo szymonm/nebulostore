@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<peerData id="1">
+	<age>
+		<privacy>
+			<private-cond-my/>
+		</privacy>
+		<value>20</value>
+	</age>
+	<friends>
+		<privacy>
+			<public-my/>
+		</privacy>		
+		<friend>1</friend>
+	</friends>
+	<sports>
+		<privacy>
+			<private-cond-my/>
+		</privacy>
+		<value>1</value>
+	</sports>
+	
+	<obfuscate>
+		<privacy>
+			<public-my/>
+		</privacy>
+		<value>123</value>
+	</obfuscate>	
+	<name>
+		<privacy>
+			<public-my/>
+		</privacy>
+		<value>Marcin Jackowski</value>
+	</name>	
+</peerData>

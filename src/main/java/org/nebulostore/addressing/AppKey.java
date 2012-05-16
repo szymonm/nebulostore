@@ -28,6 +28,14 @@ public class AppKey implements Serializable {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (o != null && (o instanceof AppKey) && (((AppKey) o).key_.equals(key_))) {
+      return true;
+    }
+    return false;
+  }
+
+  @Override
   public String toString() {
     return "AppKey [" + key_.toString() + "]";
   }

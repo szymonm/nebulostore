@@ -29,6 +29,7 @@ public class DQLClient extends ReturningJobModule<IDQLValue> {
   private static BlockingQueue<Message> dispatcherQueue_;
 
   public DQLClient(String query, int maxDepth) {
+    logger_.info("New query client ctor : \"" + query + "\" maxDepth: " + maxDepth);
     query_ = query;
     maxDepth_ = maxDepth;
     queryId_ = CryptoUtils.getRandomId();
@@ -56,12 +57,14 @@ public class DQLClient extends ReturningJobModule<IDQLValue> {
 
     @Override
     public Void visit(QueryResultsMessage message) {
+      logger_.info("Finishing with success");
       endWithSuccess(message.getResult());
       return null;
     }
 
     @Override
     public Void visit(QueryErrorMessage message) {
+      logger_.info("Finishing with error");
       endWithError(new NebuloException(message.getReason()));
       return null;
     }

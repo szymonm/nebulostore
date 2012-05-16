@@ -1,9 +1,14 @@
 package org.nebulostore.query;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -57,7 +62,7 @@ abstract public class QueryTestServer extends ServerTestingModule {
       for (CommAddress client : clientsCopy) {
         logger_.info("Initializing peer at " + client.toString());
         networkQueue_.add(new TestInitMessage(clientsJobId_, null, client,
-            new QueryTestClient(jobId_, peersNeeded_)));
+            new QueryTestClient(jobId_, lastPhase_ + 2)));
       }
     }
 
@@ -91,24 +96,59 @@ abstract public class QueryTestServer extends ServerTestingModule {
     return null;
   }
 
-  private void writeTestDataToNebulostore() {
-    HashMap<String, ObjectId> mappingMap = new HashMap<String, ObjectId>();
-    mappingMap.put("peerData.xml", new ObjectId(BigInteger.valueOf(2)));
+  private static String readFile(String path) throws IOException {
+    FileInputStream stream = new FileInputStream(new File(path));
+    try {
+      FileChannel fc = stream.getChannel();
+      MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+      /* Instead of using default, pass in a decoder. */
+      return Charset.defaultCharset().decode(bb).toString();
+    } finally {
+      stream.close();
+    }
+  }
 
-    byte[] serializedMapping = serialize(mappingMap);
+  private void writeFilesForAppKey(String testName, int appKeyInt) {
 
-    logger_.debug("Writing mappings to app_keys");
+    String folderPath = "resources/test/query/" + testName + "/" + appKeyInt;
+    File folder = new File(folderPath);
+    File[] listOfFiles = folder.listFiles();
 
-    for (int appKey = 1; appKey < peersFound_ + 1; appKey++) {
-      writeData(appKey, 1, serializedMapping);
-      logger_.debug("Written for " + appKey);
+    List<String> filesToFetch = new LinkedList<String>();
+
+    for (int i = 0; i < listOfFiles.length; i++) {
+      if (listOfFiles[i].isFile()) {
+        filesToFetch.add(listOfFiles[i].getName());
+      }
     }
 
-    logger_.debug("Writing files to app_keys");
+    int mappingObjectId = 1;
+    HashMap<String, ObjectId> mappingMap = new HashMap<String, ObjectId>();
 
-    String peerData = "some peer data file..";
+    int startObjectId = 100;
+    int stepObjectId = 100;
+
+    int objectId = startObjectId;
+    for (String filename : filesToFetch) {
+      logger_.debug("fetching filename: " + filename);
+      mappingMap.put(filename, new ObjectId(BigInteger.valueOf(objectId)));
+
+      try {
+        writeData(appKeyInt, objectId, readFile(folderPath + "/" + filename)
+            .getBytes());
+      } catch (IOException e) {
+        logger_.error("Unable to read file from local drive: " + folderPath + "/" + filename, e);
+      }
+      objectId += stepObjectId;
+    }
+    writeData(appKeyInt, mappingObjectId, serialize(mappingMap));
+
+  }
+
+  private void writeTestDataToNebulostore() {
     for (int appKey = 1; appKey < peersFound_ + 1; appKey++) {
-      writeData(appKey, 2, peerData.getBytes());
+      writeFilesForAppKey("trivialTest", appKey);
+      logger_.debug("Data written for " + appKey);
     }
   }
 

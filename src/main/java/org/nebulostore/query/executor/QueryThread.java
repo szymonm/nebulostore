@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -32,7 +33,7 @@ public class QueryThread implements Runnable {
   private final String query_;
   private final DQLExecutor dqlExecutor_;
   private final DQLInterpreter interpreter_;
-  private BlockingQueue<Message> messagesQueue_;
+  private final BlockingQueue<Message> messagesQueue_;
 
   private final CommAddress sender_;
   private final int currentDepth_;
@@ -66,6 +67,8 @@ public class QueryThread implements Runnable {
     maxDepth_ = maxDepth;
     queryState_ = new HashMap<CommAddress, RemoteQueryState>();
     timeElapsed_ = new HashMap<CommAddress, Long>();
+
+    messagesQueue_ = new LinkedBlockingQueue<Message>();
   }
 
   @Override
@@ -156,6 +159,7 @@ public class QueryThread implements Runnable {
       // moving to reduce...
       state = interpreter_.runReduce(preparedQuery, state);
 
+      logger_.info("Sending back results of the query");
       dqlExecutor_.putOnNetworkQueue(new QueryResultsMessage(senderJobId_,
           null, sender_, queryId_, state.getReduceResult()));
 
@@ -164,6 +168,8 @@ public class QueryThread implements Runnable {
       dqlExecutor_.putOnNetworkQueue(new QueryErrorMessage(senderJobId_, null,
           sender_, queryId_, "Interpreter exception occured"));
     }
+
+    logger_.info("Finishing query...");
 
     // TODO: Running query on a interpreter
     dqlExecutor_.finishQueryThread(queryId_);
