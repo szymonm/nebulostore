@@ -47,4 +47,9 @@ public class PrivateMy extends PrivacyLevel {
     return o instanceof PrivateMy;
   }
 
+  @Override
+  public boolean canBeSent() {
+    return false;
+  }
+
 }

@@ -9,14 +9,13 @@ import org.nebulostore.query.executor.ExecutorContext;
 import org.nebulostore.query.functions.CallParametersConditions;
 import org.nebulostore.query.functions.DQLFunction;
 import org.nebulostore.query.functions.exceptions.FunctionCallException;
-import org.nebulostore.query.functions.ql.xml.XPath;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.ListValue;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
 
 public class Append extends DQLFunction {
 
-  private static Log logger_ = LogFactory.getLog(XPath.class);
+  private static Log logger_ = LogFactory.getLog(Append.class);
   private static CallParametersConditions conditions_ = CallParametersConditions
       .newBuilder()
       // .parameter(1, new DQLComplexType(DQLComplexTypeEnum.DQLList,

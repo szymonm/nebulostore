@@ -76,7 +76,7 @@
   </logger>  
   
   <logger name="org.nebulostore.communication">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="FA-comm"/>
   </logger>
   
@@ -103,7 +103,7 @@
   </logger>
   
    <logger name="org.nebulostore.appcore">
-    <level value="DEBUG" />
+    <level value="INFO" />
     <appender-ref ref="CA"/>
     <appender-ref ref="FA"/>
   </logger>

@@ -25,21 +25,12 @@ sequence=`seq 1 $PEERS_NUM`
 #fi
 
 rm -rf $BUILD_DIR
-ant test-server
 
-mkdir ./$JAR_DIR_SERVER
-cp ./$JAR_DIR/*.jar ./$JAR_DIR_SERVER/
-cp -r ./$JAR_DIR/lib ./$JAR_DIR_SERVER/
-cp -r resources ./$JAR_DIR_SERVER/
-rm ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer.xml
-mv ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer_query.xml ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer.xml
-
-
-echo "Building and copying server done."
+echo "`date` Building clients..."
 
 ant test-client
 
-echo "Building clients done. Copying..."
+echo "`date` Building clients done. Copying..."
 
 for i in $sequence
 do
@@ -52,5 +43,21 @@ do
     rm ./$JAR_DIR/$i/resources/conf/communication/JxtaPeer.xml
     mv ./$JAR_DIR/$i/resources/conf/communication/JxtaPeer_query.xml ./$JAR_DIR/$i/resources/conf/communication/JxtaPeer.xml
 done
+
+echo "`date` Building server..."
+
+ant test-server
+
+echo "`date` Building server done. Copying..."
+
+mkdir ./$JAR_DIR_SERVER
+cp ./$JAR_DIR/*.jar ./$JAR_DIR_SERVER/
+cp -r ./$JAR_DIR/lib ./$JAR_DIR_SERVER/
+cp -r resources ./$JAR_DIR_SERVER/
+rm ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer.xml
+mv ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer_query.xml ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer.xml
+
+echo "`date` Building and copying server done."
+
 
 cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR_SERVER/resources/conf/communication/BdbPeer.xml

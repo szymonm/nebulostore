@@ -15,6 +15,8 @@ import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.query.language.interpreter.DQLInterpreter;
 import org.nebulostore.query.language.interpreter.InterpreterState;
 import org.nebulostore.query.language.interpreter.PreparedQuery;
+import org.nebulostore.query.language.interpreter.datasources.DataSourcesSet;
+import org.nebulostore.query.language.interpreter.datasources.InjectedDataSource;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.IntegerValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.ListValue;
@@ -23,6 +25,7 @@ import org.nebulostore.query.messages.QueryAcceptedMessage;
 import org.nebulostore.query.messages.QueryErrorMessage;
 import org.nebulostore.query.messages.QueryMessage;
 import org.nebulostore.query.messages.QueryResultsMessage;
+import org.nebulostore.query.privacy.level.PublicOthers;
 
 public class QueryThread implements Runnable {
 
@@ -141,7 +144,12 @@ public class QueryThread implements Runnable {
 
                 if (message instanceof QueryResultsMessage) {
                   QueryResultsMessage resultsMessage = (QueryResultsMessage) message;
-                  state.addFromForward(resultsMessage.getResult());
+                  IDQLValue result = resultsMessage.getResult();
+                  DataSourcesSet dataSourcesSet = new DataSourcesSet( );
+                  InjectedDataSource injected = InjectedDataSource.getInstance("DQL_RESULTS");
+                  dataSourcesSet.add(injected);
+                  result.setPrivacyLevel(new PublicOthers(dataSourcesSet));
+                  state.addFromForward(result);
                   queryState_.put(resultsMessage.getSourceAddress(),
                       RemoteQueryState.Finished);
                 }
@@ -160,7 +168,7 @@ public class QueryThread implements Runnable {
       state = interpreter_.runReduce(preparedQuery, state);
 
       logger_.info("Sending back results of the query");
-      dqlExecutor_.putOnNetworkQueue(new QueryResultsMessage(senderJobId_,
+      dqlExecutor_.sendQueryResults(new QueryResultsMessage(senderJobId_,
           null, sender_, queryId_, state.getReduceResult()));
 
     } catch (InterpreterException e) {

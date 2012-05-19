@@ -255,7 +255,6 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
           advancePhase();
           configureClients();
 
-
           testingState_ = TestingState.Running;
           startTime_ = System.currentTimeMillis();
         }
@@ -345,8 +344,10 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   public void endModule() {
     logger_.info("Test terminating. Sending finish test messages.");
     checkPhaseTimer_.cancel();
-    for (CommAddress address : clients_) {
-      networkQueue_.add(new FinishTestMessage(clientsJobId_, null, address));
+    if (clients_ != null) {
+      for (CommAddress address : clients_) {
+        networkQueue_.add(new FinishTestMessage(clientsJobId_, null, address));
+      }
     }
     super.endModule();
   }

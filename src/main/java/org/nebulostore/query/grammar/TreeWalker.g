@@ -145,7 +145,7 @@ gather_statement
   ;
 
 forward_statement returns [IDQLValue result] 
-  : ^('FORWARD' INT ex=expression) { result = ex; } 
+  : ^('FORWARD' ex=expression) { result = ex; } 
   ;
   
 reduce_statement returns [IDQLValue result]

@@ -23,6 +23,8 @@ import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.query.language.interpreter.DQLInterpreter;
+import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
+import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
 import org.nebulostore.query.messages.GossipExecutorsMessage;
 import org.nebulostore.query.messages.QueryAcceptedMessage;
 import org.nebulostore.query.messages.QueryErrorMessage;
@@ -44,6 +46,8 @@ public class DQLExecutor extends JobModule {
   private final Map<AppKey, CommAddress> remoteExecutorsAddresses_;
   private final Map<AppKey, String> remoteExecutorsJobIds_;
 
+  private final Set<IDQLValue> returnedValues_;
+
   private final Set<BigInteger> executedQueries_;
 
   private static DQLExecutor instance_;
@@ -52,7 +56,7 @@ public class DQLExecutor extends JobModule {
     super(dqlJobId);
     // this bounds maximum number of sim. executed queries
     threadPool_ = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-    executorContext_ = new ExecutorContext("");
+    executorContext_ = new ExecutorContext();
     visitor_ = new ExecutorVisitor(this);
     interpreter_ = new DQLInterpreter(executorContext_);
     runningQueries_ = 0;
@@ -68,6 +72,8 @@ public class DQLExecutor extends JobModule {
       NetworkContext.getInstance().addContextChangeMessage(
           new CommPeerFoundMessage(dqlJobId, null, null));
     }
+
+    returnedValues_ = new HashSet<IDQLValue>();
   }
 
   static public DQLExecutor getInstance() {
@@ -177,14 +183,27 @@ public class DQLExecutor extends JobModule {
       addRemoteExecutor(ApiFacade.getAppKey(), jobId_,
           CommunicationPeer.getPeerAddress());
 
-      logger_.info("Gossping known executors: " +
-          dqlExecutor_.remoteExecutorsJobIds_ + "; " +
-          dqlExecutor_.remoteExecutorsAddresses_);
+      synchronized (DQLExecutor.getInstance().remoteExecutorsAddresses_) {
+        if (!DQLExecutor.getInstance().remoteExecutorsAddresses_
+            .containsValue(message.getSourceAddress())) {
 
-      for (CommAddress address : knownPeers) {
-        networkQueue_.add(new GossipExecutorsMessage(CryptoUtils.getRandomId()
-            .toString(), null, address, dqlExecutor_.remoteExecutorsAddresses_,
-            dqlExecutor_.remoteExecutorsJobIds_));
+          logger_.info("Gossping known executors: " +
+              dqlExecutor_.remoteExecutorsJobIds_ + "; " +
+              dqlExecutor_.remoteExecutorsAddresses_);
+
+          for (CommAddress address : knownPeers) {
+            if (!address.equals(CommunicationPeer.getPeerAddress())) {
+              networkQueue_.add(new GossipExecutorsMessage(CryptoUtils
+                  .getRandomId().toString(), null, address,
+                  new HashMap<AppKey, CommAddress>(
+                      dqlExecutor_.remoteExecutorsAddresses_),
+                      new HashMap<AppKey, String>(
+                          dqlExecutor_.remoteExecutorsJobIds_)));
+            }
+
+          }
+        }
+
       }
       return null;
     }
@@ -192,11 +211,14 @@ public class DQLExecutor extends JobModule {
     @Override
     public Void visit(GossipExecutorsMessage message) {
       logger_.info("Gossip executors message received. feeding...");
-      for (AppKey appKey : message.getExecutorsAddresses().keySet()) {
-        DQLExecutor.getInstance().addRemoteExecutor(appKey,
-            message.getExecutorsJobIds().get(appKey),
-            message.getExecutorsAddresses().get(appKey));
+      synchronized (DQLExecutor.getInstance().remoteExecutorsAddresses_) {
+        for (AppKey appKey : message.getExecutorsAddresses().keySet()) {
+          DQLExecutor.getInstance().addRemoteExecutor(appKey,
+              message.getExecutorsJobIds().get(appKey),
+              message.getExecutorsAddresses().get(appKey));
+        }
       }
+      endJobModule();
       return null;
     }
   }
@@ -215,9 +237,11 @@ public class DQLExecutor extends JobModule {
   }
 
   public void addRemoteExecutor(AppKey appKey, String jobId, CommAddress address) {
-    if (!remoteExecutorsAddresses_.containsKey(appKey)) {
-      remoteExecutorsAddresses_.put(appKey, address);
-      remoteExecutorsJobIds_.put(appKey, jobId);
+    synchronized (DQLExecutor.getInstance().remoteExecutorsAddresses_) {
+      if (!remoteExecutorsAddresses_.containsKey(appKey)) {
+        remoteExecutorsAddresses_.put(appKey, address);
+        remoteExecutorsJobIds_.put(appKey, jobId);
+      }
     }
   }
 
@@ -237,4 +261,45 @@ public class DQLExecutor extends JobModule {
     return remoteExecutorsJobIds_.get(appKey);
   }
 
+  public void sendQueryResults(QueryResultsMessage queryResultsMessage) {
+
+    boolean canBeSent = true;
+    synchronized (returnedValues_) {
+      logger_.info("Checking whether value: " +
+          queryResultsMessage.getResult() + " can be sent against set: " +
+          returnedValues_);
+      for (IDQLValue value : returnedValues_) {
+        try {
+          if (!queryResultsMessage
+              .getResult()
+              .getPrivacyLevel()
+              .compose(value.getPrivacyLevel(),
+                  queryResultsMessage.getResult(), value,
+                  queryResultsMessage.getResult()).canBeSent()) {
+            canBeSent = false;
+            break;
+          }
+        } catch (InterpreterException e) {
+          logger_.error("Error in checking privacy levels: ", e);
+        }
+      }
+
+      if (canBeSent) {
+        logger_.info("It is OK to send this result back: " +
+            queryResultsMessage.getResult());
+
+        networkQueue_.add(queryResultsMessage);
+      } else {
+        logger_
+        .info("Returning the value may compromise the privacy. returning error instead.");
+        networkQueue_
+        .add(new QueryErrorMessage(queryResultsMessage.getId(), null,
+            queryResultsMessage.getDestinationAddress(),
+            queryResultsMessage.getQueryId(),
+            "Returning the results of this query may compromise data privacy."));
+      }
+
+    }
+
+  }
 }

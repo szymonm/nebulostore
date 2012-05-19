@@ -70,7 +70,18 @@ public class MessengerService extends Module {
 
   @Override
   protected void processMessage(Message msg) {
-    processMessageRetry(msg, 0, null);
+    try {
+      processMessageRetry(msg, 0, null);
+    } catch (Throwable t) {
+      logger_.error("Serious error. Sleeping for 5 sec...", t);
+      t.printStackTrace();
+      try {
+        Thread.sleep(5000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 
   private void processMessageRetry(Message msg, int retries, Exception lastError) {

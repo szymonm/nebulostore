@@ -47,4 +47,8 @@ public class PublicOthers extends PrivacyLevel {
     return "PublicOthers " + super.toString();
   }
 
+  @Override
+  public boolean canBeSent() {
+    return true;
+  }
 }

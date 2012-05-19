@@ -11,7 +11,6 @@ import org.nebulostore.communication.dht.KademliaDHTTestServer;
 import org.nebulostore.communication.messages.MessagesTestServer;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
-import org.nebulostore.query.trivial.TrivialQueryTestServer;
 import org.nebulostore.testing.ServerTestingModule;
 import org.nebulostore.testing.pingpong.PingPongServer;
 
@@ -32,9 +31,11 @@ public final class TestingPeer extends Peer {
     if (args.length < 1) {
       // Random AppKey if not provided.
       appKey = CryptoUtils.getRandomId();
+      logger_.debug("Random appKey generateds = " + appKey);
     } else {
       appKey = new BigInteger(args[0]);
     }
+    logger_.info("Starting testing peer with appKey = " + appKey);
     startPeer(new AppKey(appKey));
 
     try {
@@ -45,7 +46,7 @@ public final class TestingPeer extends Peer {
 
     try {
       // Waiting for peer initialization
-      Thread.sleep(7000);
+      Thread.sleep(240*1000);
     } catch (InterruptedException e1) {
       e1.printStackTrace();
       System.exit(-1);
@@ -59,9 +60,9 @@ public final class TestingPeer extends Peer {
 
     logger_.info("Finished DHT tests, performing messages tests...");
 
-    //messagesTests();
+    messagesTests();
 
-    runTest(new TrivialQueryTestServer(), "Query test");
+    //runTest(new TrivialQueryTestServer(), "Query test");
 
     logger_.info("All tests finished");
 
@@ -70,18 +71,18 @@ public final class TestingPeer extends Peer {
   }
 
   private static void messagesTests() {
-    int count = 15;
-    int maxPeers = 31;
-    int minPeers = 15;
+    int count = 5;
+    int maxPeers = 51;
+    int minPeers = 25;
     int stepPeers = 5;
 
-    int minEpoches = 10;
+    int minEpoches = 5;
     int maxEpoches = 30;
     int stepEpoches = 2;
 
     int minMessagesInPhase = 10;
     int maxMessagesInPhase = 100;
-    int stepMessagesInPhase = 10;
+    int stepMessagesInPhase = 30;
 
     for (int epoches = minEpoches; epoches < maxEpoches; epoches += stepEpoches) {
       for (int peers = minPeers; peers < maxPeers; peers += stepPeers) {
@@ -98,11 +99,18 @@ public final class TestingPeer extends Peer {
           while (succ < count) {
             String messagesDesc = "Messages test [" + epoches + "\t" + peers + "\t" +
                 messagesInPhase + "] - " + "count: " + i;
-            succ += runTest(new MessagesTestServer(epoches, 32, peers, 200,
+            succ += runTest(new MessagesTestServer(epoches, 35, peers, 120,
                 messagesDesc, messagesInPhase), "MessagesTestServer " + messagesDesc + "\t" +
                     i) ? 1 : 0;
             logger_
             .info("Finished Messages test. Moving to the next test.");
+
+            try {
+              Thread.sleep(180*1000);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+
             i += 1;
           }
         }

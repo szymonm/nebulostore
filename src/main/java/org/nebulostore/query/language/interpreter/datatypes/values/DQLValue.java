@@ -5,7 +5,6 @@ import org.nebulostore.query.language.interpreter.datatypes.DQLType;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
 import org.nebulostore.query.privacy.PrivacyLevel;
 
-
 public abstract class DQLValue implements IDQLValue {
 
   protected PrivacyLevel privacyLevel_;
@@ -102,12 +101,14 @@ public abstract class DQLValue implements IDQLValue {
     }
   }
 
-  protected void setPrivacyLevel(PrivacyLevel level) {
+  @Override
+  public void setPrivacyLevel(PrivacyLevel level) {
     privacyLevel_ = level;
   }
 
   @Override
-  public void setToHigherOrEqualsPrivacyLevel(PrivacyLevel level) throws InterpreterException {
+  public void setToHigherOrEqualsPrivacyLevel(PrivacyLevel level)
+      throws InterpreterException {
     if (!getPrivacyLevel().isMorePublicThan(level)) {
       throw new InterpreterException("Unable to set privacy level as " + level +
           " for value " + toString() + " due to privacy algebra violation.");
@@ -118,6 +119,5 @@ public abstract class DQLValue implements IDQLValue {
 
   @Override
   public abstract boolean equal(Object o);
-
 
 }

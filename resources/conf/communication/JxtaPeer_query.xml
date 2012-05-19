@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <jxta-peer>
 	<jxta>
-		<bootstrap-url>http://studentsx.mimuw.edu.pl/~mw262460/bootstrap3.rdv</bootstrap-url>
-		<fallback-bootstrap-url>http://studentsx.mimuw.edu.pl/~mw262460/bootstrap3.rdv</fallback-bootstrap-url>
-		<port>9766</port>
+		<bootstrap-url>http://students.mimuw.edu.pl/~mw262460/bootstrap10.rdv</bootstrap-url>
+		<fallback-bootstrap-url>http://students.mimuw.edu.pl/~mw262460/bootstrap10.rdv</fallback-bootstrap-url>
+		<port>9769</port>
 	</jxta>
 </jxta-peer>

@@ -56,4 +56,9 @@ public class PublicConditionalMy extends PrivacyLevel {
     return "PublicConditionalMy " + super.toString();
   }
 
+  @Override
+  public boolean canBeSent() {
+    return true;
+  }
+
 }

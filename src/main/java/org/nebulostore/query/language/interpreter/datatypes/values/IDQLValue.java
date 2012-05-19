@@ -9,6 +9,7 @@ import org.nebulostore.query.privacy.PrivacyLevel;
 public interface IDQLValue extends Serializable {
 
   PrivacyLevel getPrivacyLevel();
+  void setPrivacyLevel(PrivacyLevel l);
 
   IDQLValue addNum(IDQLValue arg) throws InterpreterException;
 

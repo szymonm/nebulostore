@@ -46,8 +46,7 @@ public class PrivacyAlgebraTest {
     String sender = "dummySender";
 
     log.info("Started");
-    DQLInterpreter interpreter = new DQLInterpreter(new ExecutorContext(
-        "./resources/test/avgAgeTest/1/"));
+    DQLInterpreter interpreter = new DQLInterpreter(new ExecutorContext());
 
     PreparedQuery preparedQuery = interpreter.prepareQuery(testQuery,
         1, 2);

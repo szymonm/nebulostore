@@ -37,12 +37,13 @@ public class Dispatcher extends Module {
      */
     @Override
     public Void visit(JobEndedMessage message) {
+      logger_.debug("Got job ended message " + message.getId());
       String jobId = message.getId();
       if (workersQueues_.containsKey(jobId)) {
         workersQueues_.remove(jobId);
       }
       if (workersThreads_.containsKey(jobId)) {
-        //workersThreads_.get(jobId).interrupt();
+        // workersThreads_.get(jobId).interrupt();
         workersThreads_.remove(jobId);
       }
       return null;
@@ -86,7 +87,7 @@ public class Dispatcher extends Module {
           // Network queue is dispatcher's out queue.
           handler.setNetworkQueue(outQueue_);
           workersQueues_.put(jobId, newInQueue);
-          Thread newThread = new Thread(handler);
+          Thread newThread = new Thread(handler, "Nebulostore.Dispatcher.Job." + handler.getClass().getSimpleName() + "." + jobId);
           workersThreads_.put(jobId, newThread);
           newThread.start();
           logger_.debug("Starting new thread.");

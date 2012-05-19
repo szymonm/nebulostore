@@ -59,7 +59,7 @@ public final class NetworkContext {
   }
 
   public Vector<CommAddress> getKnownPeers() {
-    return knownPeersVector_;
+    return new Vector<CommAddress>(knownPeersVector_);
   }
 
   protected void addFoundPeer(CommAddress address) {

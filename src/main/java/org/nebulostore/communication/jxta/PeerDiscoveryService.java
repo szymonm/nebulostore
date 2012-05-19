@@ -19,7 +19,7 @@ public class PeerDiscoveryService implements Runnable {
 
   private static long lifetime_ = 15 * 1000L;
   private static long expiration_ = 15 * 1000L;
-  private static long waittime_ = 3000L;
+  private static long waittime_ = 10000L;
 
   List<PipeAdvertisement> advertisements_ = new LinkedList<PipeAdvertisement>();
 

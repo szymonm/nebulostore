@@ -17,9 +17,9 @@ import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.StringValue;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
 
-public class Load extends AbstractLoad {
+public class LoadNoise extends AbstractLoad {
 
-  private static Logger logger_ = Logger.getLogger(Load.class);
+  private static Logger logger_ = Logger.getLogger(LoadNoise.class);
 
   private static CallParametersConditions conditions_ = CallParametersConditions
       .newBuilder()
@@ -28,8 +28,8 @@ public class Load extends AbstractLoad {
       .parameter(2, new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLBoolean))
       .parametersNumber(3).build();
 
-  public Load(ExecutorContext context) {
-    super("Load", conditions_, context);
+  public LoadNoise(ExecutorContext context) {
+    super("Load_Noise", conditions_, context);
   }
 
   @Override
@@ -61,7 +61,7 @@ public class Load extends AbstractLoad {
     dataSources.add(FileDataSource.getInstance(fileName, queryPath));
 
     return executeQuery(fileContents, query.toXPath(), deserializeAsList,
-        dataSources, false);
+        dataSources, true);
   }
 
   @Override

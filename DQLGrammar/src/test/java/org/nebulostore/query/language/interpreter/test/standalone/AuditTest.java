@@ -69,7 +69,6 @@ public class AuditTest {
         + "  LET public_to_private_test = checkprivacy(sum_test + priv_cond_value, \"PublicConditionalMy\") "
          */
          + " FORWARD"
-         + " MAX DEPTH 2"
          + " TO"
          + "  userFriends"
          + " REDUCE"

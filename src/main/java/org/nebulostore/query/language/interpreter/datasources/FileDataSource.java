@@ -7,16 +7,19 @@ public class FileDataSource extends DQLDataSource {
 
   static private Map<String, FileDataSource> dataSources_ = new HashMap<String, FileDataSource>();
   private final String fileName_;
+  private final String queryPath_;
 
-  static public FileDataSource getInstance(String fileName) {
-    if (!dataSources_.containsKey(fileName)) {
-      dataSources_.put(fileName, new FileDataSource(fileName));
+  static public FileDataSource getInstance(String fileName, String queryPath) {
+    if (!dataSources_.containsKey(fileName + queryPath)) {
+      dataSources_.put(fileName + queryPath, new FileDataSource(fileName,
+          queryPath));
     }
-    return dataSources_.get(fileName);
+    return dataSources_.get(fileName + queryPath);
   }
 
-  private FileDataSource(String fileName) {
+  private FileDataSource(String fileName, String queryPath) {
     fileName_ = fileName;
+    queryPath_ = queryPath;
   }
 
   @Override
@@ -29,17 +32,24 @@ public class FileDataSource extends DQLDataSource {
     return false;
   }
 
+
   @Override
   public boolean equals(Object other) {
-    if (other instanceof FileDataSource) {
-      return ((FileDataSource) other).fileName_.equals(fileName_);
+    if (other != null && other instanceof FileDataSource) {
+      FileDataSource fileSource = (FileDataSource) other;
+      if (fileSource.fileName_.equals(fileName_)) {
+        if (fileSource.queryPath_.startsWith(queryPath_) ||
+            queryPath_.startsWith(fileSource.queryPath_))
+          return true;
+        return false;
+      }
     }
     return false;
   }
 
   @Override
   public String toString() {
-    return "FileDataSource(" + fileName_ + ")";
+    return "FileDataSource(" + fileName_ + " : " + queryPath_ + ")";
   }
 
 }

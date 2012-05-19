@@ -109,10 +109,16 @@ abstract public class QueryTestServer extends ServerTestingModule {
   }
 
   private void writeFilesForAppKey(String testName, int appKeyInt) {
+    logger_.info("called writeFilesForAppKey(" + testName + ", " + appKeyInt + ")");
+    int testFoldersNum = 2;
 
-    String folderPath = "resources/test/query/" + testName + "/" + appKeyInt;
+    String folderPath = "resources/test/query/" + testName + "/" + ((appKeyInt % testFoldersNum)  + 1);
+
+    logger_.debug("folderPath = " + folderPath);
     File folder = new File(folderPath);
     File[] listOfFiles = folder.listFiles();
+
+    logger_.debug("listOfFiles = " + listOfFiles);
 
     List<String> filesToFetch = new LinkedList<String>();
 
@@ -121,6 +127,8 @@ abstract public class QueryTestServer extends ServerTestingModule {
         filesToFetch.add(listOfFiles[i].getName());
       }
     }
+
+    logger_.debug("filesToFetch = " + filesToFetch);
 
     int mappingObjectId = 1;
     HashMap<String, ObjectId> mappingMap = new HashMap<String, ObjectId>();
@@ -141,7 +149,11 @@ abstract public class QueryTestServer extends ServerTestingModule {
       }
       objectId += stepObjectId;
     }
+
+    logger_.debug("mappingMap = " + mappingMap);
     writeData(appKeyInt, mappingObjectId, serialize(mappingMap));
+
+    logger_.info("writeFilesForAppKey finished.");
 
   }
 

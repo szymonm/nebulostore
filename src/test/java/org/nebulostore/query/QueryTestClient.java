@@ -3,6 +3,7 @@ package org.nebulostore.query;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.query.client.DQLClient;
+import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.testing.TestingModule;
 import org.nebulostore.testing.messages.NewPhaseMessage;
 import org.nebulostore.testing.messages.ReconfigureTestMessage;
@@ -47,13 +48,15 @@ public class QueryTestClient extends TestingModule {
     public Void visit(NewPhaseMessage message) {
       logger_.info("Issuing query in phase " + phase_);
 
-      String query = " GATHER" + "  LET peerData = LOAD (\"peerData.xml\" ) "
-          + " FORWARD" + " MAX DEPTH 2" + " TO" + "  CREATE_LIST(1,2)"
-          + " REDUCE" + "  CREATE_TUPLE(2,3)";
+      String query = " GATHER" + "  LET peerAge = IF(LEAF_EXECUTION, LOAD_NOISE(\"peerData.xml\" , \"/peerData/age\", FALSE),  LOAD (\"peerData.xml\" , \"/peerData/age\", FALSE))  "
+          + " FORWARD"  + " TO" + "  LOAD(\"peerData.xml\", \"/peerData/friends/friend\", TRUE)"
+          + " REDUCE" + "  SUM(APPEND(peerAge,DQL_RESULTS))";
 
       DQLClient dqlClient = new DQLClient(query, 1);
       try {
-        dqlClient.getResult(60);
+        IDQLValue result = dqlClient.getResult(10);
+        logger_.info("Got query results: " + result);
+        phaseFinished();
       } catch (NebuloException e) {
         logger_.error(e);
       }

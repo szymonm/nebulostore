@@ -1,10 +1,13 @@
 package org.nebulostore.query.language.interpreter.datasources;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class DataSourcesSet implements Iterable<DQLDataSource> {
+public class DataSourcesSet implements Iterable<DQLDataSource>, Serializable {
+
+  private static final long serialVersionUID = -3167918358898744496L;
   Set<DQLDataSource> dataSources_;
 
   public DataSourcesSet() {

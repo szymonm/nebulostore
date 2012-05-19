@@ -15,8 +15,7 @@ import org.nebulostore.query.functions.dql.If;
 import org.nebulostore.query.functions.dql.Length;
 import org.nebulostore.query.functions.dql.Sum;
 import org.nebulostore.query.functions.ql.xml.Load;
-import org.nebulostore.query.functions.ql.xml.XPath;
-import org.nebulostore.query.functions.ql.xml.XPathNoise;
+import org.nebulostore.query.functions.ql.xml.LoadNoise;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
 
 public class FunctionsLibrary {
@@ -33,8 +32,8 @@ public class FunctionsLibrary {
   private FunctionsLibrary(ExecutorContext context) {
     context_ = context;
 
-    functions_ = new DQLFunction[] { new Load(context_), new XPath(context_),
-        new XPathNoise(context_), new Filter(context_), new Sum(context_),
+    functions_ = new DQLFunction[] { new Load(context_),
+        new LoadNoise(context_), new Filter(context_), new Sum(context_),
         new FoldL(context_), new FoldR(context_), new CreateTuple(context_),
         new CreateList(context_), new Get(context_), new If(context_),
         new Append(context_), new Length(context_) };

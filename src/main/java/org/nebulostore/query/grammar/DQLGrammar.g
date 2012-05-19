@@ -169,7 +169,7 @@ gather_statement
   :   'GATHER'^ let+;
 
 forward_statement
-  : 'FORWARD'^ ('MAX'! 'DEPTH'! INT)? 'TO'! expression;
+  : 'FORWARD'^ 'TO'! expression;
 
 reduce_statement
   : 'REDUCE'^ expression EOF;

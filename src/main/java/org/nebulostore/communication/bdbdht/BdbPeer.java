@@ -128,7 +128,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
       // peerDiscoveryService_.addAdvertisement(getBdbAdvertisement());
 
       advertisementsTimer_ = new Timer();
-      advertisementsTimer_.schedule(new SendAdvertisement(), 2000, 1000);
+      advertisementsTimer_.schedule(new SendAdvertisement(), 4000, 10000);
 
       if (reconfigureRequest_ != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
@@ -255,10 +255,11 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
   @Override
   protected void processMessage(Message msg) throws NebuloException {
-    logger_.info("Message accepted.");
-    Message message;
+
 
     if (msg instanceof HolderAdvertisementMessage) {
+
+      logger_.info("Message accepted. " + msg);
 
       if (holderCommAddress_ == null && reconfigureRequest_ != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
@@ -271,7 +272,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
     if (isProxy_ && holderCommAddress_ == null) {
       try {
-        Thread.sleep(100);
+        Thread.sleep(500);
       } catch (InterruptedException e) {
         logger_.error(e);
       }
@@ -280,13 +281,16 @@ public class BdbPeer extends Module implements DiscoveryListener {
     }
 
     if (isProxy_) {
+      logger_.info("Message accepted. " + msg);
       logger_.info("Putting message to be sent to holder (taskId = " +
           msg.getId() + ")");
       jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
           (DHTMessage) msg));
     } else {
+      logger_.info("Message accepted. " + msg);
       boolean fromNetwork = false;
       CommAddress sourceAddress = null;
+      Message message;
       if (msg instanceof BdbMessageWrapper) {
         message = ((BdbMessageWrapper) msg).getWrapped();
         fromNetwork = true;

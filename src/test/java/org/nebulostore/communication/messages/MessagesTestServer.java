@@ -67,6 +67,12 @@ public class MessagesTestServer extends ServerTestingModule {
       }
     }
 
+    try {
+      Thread.sleep(30000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
 
   }
 

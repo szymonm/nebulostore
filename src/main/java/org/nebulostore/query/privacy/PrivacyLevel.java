@@ -86,6 +86,8 @@ public abstract class PrivacyLevel implements Serializable {
       IDQLValue first, IDQLValue second, IDQLValue result)
           throws InterpreterException;
 
+  public abstract boolean canBeSent();
+
   public PrivacyLevel mergeSources(PrivacyLevel l) {
     dataSources_ = dataSources_.freshCopy().union(l.dataSources_);
     return this;

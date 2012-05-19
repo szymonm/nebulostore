@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SLICE_HOSTS_FILE=slice-hosts.txt
+SLICE_HOSTS_FILE=slice-hosts-100.txt
 KEY_LOCATION_FILE=key-location.txt
 
 SLICE_HOSTS=`cat $SLICE_HOSTS_FILE | sort | uniq`

@@ -36,6 +36,7 @@ import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.streambinding.IStreamBindingDriver;
 import org.nebulostore.communication.streambinding.StreamBindingService;
+import org.nebulostore.crypto.CryptoUtils;
 
 /**
  * @author Marcin Walas
@@ -44,9 +45,18 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
   private static Logger logger_ = Logger.getLogger(JXTAPeer.class);
 
-  private static final int PEER_ROLES = NetworkConfigurator.RDV_SERVER |
-      NetworkConfigurator.RDV_CLIENT | NetworkConfigurator.RELAY_CLIENT |
-      NetworkConfigurator.RELAY_SERVER | NetworkConfigurator.EDGE_NODE;
+  private static final int PEER_ROLES_SUPER_PEER = // NetworkConfigurator.RDV_SERVER
+      // |
+      // NetworkConfigurator.RDV_CLIENT |
+      // NetworkConfigurator.RELAY_CLIENT |
+      // NetworkConfigurator.RELAY_SERVER | NetworkConfigurator.EDGE_NODE;
+      NetworkConfigurator.RDV_SERVER | NetworkConfigurator.EDGE_NODE;
+
+  private static final int PEER_ROLES_EDGE =
+      // NetworkConfigurator.ADHOC_NODE;
+      NetworkConfigurator.EDGE_NODE;
+
+  private int peerRoles_;
 
   private static final String CONFIGURATION_PATH = "resources/conf/communication/JxtaPeer.xml";
 
@@ -78,7 +88,6 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   public JXTAPeer(BlockingQueue<Message> jxtaPeerIn,
       BlockingQueue<Message> jxtaPeerOut) {
     super(jxtaPeerIn, jxtaPeerOut);
-
 
     readConfig();
 
@@ -114,29 +123,40 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     // messengers init
     messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
 
-    messengerService_ = new MessengerService(messengerServiceInQueue_,
-        outQueue_, networkManager_.getNetPeerGroup());
-    (new Thread(messengerService_, "Nebulostore.Communication.MessengerService"))
-    .start();
-
     try {
       messageReceiver_ = new MessageReceiver(networkManager_.getNetPeerGroup()
           .getPipeService()
           .createInputPipe(MessengerService.getPipeAdvertisement()), outQueue_);
-
-      (new Thread(messageReceiver_, "Nebulostore.Communication.MeesageReceiver"))
-      .start();
     } catch (IOException e) {
       logger_.error(e);
-      System.exit(-1);
+      e.printStackTrace();
     }
+    (new Thread(messageReceiver_, "Nebulostore.Communication.MeesageReceiver-1"))
+    .start();
+
+    messengerService_ = new MessengerService(messengerServiceInQueue_,
+        outQueue_, networkManager_.getNetPeerGroup());
+    (new Thread(messengerService_,
+        "Nebulostore.Communication.MessengerService-1")).start();
+
+    /*
+     * messageReceiver_ = new MessageReceiver(networkManager_, outQueue_); (new
+     * Thread(messageReceiver_, "Nebulostore.Communication.MeesageReceiver-2"))
+     * .start();
+     * 
+     * messageReceiver_ = new MessageReceiver(networkManager_, outQueue_); (new
+     * Thread(messageReceiver_, "Nebulostore.Communication.MeesageReceiver-3"))
+     * .start();
+     */
 
     peerDiscoveryService_ = new PeerDiscoveryService(discoveryService_);
     (new Thread(peerDiscoveryService_,
         "Nebulostore.Communication.PeerDiscoveryService")).start();
 
+    // peerDiscoveryService_.addAdvertisement(MessengerService.getPipeAdvertisement());
+
     knownPeers_.add(getPeerAddress());
-    (new Timer()).schedule(new GossipPeers(), 2000, 1000);
+    (new Timer()).schedule(new GossipPeers(), 5000, 5000);
 
     logger_.info("fully initialised");
   }
@@ -153,6 +173,14 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     fallbackBootstrapUrl_ = config.getString("jxta.fallback-bootstrap-url",
         fallbackBootstrapUrl_);
     port_ = config.getInt("jxta.port", port_);
+
+    if (config.getString("jxta.is-edge", "true").equals("true")) {
+      logger_.info("Configuring as edge node");
+      peerRoles_ = PEER_ROLES_EDGE;
+    } else {
+      logger_.info("Configuring as super peer");
+      peerRoles_ = PEER_ROLES_SUPER_PEER;
+    }
   }
 
   /**
@@ -189,6 +217,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     if (networkConfigurator_.exists()) {
       logger_.info("Local configuration found");
       // We load it
+
       File localConfig = new File(networkConfigurator_.getHome(),
           "PlatformConfig");
       try {
@@ -211,10 +240,11 @@ public class JXTAPeer extends Module implements DiscoveryListener {
       seedingURIs_.add(bootstrapUrl_);
       seedingURIs_.add(fallbackBootstrapUrl_);
 
-      networkConfigurator_.setName(peerName_);
+      networkConfigurator_.setName(CryptoUtils.getRandomId().toString());
       networkConfigurator_.setTcpPort(port_);
+      networkConfigurator_.setRendezvousMaxClients(16);
 
-      networkConfigurator_.setMode(PEER_ROLES);
+      networkConfigurator_.setMode(peerRoles_);
       networkConfigurator_.setRendezvousSeedingURIs(seedingURIs_);
       networkConfigurator_
       .setRelaySeedingURIs(new HashSet<String>(seedingURIs_));
@@ -251,7 +281,8 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   protected void processMessage(Message msg) {
 
     if (msg instanceof DiscoveryMessage) {
-      logger_.debug("DiscoveryMessage message : emitting events");
+      logger_.info("DiscoveryMessage message : emitting events for: " +
+          ((DiscoveryMessage) msg).getKnownPeers());
       newPeersFound(((DiscoveryMessage) msg).getKnownPeers());
       return;
     }

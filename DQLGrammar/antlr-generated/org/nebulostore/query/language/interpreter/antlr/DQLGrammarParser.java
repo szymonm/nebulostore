@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g 2012-04-20 20:30:45
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g 2012-05-19 12:10:27
 
   package org.nebulostore.query.language.interpreter.antlr;
 
@@ -13,7 +13,7 @@ import org.antlr.runtime.tree.*;
 
 public class DQLGrammarParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "NEGATION", "ID", "INT", "EXPONENT", "DOUBLE", "COMMENT", "WS", "ESC_SEQ", "STRING", "CHAR", "HEX_DIGIT", "UNICODE_ESC", "OCTAL_ESC", "STRING_LITERAL", "','", "'LAMBDA'", "':'", "'('", "')'", "'PRIVATE_MY'", "'PUBLIC_MY'", "'PRIVATE_COND'", "'PUBLIC_OTHER'", "'PUBLIC_COND'", "'INTEGER'", "'DOUBLE'", "'STRING'", "'TUPLE'", "'<'", "'>'", "'LIST'", "'FILE'", "'TRUE'", "'FALSE'", "'not'", "'+'", "'-'", "'*'", "'/'", "'%'", "'='", "'!='", "'<='", "'>='", "'&&'", "'||'", "'IS'", "'AS'", "'LET'", "'GATHER'", "'FORWARD'", "'MAX'", "'DEPTH'", "'TO'", "'REDUCE'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "NEGATION", "ID", "INT", "EXPONENT", "DOUBLE", "COMMENT", "WS", "ESC_SEQ", "STRING", "CHAR", "HEX_DIGIT", "UNICODE_ESC", "OCTAL_ESC", "STRING_LITERAL", "','", "'LAMBDA'", "':'", "'('", "')'", "'PRIVATE_MY'", "'PUBLIC_MY'", "'PRIVATE_COND'", "'PUBLIC_OTHER'", "'PUBLIC_COND'", "'INTEGER'", "'DOUBLE'", "'STRING'", "'TUPLE'", "'<'", "'>'", "'LIST'", "'FILE'", "'TRUE'", "'FALSE'", "'not'", "'+'", "'-'", "'*'", "'/'", "'%'", "'='", "'!='", "'<='", "'>='", "'&&'", "'||'", "'IS'", "'AS'", "'LET'", "'GATHER'", "'FORWARD'", "'TO'", "'REDUCE'"
     };
     public static final int EOF=-1;
     public static final int T__18=18;
@@ -55,8 +55,6 @@ public class DQLGrammarParser extends Parser {
     public static final int T__54=54;
     public static final int T__55=55;
     public static final int T__56=56;
-    public static final int T__57=57;
-    public static final int T__58=58;
     public static final int NEGATION=4;
     public static final int ID=5;
     public static final int INT=6;
@@ -2032,7 +2030,7 @@ public class DQLGrammarParser extends Parser {
     };
 
     // $ANTLR start "forward_statement"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:171:1: forward_statement : 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:171:1: forward_statement : 'FORWARD' 'TO' expression ;
     public final DQLGrammarParser.forward_statement_return forward_statement() throws RecognitionException {
         DQLGrammarParser.forward_statement_return retval = new DQLGrammarParser.forward_statement_return();
         retval.start = input.LT(1);
@@ -2041,21 +2039,15 @@ public class DQLGrammarParser extends Parser {
 
         Token string_literal82=null;
         Token string_literal83=null;
-        Token string_literal84=null;
-        Token INT85=null;
-        Token string_literal86=null;
-        DQLGrammarParser.expression_return expression87 = null;
+        DQLGrammarParser.expression_return expression84 = null;
 
 
         CommonTree string_literal82_tree=null;
         CommonTree string_literal83_tree=null;
-        CommonTree string_literal84_tree=null;
-        CommonTree INT85_tree=null;
-        CommonTree string_literal86_tree=null;
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:172:3: ( 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:172:5: 'FORWARD' ( 'MAX' 'DEPTH' INT )? 'TO' expression
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:172:3: ( 'FORWARD' 'TO' expression )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:172:5: 'FORWARD' 'TO' expression
             {
             root_0 = (CommonTree)adaptor.nil();
 
@@ -2063,36 +2055,13 @@ public class DQLGrammarParser extends Parser {
             string_literal82_tree = (CommonTree)adaptor.create(string_literal82);
             root_0 = (CommonTree)adaptor.becomeRoot(string_literal82_tree, root_0);
 
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:172:16: ( 'MAX' 'DEPTH' INT )?
-            int alt20=2;
-            int LA20_0 = input.LA(1);
-
-            if ( (LA20_0==55) ) {
-                alt20=1;
-            }
-            switch (alt20) {
-                case 1 :
-                    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:172:17: 'MAX' 'DEPTH' INT
-                    {
-                    string_literal83=(Token)match(input,55,FOLLOW_55_in_forward_statement1210); 
-                    string_literal84=(Token)match(input,56,FOLLOW_56_in_forward_statement1213); 
-                    INT85=(Token)match(input,INT,FOLLOW_INT_in_forward_statement1216); 
-                    INT85_tree = (CommonTree)adaptor.create(INT85);
-                    adaptor.addChild(root_0, INT85_tree);
-
-
-                    }
-                    break;
-
-            }
-
-            string_literal86=(Token)match(input,57,FOLLOW_57_in_forward_statement1220); 
-            pushFollow(FOLLOW_expression_in_forward_statement1223);
-            expression87=expression();
+            string_literal83=(Token)match(input,55,FOLLOW_55_in_forward_statement1209); 
+            pushFollow(FOLLOW_expression_in_forward_statement1212);
+            expression84=expression();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, expression87.getTree());
+            adaptor.addChild(root_0, expression84.getTree());
 
             }
 
@@ -2127,13 +2096,13 @@ public class DQLGrammarParser extends Parser {
 
         CommonTree root_0 = null;
 
-        Token string_literal88=null;
-        Token EOF90=null;
-        DQLGrammarParser.expression_return expression89 = null;
+        Token string_literal85=null;
+        Token EOF87=null;
+        DQLGrammarParser.expression_return expression86 = null;
 
 
-        CommonTree string_literal88_tree=null;
-        CommonTree EOF90_tree=null;
+        CommonTree string_literal85_tree=null;
+        CommonTree EOF87_tree=null;
 
         try {
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/DQLGrammar.g:175:3: ( 'REDUCE' expression EOF )
@@ -2141,19 +2110,19 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            string_literal88=(Token)match(input,58,FOLLOW_58_in_reduce_statement1233); 
-            string_literal88_tree = (CommonTree)adaptor.create(string_literal88);
-            root_0 = (CommonTree)adaptor.becomeRoot(string_literal88_tree, root_0);
+            string_literal85=(Token)match(input,56,FOLLOW_56_in_reduce_statement1222); 
+            string_literal85_tree = (CommonTree)adaptor.create(string_literal85);
+            root_0 = (CommonTree)adaptor.becomeRoot(string_literal85_tree, root_0);
 
-            pushFollow(FOLLOW_expression_in_reduce_statement1236);
-            expression89=expression();
+            pushFollow(FOLLOW_expression_in_reduce_statement1225);
+            expression86=expression();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, expression89.getTree());
-            EOF90=(Token)match(input,EOF,FOLLOW_EOF_in_reduce_statement1238); 
-            EOF90_tree = (CommonTree)adaptor.create(EOF90);
-            adaptor.addChild(root_0, EOF90_tree);
+            adaptor.addChild(root_0, expression86.getTree());
+            EOF87=(Token)match(input,EOF,FOLLOW_EOF_in_reduce_statement1227); 
+            EOF87_tree = (CommonTree)adaptor.create(EOF87);
+            adaptor.addChild(root_0, EOF87_tree);
 
 
             }
@@ -2189,11 +2158,11 @@ public class DQLGrammarParser extends Parser {
 
         CommonTree root_0 = null;
 
-        DQLGrammarParser.gather_statement_return gather_statement91 = null;
+        DQLGrammarParser.gather_statement_return gather_statement88 = null;
 
-        DQLGrammarParser.forward_statement_return forward_statement92 = null;
+        DQLGrammarParser.forward_statement_return forward_statement89 = null;
 
-        DQLGrammarParser.reduce_statement_return reduce_statement93 = null;
+        DQLGrammarParser.reduce_statement_return reduce_statement90 = null;
 
 
 
@@ -2203,24 +2172,24 @@ public class DQLGrammarParser extends Parser {
             {
             root_0 = (CommonTree)adaptor.nil();
 
-            pushFollow(FOLLOW_gather_statement_in_query1249);
-            gather_statement91=gather_statement();
+            pushFollow(FOLLOW_gather_statement_in_query1238);
+            gather_statement88=gather_statement();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, gather_statement91.getTree());
-            pushFollow(FOLLOW_forward_statement_in_query1254);
-            forward_statement92=forward_statement();
+            adaptor.addChild(root_0, gather_statement88.getTree());
+            pushFollow(FOLLOW_forward_statement_in_query1243);
+            forward_statement89=forward_statement();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, forward_statement92.getTree());
-            pushFollow(FOLLOW_reduce_statement_in_query1259);
-            reduce_statement93=reduce_statement();
+            adaptor.addChild(root_0, forward_statement89.getTree());
+            pushFollow(FOLLOW_reduce_statement_in_query1248);
+            reduce_statement90=reduce_statement();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, reduce_statement93.getTree());
+            adaptor.addChild(root_0, reduce_statement90.getTree());
 
             }
 
@@ -2253,7 +2222,7 @@ public class DQLGrammarParser extends Parser {
     static final String DFA6_minS =
         "\1\5\1\22\11\uffff";
     static final String DFA6_maxS =
-        "\1\45\1\72\11\uffff";
+        "\1\45\1\70\11\uffff";
     static final String DFA6_acceptS =
         "\2\uffff\1\2\1\3\1\4\1\5\1\7\1\10\1\11\1\6\1\1";
     static final String DFA6_specialS =
@@ -2262,7 +2231,7 @@ public class DQLGrammarParser extends Parser {
             "\1\1\1\3\1\uffff\1\4\10\uffff\1\5\1\uffff\1\6\1\uffff\1\2\16"+
             "\uffff\1\7\1\10",
             "\1\12\2\uffff\1\11\1\12\11\uffff\2\12\5\uffff\14\12\1\uffff"+
-            "\1\12\1\uffff\1\12\3\uffff\1\12",
+            "\1\12\1\uffff\1\12\1\uffff\1\12",
             "",
             "",
             "",
@@ -2390,17 +2359,14 @@ public class DQLGrammarParser extends Parser {
     public static final BitSet FOLLOW_expression_in_let1178 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_53_in_gather_statement1192 = new BitSet(new long[]{0x0010000000000000L});
     public static final BitSet FOLLOW_let_in_gather_statement1195 = new BitSet(new long[]{0x0010000000000002L});
-    public static final BitSet FOLLOW_54_in_forward_statement1206 = new BitSet(new long[]{0x0280000000000000L});
-    public static final BitSet FOLLOW_55_in_forward_statement1210 = new BitSet(new long[]{0x0100000000000000L});
-    public static final BitSet FOLLOW_56_in_forward_statement1213 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_INT_in_forward_statement1216 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_57_in_forward_statement1220 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_expression_in_forward_statement1223 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_58_in_reduce_statement1233 = new BitSet(new long[]{0x000001F0002A0160L});
-    public static final BitSet FOLLOW_expression_in_reduce_statement1236 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_reduce_statement1238 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_gather_statement_in_query1249 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_forward_statement_in_query1254 = new BitSet(new long[]{0x0400000000000000L});
-    public static final BitSet FOLLOW_reduce_statement_in_query1259 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_54_in_forward_statement1206 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_55_in_forward_statement1209 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_expression_in_forward_statement1212 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_56_in_reduce_statement1222 = new BitSet(new long[]{0x000001F0002A0160L});
+    public static final BitSet FOLLOW_expression_in_reduce_statement1225 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_reduce_statement1227 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_gather_statement_in_query1238 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_forward_statement_in_query1243 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_reduce_statement_in_query1248 = new BitSet(new long[]{0x0000000000000002L});
 
 }

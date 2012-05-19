@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g 2012-04-20 20:30:48
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g 2012-05-19 12:10:29
 
   package org.nebulostore.query.language.interpreter.antlr;
 
@@ -53,7 +53,7 @@ import java.util.ArrayList;
 
 public class TreeWalker extends TreeParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "NEGATION", "ID", "INT", "EXPONENT", "DOUBLE", "COMMENT", "WS", "ESC_SEQ", "STRING", "CHAR", "HEX_DIGIT", "UNICODE_ESC", "OCTAL_ESC", "STRING_LITERAL", "','", "'LAMBDA'", "':'", "'('", "')'", "'PRIVATE_MY'", "'PUBLIC_MY'", "'PRIVATE_COND'", "'PUBLIC_OTHER'", "'PUBLIC_COND'", "'INTEGER'", "'DOUBLE'", "'STRING'", "'TUPLE'", "'<'", "'>'", "'LIST'", "'FILE'", "'TRUE'", "'FALSE'", "'not'", "'+'", "'-'", "'*'", "'/'", "'%'", "'='", "'!='", "'<='", "'>='", "'&&'", "'||'", "'IS'", "'AS'", "'LET'", "'GATHER'", "'FORWARD'", "'MAX'", "'DEPTH'", "'TO'", "'REDUCE'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "NEGATION", "ID", "INT", "EXPONENT", "DOUBLE", "COMMENT", "WS", "ESC_SEQ", "STRING", "CHAR", "HEX_DIGIT", "UNICODE_ESC", "OCTAL_ESC", "STRING_LITERAL", "','", "'LAMBDA'", "':'", "'('", "')'", "'PRIVATE_MY'", "'PUBLIC_MY'", "'PRIVATE_COND'", "'PUBLIC_OTHER'", "'PUBLIC_COND'", "'INTEGER'", "'DOUBLE'", "'STRING'", "'TUPLE'", "'<'", "'>'", "'LIST'", "'FILE'", "'TRUE'", "'FALSE'", "'not'", "'+'", "'-'", "'*'", "'/'", "'%'", "'='", "'!='", "'<='", "'>='", "'&&'", "'||'", "'IS'", "'AS'", "'LET'", "'GATHER'", "'FORWARD'", "'TO'", "'REDUCE'"
     };
     public static final int EOF=-1;
     public static final int T__18=18;
@@ -95,8 +95,6 @@ public class TreeWalker extends TreeParser {
     public static final int T__54=54;
     public static final int T__55=55;
     public static final int T__56=56;
-    public static final int T__57=57;
-    public static final int T__58=58;
     public static final int NEGATION=4;
     public static final int ID=5;
     public static final int INT=6;
@@ -309,7 +307,7 @@ public class TreeWalker extends TreeParser {
 
 
     // $ANTLR start "forward_statement"
-    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:147:1: forward_statement returns [IDQLValue result] : ^( 'FORWARD' INT ex= expression ) ;
+    // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:147:1: forward_statement returns [IDQLValue result] : ^( 'FORWARD' ex= expression ) ;
     public final IDQLValue forward_statement() throws RecognitionException {
         IDQLValue result = null;
 
@@ -317,14 +315,13 @@ public class TreeWalker extends TreeParser {
 
 
         try {
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:148:3: ( ^( 'FORWARD' INT ex= expression ) )
-            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:148:5: ^( 'FORWARD' INT ex= expression )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:148:3: ( ^( 'FORWARD' ex= expression ) )
+            // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:148:5: ^( 'FORWARD' ex= expression )
             {
             match(input,54,FOLLOW_54_in_forward_statement108); 
 
             match(input, Token.DOWN, null); 
-            match(input,INT,FOLLOW_INT_in_forward_statement110); 
-            pushFollow(FOLLOW_expression_in_forward_statement114);
+            pushFollow(FOLLOW_expression_in_forward_statement112);
             ex=expression();
 
             state._fsp--;
@@ -359,15 +356,15 @@ public class TreeWalker extends TreeParser {
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:152:3: ( ^( 'REDUCE' ex= expression EOF ) )
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:152:5: ^( 'REDUCE' ex= expression EOF )
             {
-            match(input,58,FOLLOW_58_in_reduce_statement138); 
+            match(input,56,FOLLOW_56_in_reduce_statement136); 
 
             match(input, Token.DOWN, null); 
-            pushFollow(FOLLOW_expression_in_reduce_statement142);
+            pushFollow(FOLLOW_expression_in_reduce_statement140);
             ex=expression();
 
             state._fsp--;
 
-            match(input,EOF,FOLLOW_EOF_in_reduce_statement144); 
+            match(input,EOF,FOLLOW_EOF_in_reduce_statement142); 
 
             match(input, Token.UP, null); 
              result = ex; 
@@ -393,17 +390,17 @@ public class TreeWalker extends TreeParser {
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:156:7: ( gather_statement forward_statement reduce_statement )
             // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:157:4: gather_statement forward_statement reduce_statement
             {
-            pushFollow(FOLLOW_gather_statement_in_query163);
+            pushFollow(FOLLOW_gather_statement_in_query161);
             gather_statement();
 
             state._fsp--;
 
-            pushFollow(FOLLOW_forward_statement_in_query168);
+            pushFollow(FOLLOW_forward_statement_in_query166);
             forward_statement();
 
             state._fsp--;
 
-            pushFollow(FOLLOW_reduce_statement_in_query173);
+            pushFollow(FOLLOW_reduce_statement_in_query171);
             reduce_statement();
 
             state._fsp--;
@@ -456,12 +453,12 @@ public class TreeWalker extends TreeParser {
                 case 1 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:168:5: v= expression rest= function_call_parameters
                     {
-                    pushFollow(FOLLOW_expression_in_function_call_parameters208);
+                    pushFollow(FOLLOW_expression_in_function_call_parameters206);
                     v=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_function_call_parameters_in_function_call_parameters212);
+                    pushFollow(FOLLOW_function_call_parameters_in_function_call_parameters210);
                     rest=function_call_parameters();
 
                     state._fsp--;
@@ -521,8 +518,8 @@ public class TreeWalker extends TreeParser {
                 case 1 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:173:5: ID rest= function_decl_parameters
                     {
-                    ID2=(CommonTree)match(input,ID,FOLLOW_ID_in_function_decl_parameters239); 
-                    pushFollow(FOLLOW_function_decl_parameters_in_function_decl_parameters243);
+                    ID2=(CommonTree)match(input,ID,FOLLOW_ID_in_function_decl_parameters237); 
+                    pushFollow(FOLLOW_function_decl_parameters_in_function_decl_parameters241);
                     rest=function_decl_parameters();
 
                     state._fsp--;
@@ -583,12 +580,12 @@ public class TreeWalker extends TreeParser {
                 case 1 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:178:5: type= type_rule rest= type_list
                     {
-                    pushFollow(FOLLOW_type_rule_in_type_list272);
+                    pushFollow(FOLLOW_type_rule_in_type_list270);
                     type=type_rule();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_type_list_in_type_list276);
+                    pushFollow(FOLLOW_type_list_in_type_list274);
                     rest=type_list();
 
                     state._fsp--;
@@ -673,7 +670,7 @@ public class TreeWalker extends TreeParser {
                 case 1 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:183:5: 'INTEGER'
                     {
-                    match(input,28,FOLLOW_28_in_type_rule302); 
+                    match(input,28,FOLLOW_28_in_type_rule300); 
                      result=new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLInteger); 
 
                     }
@@ -681,10 +678,10 @@ public class TreeWalker extends TreeParser {
                 case 2 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:184:5: ^( 'LIST' list_type= type_rule )
                     {
-                    match(input,34,FOLLOW_34_in_type_rule341); 
+                    match(input,34,FOLLOW_34_in_type_rule339); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_type_rule_in_type_rule345);
+                    pushFollow(FOLLOW_type_rule_in_type_rule343);
                     list_type=type_rule();
 
                     state._fsp--;
@@ -702,7 +699,7 @@ public class TreeWalker extends TreeParser {
                 case 3 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:190:5: 'DOUBLE'
                     {
-                    match(input,29,FOLLOW_29_in_type_rule369); 
+                    match(input,29,FOLLOW_29_in_type_rule367); 
                      result = new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLDouble); 
 
                     }
@@ -710,7 +707,7 @@ public class TreeWalker extends TreeParser {
                 case 4 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:191:5: 'STRING'
                     {
-                    match(input,30,FOLLOW_30_in_type_rule408); 
+                    match(input,30,FOLLOW_30_in_type_rule406); 
                      result = new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLString); 
 
                     }
@@ -718,7 +715,7 @@ public class TreeWalker extends TreeParser {
                 case 5 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:192:5: 'FILE'
                     {
-                    match(input,35,FOLLOW_35_in_type_rule447); 
+                    match(input,35,FOLLOW_35_in_type_rule445); 
                      result = new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLFile); 
 
                     }
@@ -726,11 +723,11 @@ public class TreeWalker extends TreeParser {
                 case 6 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:193:5: ^( 'TUPLE' list= type_list )
                     {
-                    match(input,31,FOLLOW_31_in_type_rule489); 
+                    match(input,31,FOLLOW_31_in_type_rule487); 
 
                     if ( input.LA(1)==Token.DOWN ) {
                         match(input, Token.DOWN, null); 
-                        pushFollow(FOLLOW_type_list_in_type_rule494);
+                        pushFollow(FOLLOW_type_list_in_type_rule492);
                         list=type_list();
 
                         state._fsp--;
@@ -801,7 +798,7 @@ public class TreeWalker extends TreeParser {
                 case 1 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:198:5: 'PRIVATE_MY'
                     {
-                    match(input,23,FOLLOW_23_in_privacy_decl528); 
+                    match(input,23,FOLLOW_23_in_privacy_decl526); 
                      result = new PrivateMy(); 
 
                     }
@@ -809,7 +806,7 @@ public class TreeWalker extends TreeParser {
                 case 2 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:199:5: 'PUBLIC_MY'
                     {
-                    match(input,24,FOLLOW_24_in_privacy_decl565); 
+                    match(input,24,FOLLOW_24_in_privacy_decl563); 
                      result = new PublicMy(); 
 
                     }
@@ -817,7 +814,7 @@ public class TreeWalker extends TreeParser {
                 case 3 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:200:5: 'PUBLIC_OTHER'
                     {
-                    match(input,26,FOLLOW_26_in_privacy_decl603); 
+                    match(input,26,FOLLOW_26_in_privacy_decl601); 
                      result = new PublicOthers(); 
 
                     }
@@ -825,7 +822,7 @@ public class TreeWalker extends TreeParser {
                 case 4 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:201:5: 'PRIVATE_COND'
                     {
-                    match(input,25,FOLLOW_25_in_privacy_decl638); 
+                    match(input,25,FOLLOW_25_in_privacy_decl636); 
                      result = new PrivateConditionalMy(); 
 
                     }
@@ -833,7 +830,7 @@ public class TreeWalker extends TreeParser {
                 case 5 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:202:5: 'PUBLIC_COND'
                     {
-                    match(input,27,FOLLOW_27_in_privacy_decl673); 
+                    match(input,27,FOLLOW_27_in_privacy_decl671); 
                      result = new PublicConditionalMy(); 
 
                     }
@@ -886,15 +883,15 @@ public class TreeWalker extends TreeParser {
                 case 1 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:207:5: ^( '+' op1= expression op2= expression )
                     {
-                    match(input,39,FOLLOW_39_in_expression724); 
+                    match(input,39,FOLLOW_39_in_expression722); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression728);
+                    pushFollow(FOLLOW_expression_in_expression726);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression732);
+                    pushFollow(FOLLOW_expression_in_expression730);
                     op2=expression();
 
                     state._fsp--;
@@ -908,15 +905,15 @@ public class TreeWalker extends TreeParser {
                 case 2 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:208:5: ^( '-' op1= expression op2= expression )
                     {
-                    match(input,40,FOLLOW_40_in_expression748); 
+                    match(input,40,FOLLOW_40_in_expression746); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression752);
+                    pushFollow(FOLLOW_expression_in_expression750);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression756);
+                    pushFollow(FOLLOW_expression_in_expression754);
                     op2=expression();
 
                     state._fsp--;
@@ -930,15 +927,15 @@ public class TreeWalker extends TreeParser {
                 case 3 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:209:5: ^( '*' op1= expression op2= expression )
                     {
-                    match(input,41,FOLLOW_41_in_expression772); 
+                    match(input,41,FOLLOW_41_in_expression770); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression776);
+                    pushFollow(FOLLOW_expression_in_expression774);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression780);
+                    pushFollow(FOLLOW_expression_in_expression778);
                     op2=expression();
 
                     state._fsp--;
@@ -952,15 +949,15 @@ public class TreeWalker extends TreeParser {
                 case 4 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:210:5: ^( '/' op1= expression op2= expression )
                     {
-                    match(input,42,FOLLOW_42_in_expression796); 
+                    match(input,42,FOLLOW_42_in_expression794); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression800);
+                    pushFollow(FOLLOW_expression_in_expression798);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression804);
+                    pushFollow(FOLLOW_expression_in_expression802);
                     op2=expression();
 
                     state._fsp--;
@@ -974,15 +971,15 @@ public class TreeWalker extends TreeParser {
                 case 5 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:211:5: ^( '%' op1= expression op2= expression )
                     {
-                    match(input,43,FOLLOW_43_in_expression820); 
+                    match(input,43,FOLLOW_43_in_expression818); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression824);
+                    pushFollow(FOLLOW_expression_in_expression822);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression828);
+                    pushFollow(FOLLOW_expression_in_expression826);
                     op2=expression();
 
                     state._fsp--;
@@ -996,10 +993,10 @@ public class TreeWalker extends TreeParser {
                 case 6 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:212:5: ^( NEGATION e= expression )
                     {
-                    match(input,NEGATION,FOLLOW_NEGATION_in_expression844); 
+                    match(input,NEGATION,FOLLOW_NEGATION_in_expression842); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression848);
+                    pushFollow(FOLLOW_expression_in_expression846);
                     e=expression();
 
                     state._fsp--;
@@ -1013,15 +1010,15 @@ public class TreeWalker extends TreeParser {
                 case 7 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:215:5: ^( '=' op1= expression op2= expression )
                     {
-                    match(input,44,FOLLOW_44_in_expression882); 
+                    match(input,44,FOLLOW_44_in_expression880); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression888);
+                    pushFollow(FOLLOW_expression_in_expression886);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression892);
+                    pushFollow(FOLLOW_expression_in_expression890);
                     op2=expression();
 
                     state._fsp--;
@@ -1035,15 +1032,15 @@ public class TreeWalker extends TreeParser {
                 case 8 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:216:5: ^( '!=' op1= expression op2= expression )
                     {
-                    match(input,45,FOLLOW_45_in_expression906); 
+                    match(input,45,FOLLOW_45_in_expression904); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression911);
+                    pushFollow(FOLLOW_expression_in_expression909);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression915);
+                    pushFollow(FOLLOW_expression_in_expression913);
                     op2=expression();
 
                     state._fsp--;
@@ -1057,15 +1054,15 @@ public class TreeWalker extends TreeParser {
                 case 9 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:217:5: ^( '<' op1= expression op2= expression )
                     {
-                    match(input,32,FOLLOW_32_in_expression929); 
+                    match(input,32,FOLLOW_32_in_expression927); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression935);
+                    pushFollow(FOLLOW_expression_in_expression933);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression939);
+                    pushFollow(FOLLOW_expression_in_expression937);
                     op2=expression();
 
                     state._fsp--;
@@ -1079,15 +1076,15 @@ public class TreeWalker extends TreeParser {
                 case 10 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:218:5: ^( '<=' op1= expression op2= expression )
                     {
-                    match(input,46,FOLLOW_46_in_expression953); 
+                    match(input,46,FOLLOW_46_in_expression951); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression958);
+                    pushFollow(FOLLOW_expression_in_expression956);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression962);
+                    pushFollow(FOLLOW_expression_in_expression960);
                     op2=expression();
 
                     state._fsp--;
@@ -1101,15 +1098,15 @@ public class TreeWalker extends TreeParser {
                 case 11 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:219:5: ^( '>' op1= expression op2= expression )
                     {
-                    match(input,33,FOLLOW_33_in_expression976); 
+                    match(input,33,FOLLOW_33_in_expression974); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression982);
+                    pushFollow(FOLLOW_expression_in_expression980);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression986);
+                    pushFollow(FOLLOW_expression_in_expression984);
                     op2=expression();
 
                     state._fsp--;
@@ -1123,15 +1120,15 @@ public class TreeWalker extends TreeParser {
                 case 12 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:220:5: ^( '>=' op1= expression op2= expression )
                     {
-                    match(input,47,FOLLOW_47_in_expression1000); 
+                    match(input,47,FOLLOW_47_in_expression998); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression1005);
+                    pushFollow(FOLLOW_expression_in_expression1003);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression1009);
+                    pushFollow(FOLLOW_expression_in_expression1007);
                     op2=expression();
 
                     state._fsp--;
@@ -1145,15 +1142,15 @@ public class TreeWalker extends TreeParser {
                 case 13 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:223:5: ^( '&&' op1= expression op2= expression )
                     {
-                    match(input,48,FOLLOW_48_in_expression1029); 
+                    match(input,48,FOLLOW_48_in_expression1027); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression1034);
+                    pushFollow(FOLLOW_expression_in_expression1032);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression1038);
+                    pushFollow(FOLLOW_expression_in_expression1036);
                     op2=expression();
 
                     state._fsp--;
@@ -1167,15 +1164,15 @@ public class TreeWalker extends TreeParser {
                 case 14 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:224:5: ^( '||' op1= expression op2= expression )
                     {
-                    match(input,49,FOLLOW_49_in_expression1052); 
+                    match(input,49,FOLLOW_49_in_expression1050); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression1057);
+                    pushFollow(FOLLOW_expression_in_expression1055);
                     op1=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_expression_in_expression1061);
+                    pushFollow(FOLLOW_expression_in_expression1059);
                     op2=expression();
 
                     state._fsp--;
@@ -1189,10 +1186,10 @@ public class TreeWalker extends TreeParser {
                 case 15 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:225:5: ^( 'not' op1= expression )
                     {
-                    match(input,38,FOLLOW_38_in_expression1075); 
+                    match(input,38,FOLLOW_38_in_expression1073); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression1079);
+                    pushFollow(FOLLOW_expression_in_expression1077);
                     op1=expression();
 
                     state._fsp--;
@@ -1206,7 +1203,7 @@ public class TreeWalker extends TreeParser {
                 case 16 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:228:5: ID
                     {
-                    ID3=(CommonTree)match(input,ID,FOLLOW_ID_in_expression1116); 
+                    ID3=(CommonTree)match(input,ID,FOLLOW_ID_in_expression1114); 
                      result = envGet((ID3!=null?ID3.getText():null)); 
 
                     }
@@ -1214,16 +1211,16 @@ public class TreeWalker extends TreeParser {
                 case 17 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:229:5: ^( ID '(' call_params= function_call_parameters ')' )
                     {
-                    ID4=(CommonTree)match(input,ID,FOLLOW_ID_in_expression1167); 
+                    ID4=(CommonTree)match(input,ID,FOLLOW_ID_in_expression1165); 
 
                     match(input, Token.DOWN, null); 
-                    match(input,21,FOLLOW_21_in_expression1169); 
-                    pushFollow(FOLLOW_function_call_parameters_in_expression1173);
+                    match(input,21,FOLLOW_21_in_expression1167); 
+                    pushFollow(FOLLOW_function_call_parameters_in_expression1171);
                     call_params=function_call_parameters();
 
                     state._fsp--;
 
-                    match(input,22,FOLLOW_22_in_expression1175); 
+                    match(input,22,FOLLOW_22_in_expression1173); 
 
                     match(input, Token.UP, null); 
                      Collections.reverse(call_params); result = call((ID4!=null?ID4.getText():null), call_params); 
@@ -1233,22 +1230,22 @@ public class TreeWalker extends TreeParser {
                 case 18 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:230:5: ^( 'LAMBDA' params= function_decl_parameters ':' (EXPRESSION= . )* )
                     {
-                    match(input,19,FOLLOW_19_in_expression1186); 
+                    match(input,19,FOLLOW_19_in_expression1184); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_function_decl_parameters_in_expression1190);
+                    pushFollow(FOLLOW_function_decl_parameters_in_expression1188);
                     params=function_decl_parameters();
 
                     state._fsp--;
 
-                    match(input,20,FOLLOW_20_in_expression1192); 
+                    match(input,20,FOLLOW_20_in_expression1190); 
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:230:62: (EXPRESSION= . )*
                     loop7:
                     do {
                         int alt7=2;
                         int LA7_0 = input.LA(1);
 
-                        if ( ((LA7_0>=NEGATION && LA7_0<=58)) ) {
+                        if ( ((LA7_0>=NEGATION && LA7_0<=56)) ) {
                             alt7=1;
                         }
 
@@ -1277,7 +1274,7 @@ public class TreeWalker extends TreeParser {
                 case 19 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:233:5: INT
                     {
-                    INT5=(CommonTree)match(input,INT,FOLLOW_INT_in_expression1214); 
+                    INT5=(CommonTree)match(input,INT,FOLLOW_INT_in_expression1212); 
                      result = new IntegerValue(Integer.parseInt((INT5!=null?INT5.getText():null)), new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); 
 
                     }
@@ -1285,7 +1282,7 @@ public class TreeWalker extends TreeParser {
                 case 20 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:234:5: DOUBLE
                     {
-                    DOUBLE6=(CommonTree)match(input,DOUBLE,FOLLOW_DOUBLE_in_expression1261); 
+                    DOUBLE6=(CommonTree)match(input,DOUBLE,FOLLOW_DOUBLE_in_expression1259); 
                      result = new DoubleValue(Double.parseDouble((DOUBLE6!=null?DOUBLE6.getText():null)), new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); 
 
                     }
@@ -1293,7 +1290,7 @@ public class TreeWalker extends TreeParser {
                 case 21 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:235:5: STRING_LITERAL
                     {
-                    STRING_LITERAL7=(CommonTree)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_expression1305); 
+                    STRING_LITERAL7=(CommonTree)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_expression1303); 
                      result = new StringValue(prepareString((STRING_LITERAL7!=null?STRING_LITERAL7.getText():null)), new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); 
 
                     }
@@ -1301,7 +1298,7 @@ public class TreeWalker extends TreeParser {
                 case 22 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:236:5: 'TRUE'
                     {
-                    match(input,36,FOLLOW_36_in_expression1341); 
+                    match(input,36,FOLLOW_36_in_expression1339); 
                      result = new BooleanValue(true, new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); 
 
                     }
@@ -1309,7 +1306,7 @@ public class TreeWalker extends TreeParser {
                 case 23 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:237:5: 'FALSE'
                     {
-                    match(input,37,FOLLOW_37_in_expression1385); 
+                    match(input,37,FOLLOW_37_in_expression1383); 
                      result = new BooleanValue(false, new PublicMy(ConstantDataSource.getInstance().toDataSourcesSet())); 
 
                     }
@@ -1317,15 +1314,15 @@ public class TreeWalker extends TreeParser {
                 case 24 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:240:5: ^( 'AS' e= expression type= type_rule )
                     {
-                    match(input,51,FOLLOW_51_in_expression1437); 
+                    match(input,51,FOLLOW_51_in_expression1435); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression1441);
+                    pushFollow(FOLLOW_expression_in_expression1439);
                     e=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_type_rule_in_expression1445);
+                    pushFollow(FOLLOW_type_rule_in_expression1443);
                     type=type_rule();
 
                     state._fsp--;
@@ -1339,15 +1336,15 @@ public class TreeWalker extends TreeParser {
                 case 25 :
                     // /home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/DQLGrammar/src/main/java/org/nebulostore/query/grammar/TreeWalker.g:241:5: ^( 'IS' e= expression level= privacy_decl )
                     {
-                    match(input,50,FOLLOW_50_in_expression1462); 
+                    match(input,50,FOLLOW_50_in_expression1460); 
 
                     match(input, Token.DOWN, null); 
-                    pushFollow(FOLLOW_expression_in_expression1466);
+                    pushFollow(FOLLOW_expression_in_expression1464);
                     e=expression();
 
                     state._fsp--;
 
-                    pushFollow(FOLLOW_privacy_decl_in_expression1470);
+                    pushFollow(FOLLOW_privacy_decl_in_expression1468);
                     level=privacy_decl();
 
                     state._fsp--;
@@ -1466,94 +1463,93 @@ public class TreeWalker extends TreeParser {
     public static final BitSet FOLLOW_53_in_gather_statement84 = new BitSet(new long[]{0x0000000000000004L});
     public static final BitSet FOLLOW_let_in_gather_statement86 = new BitSet(new long[]{0x0000000000000028L});
     public static final BitSet FOLLOW_54_in_forward_statement108 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_INT_in_forward_statement110 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_forward_statement114 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_58_in_reduce_statement138 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_reduce_statement142 = new BitSet(new long[]{0x0000000000000000L});
-    public static final BitSet FOLLOW_EOF_in_reduce_statement144 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_gather_statement_in_query163 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_forward_statement_in_query168 = new BitSet(new long[]{0x0400000000000000L});
-    public static final BitSet FOLLOW_reduce_statement_in_query173 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expression_in_function_call_parameters208 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_function_call_parameters_in_function_call_parameters212 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_function_decl_parameters239 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_function_decl_parameters_in_function_decl_parameters243 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_type_rule_in_type_list272 = new BitSet(new long[]{0x0000000CF0000000L});
-    public static final BitSet FOLLOW_type_list_in_type_list276 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_28_in_type_rule302 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_34_in_type_rule341 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_type_rule_in_type_rule345 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_29_in_type_rule369 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_30_in_type_rule408 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_35_in_type_rule447 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_31_in_type_rule489 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_type_list_in_type_rule494 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_23_in_privacy_decl528 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_24_in_privacy_decl565 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_26_in_privacy_decl603 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_25_in_privacy_decl638 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_27_in_privacy_decl673 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_39_in_expression724 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression728 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression732 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_40_in_expression748 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression752 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression756 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_41_in_expression772 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression776 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression780 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_42_in_expression796 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression800 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression804 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_43_in_expression820 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression824 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression828 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_NEGATION_in_expression844 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression848 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_44_in_expression882 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression888 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression892 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_45_in_expression906 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression911 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression915 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_32_in_expression929 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression935 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression939 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_46_in_expression953 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression958 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression962 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_33_in_expression976 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression982 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression986 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_47_in_expression1000 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression1005 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression1009 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_48_in_expression1029 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression1034 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression1038 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_49_in_expression1052 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression1057 = new BitSet(new long[]{0x000FFFF3000A0170L});
-    public static final BitSet FOLLOW_expression_in_expression1061 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_38_in_expression1075 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression1079 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_ID_in_expression1116 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ID_in_expression1167 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_21_in_expression1169 = new BitSet(new long[]{0x000FFFF3004A0170L});
-    public static final BitSet FOLLOW_function_call_parameters_in_expression1173 = new BitSet(new long[]{0x0000000000400000L});
-    public static final BitSet FOLLOW_22_in_expression1175 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_19_in_expression1186 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_function_decl_parameters_in_expression1190 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_20_in_expression1192 = new BitSet(new long[]{0x07FFFFFFFFFFFFF8L});
-    public static final BitSet FOLLOW_INT_in_expression1214 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DOUBLE_in_expression1261 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_expression1305 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_36_in_expression1341 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_37_in_expression1385 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_51_in_expression1437 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression1441 = new BitSet(new long[]{0x0000000CF0000000L});
-    public static final BitSet FOLLOW_type_rule_in_expression1445 = new BitSet(new long[]{0x0000000000000008L});
-    public static final BitSet FOLLOW_50_in_expression1462 = new BitSet(new long[]{0x0000000000000004L});
-    public static final BitSet FOLLOW_expression_in_expression1466 = new BitSet(new long[]{0x000000000F800000L});
-    public static final BitSet FOLLOW_privacy_decl_in_expression1470 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_expression_in_forward_statement112 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_56_in_reduce_statement136 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_reduce_statement140 = new BitSet(new long[]{0x0000000000000000L});
+    public static final BitSet FOLLOW_EOF_in_reduce_statement142 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_gather_statement_in_query161 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_forward_statement_in_query166 = new BitSet(new long[]{0x0100000000000000L});
+    public static final BitSet FOLLOW_reduce_statement_in_query171 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expression_in_function_call_parameters206 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_function_call_parameters_in_function_call_parameters210 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_function_decl_parameters237 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_function_decl_parameters_in_function_decl_parameters241 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_type_rule_in_type_list270 = new BitSet(new long[]{0x0000000CF0000000L});
+    public static final BitSet FOLLOW_type_list_in_type_list274 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_28_in_type_rule300 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_34_in_type_rule339 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_type_rule_in_type_rule343 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_29_in_type_rule367 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_30_in_type_rule406 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_35_in_type_rule445 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_31_in_type_rule487 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_type_list_in_type_rule492 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_23_in_privacy_decl526 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_24_in_privacy_decl563 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_26_in_privacy_decl601 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_25_in_privacy_decl636 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_27_in_privacy_decl671 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_39_in_expression722 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression726 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression730 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_40_in_expression746 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression750 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression754 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_41_in_expression770 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression774 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression778 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_42_in_expression794 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression798 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression802 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_43_in_expression818 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression822 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression826 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_NEGATION_in_expression842 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression846 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_44_in_expression880 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression886 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression890 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_45_in_expression904 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression909 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression913 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_32_in_expression927 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression933 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression937 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_46_in_expression951 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression956 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression960 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_33_in_expression974 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression980 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression984 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_47_in_expression998 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression1003 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression1007 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_48_in_expression1027 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression1032 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression1036 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_49_in_expression1050 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression1055 = new BitSet(new long[]{0x000FFFF3000A0170L});
+    public static final BitSet FOLLOW_expression_in_expression1059 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_38_in_expression1073 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression1077 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_ID_in_expression1114 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ID_in_expression1165 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_21_in_expression1167 = new BitSet(new long[]{0x000FFFF3004A0170L});
+    public static final BitSet FOLLOW_function_call_parameters_in_expression1171 = new BitSet(new long[]{0x0000000000400000L});
+    public static final BitSet FOLLOW_22_in_expression1173 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_19_in_expression1184 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_function_decl_parameters_in_expression1188 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_20_in_expression1190 = new BitSet(new long[]{0x01FFFFFFFFFFFFF8L});
+    public static final BitSet FOLLOW_INT_in_expression1212 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_DOUBLE_in_expression1259 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_expression1303 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_36_in_expression1339 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_37_in_expression1383 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_51_in_expression1435 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression1439 = new BitSet(new long[]{0x0000000CF0000000L});
+    public static final BitSet FOLLOW_type_rule_in_expression1443 = new BitSet(new long[]{0x0000000000000008L});
+    public static final BitSet FOLLOW_50_in_expression1460 = new BitSet(new long[]{0x0000000000000004L});
+    public static final BitSet FOLLOW_expression_in_expression1464 = new BitSet(new long[]{0x000000000F800000L});
+    public static final BitSet FOLLOW_privacy_decl_in_expression1468 = new BitSet(new long[]{0x0000000000000008L});
 
 }
