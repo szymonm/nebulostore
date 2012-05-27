@@ -14,23 +14,20 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 
 /**
+ * Metadata for file. Actual data is stored in FileChunks.
  * @author bolek
- * File (only metadata).
  */
 
 public class NebuloFile extends NebuloObject {
 
-  private static Logger logger_ = Logger.getLogger(NebuloFile.class);
-
   /**
-   * File chunk meta data.
+   * File chunk metadata.
    */
   protected class FileChunkWrapper implements Serializable {
 
-
-
     private static final long serialVersionUID = -6723808968821818811L;
 
+    // FileChunk stores (endByte_ - startByte_) bytes from interval [startByte_, endByte_).
     public int startByte_;
     public int endByte_;
     public NebuloAddress address_;
@@ -42,7 +39,7 @@ public class NebuloFile extends NebuloObject {
       startByte_ = startByte;
       endByte_ = endByte;
       address_ = address;
-      chunk_ = new FileChunk();
+      chunk_ = new FileChunk(endByte_ - startByte_);
     }
 
     public byte[] getData() throws NebuloException {
@@ -77,13 +74,18 @@ public class NebuloFile extends NebuloObject {
     }
   }
 
+
+
+  private static Logger logger_ = Logger.getLogger(NebuloFile.class);
   private static final long serialVersionUID = -1687075358113579488L;
+  public static final int DEFAULT_CHUNK_SIZE_BYTES = 1024 * 1024;
 
   // Is this file new, i.e. its ObjectId is not yet in DHT (false by default).
   protected transient boolean isNew_;
 
   protected int size_;
   protected Vector<FileChunkWrapper> chunks_;
+  protected int chunkSize_ = DEFAULT_CHUNK_SIZE_BYTES;
 
   /**
    * New, empty file.
@@ -100,6 +102,23 @@ public class NebuloFile extends NebuloObject {
     initNewFile();
   }
 
+  public NebuloFile(AppKey appKey, ObjectId objectId, int chunkSize) {
+    address_ = new NebuloAddress(appKey, objectId);
+    chunkSize_ = chunkSize;
+    initNewFile();
+  }
+
+  public int getSize() {
+    return size_;
+  }
+
+  /**
+   * Read at most len bytes starting from position pos.
+   * @param pos
+   * @param len
+   * @return bytes read
+   * @throws NebuloException
+   */
   public byte[] read(int pos, int len) throws NebuloException {
     logger_.info("read called");
 
@@ -121,39 +140,72 @@ public class NebuloFile extends NebuloObject {
         }
         trueLen -= currLen;
         truePos += currLen;
+        retPos += currLen;
       }
     }
     return ret;
   }
 
+ /**
+  * Write bytes from buffer starting at position pos.
+  * @param buffer
+  * @param pos
+  * @return bytes written
+  * @throws NebuloException
+  */
   public int write(byte[] buffer, int pos) throws NebuloException {
-    FileChunkWrapper chunk = null;
-    // TODO(bolek): What if buffer is very large?
-    for (int i = 0; i < chunks_.size(); ++i) {
-      chunk = chunks_.get(i);
-      if (chunk.startByte_ <= pos) {
-        break;
-      }
+    if (pos > size_) {
+      throw new NebuloException("Write attempt after the end of the file!");
     }
-    int maxPos = pos + buffer.length;
+    int chunkIndex = (int) (pos / chunkSize_);
+    int currPos = pos;
+    int currBufPos = 0;
+    while (currPos < pos + buffer.length) {
+      int currChunkPos = currPos - chunkIndex * chunkSize_;
+      int currLen = Math.min(chunkSize_ - currChunkPos, buffer.length + pos - currPos);
+      writeSingleChunk(chunkIndex, buffer, currBufPos, currChunkPos, currLen);
+      currBufPos += currLen;
+      currPos += currLen;
+      ++chunkIndex;
+    }
+    size_ = Math.max(size_, pos + buffer.length);
+    return buffer.length;
+  }
+
+  private void writeSingleChunk(int chunkIdx, byte[] buffer, int bufPos, int chunkPos, int len)
+    throws NebuloException {
+    if (chunkIdx >= chunks_.size()) {
+      // Create new chunk at the end.
+      // TODO(bolek): Better ID generation!
+      ObjectId chunkId = new ObjectId(
+          chunks_.lastElement().address_.getObjectId().getKey().add(BigInteger.ONE));
+      chunks_.add(new FileChunkWrapper(chunkIdx * chunkSize_, chunkIdx * chunkSize_ + len,
+          new NebuloAddress(address_.getAppKey(), chunkId)));
+    }
+    FileChunkWrapper chunk = chunks_.get(chunkIdx);
     try {
       byte[] newDataArray = chunk.getData();
-      if (maxPos > chunk.endByte_) {
+      int endPos = chunkIdx * chunkSize_ + (chunkPos + len);
+      if (endPos > chunk.endByte_) {
         // Resize chunk.
-        newDataArray = new byte[maxPos - chunk.startByte_];
+        newDataArray = new byte[endPos - chunk.startByte_];
         System.arraycopy(chunk.getData(), 0, newDataArray, 0, chunk.endByte_ - chunk.startByte_);
-        chunk.endByte_ = maxPos;
-        size_ = Math.max(size_, maxPos);
+        chunk.endByte_ = endPos;
       }
-      System.arraycopy(buffer, 0, newDataArray, pos - chunk.startByte_, buffer.length);
+      System.arraycopy(buffer, bufPos, newDataArray, chunkPos, len);
       chunk.setData(newDataArray);
     } catch (NebuloException exception) {
       throw new NebuloException("Unable to fetch file", exception);
     }
-    runSync();
-    return buffer.length;
   }
 
+  public void truncate(int newSize) {
+    // TODO(bolek).
+  }
+
+  /**
+   * Creates one empty FileChunk for a newly created file (but doesn't send it to any replica).
+   */
   private void initNewFile() {
     isNew_ = true;
     chunks_ = new Vector<FileChunkWrapper>();

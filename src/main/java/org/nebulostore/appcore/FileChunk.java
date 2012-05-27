@@ -14,6 +14,10 @@ public class FileChunk extends NebuloObject {
     data_ = new byte[0];
   }
 
+  public FileChunk(int len) {
+    data_ = new byte[len];
+  }
+
   public byte[] getData() {
     return data_;
   }

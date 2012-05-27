@@ -98,9 +98,11 @@ public class WriteNebuloObjectModule extends ReturningJobModule<Void> {
         // TODO(bolek): Ask other replicas if first query is unsuccessful.
         // Source address will be added by Network module.
         try {
-          logger_.info("Value DHT Message received. Sending StoreObjectMessage to: " + group.getReplicator(0));
-          networkQueue_.add(new StoreObjectMessage(CryptoUtils.getRandomId().toString(), null, group.getReplicator(0),
-              address_.getObjectId(), CryptoUtils.encryptObject(object_), jobId_));
+          logger_.info("Value DHT Message received. Sending StoreObjectMessage to: " +
+            group.getReplicator(0));
+          networkQueue_.add(new StoreObjectMessage(CryptoUtils.getRandomId().toString(),
+              null, group.getReplicator(0), address_.getObjectId(),
+              CryptoUtils.encryptObject(object_), jobId_));
         } catch (CryptoException exception) {
           endWithError(new NebuloException("Unable to encrypt object.", exception));
         }

@@ -9,7 +9,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
- * NebuloObject - object that is stored in replicas and identified by NabuloAddress
+ * NebuloObject - object that is stored in replicas and identified by NebuloAddress
  * (currently NebuloFile, NebuloList or FileChunk).
  * @author bolek
  */

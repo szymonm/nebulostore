@@ -223,7 +223,7 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
 
-  public R visit(ReconfigureDHTAckMessage message) throws NebuloException{
+  public R visit(ReconfigureDHTAckMessage message) throws NebuloException {
     return visitDefault(message);
   }
 
