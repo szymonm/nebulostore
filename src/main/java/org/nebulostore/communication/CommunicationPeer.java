@@ -43,7 +43,8 @@ public class CommunicationPeer extends Module {
   private final BlockingQueue<Message> dhtInQueue_;
 
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
-  private static final String CONFIGURATION_PATH = "resources/conf/communication/CommunicationPeer.xml";
+  private static final String CONFIGURATION_PATH =
+      "resources/conf/communication/CommunicationPeer.xml";
 
   private static JXTAPeer currJxtaPeer_;
 
@@ -89,7 +90,7 @@ public class CommunicationPeer extends Module {
       ReconfigureDHTMessage reconfigureRequest) throws NebuloException {
 
     if (dhtProvider.equals("bdb") && (dhtPeer_ instanceof BdbPeer)) {
-      if (reconfigureRequest != null && ((BdbPeer)dhtPeer_).getHolderAddress() != null) {
+      if (reconfigureRequest != null && ((BdbPeer) dhtPeer_).getHolderAddress() != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest));
       }
       return;
@@ -212,7 +213,7 @@ public class CommunicationPeer extends Module {
 
     if (msg instanceof CommMessage) {
       if (((CommMessage) msg).getSourceAddress() == null) {
-        ((CommMessage)msg).setSourceAddress(getPeerAddress());
+        ((CommMessage) msg).setSourceAddress(getPeerAddress());
       }
 
       if (((CommMessage) msg).getDestinationAddress() == null) {

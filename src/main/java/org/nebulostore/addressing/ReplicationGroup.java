@@ -5,13 +5,14 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import org.nebulostore.communication.address.CommAddress;
 
 /**
  * A list of addresses of peers that share the same contract.
  */
-public class ReplicationGroup implements Serializable, Comparable<ObjectId> {
+public class ReplicationGroup implements Serializable, Comparable<ObjectId>, Iterable<CommAddress> {
   private static final long serialVersionUID = -2519006213860783596L;
 
   private final ArrayList<CommAddress> replicators_;
@@ -33,6 +34,10 @@ public class ReplicationGroup implements Serializable, Comparable<ObjectId> {
 
   public CommAddress getReplicator(int index) {
     return replicators_.get(index);
+  }
+
+  public Iterator<CommAddress> iterator() {
+    return replicators_.iterator();
   }
 
   @Override

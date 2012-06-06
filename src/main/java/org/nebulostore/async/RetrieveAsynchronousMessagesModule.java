@@ -10,7 +10,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.BrokerErrorMessage;
-import org.nebulostore.async.messages.UpdateFileMessage;
+import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
 import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -80,10 +80,10 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
       } else {
         for (AsynchronousMessage m : message.getMessages()) {
           // TODO(szm): Prevent message duplicates
-          if (m instanceof UpdateFileMessage) {
+          if (m instanceof UpdateNebuloObjectMessage) {
             // TODO(szm): update file
             logger_.debug("Received update file asynchronous message " +
-                ((UpdateFileMessage) m).getMessageId());
+                ((UpdateNebuloObjectMessage) m).getMessageId());
           } else {
             error(message.getId(), new NebuloException(
                 "Unknown AsynchronousMessage type."));

@@ -11,6 +11,10 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 public class JobInitMessage extends Message {
   private static final long serialVersionUID = 2482967055598180345L;
 
+  public JobInitMessage(JobModule jobModule) {
+    jobModule_ = jobModule;
+  }
+
   public JobInitMessage(String jobId, JobModule jobModule) {
     super(jobId);
     jobModule_ = jobModule;

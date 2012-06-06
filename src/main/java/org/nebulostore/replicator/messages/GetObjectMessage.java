@@ -14,7 +14,14 @@ import org.nebulostore.replicator.Replicator;
  *         SendObjectMessage.
  */
 public class GetObjectMessage extends CommMessage {
-  public ObjectId objectId_;
+  private static final long serialVersionUID = 1660420694986822395L;
+
+  private final ObjectId objectId_;
+
+  public ObjectId getObjectId() {
+    return objectId_;
+  }
+
   private final String sourceJobId_;
 
   public GetObjectMessage(CommAddress sourceAddress, CommAddress destAddress,

@@ -11,6 +11,8 @@ import org.nebulostore.communication.messages.CommMessage;
  * @author szymonmatejczyk
  */
 public class ReplicatorErrorMessage extends CommMessage {
+  private static final long serialVersionUID = -686759042653122970L;
+
   String message_;
 
   public ReplicatorErrorMessage(String jobId, CommAddress sourceAddress,
@@ -19,6 +21,7 @@ public class ReplicatorErrorMessage extends CommMessage {
     message_ = message;
   }
 
+  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }

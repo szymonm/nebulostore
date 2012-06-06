@@ -20,10 +20,10 @@ import org.nebulostore.testing.messages.GatherStatsMessage;
 import org.nebulostore.testing.messages.TestStatsMessage;
 import org.nebulostore.testing.messages.TicMessage;
 import org.nebulostore.testing.messages.TocMessage;
+import org.nebulostore.timer.IMessageGenerator;
 
 /**
  * Testing module that acts as a Test Server.
- * 
  * @author szymonmatejczyk Remember to set lastPhase_ and peersNeeded_ in
  *         subclass.
  */
@@ -47,7 +47,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   private int tocs_;
 
   /**
-   * CommAddresses of the received Tocs
+   * CommAddresses of the received Tocs.
    */
   HashSet<CommAddress> tocsAddresses_ = new HashSet<CommAddress>();
 
@@ -81,7 +81,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
 
   /**
    * Visitor state - either initializing peers or running the tests on constant
-   * set of peers
+   * set of peers.
    */
   enum TestingState {
     Initializing, Running
@@ -98,7 +98,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   private final String testDescription_;
 
   /**
-   * keeps starting time of the test
+   * keeps starting time of the test.
    */
   private long startTime_;
 
@@ -110,7 +110,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   private final boolean gatherStats_;
 
   /**
-   * Timer for watching maximum stage time
+   * Timer for watching maximum stage time.
    */
   private final Timer checkPhaseTimer_;
 
@@ -139,6 +139,9 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
         false, testDescription);
   }
 
+  /**
+   * Timer.
+   */
   class PhaseTimeoutTimer extends TimerTask {
 
     private int lastSeenPhase_ = -1;
@@ -178,22 +181,22 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   public abstract void feedStats(TestStatistics stats);
 
   /**
-   * Returns additional statistics from the upper module
+   * Returns additional statistics from the upper module.
    */
   protected abstract String getAdditionalStats();
 
   /**
    * Visitor.
-   * 
    * @author szymonmatejczyk
    * @author Marcin Walas
    */
   protected class ServerTestingModuleVisitor extends MessageVisitor<Void> {
-    private NetworkContextChangedMessage notificationMessage_;
+    private IMessageGenerator notificationGenerator_;
     private final NetworkContext context_ = NetworkContext.getInstance();
 
     @Override
     public Void visit(JobInitMessage message) {
+      jobId_ = message.getId();
       if (NetworkContext.getInstance().getKnownPeers().size() >= peersFound_) {
         logger_
         .debug("Enough peers in NetworkContext. Initializing clients...");
@@ -207,8 +210,13 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
          * NetworkContext changes.
          */
         GlobalContext.getInstance().setDispatcherQueue(outQueue_);
-        notificationMessage_ = new NetworkContextChangedMessage(message.getId());
-        context_.addContextChangeMessage(notificationMessage_);
+        notificationGenerator_ = new IMessageGenerator() {
+          @Override
+          public Message generate() {
+            return new NetworkContextChangedMessage(getJobId());
+          }
+        };
+        context_.addContextChangeMessageGenerator(notificationGenerator_);
         logger_.debug("Waiting for peer discovery.");
       }
       return null;
@@ -219,8 +227,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
       if (NetworkContext.getInstance().getKnownPeers().size() >= peersFound_) {
         logger_.debug("Enough peers found, initializing test.");
         /* stop listening for notifications */
-        NetworkContext.getInstance().removeContextChangeMessage(
-            notificationMessage_);
+        NetworkContext.getInstance().removeContextChangeMessageGenerator(notificationGenerator_);
         clients_ = new HashSet<CommAddress>(NetworkContext.getInstance()
             .getKnownPeers());
         testingState_ = TestingState.Initializing;

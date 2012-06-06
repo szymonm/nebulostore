@@ -9,7 +9,6 @@ import org.nebulostore.addressing.ContractList;
  * Metadata object is stored in main DHT. It contains data necessary for system,
  * that cannot be stored in as other files, because they are used for replica
  * management. It also stores user's ContractList.
- * 
  * @author szymonmatejczyk
  * @author bolek
  */

@@ -63,6 +63,14 @@
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
+  </appender> 
+  
+  <appender name="FA-replicator" class="org.apache.log4j.FileAppender">
+    <param name="File" value="replicator.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
   </appender>  
 
   <logger name="org.nebulostore.communication.bdbdht">
@@ -102,27 +110,33 @@
     <appender-ref ref="FA-testing"/>
   </logger>
   
-   <logger name="org.nebulostore.appcore">
+   <!--<logger name="org.nebulostore.appcore">
     <level value="INFO" />
     <appender-ref ref="CA"/>
     <appender-ref ref="FA"/>
-  </logger>
+  </logger> -->
   
   <logger name="org.nebulostore.communication.dht">
     <level value="INFO" />
-    <appender-ref ref="CA-testing"/>
+    <!--<appender-ref ref="CA-testing"/> -->
     <appender-ref ref="FA-testing"/>
   </logger>
   
   <logger name="org.nebulostore.communication.messages">
     <level value="DEBUG" />
-    <appender-ref ref="CA-testing"/>
+    <!-- <appender-ref ref="CA-testing"/> -->
     <appender-ref ref="FA-testing"/>
   </logger>
   
   <logger name="org.nebulostore.query">
     <level value="DEBUG" />
     <appender-ref ref="FA-query"/>
+  </logger>
+  
+  
+  <logger name="net.jxta">
+    <level value="INFO" />
+    <appender-ref ref="FA-comm" />
   </logger>
   
   <root>

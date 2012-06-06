@@ -10,6 +10,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  *
  */
 public class NetworkContextChangedMessage extends Message {
+  private static final long serialVersionUID = -6053305223214969389L;
 
   public NetworkContextChangedMessage(String jobID) {
     super(jobID);

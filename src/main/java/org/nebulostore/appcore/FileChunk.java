@@ -28,6 +28,6 @@ public class FileChunk extends NebuloObject {
 
   @Override
   protected void runSync() {
-    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException();
   }
 }

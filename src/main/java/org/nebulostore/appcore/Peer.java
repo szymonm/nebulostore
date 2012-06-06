@@ -9,6 +9,8 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.async.AddSynchroPeerModule;
+import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
 import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.jxta.JXTAPeer;
@@ -18,12 +20,16 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.query.client.DQLClient;
 import org.nebulostore.query.executor.DQLExecutor;
+import org.nebulostore.timer.IMessageGenerator;
+import org.nebulostore.timer.PeriodicMessageSender;
 
 /**
  * @author marcin This is the entry point for a regular peer with full
  *         functionality.
  */
 public class Peer {
+  static final Long RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL = 2000L;
+
   private static Logger logger_ = Logger.getLogger(Peer.class);
   protected static BlockingQueue<Message> networkInQueue_;
   protected static BlockingQueue<Message> dispatcherInQueue_;
@@ -105,6 +111,32 @@ public class Peer {
     dispatcherThread_.start();
 
     JXTAPeer.startFeeding_ = true;
+
+    runInitialModules(dispatcherInQueue_);
+  }
+
+  protected static void runInitialModules(BlockingQueue<Message> dispatcherQueue) {
+    //TODO(szm) move it somewhere
+
+    /* Periodically checking asynchronous messages. */
+    IMessageGenerator retriveAMGenerator = new IMessageGenerator() {
+      @Override
+      public Message generate() {
+        return new JobInitMessage(new RetrieveAsynchronousMessagesModule());
+      }
+    };
+    PeriodicMessageSender sender = new PeriodicMessageSender(retriveAMGenerator,
+        RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL, dispatcherQueue);
+    dispatcherQueue.add(new JobInitMessage(sender));
+
+    /* Adds found peer to synchro peers */
+    IMessageGenerator addFoundSynchroPeer = new IMessageGenerator() {
+      @Override
+      public Message generate() {
+        return new JobInitMessage(new AddSynchroPeerModule());
+      }
+    };
+    NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
   }
 
   protected static void finishPeer() {

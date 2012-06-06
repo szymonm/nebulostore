@@ -1,6 +1,8 @@
 package org.nebulostore.async.messages;
 
 import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
@@ -8,15 +10,15 @@ import org.nebulostore.communication.address.CommAddress;
  * that he stores, from @updateFrom.
  * @author szymonmatejczyk
  */
-public class UpdateFileMessage extends AsynchronousMessage {
-  private static final long serialVersionUID = -4412275517980056063L;
+public class UpdateNebuloObjectMessage extends AsynchronousMessage {
+  private static final long serialVersionUID = 1428811392987901652L;
 
   NebuloAddress objectId_;
 
   /* It is assumed that instance of Nebulostore has persistent CommAddress. */
   CommAddress updateFrom_;
 
-  public UpdateFileMessage(NebuloAddress objectId, CommAddress updateFrom) {
+  public UpdateNebuloObjectMessage(NebuloAddress objectId, CommAddress updateFrom) {
     super();
     objectId_ = objectId;
     updateFrom_ = updateFrom;
@@ -28,5 +30,9 @@ public class UpdateFileMessage extends AsynchronousMessage {
 
   public CommAddress getUpdateFrom() {
     return updateFrom_;
+  }
+
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 }

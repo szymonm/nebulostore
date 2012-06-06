@@ -1,6 +1,8 @@
 package org.nebulostore.appcore;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 import org.nebulostore.addressing.NebuloAddress;
@@ -24,6 +26,9 @@ public abstract class NebuloObject implements Serializable {
   protected NebuloAddress address_;
   protected transient CommAddress sender_;
 
+  protected transient String lastCommittedVersion_;
+  protected transient Set<String> previousVersions_ = new HashSet<String>();
+
   public static void initObjectApi(BlockingQueue<Message> queue) {
     dispatcherQueue_ = queue;
   }
@@ -45,6 +50,14 @@ public abstract class NebuloObject implements Serializable {
     sender_ = sender;
   }
 
+  public Set<String> getVersions() {
+    return previousVersions_;
+  }
+
+  public void setVersions(Set<String> versions) {
+    previousVersions_ = versions;
+  }
+
   public void delete() {
     // TODO(bolek).
   }
@@ -59,4 +72,17 @@ public abstract class NebuloObject implements Serializable {
   }
 
   protected abstract void runSync() throws NebuloException;
+
+  public String getLastCommittedVersion() {
+    return lastCommittedVersion_;
+  }
+
+  public void setLastCommittedVersion(String lastCommittedVersion) {
+    lastCommittedVersion_ = lastCommittedVersion;
+  }
+
+  public void newVersionCommitted(String version) {
+    previousVersions_.add(lastCommittedVersion_);
+    lastCommittedVersion_ = version;
+  }
 }

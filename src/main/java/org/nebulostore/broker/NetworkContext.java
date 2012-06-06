@@ -10,6 +10,7 @@ import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.timer.IMessageGenerator;
 
 /**
  * Context that stores information about known peers and network state.
@@ -25,11 +26,12 @@ public final class NetworkContext {
   private final HashSet<CommAddress> knownPeers_;
   private final Vector<CommAddress> knownPeersVector_;
 
-  //TODO(szm): complete events module
+  //TODO(szm): complete events-notifications module
   /**
    * Messages to be send to dispatcher when context changes.
    */
-  private final HashSet<Message> contextChangeMessages_ = new HashSet<Message>();
+  private final HashSet<IMessageGenerator> contextChangeMessageGenerators_ =
+      new HashSet<IMessageGenerator>();
 
   public static NetworkContext getInstance() {
     if (instance_ == null)
@@ -45,17 +47,31 @@ public final class NetworkContext {
   }
 
   private void contextChanged() {
-    for (Message m : contextChangeMessages_) {
-      getDispatcherQueue().add(m);
+    for (IMessageGenerator m : contextChangeMessageGenerators_) {
+      getDispatcherQueue().add(m.generate());
     }
   }
 
-  public void addContextChangeMessage(Message message) {
-    contextChangeMessages_.add(message);
+  /**
+   * @deprecated Use addContextChangeMessageGenerator.
+   */
+  @Deprecated
+  public void addContextChangeMessage(final Message message) {
+    IMessageGenerator generator = new IMessageGenerator() {
+      @Override
+      public Message generate() {
+        return message;
+      }
+    };
+    contextChangeMessageGenerators_.add(generator);
   }
 
-  public void removeContextChangeMessage(Message message) {
-    contextChangeMessages_.remove(message);
+  public void addContextChangeMessageGenerator(IMessageGenerator generator) {
+    contextChangeMessageGenerators_.add(generator);
+  }
+
+  public void removeContextChangeMessageGenerator(IMessageGenerator generator) {
+    contextChangeMessageGenerators_.remove(generator);
   }
 
   public Vector<CommAddress> getKnownPeers() {

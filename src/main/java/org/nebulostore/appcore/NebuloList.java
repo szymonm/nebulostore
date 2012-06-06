@@ -24,7 +24,7 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
    */
   public class ListIterator implements Iterator<NebuloElement> {
     private int currIndex_;
-    private Iterator<NebuloElement> iterator_;
+    private final Iterator<NebuloElement> iterator_;
 
     public ListIterator() {
       currIndex_ = -1;
@@ -148,7 +148,8 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
 
   @Override
   protected void runSync() throws NebuloException {
-    WriteNebuloObjectModule writer = new WriteNebuloObjectModule(address_, this, dispatcherQueue_);
+    WriteNebuloObjectModule writer = new WriteNebuloObjectModule(address_, this, dispatcherQueue_,
+        previousVersions_);
     writer.getResult(TIMEOUT_SEC);
   }
 

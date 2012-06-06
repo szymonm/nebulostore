@@ -16,7 +16,6 @@ import org.nebulostore.testing.pingpong.PingPongServer;
 
 /**
  * Class to run test server.
- * 
  * @author szymonmatejczyk
  */
 public final class TestingPeer extends Peer {
@@ -46,7 +45,7 @@ public final class TestingPeer extends Peer {
 
     try {
       // Waiting for peer initialization
-      Thread.sleep(240*1000);
+      Thread.sleep(240 * 1000);
     } catch (InterruptedException e1) {
       e1.printStackTrace();
       System.exit(-1);
@@ -91,7 +90,8 @@ public final class TestingPeer extends Peer {
         } else {
           minMessagesInPhase = 10;
         }
-        for (int messagesInPhase = minMessagesInPhase; messagesInPhase < maxMessagesInPhase; messagesInPhase += stepMessagesInPhase) {
+        for (int messagesInPhase = minMessagesInPhase; messagesInPhase < maxMessagesInPhase;
+            messagesInPhase += stepMessagesInPhase) {
 
 
           int i = 0;
@@ -106,7 +106,7 @@ public final class TestingPeer extends Peer {
             .info("Finished Messages test. Moving to the next test.");
 
             try {
-              Thread.sleep(180*1000);
+              Thread.sleep(180 * 1000);
             } catch (InterruptedException e) {
               e.printStackTrace();
             }
@@ -146,7 +146,8 @@ public final class TestingPeer extends Peer {
         }
          */
         /*
-        for (int keysMultiplier = minKeysMultiplier; keysMultiplier < maxKeysMultiplier; keysMultiplier += stepKeysMultiplier) {
+        for (int keysMultiplier = minKeysMultiplier; keysMultiplier < maxKeysMultiplier;
+        keysMultiplier += stepKeysMultiplier) {
 
           int i = 0;
           int succ = 0;
@@ -164,7 +165,8 @@ public final class TestingPeer extends Peer {
         minKeysMultiplier = 8;
         logger_
         .info("Finished Bdb DHT Test, performing Kademlia DHT Test...");
-        for (int keysMultiplier = minKeysMultiplier; keysMultiplier < maxKeysMultiplier; keysMultiplier += stepKeysMultiplier) {
+        for (int keysMultiplier = minKeysMultiplier; keysMultiplier < maxKeysMultiplier;
+            keysMultiplier += stepKeysMultiplier) {
           int i = 0;
           int succ = 0;
           while (succ < count) {

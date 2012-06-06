@@ -19,8 +19,9 @@ import org.nebulostore.testing.messages.TocMessage;
 
 /**
  * Base class for all TestingModules(test cases run on peers).
- * 
- * @author szymonmatejczyk Writting tests: 1. Remember to set visitors for each
+ * @author szymonmatejczyk
+ *
+ * Writting tests: 1. Remember to set visitors for each
  *         phase. 2. Don't forget to put phaseFinished in every visitor. 3. By
  *         default you should define visitor for each phase. However, you can
  *         override getVisitor() method to use visitors differently(ex. more
@@ -87,7 +88,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
 
   /**
    * Visitor handling Tic and FinishTest messages.
-   * 
+   *
    * @author szymonmatejczyk
    */
   protected abstract class TestingModuleVisitor extends MessageVisitor<Void> {
@@ -96,7 +97,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
 
     @Override
     public Void visit(TicMessage message) {
-      if (message.getPhase() -1 != phase_) {
+      if (message.getPhase() - 1 != phase_) {
         return null;
       }
       phase_++;
@@ -122,7 +123,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
 
   /**
    * Empty visitor for phase 0.
-   * 
+   *
    * @author szymonmatejczyk
    */
   protected class EmptyInitializationVisitor extends TestingModuleVisitor {
@@ -146,7 +147,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
 
   /**
    * Visitor that ignores NewPhaseMessage.
-   * 
+   *
    * @author szymonmatejczyk
    */
   protected class IgnoreNewPhaseVisitor extends TestingModuleVisitor {

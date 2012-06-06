@@ -13,6 +13,8 @@ import org.nebulostore.replicator.Replicator;
  * This is a request to delete a particular object from a peer that is replicating it.
  */
 public class DeleteObjectMessage extends CommMessage {
+  private static final long serialVersionUID = -587693375265935213L;
+
   public ObjectId objectId_;
   private final String sourceJobId_;
 

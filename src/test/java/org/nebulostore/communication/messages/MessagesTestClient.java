@@ -18,7 +18,7 @@ import org.nebulostore.testing.messages.TestStatsMessage;
 
 /**
  * Testing client module of communication layer.
- * 
+ *
  * @author Marcin Walas
  */
 public class MessagesTestClient extends TestingModule implements Serializable {
@@ -153,7 +153,7 @@ public class MessagesTestClient extends TestingModule implements Serializable {
     }
 
     private void refreshVisitor() {
-      if (checkNotInitialized_ ) {
+      if (checkNotInitialized_) {
         // 2000 ms set
         phaseCheckTimer_.schedule(phaseCheckTask_, 1000, 1000);
         checkNotInitialized_ = false;

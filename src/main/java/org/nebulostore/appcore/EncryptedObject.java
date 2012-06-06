@@ -17,4 +17,8 @@ public class EncryptedObject implements Serializable {
   public byte[] getEncryptedData() {
     return encryptedData_;
   }
+
+  public int size() {
+    return encryptedData_.length;
+  }
 }

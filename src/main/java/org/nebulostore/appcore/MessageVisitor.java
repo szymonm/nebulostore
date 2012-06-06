@@ -1,5 +1,7 @@
 package org.nebulostore.appcore;
 
+import org.nebulostore.api.WriteNebuloObjectModule;
+import org.nebulostore.api.messages.UpdateTimeoutMessage;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
@@ -40,9 +42,13 @@ import org.nebulostore.query.messages.QueryResultsMessage;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.DeleteObjectMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
+import org.nebulostore.replicator.messages.ObjectOutdatedMessage;
+import org.nebulostore.replicator.messages.QueryToStoreObjectMessage;
 import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
-import org.nebulostore.replicator.messages.StoreObjectMessage;
+import org.nebulostore.replicator.messages.TransactionResultMessage;
+import org.nebulostore.replicator.messages.UpdateRejectMessage;
+import org.nebulostore.replicator.messages.UpdateWithholdMessage;
 import org.nebulostore.testing.messages.ErrorTestMessage;
 import org.nebulostore.testing.messages.FinishTestMessage;
 import org.nebulostore.testing.messages.GatherStatsMessage;
@@ -92,7 +98,7 @@ public abstract class MessageVisitor<R> {
   public R visit(SendObjectMessage message) throws NebuloException {
     return visitDefault(message);
   }
-  public R visit(StoreObjectMessage message) throws NebuloException {
+  public R visit(QueryToStoreObjectMessage message) throws NebuloException {
     return visitDefault(message);
   }
   public R visit(ConfirmationMessage message) throws NebuloException {
@@ -235,16 +241,23 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
 
-  public R visit(ErrorCommMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
   // Timer module tests.
   public R visit(TimerTestMessage message) throws NebuloException {
     return visitDefault(message);
   }
 
   public R visit(InitSimpleTimerTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+  public R visit(ErrorCommMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(UpdateRejectMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(UpdateWithholdMessage message) throws NebuloException {
     return visitDefault(message);
   }
 
@@ -264,8 +277,24 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
 
+  public R visit(UpdateTimeoutMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
   public R visit(GossipExecutorsMessage message) throws NebuloException {
     return visitDefault(message);
   }
 
+  public R visit(WriteNebuloObjectModule.TransactionAnswerInMessage message)
+    throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(TransactionResultMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(ObjectOutdatedMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
 }

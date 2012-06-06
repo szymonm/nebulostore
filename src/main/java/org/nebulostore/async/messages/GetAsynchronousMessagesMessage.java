@@ -13,6 +13,8 @@ import org.nebulostore.communication.messages.CommMessage;
  * Message send, when peer wants to receive messages waiting for him.
  */
 public class GetAsynchronousMessagesMessage extends CommMessage {
+  private static final long serialVersionUID = 132756955341183967L;
+
   InstanceID recipient_;
 
   public GetAsynchronousMessagesMessage(String jobId, CommAddress sourceAddress,

@@ -9,8 +9,11 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EncryptedObject;
 
 /**
@@ -18,6 +21,7 @@ import org.nebulostore.appcore.EncryptedObject;
  * Library of cryptographic and serialization functions.
  */
 public final class CryptoUtils {
+  private static Logger logger_ = Logger.getLogger(CryptoUtils.class);
 
   public static BigInteger getRandomId() {
     return new BigInteger(130, RANDOM);
@@ -74,6 +78,17 @@ public final class CryptoUtils {
       throw new CryptoException("Cannot deserialize object of unknown class.");
     }
     return o;
+  }
+
+  public static String sha(EncryptedObject encryptedObject) {
+    MessageDigest md = null;
+    try {
+      md = MessageDigest.getInstance("SHA");
+    } catch (NoSuchAlgorithmException e) {
+      logger_.error(e.toString());
+    }
+    md.update(encryptedObject.getEncryptedData());
+    return md.digest().toString();
   }
 
   private static final SecureRandom RANDOM = new SecureRandom();

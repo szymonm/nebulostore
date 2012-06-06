@@ -7,16 +7,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.Durability;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
-import com.sleepycat.je.Transaction;
-
 import net.jxta.discovery.DiscoveryEvent;
 import net.jxta.discovery.DiscoveryListener;
 import net.jxta.document.Advertisement;
@@ -51,9 +41,18 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.Durability;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
+import com.sleepycat.je.Transaction;
+
 /**
  * Implementation of berkely db based engine for...
- * 
  * @author marcin
  */
 public class BdbPeer extends Module implements DiscoveryListener {
@@ -61,8 +60,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
   private static String configurationPath_ = "resources/conf/communication/BdbPeer.xml";
   private static Logger logger_ = Logger.getLogger(BdbPeer.class);
 
-  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:"
-      + "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
+  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:" +
+      "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
 
   private String storagePath_;
   private String storeName_;
@@ -229,8 +228,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
     KeyDHT key = getMsg.getKey();
     DatabaseEntry data = new DatabaseEntry();
 
-    OperationStatus operationStatus = database_.get(null, new DatabaseEntry(key.toString().getBytes()), data,
-        LockMode.DEFAULT);
+    OperationStatus operationStatus = database_.get(null,
+        new DatabaseEntry(key.toString().getBytes()), data, LockMode.DEFAULT);
 
     if (operationStatus == OperationStatus.SUCCESS) {
       ValueDHT value = ValueDHT.build(new String(data.getData()));

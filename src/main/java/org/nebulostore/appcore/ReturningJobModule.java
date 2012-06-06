@@ -13,6 +13,10 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  */
 public abstract class ReturningJobModule<R> extends JobModule {
 
+  protected R result_;
+  protected NebuloException error_;
+  protected Semaphore mutex_;
+
   private static Logger logger_ = Logger.getLogger(ReturningJobModule.class);
 
   protected ReturningJobModule() {
@@ -44,10 +48,14 @@ public abstract class ReturningJobModule<R> extends JobModule {
     }
   }
 
-  protected void endWithSuccess(R result) {
+  protected void returnSuccess(R result) {
     result_ = result;
     // Make result available.
     mutex_.release();
+  }
+
+  protected void endWithSuccess(R result) {
+    returnSuccess(result);
     // End thread and remove from Dispatcher's queue.
     endJobModule();
   }
@@ -60,7 +68,4 @@ public abstract class ReturningJobModule<R> extends JobModule {
     endJobModule();
   }
 
-  protected R result_;
-  protected NebuloException error_;
-  protected Semaphore mutex_;
 }

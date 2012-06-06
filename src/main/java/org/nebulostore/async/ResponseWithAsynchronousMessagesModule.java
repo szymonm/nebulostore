@@ -1,13 +1,10 @@
 package org.nebulostore.async;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
@@ -42,8 +39,6 @@ public class ResponseWithAsynchronousMessagesModule extends JobModule {
   private class Visitor extends MessageVisitor<Void> {
     public Void visit(GetAsynchronousMessagesMessage message) {
       // TODO(szm): prevent message flooding
-      List<AsynchronousMessage> messages = context_.waitingAsynchronousMessagesMap_.get(
-          message.getRecipient());
       AsynchronousMessagesMessage reply = new AsynchronousMessagesMessage(message.getId(),
           message.getDestinationAddress(), message.getSourceAddress(),
           context_.waitingAsynchronousMessagesMap_.get(message.getRecipient()));

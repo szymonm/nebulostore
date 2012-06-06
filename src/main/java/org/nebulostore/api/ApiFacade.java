@@ -19,7 +19,9 @@ public final class ApiFacade {
 
   private static final int TIMEOUT_SEC = 60;
   private static BlockingQueue<Message> dispatcherQueue_;
-  private static AppKey appKey_;
+
+  // TODO(szm) Temporaly setting to 0 for testing purposes.
+  private static AppKey appKey_ = new AppKey(BigInteger.ZERO);
 
   public static void initApi(BlockingQueue<Message> queue) {
     dispatcherQueue_ = queue;

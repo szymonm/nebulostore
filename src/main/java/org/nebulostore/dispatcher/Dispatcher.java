@@ -87,7 +87,8 @@ public class Dispatcher extends Module {
           // Network queue is dispatcher's out queue.
           handler.setNetworkQueue(outQueue_);
           workersQueues_.put(jobId, newInQueue);
-          Thread newThread = new Thread(handler, "Nebulostore.Dispatcher.Job." + handler.getClass().getSimpleName() + "." + jobId);
+          Thread newThread = new Thread(handler, "Nebulostore.Dispatcher.Job." +
+              handler.getClass().getSimpleName() + "." + jobId);
           workersThreads_.put(jobId, newThread);
           newThread.start();
           logger_.debug("Starting new thread.");

@@ -9,7 +9,6 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
-import org.nebulostore.async.messages.BrokerErrorMessage;
 import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
 import org.nebulostore.broker.BrokerContext;
@@ -90,10 +89,6 @@ public class GetAsynchronousMessagesModule extends JobModule {
       resultQueue_.add(m);
       endJobModule();
       return null;
-    }
-
-    public void error(NebuloException exception) {
-      resultQueue_.add(new BrokerErrorMessage(null, exception));
     }
   }
 }
