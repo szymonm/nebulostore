@@ -1,7 +1,6 @@
 package org.nebulostore.appcore;
 
 import org.nebulostore.api.WriteNebuloObjectModule;
-import org.nebulostore.api.messages.UpdateTimeoutMessage;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
@@ -274,10 +273,6 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(QueryResultsMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(UpdateTimeoutMessage message) throws NebuloException {
     return visitDefault(message);
   }
 
