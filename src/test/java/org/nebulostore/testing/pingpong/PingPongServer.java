@@ -19,7 +19,7 @@ public class PingPongServer extends ServerTestingModule {
     // Test consist of 2 phases and needs 2 peers.
     // We give it 5 seconds.
     // We set "PingPong client" as clients job id.
-    super(2, 2, 20, "PingPong server", "PingPong server");
+    super(2, 2, 20, "PingPong client", "PingPong server");
   }
 
   @Override

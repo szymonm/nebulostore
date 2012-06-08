@@ -14,7 +14,7 @@ public class ListValue extends DQLValue implements Iterable<IDQLValue> {
 
   private final List<IDQLValue> value_;
   private int size_;
-  private final DQLType type_;
+  private DQLType type_;
 
   public ListValue(DQLType type, PrivacyLevel privacyLevel) {
     super(privacyLevel);
@@ -61,15 +61,32 @@ public class ListValue extends DQLValue implements Iterable<IDQLValue> {
 
   public boolean add(IDQLValue e) throws InterpreterException {
     // TODO: Czy to jest OK ? (this, e, this)?
+    if (value_.size() == 0) {
+      type_ = e.getType();
+    }
+    if (!e.getType().equals(type_)) {
+      throw new InterpreterException(
+          "Attempting to add object of wrong type to the list");
+    }
     privacyLevel_ = privacyLevel_.compose(e.getPrivacyLevel(), this, e, this);
     return value_.add(e);
   }
 
   public void add(int index, IDQLValue element) throws InterpreterException {
     // TODO: Czy to jest OK ? (this, e, this)?
-    privacyLevel_ = privacyLevel_.compose(element.getPrivacyLevel(), this,
-        element, this);
-    value_.add(index, element);
+
+    if (!element.getType().equals(type_)) {
+      throw new InterpreterException(
+          "Attempting to add object of wrong type to the list");
+    }
+
+    try {
+      value_.add(index, element);
+      privacyLevel_ = privacyLevel_.compose(element.getPrivacyLevel(), this,
+          element, this);
+    } catch (IndexOutOfBoundsException ex) {
+      throw new InterpreterException(ex);
+    }
   }
 
   /**
@@ -106,6 +123,11 @@ public class ListValue extends DQLValue implements Iterable<IDQLValue> {
    */
   public void set(int index, IDQLValue element) throws InterpreterException {
     try {
+      if (!element.getType().equals(type_)) {
+        throw new InterpreterException(
+            "Attempting to add object of wrong type to the list");
+      }
+
       value_.set(index, element);
       // TODO: Czy to jest OK ? (this, e, this)?
       privacyLevel_ = privacyLevel_.compose(element.getPrivacyLevel(), this,
@@ -120,15 +142,11 @@ public class ListValue extends DQLValue implements Iterable<IDQLValue> {
   public boolean equal(Object o) {
     return false;
     /*
-    if ((o instanceof ListValue) && (value_.size() == ((ListValue)o).size_)) {
-      for (int i = 0; i < value_.size(); i++)
-        if (value_.get(i).equals(((ListValue)o).value_.get(i))) {
-          return false;
-        }
-
-      return true;
-    }
-    return false;
+     * if ((o instanceof ListValue) && (value_.size() == ((ListValue)o).size_))
+     * { for (int i = 0; i < value_.size(); i++) if
+     * (value_.get(i).equals(((ListValue)o).value_.get(i))) { return false; }
+     * 
+     * return true; } return false;
      */
   }
   /*

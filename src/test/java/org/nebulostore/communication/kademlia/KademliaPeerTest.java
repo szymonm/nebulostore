@@ -100,8 +100,8 @@ public final class KademliaPeerTest {
           }
           logger.info("put with current number");
           inQueue.add(new PutDHTMessage("Kademlia test", new KeyDHT(
-              BigInteger.valueOf(peerNum)), new ValueDHT("Hello World with finding: " +
-                  pong.getNumber())));
+              BigInteger.valueOf(peerNum)), new ValueDHT(new MergeableString("Hello World with finding: " +
+                  pong.getNumber()))));
         }
 
         if (msg instanceof OutDHTMessage) {

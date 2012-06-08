@@ -1,8 +1,13 @@
 package org.nebulostore.query.filestorage;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,9 +36,12 @@ public class FileStorage {
   private final ExecutorContext context_;
   private Map<String, ObjectId> filesMapping_;
 
+  private boolean isLocal_;
+
   private FileStorage(ExecutorContext context) {
     context_ = context;
     filesMapping_ = null;
+    isLocal_ = false;
   }
 
   private void checkFilesMapping() throws InterpreterException {
@@ -72,8 +80,7 @@ public class FileStorage {
     }
   }
 
-  public String readFile(String path) throws InterpreterException {
-
+  private String readFileRemote(String path) throws InterpreterException {
     checkFilesMapping();
 
     if (!filesMapping_.containsKey(path)) {
@@ -95,4 +102,43 @@ public class FileStorage {
       throw new InterpreterException(e);
     }
   }
+
+  private String readLocalFileInternal(String path) throws IOException {
+    FileInputStream stream = new FileInputStream(new File(path));
+    try {
+      FileChannel fc = stream.getChannel();
+      MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+      /* Instead of using default, pass in a decoder. */
+      return Charset.defaultCharset().decode(bb).toString();
+    } finally {
+      stream.close();
+    }
+  }
+
+  public String readFileLocal(String path) throws InterpreterException {
+    try {
+      return readLocalFileInternal(context_.getDataPath() + path);
+    } catch (IOException e) {
+      logger_.error(e);
+      throw new InterpreterException(e);
+    }
+  }
+
+
+  public String readFile(String path) throws InterpreterException {
+    if (isLocal_) {
+      return readFileLocal(path);
+    } else {
+      return readFileRemote(path);
+    }
+  }
+
+  public void setLocal() {
+    isLocal_ = true;
+  }
+
+  public void setRemote() {
+    isLocal_ = false;
+  }
+
 }

@@ -1,6 +1,8 @@
 package org.nebulostore.testing;
 
 import java.io.Serializable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
@@ -14,7 +16,9 @@ import org.nebulostore.testing.messages.ErrorTestMessage;
 import org.nebulostore.testing.messages.FinishTestMessage;
 import org.nebulostore.testing.messages.NewPhaseMessage;
 import org.nebulostore.testing.messages.TestInitMessage;
+import org.nebulostore.testing.messages.TicAckMessage;
 import org.nebulostore.testing.messages.TicMessage;
+import org.nebulostore.testing.messages.TocAckMessage;
 import org.nebulostore.testing.messages.TocMessage;
 
 /**
@@ -42,10 +46,48 @@ public abstract class TestingModule extends JobModule implements Serializable {
   protected final CommAddress server_;
   protected final String serverJobId_;
 
+  private long tocSentTime_;
+
+  private Timer checkPendingTocs_;
+
   public TestingModule(String serverJobId) {
     super();
     serverJobId_ = serverJobId;
     server_ = CommunicationPeer.getPeerAddress();
+    tocSentTime_ = -1;
+  }
+
+  class CheckPendingTocs extends TimerTask {
+    private static final int MAX_RETRIES = 5;
+    long lastSeen_;
+    private int retries_;
+
+
+    public CheckPendingTocs() {
+      lastSeen_ = -2;
+      retries_ = 0;
+    }
+
+    @Override
+    public void run() {
+      if (tocSentTime_ != -1) {
+        if (tocSentTime_ == lastSeen_) {
+          if (retries_ < MAX_RETRIES) {
+            logger_.info("Retrying to send TocMessage.");
+            phaseFinished();
+            retries_++;
+          } else {
+            logger_.info("Module sepuku!");
+            abortTest();
+          }
+
+        } else {
+          lastSeen_ = tocSentTime_;
+        }
+      } else {
+        retries_ = 0;
+      }
+    }
   }
 
   public void abortTest() {
@@ -61,8 +103,18 @@ public abstract class TestingModule extends JobModule implements Serializable {
 
   protected void phaseFinished() {
     logger_.debug("Phase finished. Sending TocMessage");
+    tocSentTime_  = System.currentTimeMillis();
     networkQueue_.add(new TocMessage(serverJobId_, CommunicationPeer
         .getPeerAddress(), server_, phase_));
+  }
+
+  @Override
+  public void endModule() {
+    if (checkPendingTocs_ != null) {
+      tocSentTime_ = -1;
+      checkPendingTocs_.cancel();
+    }
+    super.endModule();
   }
 
   /*
@@ -74,7 +126,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
     if (visitors_ == null) {
       initVisitors();
     }
-    logger_.debug("in phase: " + phase_);
+    logger_.debug("get Visitor in phase: " + phase_);
     return visitors_[phase_];
   }
 
@@ -96,13 +148,34 @@ public abstract class TestingModule extends JobModule implements Serializable {
     public abstract Void visit(NewPhaseMessage message);
 
     @Override
+    public Void visit(TocAckMessage message) {
+      if (message.getPhase() == phase_) {
+        tocSentTime_ = -1;
+      }
+      return null;
+    }
+
+    @Override
     public Void visit(TicMessage message) {
-      if (message.getPhase() - 1 != phase_) {
+
+      logger_.debug("TicMessage received. Curr phase: " + phase_ +
+          " server phase: " + message.getPhase());
+      if (!(message.getPhase() - phase_ <= 1)) {
         return null;
       }
-      phase_++;
-      logger_.debug("TicMessage received. Advancing to the next phase");
-      advancedToNextPhase();
+      logger_.debug("TicMessage  - moving on with processing.");
+
+      tocSentTime_ = -1;
+      // Sending TicAck
+      networkQueue_.add(new TicAckMessage(serverJobId_, CommunicationPeer
+          .getPeerAddress(), server_, message.getPhase()));
+
+      int oldPhase = phase_;
+      phase_ = message.getPhase();
+      if (oldPhase != phase_) {
+        logger_.debug("Advancing to the next phase");
+        advancedToNextPhase();
+      }
       return null;
     }
 
@@ -135,6 +208,9 @@ public abstract class TestingModule extends JobModule implements Serializable {
       jobId_ = message.getId();
       logger_.debug("Test client initialized: " +
           message.getHandler().getClass().toString());
+
+      checkPendingTocs_ = new Timer();
+      checkPendingTocs_.schedule(new CheckPendingTocs(), 2000, 2000);
       phaseFinished();
       return null;
     }

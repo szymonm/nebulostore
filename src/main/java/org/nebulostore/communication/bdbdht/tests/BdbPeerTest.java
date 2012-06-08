@@ -13,6 +13,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
+import org.nebulostore.communication.kademlia.MergeableString;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
@@ -97,7 +98,7 @@ public final class BdbPeerTest {
           }
           logger.info("sending put with current number to holder");
           inQueue.add(new PutDHTMessage("Bdbtest", new KeyDHT(BigInteger.valueOf(peerNum)),
-              new ValueDHT("Hello World with finding: " + pong.getNumber())));
+              new ValueDHT(new MergeableString("Hello World with finding: " + pong.getNumber()))));
         }
 
         if (msg instanceof BdbMessageWrapper) {

@@ -54,7 +54,7 @@ public class HintFriendsTest {
     String sender = "dummySender";
 
     log.info("Started");
-    DQLInterpreter interpreter = new DQLInterpreter(new ExecutorContext());
+    DQLInterpreter interpreter = new DQLInterpreter(new ExecutorContext("./resources/test/query/pajek-40/"));
 
     PreparedQuery preparedQuery = interpreter.prepareQuery(testQuery,
         2, 1);

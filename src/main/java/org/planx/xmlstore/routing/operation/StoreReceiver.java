@@ -40,7 +40,7 @@ public class StoreReceiver extends OriginReceiver {
       if ((exstValue == null) ||
           (incmValue.timestamp() > exstValue.timestamp())) {
         // Incoming mapping was newer
-        localMap.put(key, incmValue);
+        StoreOperation.mergeLocal(localMap, key, incmValue);
       } else if ((exstValue != null) && mess.updateRequested() &&
           (exstValue.timestamp() > incmValue.timestamp())) {
         // Existing mapping newer and update message requested

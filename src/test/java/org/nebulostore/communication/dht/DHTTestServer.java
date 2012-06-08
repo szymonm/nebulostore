@@ -1,18 +1,23 @@
 package org.nebulostore.communication.dht;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.testing.ServerTestingModule;
 import org.nebulostore.testing.TestStatistics;
-import org.nebulostore.testing.messages.ReconfigureTestMessage;
 import org.nebulostore.testing.messages.TestInitMessage;
 
 public class DHTTestServer extends ServerTestingModule {
@@ -30,10 +35,10 @@ public class DHTTestServer extends ServerTestingModule {
   private double errors_ = 0.0;
 
   public DHTTestServer(int testPhases, int peersFound, int peersInTest,
-      int timeout, int phaseTimeout, int keysMultiplier, String dhtProvider, String clientsJobId,
-      String testDescription) {
-    super(testPhases - 1, peersFound, peersInTest, timeout, phaseTimeout, clientsJobId, true,
-        testDescription);
+      int timeout, int phaseTimeout, int keysMultiplier, String dhtProvider,
+      String clientsJobId, String testDescription) {
+    super(testPhases - 1, peersFound, peersInTest, timeout, phaseTimeout,
+        clientsJobId, true, testDescription);
     keysMultiplier_ = keysMultiplier;
     dhtProvider_ = dhtProvider;
     peersInTest_ = peersFound;
@@ -65,31 +70,29 @@ public class DHTTestServer extends ServerTestingModule {
     }
     logger_.info("Initializing peers (number of clients: " + clients_.size() +
         ")");
-    int peerNum = 0;
+
     List<CommAddress> clientsCopy = new LinkedList<CommAddress>();
-    for (CommAddress client : clients_) {
-      if (peerNum >= peersInTest_) {
-        break;
-      }
-      if (client != null) {
-        logger_.info("Copying address : " + client);
-        clientsCopy.add(client);
-        peerNum++;
-      }
+    Random rand = new Random(System.currentTimeMillis());
+    Vector<CommAddress> clientsToShuffle = new Vector<CommAddress>(clients_);
+
+    // Remove myself:
+    if (clientsToShuffle.size() >= peersFound_ + 1) {
+      logger_.debug("Size before myself removal: " + clientsToShuffle.size());
+      clientsToShuffle.remove(CommunicationPeer.getPeerAddress());
+      logger_.debug("Size after myself removal: " + clientsToShuffle.size());
     }
+    for (int i = 0; i < peersFound_; i++) {
+      clientsCopy.add(clientsToShuffle.remove(rand.nextInt(clientsToShuffle
+          .size())));
+    }
+
     clients_ = new HashSet<CommAddress>(clientsCopy);
-    if (peerNum < peersInTest_) {
-      logger_.error("NULL peer addresses found. Not initializing clients");
-      this.endWithError(new NebuloException(
-          "NULL Peer addresses received from NetworkContext"));
-    } else {
-      logger_.info("Address copy done.");
-      for (CommAddress client : clientsCopy) {
-        logger_.info("Initializing peer at " + client.toString());
-        networkQueue_.add(new TestInitMessage(clientsJobId_, null, client,
-            new DHTTestClient(jobId_, testPhases_, dhtProvider_,
-                keysMultiplier_, clientsCopy.toArray(new CommAddress[1]))));
-      }
+    logger_.info("Address copy done.");
+    for (CommAddress client : clientsCopy) {
+      logger_.info("Initializing peer at " + client.toString());
+      networkQueue_.add(new TestInitMessage(clientsJobId_, null, client,
+          new DHTTestClient(jobId_, testPhases_, dhtProvider_, keysMultiplier_,
+              clientsCopy.toArray(new CommAddress[0]))));
     }
 
   }
@@ -97,12 +100,38 @@ public class DHTTestServer extends ServerTestingModule {
   @Override
   public void configureClients() {
     logger_.debug("Sending ReconfigureTestMessage to clients");
+
+    Map<CommAddress, Set<CommAddress>> clientsOut = new HashMap<CommAddress, Set<CommAddress>>();
+    Map<CommAddress, Set<CommAddress>> clientsIn = new HashMap<CommAddress, Set<CommAddress>>();
+
+    Random rand = new Random(System.currentTimeMillis());
+
+    // TODO: Move it as a test parameter
+    int outDegree = 5;
+
     for (CommAddress client : clients_) {
-      networkQueue_.add(new ReconfigureTestMessage(clientsJobId_, null, client,
-          clients_));
+      Vector<CommAddress> shuffle = new Vector<CommAddress>(clients_);
+      clientsOut.put(client, new HashSet<CommAddress>());
+      if (!clientsIn.containsKey(client)) {
+        clientsIn.put(client, new HashSet<CommAddress>());
+      }
+      for (int i = 0; i < outDegree; i++) {
+        CommAddress drawn = shuffle.remove(rand.nextInt(shuffle.size()));
+        clientsOut.get(client).add(drawn);
+        if (!clientsIn.containsKey(drawn)) {
+          clientsIn.put(drawn, new HashSet<CommAddress>());
+        }
+        clientsIn.get(drawn).add(client);
+      }
+    }
+
+    for (CommAddress client : clients_) {
+      networkQueue_.add(new ReconfigureDHTTestMessage(clientsJobId_, null,
+          client, clientsOut.get(client), clientsIn.get(client)));
     }
 
   }
+
   @Override
   public void feedStats(TestStatistics stats) {
     all_ += stats.getDouble("all");
@@ -112,6 +141,6 @@ public class DHTTestServer extends ServerTestingModule {
 
   @Override
   protected String getAdditionalStats() {
-    return "\t" + (errors_/all_);
+    return "\t" + (errors_ / (all_ + errors_));
   }
 }

@@ -33,6 +33,7 @@ public class DQLClient extends ReturningJobModule<IDQLValue> {
     query_ = query;
     maxDepth_ = maxDepth;
     queryId_ = CryptoUtils.getRandomId();
+    logger_.info("QueryId set to " + queryId_);
     visitor_ = new StateMachineVisitor();
     runThroughDispatcher(dispatcherQueue_);
   }

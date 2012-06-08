@@ -30,14 +30,14 @@ def plot_dht():
     print bdb_stats
     print kad_stats
 
-    pick_phases = 5.0
+    pick_phases = 7.0
 
     bdb_stats = dict(filter(lambda ((phases, a, b), c) : phases == pick_phases, bdb_stats.iteritems()))
     kad_stats = dict(filter(lambda ((phases, a, b), c) : phases == pick_phases, kad_stats.iteritems()))
 
     # Converting stats, recalculating operations issued
-    bdb_stats = dict(map(lambda ((a, peers, mult), c) : ((a, peers, peers*mult), c), bdb_stats.iteritems()))
-    kad_stats = dict(map(lambda ((a, peers, mult), c) : ((a, peers, peers*mult), c), kad_stats.iteritems()))
+    bdb_stats = dict(map(lambda ((a, peers, mult), c) : ((a, peers, 5*mult), c), bdb_stats.iteritems()))
+    kad_stats = dict(map(lambda ((a, peers, mult), c) : ((a, peers, 5*mult), c), kad_stats.iteritems()))
 
      # series of plots.
     peers_set = set(map(lambda (a, peers, b): peers, bdb_stats.keys()))
@@ -46,13 +46,14 @@ def plot_dht():
 
     print peers_set
 
-    fig, axs = plt.subplots(nrows = (len(peers_set) + len(peers_set)%2)/2, ncols = 2, sharex = True)
+    cols=1
+    fig, axs = plt.subplots(nrows = (len(peers_set) + len(peers_set)%cols)/cols, ncols = cols, sharex = True)
     i = 0
     for peers in peers_set:
         print "\nSubplot", i
        
-        ax = axs[i/2 , i % 2]
-        ax_lost = ax.twinx()
+        ax = axs[i/cols] # , i % 2]
+#        ax_lost = ax.twinx()
 
         msgs_list = map(lambda (a,b, msgs) : msgs, filter(lambda (a, p, c) : p == peers, bdb_stats))
         msgs_list.sort()
@@ -90,6 +91,8 @@ def plot_dht():
         ax.set_ylabel("Time in ms")
         ax.set_xlabel("Number of DHT operations issued by a single peer")
 
+    
+
         lost_err_bdb = []
 
         for msgs in msgs_list:
@@ -99,7 +102,7 @@ def plot_dht():
         y = np.array(map(lambda (a,b): a, lost_err_bdb))
         err = np.array(map(lambda (a,b): b, lost_err_bdb))
 
-        lost_bdb,a,b, = ax_lost.errorbar(x, y, yerr = err, fmt = 'o-', color = "r", linestyle="--", label = "Bdb errors")
+#        lost_bdb,a,b, = ax_lost.errorbar(x, y, yerr = err, fmt = 'o-', color = "r", linestyle="--", label = "Bdb errors")
 
         lost_err_kad = []
 
@@ -109,11 +112,13 @@ def plot_dht():
         y = np.array(map(lambda (a,b): a, lost_err_kad))
         err = np.array(map(lambda (a,b): b, lost_err_kad))
 
-        lost_kad,a,b, = ax_lost.errorbar(x, y, yerr = err, fmt = 's-', color = "r", linestyle="--", label = "Kademlia errors")
+#        lost_kad,a,b, = ax_lost.errorbar(x, y, yerr = err, fmt = 's-', color = "r", linestyle="--", label = "Kademlia errors")
 
-        ax_lost.set_ylabel("Percent of errors")
+#        ax_lost.set_ylabel("Percent of errors")
 
-        ax.legend([times_bdb, lost_bdb, times_kad, lost_kad], [times_bdb.get_label(), lost_bdb.get_label(), times_kad.get_label(), lost_kad.get_label()])
+#        ax.legend([times_bdb, lost_bdb, times_kad, lost_kad], [times_bdb.get_label(), lost_bdb.get_label(), times_kad.get_label(), lost_kad.get_label()])
+        ax.legend([times_bdb, times_kad], [times_bdb.get_label(), times_kad.get_label()], loc=2)
+
 
         i += 1
 

@@ -60,4 +60,4 @@ mv ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer_query.xml ./$JAR_DIR_
 echo "`date` Building and copying server done."
 
 
-cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR_SERVER/resources/conf/communication/BdbPeer.xml
+#cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR_SERVER/resources/conf/communication/BdbPeer.xml

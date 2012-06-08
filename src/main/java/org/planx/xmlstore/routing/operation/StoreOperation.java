@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.nebulostore.communication.dht.ValueDHT;
 import org.planx.xmlstore.routing.Configuration;
 import org.planx.xmlstore.routing.Identifier;
 import org.planx.xmlstore.routing.Node;
@@ -18,6 +20,9 @@ import org.planx.xmlstore.routing.messaging.MessageServer;
  * Space.K nodes exist in the network the mapping will be stored at all nodes.
  **/
 public class StoreOperation extends Operation {
+
+  static Logger logger_ = Logger.getLogger(StoreOperation.class);
+
   private final Configuration conf;
   private final MessageServer server;
   private final Space space;
@@ -60,12 +65,34 @@ public class StoreOperation extends Operation {
       Node node = (Node) nodes.get(i);
       if (node.equals(local)) {
         synchronized (localMap) {
-          localMap.put(key, value);
+          mergeLocal(localMap, key, value);
         }
       } else {
         server.send(message, node.getAddress(), null);
       }
     }
     return null;
+  }
+
+  public static void mergeLocal(Map localMap, Identifier key,
+      TimestampedValue value) {
+    logger_.debug("Merging locally on key: " + key);
+    try {
+      if (localMap.containsKey(key)) {
+        logger_.debug("Object on key exists, really doing merge");
+
+        ValueDHT newValue = (ValueDHT) value.getObject();
+        ValueDHT oldValue = (ValueDHT) ((TimestampedValue) localMap.get(key))
+            .getObject();
+        newValue = new ValueDHT(newValue.getValue().merge(oldValue.getValue()));
+        value = new TimestampedValue(newValue, value.timestamp());
+        logger_.debug("Really doing merge finished successfully");
+      }
+    } catch (IOException e) {
+      logger_.error(e);
+    }
+    localMap.put(key, value);
+
+    logger_.debug("Successfully merged.");
   }
 }

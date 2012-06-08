@@ -13,7 +13,6 @@ import org.nebulostore.testing.TestStatistics;
 import org.nebulostore.testing.TestingModule;
 import org.nebulostore.testing.messages.GatherStatsMessage;
 import org.nebulostore.testing.messages.NewPhaseMessage;
-import org.nebulostore.testing.messages.ReconfigureTestMessage;
 import org.nebulostore.testing.messages.TestStatsMessage;
 
 /**
@@ -32,6 +31,7 @@ public class MessagesTestClient extends TestingModule implements Serializable {
   private CommAddress[] allClients_ = new CommAddress[0];
   private final TestStatistics stats_ = new TestStatistics();
   private final String payload_;
+  private int expectedInClients_;
 
   private MessagesVisitor messagesVisitor_;
 
@@ -68,10 +68,11 @@ public class MessagesTestClient extends TestingModule implements Serializable {
   final class ConfigurationVisitor extends EmptyInitializationVisitor {
 
     @Override
-    public Void visit(ReconfigureTestMessage message) {
+    public Void visit(ReconfigureMessagesTestMessage message) {
       logger_.info("Got reconfiguration message with clients set: " +
           message.getClients());
       allClients_ = message.getClients().toArray(new CommAddress[0]);
+      expectedInClients_ = message.getExpectedInClients();
       phaseFinished();
       return null;
     }
@@ -124,16 +125,21 @@ public class MessagesTestClient extends TestingModule implements Serializable {
 
       @Override
       public void run() {
-        if (lastSeenReceivedSize_ == receivedMessages_.size() &&
-            (!phaseFinished_)) {
-          int lost = allClients_.length * messagesForPhase_ -
-              lastSeenReceivedSize_;
-          logger_.info("Forcing phase shutdown with lost messages: " + lost);
-          stats_.setDouble("lost", stats_.getDouble("lost") + lost);
-          phaseFinished_ = true;
-          phaseFinished();
+        if (!phaseFinished_) {
+          if (lastSeenReceivedSize_ == receivedMessages_.size() &&
+              (!phaseFinished_)) {
+            int lost = expectedInClients_ * messagesForPhase_ -
+                lastSeenReceivedSize_;
+            logger_.info("Forcing phase shutdown with lost messages: " + lost);
+            stats_.setDouble("lost", stats_.getDouble("lost") + lost);
+            phaseFinished_ = true;
+            lastSeenReceivedSize_ = -1;
+            phaseFinished();
+          }
+          lastSeenReceivedSize_ = receivedMessages_.size();
+        } else {
+          lastSeenReceivedSize_ = -1;
         }
-        lastSeenReceivedSize_ = receivedMessages_.size();
       }
     }
 
@@ -148,13 +154,15 @@ public class MessagesTestClient extends TestingModule implements Serializable {
               .getPeerAddress(), destination, payload_, phase_, i));
         }
       }
+      stats_.setDouble("all", stats_.getDouble("all") +
+          new Double(allClients_.length * messagesForPhase_));
       logger_.info("Sending messages to remote hosts. DONE.");
       return null;
     }
 
     private void refreshVisitor() {
       if (checkNotInitialized_) {
-        // 2000 ms set
+        // 1000 ms set
         phaseCheckTimer_.schedule(phaseCheckTask_, 1000, 1000);
         checkNotInitialized_ = false;
       }
@@ -182,9 +190,9 @@ public class MessagesTestClient extends TestingModule implements Serializable {
 
       receivedMessages_.add(message.getSourceAddress().toString() +
           message.getCounterVal());
-      stats_.setDouble("all", stats_.getDouble("all") + 1.0);
+
       if (!phaseFinished_ &&
-          receivedMessages_.size() >= allClients_.length * messagesForPhase_) {
+          receivedMessages_.size() >= expectedInClients_ * messagesForPhase_) {
         logger_.info("All OK finished. Phase finished.");
         phaseFinished_ = true;
         phaseFinished();

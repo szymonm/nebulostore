@@ -56,7 +56,7 @@ public final class NetworkContext {
    * @deprecated Use addContextChangeMessageGenerator.
    */
   @Deprecated
-  public void addContextChangeMessage(final Message message) {
+  public synchronized void addContextChangeMessage(final Message message) {
     IMessageGenerator generator = new IMessageGenerator() {
       @Override
       public Message generate() {
@@ -65,8 +65,12 @@ public final class NetworkContext {
     };
     contextChangeMessageGenerators_.add(generator);
   }
-
-  public void addContextChangeMessageGenerator(IMessageGenerator generator) {
+/*
+  public synchronized void removeContextChangeMessage(Message message) {
+    contextChangeMessagesGenerators_.remove(message);
+  }
+*/
+  public synchronized void addContextChangeMessageGenerator(IMessageGenerator generator) {
     contextChangeMessageGenerators_.add(generator);
   }
 
@@ -78,7 +82,7 @@ public final class NetworkContext {
     return new Vector<CommAddress>(knownPeersVector_);
   }
 
-  protected void addFoundPeer(CommAddress address) {
+  protected synchronized void addFoundPeer(CommAddress address) {
     // TODO(mbw): address != null, because of Broker.java:40
     if (!knownPeers_.contains(address) && address != null) {
       logger_.debug("Adding a CommAddress: " + address);

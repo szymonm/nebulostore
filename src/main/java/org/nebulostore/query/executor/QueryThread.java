@@ -85,7 +85,6 @@ public class QueryThread implements Runnable {
 
       state = interpreter_.runGather(preparedQuery, state);
 
-      // TODO: Czy ten warunek jest OK?
       if (currentDepth_ < maxDepth_) {
         state = interpreter_.runForward(preparedQuery, state);
 

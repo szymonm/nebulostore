@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import net.jxta.impl.util.Base64;
+import org.bouncycastle.util.encoders.Base64;
 
 /**
  * @author marcin
@@ -15,14 +15,13 @@ import net.jxta.impl.util.Base64;
 
 public class ValueDHT implements Serializable {
 
-  // TODO: Do not use Object here.
-  private final Object value_;
+  private final Mergeable value_;
 
-  public Object getValue() {
+  public Mergeable getValue() {
     return value_;
   }
 
-  public ValueDHT(Object v) {
+  public ValueDHT(Mergeable v) {
     value_ = v;
   }
 
@@ -43,19 +42,19 @@ public class ValueDHT implements Serializable {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    serialized = new String(Base64.encodeBase64(baos.toByteArray()));
+    serialized = new String(Base64.encode(baos.toByteArray()));
     return serialized;
   }
 
   public static ValueDHT build(String serialized) {
 
     byte[] data = null;
-    try {
-      data = Base64.decodeBase64(serialized);
-    } catch (IOException e2) {
-      // TODO Auto-generated catch block
-      e2.printStackTrace();
-    }
+    //    try {
+    data = Base64.decode(serialized);
+    //    } catch (IOException e2) {
+    // TODO Auto-generated catch block
+    //      e2.printStackTrace();
+    //    }
     ByteArrayInputStream baos = new ByteArrayInputStream(data);
     ObjectInputStream ois = null;
     try {
@@ -66,7 +65,7 @@ public class ValueDHT implements Serializable {
     }
 
     try {
-      return new ValueDHT(ois.readObject());
+      return new ValueDHT((Mergeable)ois.readObject());
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {

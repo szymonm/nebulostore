@@ -13,6 +13,7 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.TokenStream;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
+import org.apache.log4j.Logger;
 import org.nebulostore.query.functions.DQLFunction;
 import org.nebulostore.query.language.interpreter.antlr.DQLGrammarLexer;
 import org.nebulostore.query.language.interpreter.antlr.DQLGrammarParser;
@@ -26,6 +27,7 @@ import org.nebulostore.query.privacy.level.PrivateMy;
 
 public class LambdaValue extends DQLValue {
 
+  private static Logger logger_ = Logger.getLogger(LambdaValue.class);
   private static final long serialVersionUID = 7099322070509778562L;
 
   private final List<String> paramsDecls_;
@@ -73,16 +75,19 @@ public class LambdaValue extends DQLValue {
 
   public IDQLValue evaluate(List<IDQLValue> params)
       throws InterpreterException, RecognitionException {
+    logger_.debug("evaluate called on " + params);
 
     TreeWalker walker = new TreeWalker(new CommonTreeNodeStream(expression_));
     walker.setInEnvironment(environment_);
     walker.insertFunctions(functions_);
 
+    logger_.debug("Walker created, checking params...");
     if (params.size() != paramsDecls_.size()) {
       throw new InterpreterException(
           "Called with wrong number of arguments expected: " +
               paramsDecls_.size() + " got: " + params.size());
     }
+    logger_.debug("Params OK.");
 
     Map<String, IDQLValue> parameters = new HashMap<String, IDQLValue>();
     for (int i = 0; i < params.size(); i++) {
@@ -90,6 +95,7 @@ public class LambdaValue extends DQLValue {
     }
 
     walker.setInEnvironment(parameters);
+    logger_.debug("Evaluating expression in walker.");
 
     return walker.expression();
   }

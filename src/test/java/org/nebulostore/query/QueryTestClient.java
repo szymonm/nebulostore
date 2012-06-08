@@ -1,8 +1,11 @@
 package org.nebulostore.query;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.query.client.DQLClient;
+import org.nebulostore.query.executor.DQLExecutor;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.testing.TestingModule;
 import org.nebulostore.testing.messages.NewPhaseMessage;
@@ -15,9 +18,15 @@ public class QueryTestClient extends TestingModule {
   private static final long serialVersionUID = -5986566958498578754L;
   private final int testPhases_;
 
-  public QueryTestClient(String serverJobId, int testPhases) {
+  private final int queryTimeout_;
+  private final Map<Integer, QueryDescription> queriesToBeExecuted_;
+
+  public QueryTestClient(String serverJobId, int testPhases,
+      Map<Integer, QueryDescription> queriesToBeExecuted, int queryTimeout) {
     super(serverJobId);
     testPhases_ = testPhases;
+    queriesToBeExecuted_ = queriesToBeExecuted;
+    queryTimeout_ = queryTimeout;
   }
 
   @Override
@@ -48,18 +57,30 @@ public class QueryTestClient extends TestingModule {
     public Void visit(NewPhaseMessage message) {
       logger_.info("Issuing query in phase " + phase_);
 
-      String query = " GATHER" + "  LET peerAge = IF(LEAF_EXECUTION, LOAD_NOISE(\"peerData.xml\" , \"/peerData/age\", FALSE),  LOAD (\"peerData.xml\" , \"/peerData/age\", FALSE))  "
-          + " FORWARD"  + " TO" + "  LOAD(\"peerData.xml\", \"/peerData/friends/friend\", TRUE)"
-          + " REDUCE" + "  SUM(APPEND(peerAge,DQL_RESULTS))";
+      logger_.debug("queries to be executed: " + queriesToBeExecuted_);
 
-      DQLClient dqlClient = new DQLClient(query, 1);
+      QueryDescription queryDescription = queriesToBeExecuted_.get(phase_ - 2);
+      String query = queryDescription.getQuery();
+      int maxDepth = queryDescription.getMaxDepth();
+
+      DQLClient dqlClient = new DQLClient(query, maxDepth);
       try {
-        IDQLValue result = dqlClient.getResult(10);
+        IDQLValue result = dqlClient.getResult(queryTimeout_);
         logger_.info("Got query results: " + result);
-        phaseFinished();
       } catch (NebuloException e) {
         logger_.error(e);
       }
+      logger_.info("Executing locally query...");
+      LocalExecutor localExecutor = new LocalExecutor("./resources/test/query/pajek-40/");
+      try {
+        IDQLValue resultLocal = localExecutor.executeQuery(query, maxDepth, DQLExecutor.getInstance().getAllAppKeys());
+        logger_.info("Got query results: " + resultLocal);
+      } catch (NebuloException e) {
+        logger_.error(e);
+      }
+
+      logger_.info("Finishing phase: " + phase_);
+      phaseFinished();
       return null;
     }
 

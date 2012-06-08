@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.concurrent.BlockingQueue;
 
-import net.jxta.impl.util.Base64;
 import net.jxta.pipe.InputPipe;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.util.encoders.Base64;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.messages.CommMessage;
 
@@ -49,13 +49,12 @@ class MessageReceiver implements Runnable {
   private Message unwrapMessage(net.jxta.endpoint.Message msg) {
 
     byte[] data = null;
-    try {
-      data = Base64
-          .decodeBase64(msg.getMessageElement("serialized").toString());
-    } catch (IOException e) {
-      logger_.error(e);
-      return null;
-    }
+    //    try {
+    data = Base64.decode(msg.getMessageElement("serialized").toString());
+    //    } catch (IOException e) {
+    //      logger_.error(e);
+    //      return null;
+    //    }
 
     ByteArrayInputStream baos = new ByteArrayInputStream(data);
     ObjectInputStream ois = null;

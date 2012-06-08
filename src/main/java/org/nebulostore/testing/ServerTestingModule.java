@@ -1,6 +1,8 @@
 package org.nebulostore.testing;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,7 +20,9 @@ import org.nebulostore.testing.messages.ErrorTestMessage;
 import org.nebulostore.testing.messages.FinishTestMessage;
 import org.nebulostore.testing.messages.GatherStatsMessage;
 import org.nebulostore.testing.messages.TestStatsMessage;
+import org.nebulostore.testing.messages.TicAckMessage;
 import org.nebulostore.testing.messages.TicMessage;
+import org.nebulostore.testing.messages.TocAckMessage;
 import org.nebulostore.testing.messages.TocMessage;
 import org.nebulostore.timer.IMessageGenerator;
 
@@ -77,14 +81,14 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   /**
    * Number of peers needed to perform this test.
    */
-  protected final int peersNeeded_;
+  protected int peersNeeded_;
 
   /**
    * Visitor state - either initializing peers or running the tests on constant
    * set of peers.
    */
   enum TestingState {
-    Initializing, Running
+    Initializing, Configuring, Running, GatheringStats
   };
 
   private TestingState testingState_;
@@ -100,7 +104,9 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   /**
    * keeps starting time of the test.
    */
-  private long startTime_;
+  private long startTime_ = -1;
+
+  private long stopTime_ = -1;
 
   /**
    * If set to true, then before test completion statistics will be gathered
@@ -112,7 +118,18 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   /**
    * Timer for watching maximum stage time.
    */
-  private final Timer checkPhaseTimer_;
+  private final Timer internalCheckTimer_;
+
+  // TODO: Docs - move to ctor
+  public Map<CommAddress, Long> pendingTicsAck_ = new HashMap<CommAddress, Long>();
+
+  private long postponeStart_ = -1;
+  private final long postponeDelay_ = 20;
+  private final boolean postponeTics_ = true;
+
+  private final  int maximumLost_ = 1;
+  private final  int lostDelay_ = 7;
+  private long firstToc_ = -1;
 
   protected ServerTestingModule(int lastPhase, int peersFound, int peersNeeded,
       int timeout, int phaseTimeout, String clientsJobId, boolean gatherStats,
@@ -127,9 +144,10 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
     visitor_ = new ServerTestingModuleVisitor();
     startTime_ = System.currentTimeMillis();
 
-    checkPhaseTimer_ = new Timer();
-    checkPhaseTimer_.schedule(new PhaseTimeoutTimer(this), phaseTimeout * 1000,
-        phaseTimeout * 1000);
+    internalCheckTimer_ = new Timer();
+    internalCheckTimer_.schedule(new PhaseTimeoutTimer(),
+        3 * phaseTimeout * 1000, phaseTimeout * 1000);
+    internalCheckTimer_.schedule(new PeriodicCheck(), 1000, 1000);
 
   }
 
@@ -139,24 +157,68 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
         false, testDescription);
   }
 
+  class PeriodicCheck extends TimerTask {
+    private static final long MAX_DELAY = 5000;
+
+    @Override
+    public void run() {
+      long time = System.currentTimeMillis();
+
+      synchronized (pendingTicsAck_) {
+        for (CommAddress address : pendingTicsAck_.keySet()) {
+          if ((time - pendingTicsAck_.get(address)) > MAX_DELAY) {
+            logger_.debug("Sending again Tic to " + address);
+            networkQueue_.add(new TicMessage(clientsJobId_, null, address,
+                phase_));
+            pendingTicsAck_.put(address, time);
+          }
+        }
+      }
+
+      if (firstToc_ != -1) {
+        if (((time - firstToc_) > lostDelay_ * 1000) && (peersNeeded_ - tocs_) < maximumLost_) {
+          synchronized (tocsAddresses_) {
+            clients_ = tocsAddresses_;
+            logger_.info("Lost clients: " + (peersNeeded_ - tocs_));
+            peersNeeded_ = tocs_;
+            firstToc_ = -1;
+            processTocsChange();
+          }
+        }
+      }
+
+      // logger_.debug("Checking for postponeTics_: " + postponeTics_ +
+      // " postponeStart_: " + postponeStart_);
+      if (postponeTics_ && postponeStart_ > 0) {
+        logger_.debug("Postpone Tics checking whether to send time: " + time +
+            " postponeStart_: " + postponeStart_ + " postponeDelay_: " +
+            postponeDelay_);
+        if (time - postponeStart_ > postponeDelay_ * 1000L) {
+          sendTics();
+          if (startTime_ > 0 && stopTime_ < 0) {
+            logger_.debug("Elapsed milis: " + (time - startTime_));
+            startTime_ += (time - postponeStart_);
+            logger_.debug("After reduction: " + (time - startTime_));
+          }
+          postponeStart_ = -1;
+        }
+      }
+    }
+
+  }
+
   /**
    * Timer.
    */
   class PhaseTimeoutTimer extends TimerTask {
 
     private int lastSeenPhase_ = -1;
-    private final ServerTestingModule testModule_;
-
-    public PhaseTimeoutTimer(ServerTestingModule serverTestingModule) {
-      testModule_ = serverTestingModule;
-    }
 
     @Override
     public void run() {
       if (lastSeenPhase_ == phase_) {
         logger_.warn("Phase stalled too long. Finishing test server.");
-        testModule_.endWithError(new NebuloException("Phase " + phase_ +
-            " stalled to long"));
+        endWithError(new NebuloException("Phase " + phase_ + " stalled to long"));
       }
       lastSeenPhase_ = phase_;
     }
@@ -184,6 +246,11 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
    * Returns additional statistics from the upper module.
    */
   protected abstract String getAdditionalStats();
+
+
+  protected boolean isSuccessful() {
+    return true;
+  }
 
   /**
    * Visitor.
@@ -242,62 +309,61 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
           message.getPhase() != phase_) {
         return null;
       }
-      tocs_++;
-      tocsAddresses_.add(message.getSourceAddress());
-      HashSet<CommAddress> tmp = new HashSet<CommAddress>(clients_);
-      tmp.removeAll(tocsAddresses_);
+
+      // Send ack
+      networkQueue_.add(new TocAckMessage(clientsJobId_, null, message
+          .getSourceAddress(), message.getPhase()));
       logger_.debug("TocMessage received. Tocs: " + tocs_ + "(from: " +
-          message.getSourceAddress() + ")");
-      logger_.debug("Still waiting for: " + tmp.toString());
+          message.getSourceAddress() + ") sending back Ack Message.");
 
-      if (testingState_ == TestingState.Initializing) {
-        logger_.debug("In state initializing");
+      if (tocsAddresses_.contains(message.getSourceAddress())) {
+        logger_.debug("Already received toc from this address");
+        return null;
+      }
+
+      if (tocs_ == 0) {
+        firstToc_ = System.currentTimeMillis();
+      }
+
+
+
+      synchronized (tocsAddresses_) {
+        tocs_++;
+        tocsAddresses_.add(message.getSourceAddress());
+        HashSet<CommAddress> tmp = new HashSet<CommAddress>(clients_);
+        tmp.removeAll(tocsAddresses_);
+        logger_.debug("TocMessage received. Tocs incremented to: " + tocs_);
+        logger_.debug("Still waiting for: " + tmp.toString());
+
         if (tocs_ >= peersNeeded_) {
-          clients_ = tocsAddresses_;
-          logger_.debug("clients set modified to: " + clients_);
-          logger_.info("Advancing to the next phase.");
-
-          phase_++;
-
-          advancePhase();
-          configureClients();
-
-          testingState_ = TestingState.Running;
-          startTime_ = System.currentTimeMillis();
+          firstToc_ = -1;
         }
-      } else {
-        logger_.debug("In state running");
 
-        if (tocs_ >= peersNeeded_) {
-          phase_++;
+        processTocsChange();
+      }
 
-          if (phase_ <= lastPhase_) {
-            logger_.debug("Advanced to phase: " + phase_);
-            advancePhase();
-          } else {
-            if (successful_) {
 
-              if (gatherStats_) {
-                logger_.debug("Getting stats from test clients.");
-                advancePhase();
-                for (CommAddress address : clients_) {
-                  networkQueue_.add(new GatherStatsMessage(clientsJobId_, null,
-                      address));
-                }
-              } else {
-                logger_.info("Test " + testDescription_ +
-                    " successfull. After: \t" +
-                    (System.currentTimeMillis() - startTime_) +
-                    getAdditionalStats());
-                endWithSuccess(null);
-              }
-            } else {
-              logger_.info("Test " + testDescription_ + " failed. After: \t" +
-                  (System.currentTimeMillis() - startTime_) +
-                  getAdditionalStats());
-              endWithSuccess(null);
+      return null;
+    }
+
+    @Override
+    public Void visit(TicAckMessage message) {
+
+      synchronized (pendingTicsAck_) {
+        pendingTicsAck_.remove(message.getSourceAddress());
+
+        logger_.debug("Got Tic ack from " + message.getSourceAddress() +
+            " still waiting for: " + pendingTicsAck_.size());
+
+        if (pendingTicsAck_.size() == 0) {
+          if (testingState_ == TestingState.Configuring) {
+            configureClients();
+          }
+          if (testingState_ == TestingState.GatheringStats) {
+            for (CommAddress address : clients_) {
+              networkQueue_.add(new GatherStatsMessage(clientsJobId_, null,
+                  address));
             }
-
           }
         }
       }
@@ -315,26 +381,109 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
 
       feedStats(message.getStats());
       if (tocs_ >= peersNeeded_) {
-        logger_.info("Test " + testDescription_ + " successfull. After: \t" +
-            (System.currentTimeMillis() - startTime_) + getAdditionalStats());
-        endWithSuccess(null);
+        if (isSuccessful()) {
+          logger_.info("Test " + testDescription_ + " successfull. After: \t" +
+              (stopTime_ - startTime_) + getAdditionalStats());
+          endWithSuccess(null);
+        } else {
+          logger_.info("Test " + testDescription_ + " failed. After: \t" +
+              (stopTime_ - startTime_) + getAdditionalStats());
+          endWithError(new NebuloException("Not successful test"));
+        }
       }
       return null;
     }
 
-    private void advancePhase() {
-      tocs_ = 0;
-      tocsAddresses_ = new HashSet<CommAddress>();
-      for (CommAddress address : clients_) {
-        networkQueue_.add(new TicMessage(clientsJobId_, null, address, phase_));
-      }
-    }
 
     @Override
     public Void visit(ErrorTestMessage message) {
       logger_.warn("Received error, test failed: " + message.getMessage());
       successful_ = false;
       return null;
+    }
+  }
+
+  private void advancePhase() {
+    tocs_ = 0;
+    tocsAddresses_ = new HashSet<CommAddress>();
+    if (postponeTics_) {
+      postponeStart_ = System.currentTimeMillis();
+    } else {
+      sendTics();
+    }
+  }
+
+
+  private void processTocsChange() {
+    if (testingState_ == TestingState.Initializing) {
+      logger_.debug("In state initializing");
+      if (tocs_ >= peersNeeded_) {
+        clients_ = tocsAddresses_;
+        logger_.debug("clients set modified to: " + clients_);
+        logger_.info("Advancing to phase: " + phase_);
+
+        phase_++;
+
+        advancePhase();
+
+        testingState_ = TestingState.Configuring;
+      }
+    } else if (testingState_ == TestingState.Configuring) {
+      logger_.debug("In state configuring phase: " + phase_);
+      if (tocs_ >= peersNeeded_) {
+        phase_++;
+
+        logger_.debug("Advanced to phase: " + phase_);
+        testingState_ = TestingState.Running;
+        startTime_ = System.currentTimeMillis();
+        advancePhase();
+      }
+    } else if (testingState_ == TestingState.Running) {
+      logger_.debug("In state running phase: " + phase_);
+
+      if (tocs_ >= peersNeeded_) {
+        phase_++;
+
+        if (phase_ <= lastPhase_) {
+          logger_.debug("Advanced to phase: " + phase_);
+          advancePhase();
+        } else {
+          if (successful_) {
+
+            if (gatherStats_) {
+              logger_.debug("Getting stats from test clients...");
+              stopTime_ = System.currentTimeMillis();
+              testingState_ = TestingState.GatheringStats;
+              advancePhase();
+
+            } else {
+              logger_.info("Test " + testDescription_ +
+                  " successfull. After: \t" +
+                  (System.currentTimeMillis() - startTime_) +
+                  getAdditionalStats());
+              endWithSuccess(null);
+            }
+          } else {
+            logger_.info("Test " + testDescription_ + " failed. After: \t" +
+                (System.currentTimeMillis() - startTime_) +
+                getAdditionalStats());
+            endWithSuccess(null);
+          }
+
+        }
+      }
+    }
+  }
+
+  private void sendTics() {
+    logger_.debug("Sending Tic messages...");
+    synchronized (pendingTicsAck_) {
+      pendingTicsAck_ = new HashMap<CommAddress, Long>();
+      for (CommAddress address : clients_) {
+        networkQueue_.add(new TicMessage(clientsJobId_, null, address, phase_));
+        long time = System.currentTimeMillis();
+        pendingTicsAck_.put(address, time);
+      }
     }
   }
 
@@ -350,7 +499,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   @Override
   public void endModule() {
     logger_.info("Test terminating. Sending finish test messages.");
-    checkPhaseTimer_.cancel();
+    internalCheckTimer_.cancel();
     if (clients_ != null) {
       for (CommAddress address : clients_) {
         networkQueue_.add(new FinishTestMessage(clientsJobId_, null, address));

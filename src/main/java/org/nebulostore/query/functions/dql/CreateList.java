@@ -12,7 +12,7 @@ import org.nebulostore.query.language.interpreter.datatypes.DQLPrimitiveType.DQL
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 import org.nebulostore.query.language.interpreter.datatypes.values.ListValue;
 import org.nebulostore.query.language.interpreter.exceptions.InterpreterException;
-import org.nebulostore.query.privacy.level.PrivateMy;
+import org.nebulostore.query.privacy.level.PublicMy;
 
 public class CreateList extends DQLFunction {
 
@@ -25,7 +25,8 @@ public class CreateList extends DQLFunction {
 
   @Override
   public IDQLValue call(List<IDQLValue> params) throws FunctionCallException,
-      InterpreterException, RecognitionException {
+  InterpreterException, RecognitionException {
+
     ListValue ret = null;
     for (IDQLValue value : params) {
       if (ret == null) {
@@ -36,7 +37,7 @@ public class CreateList extends DQLFunction {
 
     if (ret == null) {
       ret = new ListValue(new DQLPrimitiveType(DQLPrimitiveTypeEnum.DQLDouble),
-          new PrivateMy());
+          new PublicMy());
     }
 
     return ret;

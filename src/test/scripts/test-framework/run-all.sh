@@ -37,18 +37,22 @@ sleep 5
 for HOST in $REN_HOSTS; do
     echo "Running jar on rendezvous host with $HOST appKey $APP_KEY"
     ssh -i $KEY_LOCATION/planetlab-key -l $USER $HOST "ulimit -s 64; ulimit -u 2000; cd $REMOTE_DIR; java -Xmx450m -Xss64k -jar Nebulostore.jar $APP_KEY > std.out.log 2> std.err.log &" 
-    sleep 10
+    sleep 15
 
     ((APP_KEY++))
 done
 
-sleep 10
+#sleep 10
 
 
 for HOST in $SLICE_HOSTS; do
     echo "Running jar on $HOST with appKey $APP_KEY"
+
     ssh -i $KEY_LOCATION/planetlab-key -l $USER $HOST "ulimit -s 64; ulimit -u 2000; cd $REMOTE_DIR; java -Xmx450m -Xss64k -jar Nebulostore.jar $APP_KEY > std.out.log 2> std.err.log &" 
-    sleep 20
+    if [ $APP_KEY -gt 17 ]; then
+        sleep 300
+    fi
+    sleep 15
     ((APP_KEY++))
 done
 

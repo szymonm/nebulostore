@@ -11,6 +11,7 @@ import org.nebulostore.async.messages.NetworkContextChangedMessage;
 import org.nebulostore.async.messages.StoreAsynchronousMessage;
 import org.nebulostore.broker.messages.ContractOfferMessage;
 import org.nebulostore.broker.messages.OfferReplyMessage;
+import org.nebulostore.communication.dht.ReconfigureDHTTestMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.CommSendDataMessage;
@@ -19,6 +20,7 @@ import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
+import org.nebulostore.communication.messages.ReconfigureMessagesTestMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.DelDHTMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -55,15 +57,18 @@ import org.nebulostore.testing.messages.NewPhaseMessage;
 import org.nebulostore.testing.messages.ReconfigureTestMessage;
 import org.nebulostore.testing.messages.TestInitMessage;
 import org.nebulostore.testing.messages.TestStatsMessage;
+import org.nebulostore.testing.messages.TicAckMessage;
 import org.nebulostore.testing.messages.TicMessage;
+import org.nebulostore.testing.messages.TocAckMessage;
 import org.nebulostore.testing.messages.TocMessage;
 import org.nebulostore.timer.InitSimpleTimerTestMessage;
 import org.nebulostore.timer.TimerTestMessage;
 
 /**
  * Generic Message visitor class.
+ * 
  * @param <R>
- *    return type.
+ *          return type.
  */
 public abstract class MessageVisitor<R> {
   /* Common action for all messages that are not handled. */
@@ -80,9 +85,11 @@ public abstract class MessageVisitor<R> {
   public R visit(JobEndedMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(JobInitMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(KillDispatcherMessage message) throws NebuloException {
     return visitDefault(message);
   }
@@ -91,18 +98,23 @@ public abstract class MessageVisitor<R> {
   public R visit(GetObjectMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(DeleteObjectMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(SendObjectMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(QueryToStoreObjectMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(ConfirmationMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(ReplicatorErrorMessage message) throws NebuloException {
     return visitDefault(message);
   }
@@ -111,12 +123,15 @@ public abstract class MessageVisitor<R> {
   public R visit(CommMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(CommPeerFoundMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(CommSendDataMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(DiscoveryMessage message) throws NebuloException {
     return visitDefault(message);
   }
@@ -125,27 +140,35 @@ public abstract class MessageVisitor<R> {
   public R visit(DHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(DelDHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(ErrorDHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(GetDHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(InDHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(OkDHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(OutDHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(PutDHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(ValueDHTMessage message) throws NebuloException {
     return visitDefault(message);
   }
@@ -154,6 +177,7 @@ public abstract class MessageVisitor<R> {
   public R visit(ContractOfferMessage message) throws NebuloException {
     return visitDefault(message);
   }
+
   public R visit(OfferReplyMessage message) throws NebuloException {
     return visitDefault(message);
   }
@@ -290,6 +314,22 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(ObjectOutdatedMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(TocAckMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(TicAckMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(ReconfigureMessagesTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(ReconfigureDHTTestMessage message) throws NebuloException {
     return visitDefault(message);
   }
 }

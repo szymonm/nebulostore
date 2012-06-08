@@ -77,7 +77,7 @@ public class AuditTest {
     String sender = "dummySender";
 
     log.info("Started");
-    DQLInterpreter interpreter = new DQLInterpreter(new ExecutorContext());
+    DQLInterpreter interpreter = new DQLInterpreter(new ExecutorContext("./resources/test/query/pajek-40/"));
 
     PreparedQuery preparedQuery = interpreter.prepareQuery(ageSumQuery, 1, 2);
 
@@ -117,7 +117,7 @@ public class AuditTest {
         + "    SUM(DQL_RESULTS) + 1";
 
 
-    interpreter = new DQLInterpreter(new ExecutorContext());
+    interpreter = new DQLInterpreter(new ExecutorContext("./resources/test/query/pajek-40/"));
 
     preparedQuery = interpreter.prepareQuery(ageCountQuery,
         2, 1);

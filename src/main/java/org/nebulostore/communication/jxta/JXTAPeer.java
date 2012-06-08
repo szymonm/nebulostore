@@ -46,10 +46,9 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   private static Logger logger_ = Logger.getLogger(JXTAPeer.class);
 
   private static final int PEER_ROLES_SUPER_PEER = // NetworkConfigurator.RDV_SERVER
-      // |
-      // NetworkConfigurator.RDV_CLIENT |
       // NetworkConfigurator.RELAY_CLIENT |
       // NetworkConfigurator.RELAY_SERVER | NetworkConfigurator.EDGE_NODE;
+      // NetworkConfigurator.RDV_CLIENT |
       NetworkConfigurator.RDV_SERVER | NetworkConfigurator.EDGE_NODE;
 
   private static final int PEER_ROLES_EDGE =
@@ -64,7 +63,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   private String fallbackBootstrapUrl_ = "http://students.mimuw.edu.pl/~mw262460/bootstrap3.rdv";
   private int port_ = 9768;
 
-  private static String peerName_ = "somepeername";
+  private static String peerName_ = CryptoUtils.getRandomId().toString();
 
   private transient MessengerService messengerService_;
   private transient MessageReceiver messageReceiver_;
@@ -98,8 +97,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
       logger_.error(e);
       System.exit(-1);
     }
-    logger_.info("Network manager configured with PeerID: " +
-        networkManager_.getPeerID().toString());
+
 
     logger_.info("Starting JXTA Network manager... ");
     try {
@@ -109,6 +107,9 @@ public class JXTAPeer extends Module implements DiscoveryListener {
       System.exit(-1);
     }
     logger_.info("Network manager started successfuly");
+
+    logger_.info("Network manager configured with PeerID: " +
+        networkManager_.getPeerID().toString());
 
     // discovery init
     discoveryService_.addDiscoveryListener(this);
@@ -156,7 +157,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     // peerDiscoveryService_.addAdvertisement(MessengerService.getPipeAdvertisement());
 
     knownPeers_.add(getPeerAddress());
-    (new Timer()).schedule(new GossipPeers(), 5000, 5000);
+    (new Timer()).schedule(new GossipPeers(), 20000, 20000);
 
     logger_.info("fully initialised");
   }
@@ -192,6 +193,7 @@ public class JXTAPeer extends Module implements DiscoveryListener {
    */
   private void initNetworkManager() throws NebuloException {
 
+    logger_.info("Getting NetworkManager instance.");
     try {
       networkManager_ = new NetworkManager(NetworkManager.ConfigMode.EDGE,
           peerName_);
@@ -199,9 +201,12 @@ public class JXTAPeer extends Module implements DiscoveryListener {
       logger_.fatal(e);
       System.exit(-1);
     }
+    logger_.info("Setting persistent config on network manager instance: " +
+        networkManager_);
+
 
     networkManager_.setConfigPersistent(true);
-    logger_.info("PeerID: " + networkManager_.getPeerID().toString());
+    //    logger_.info("PeerID: " + networkManager_.getPeerID().toString());
 
     // Retrieving the Network Configurator
     logger_.info("Retrieving the Network Configurator");
@@ -242,9 +247,10 @@ public class JXTAPeer extends Module implements DiscoveryListener {
 
       networkConfigurator_.setName(CryptoUtils.getRandomId().toString());
       networkConfigurator_.setTcpPort(port_);
-      networkConfigurator_.setRendezvousMaxClients(16);
+      networkConfigurator_.setRendezvousMaxClients(13);
 
       networkConfigurator_.setMode(peerRoles_);
+      networkConfigurator_.setHttpEnabled(false);
       networkConfigurator_.setRendezvousSeedingURIs(seedingURIs_);
       networkConfigurator_
       .setRelaySeedingURIs(new HashSet<String>(seedingURIs_));
@@ -281,8 +287,8 @@ public class JXTAPeer extends Module implements DiscoveryListener {
   protected void processMessage(Message msg) {
 
     if (msg instanceof DiscoveryMessage) {
-      logger_.info("DiscoveryMessage message : emitting events for: " +
-          ((DiscoveryMessage) msg).getKnownPeers());
+      logger_.info("DiscoveryMessage in processing");
+      // emitting events for: " + ((DiscoveryMessage) msg).getKnownPeers());
       newPeersFound(((DiscoveryMessage) msg).getKnownPeers());
       return;
     }
@@ -369,3 +375,4 @@ public class JXTAPeer extends Module implements DiscoveryListener {
     return socketServer_;
   }
 }
+

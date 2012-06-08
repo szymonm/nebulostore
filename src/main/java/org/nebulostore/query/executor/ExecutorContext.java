@@ -12,11 +12,13 @@ import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 
 public class ExecutorContext {
 
-
   private final Map<String, IDQLValue> noiseValues_;
   private final Random random_;
+  private final String dataPath_;
+  private int localAppKey_;
 
-  public ExecutorContext() {
+  public ExecutorContext(String dataPath) {
+    dataPath_ = dataPath;
     random_ = new Random(System.currentTimeMillis());
     noiseValues_ = new HashMap<String, IDQLValue>();
   }
@@ -43,5 +45,13 @@ public class ExecutorContext {
 
   public Random getRandom() {
     return random_;
+  }
+
+  public void setLocalAppKey(int localAppKey) {
+    localAppKey_ = localAppKey;
+  }
+
+  public String getDataPath() {
+    return dataPath_ + "/" + localAppKey_ + "/";
   }
 }

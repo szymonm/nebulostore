@@ -23,9 +23,8 @@ import org.nebulostore.communication.messages.dht.PutDHTMessage;
 
 /**
  * Performance test of Kadmelia DHT implementation.
- *
+ * 
  * @author Marcin Walas
- *
  */
 public final class KademliaPerfTest {
 
@@ -101,8 +100,9 @@ public final class KademliaPerfTest {
         byte[] rbytes = new byte[5];
         random.nextBytes(rbytes);
         testSet.add(new String(rbytes));
-        inQueue.add(new PutDHTMessage(new String(rbytes), KeyDHT.fromSerializableObject(rbytes)
-            , new ValueDHT(random.nextLong())));
+        inQueue.add(new PutDHTMessage(new String(rbytes), KeyDHT
+            .fromSerializableObject(rbytes), new ValueDHT(new MergeableLong(
+                random.nextLong()))));
       }
 
       Message msg = null;
@@ -116,7 +116,7 @@ public final class KademliaPerfTest {
 
         if (msg instanceof OutDHTMessage && msg instanceof OkDHTMessage) {
           finished.add(((OkDHTMessage) msg).getId());
-          //          logger.debug(communicationPeer.getDHTPeer().toString());
+          // logger.debug(communicationPeer.getDHTPeer().toString());
         }
         if (msg instanceof OutDHTMessage && msg instanceof ErrorDHTMessage) {
           logger_.error("Got ErrorDHTMessage with ",
@@ -132,7 +132,8 @@ public final class KademliaPerfTest {
     }
     long endTime = System.currentTimeMillis();
     logger_.info("test results: put of " + testSize + " messages finished in " +
-        (endTime - startTime) + " per sec: " + testSize * 1000.0 / (endTime - startTime));
+        (endTime - startTime) + " per sec: " + testSize * 1000.0 /
+        (endTime - startTime));
 
   }
 }

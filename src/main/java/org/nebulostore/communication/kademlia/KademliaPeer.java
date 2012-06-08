@@ -3,8 +3,10 @@ package org.nebulostore.communication.kademlia;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
@@ -72,6 +74,9 @@ public class KademliaPeer extends Module implements DiscoveryListener {
   private final List<MessageWorker> messageWorkers_;
 
   private final ReconfigureDHTMessage reconfigureRequest_;
+  private final Set<CommAddress> alreadyBootstraped_;
+
+  private final Timer bootstrapTimer_;
 
   public KademliaPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue,
@@ -87,6 +92,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
     workerInQueue_ = new LinkedBlockingQueue<Message>();
     peerAddress_ = peerAddress;
     bootstrapCount_ = 0;
+    alreadyBootstraped_ = new HashSet<CommAddress>();
 
     try {
       kademlia_ = new Kademlia(null, jxtaInQueue, kademliaQueue_, peerAddress);
@@ -100,12 +106,14 @@ public class KademliaPeer extends Module implements DiscoveryListener {
 
     kademliaStatic_ = kademlia_;
 
-    //peerDiscoveryService_.addAdvertisement(getKademliaAdvertisement());
-    //peerDiscoveryService_.getDiscoveryService().addDiscoveryListener(this);
+    // peerDiscoveryService_.addAdvertisement(getKademliaAdvertisement());
+    // peerDiscoveryService_.getDiscoveryService().addDiscoveryListener(this);
 
     messageWorkers_ = new LinkedList<MessageWorker>();
 
-    (new Timer()).schedule(new BootstrapTask(), 1000);
+    bootstrapTimer_ = new Timer();
+
+    bootstrapTimer_.schedule(new BootstrapTask(), 1000, 10000);
 
     for (int i = 0; i < 16; i++) {
       MessageWorker tmp = new MessageWorker(workerInQueue_, this);
@@ -115,7 +123,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
     }
   }
 
-  class  BootstrapTask extends TimerTask {
+  class BootstrapTask extends TimerTask {
     @Override
     public void run() {
       /* TODO: Register in NetworkContext also...!!! */
@@ -130,8 +138,9 @@ public class KademliaPeer extends Module implements DiscoveryListener {
   public void endModule() {
     peerDiscoveryService_.removeAdvertisement(getKademliaAdvertisement());
     peerDiscoveryService_.getDiscoveryService().removeDiscoveryListener(this);
+    bootstrapTimer_.cancel();
 
-    for (MessageWorker worker: messageWorkers_) {
+    for (MessageWorker worker : messageWorkers_) {
       worker.endModule();
     }
 
@@ -266,22 +275,25 @@ public class KademliaPeer extends Module implements DiscoveryListener {
 
   private void bootstrapWithAddress(CommAddress bootstrapAddress) {
     bootstrapCount_++;
+    if (alreadyBootstraped_.contains(bootstrapAddress)) {
+      return;
+    }
 
     try {
       logger_.info("Kademlia is trying to bootstrap with " +
           bootstrapAddress.toString());
       kademlia_.connect(bootstrapAddress);
+
+      logger_.info("Kademlia bootstraped with " + bootstrapAddress.toString());
+      logger_.info("Kademlia contents:" + kademlia_.toString());
+      alreadyBootstraped_.add(bootstrapAddress);
+      if (bootstrapCount_ == 1 && reconfigureRequest_ != null) {
+        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
+      }
+
     } catch (IOException e) {
       logger_.error(e);
     }
-
-    if (bootstrapCount_ == 1 && reconfigureRequest_ != null) {
-      outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
-    }
-
-    logger_.info("Kademlia bootstraped with " +
-        bootstrapAddress.toString());
-    logger_.info("Kademlia contents:" + kademlia_.toString());
 
   }
 

@@ -27,7 +27,7 @@ def plot_messages():
     msg_stats = dict(filter(lambda ((phases, a, b), c) : phases == pick_phases, msg_stats.iteritems()))
 
     # converting stats - recalculating messages sent
-    msg_stats = dict(map(lambda ((a, peers, mult), c) : ((a, peers, peers*mult), c), msg_stats.iteritems()))
+    msg_stats = dict(map(lambda ((a, peers, mult), c) : ((a, peers, 5.0*mult), c), msg_stats.iteritems()))
 
     print msg_stats
 
@@ -36,12 +36,14 @@ def plot_messages():
     peers_set = list(peers_set)
     peers_set.sort()
 
-    fig, axs = plt.subplots(nrows = (len(peers_set) + len(peers_set)%2)/2, ncols = 2, sharex = True)
+    cols = 1
+
+    fig, axs = plt.subplots(nrows = (len(peers_set) + len(peers_set)%cols)/cols, ncols = cols)
     i = 0
     for peers in peers_set:
-        print "\nSubplot", i
+        print "\nSubplot", i, " on ", i/cols, i%cols
 
-        ax = axs[i/2 , i % 2]
+        ax = axs[i/cols] # , i % cols]
         ax_lost = ax.twinx()
 
         msgs_list = map(lambda (a,b, msgs) : msgs, filter(lambda (a, p, c) : p == peers, msg_stats))
@@ -78,7 +80,8 @@ def plot_messages():
         lost,a,b, = ax_lost.errorbar(x, y, yerr = err, fmt = 'o-', color = "r", linestyle="--", label = "Lost messages")
         ax_lost.set_ylabel("Percent of lost messages")
 
-        ax.legend([times, lost], [times.get_label(), lost.get_label()])
+        ax.legend([times, lost], [times.get_label(), lost.get_label()], loc=2)
+
 
 
     fig.suptitle("Messages exchange time in setups of different numbers of peers")

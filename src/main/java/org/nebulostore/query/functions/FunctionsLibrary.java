@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.nebulostore.query.executor.ExecutorContext;
 import org.nebulostore.query.functions.dql.Append;
+import org.nebulostore.query.functions.dql.Concat;
 import org.nebulostore.query.functions.dql.CreateList;
 import org.nebulostore.query.functions.dql.CreateTuple;
 import org.nebulostore.query.functions.dql.Filter;
@@ -36,7 +37,7 @@ public class FunctionsLibrary {
         new LoadNoise(context_), new Filter(context_), new Sum(context_),
         new FoldL(context_), new FoldR(context_), new CreateTuple(context_),
         new CreateList(context_), new Get(context_), new If(context_),
-        new Append(context_), new Length(context_) };
+        new Append(context_), new Length(context_), new Concat(context_) };
   }
 
   private final DQLFunction[] functions_;

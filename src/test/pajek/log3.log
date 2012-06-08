@@ -1,0 +1,24 @@
+NETBEGIN 1
+CLUBEGIN 1
+PERBEGIN 1
+CLSBEGIN 1
+HIEBEGIN 1
+VECBEGIN 1
+
+Msg Bernoulli/Poisson random network generator
+N 1 ERDREN  [40, 10.000, 1, 0] (40)
+E 1 DRAW 0 0 0 0 0
+Msg  Undirected scale free random network generator
+N 2 SCALEF  [2 1 40 999999999 40 4.00000 0.10000 0.20000 0.20000] (40)
+E 2 DRAW 0 0 0 0 0
+Msg  Undirected scale free random network generator
+N 3 SCALEF  [2 1 200 999999999 40 4.00000 0.20000 0.30000 0.30000] (200)
+E 3 DRAW 0 0 0 0 0
+Msg  Undirected scale free random network generator
+N 4 SCALEF  [2 1 40 200 40 4.00000 0.20000 0.10000 0.10000] (40)
+E 4 DRAW 0 0 0 0 0
+E 4 DRAW 0 0 0 0 0
+Msg Saving network to file   ---    Z:\home\marcin\5ROK\praca\nebulostore\pajek\barabasz\1.net
+N 4 WN "Z:\home\marcin\5ROK\praca\nebulostore\pajek\barabasz\1.net" 0 (40)
+Msg Saving network to file   ---    Z:\home\marcin\5ROK\praca\nebulostore\pajek\barabasz\1b.net
+N 4 WN "Z:\home\marcin\5ROK\praca\nebulostore\pajek\barabasz\1b.net" 1 (40)

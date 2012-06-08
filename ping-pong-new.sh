@@ -48,4 +48,4 @@ do
     cp -r resources ./$JAR_DIR/$i/
 done
 
-cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR_SERVER/resources/conf/communication/BdbPeer.xml
+#cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR_SERVER/resources/conf/communication/BdbPeer.xml

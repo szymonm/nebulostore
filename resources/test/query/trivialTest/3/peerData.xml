@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<peerData id="1">
+	<age>
+		<private-conditional-my/>
+		<integer/>
+		<value>24</value>
+		<noise>1</noise>
+	</age>
+	<name>
+		<private-my/>
+		<string/>
+		<value>Test Man 3</value>
+	</name>
+	<friends>
+		<friend>
+			<value>1</value>
+			<integer/>
+			<private-my/>
+		</friend>
+		<friend>
+			<value>8</value>
+			<integer/>
+			<private-my/>
+		</friend>		
+		<friend>
+			<value>9</value>
+			<integer/>
+			<private-my/>
+		</friend>
+		<friend>
+			<value>10</value>
+			<integer/>
+			<private-my/>
+		</friend>	
+	</friends>	
+</peerData>

@@ -203,11 +203,24 @@ public class BdbPeer extends Module implements DiscoveryListener {
     logger_.info("PutDHTMessage (" + putMsg.getId() + ") in holder with " +
         putMsg.getKey().toString() + " : " + putMsg.getValue().toString());
 
-    String key = putMsg.getKey().toString();
-    String value = putMsg.getValue().serializeValue();
+    KeyDHT key = putMsg.getKey();
+    ValueDHT valueDHT = putMsg.getValue();
+
     // TODO: Serialization error handling as well
     Transaction t = env_.beginTransaction(null, null);
-    database_.put(t, new DatabaseEntry(key.getBytes()),
+
+    DatabaseEntry data = new DatabaseEntry();
+    OperationStatus operationStatus = database_.get(t, new DatabaseEntry(key.toString().getBytes()), data,
+        LockMode.DEFAULT);
+
+    if (operationStatus == OperationStatus.SUCCESS) {
+      logger_.info("Performing merge on object from DHT");
+      ValueDHT oldValue = ValueDHT.build(new String(data.getData()));
+      valueDHT = new ValueDHT(valueDHT.getValue().merge(oldValue.getValue()));
+    }
+
+    String value = valueDHT.serializeValue();
+    database_.put(t, new DatabaseEntry(key.toString().getBytes()),
         new DatabaseEntry(value.getBytes()));
 
     t.commit();
@@ -280,11 +293,16 @@ public class BdbPeer extends Module implements DiscoveryListener {
     }
 
     if (isProxy_) {
-      logger_.info("Message accepted. " + msg);
-      logger_.info("Putting message to be sent to holder (taskId = " +
-          msg.getId() + ")");
-      jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
-          (DHTMessage) msg));
+      if (msg instanceof DHTMessage) {
+        logger_.info("Message accepted. " + msg);
+        logger_.info("Putting message to be sent to holder (taskId = " +
+            msg.getId() + ")");
+        jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
+            (DHTMessage) msg));
+      } else {
+        logger_.error("Unknown message of type: " + msg);
+      }
+
     } else {
       logger_.info("Message accepted. " + msg);
       boolean fromNetwork = false;

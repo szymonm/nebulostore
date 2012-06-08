@@ -34,7 +34,7 @@ import org.nebulostore.query.messages.QueryResultsMessage;
 public class DQLExecutor extends JobModule {
 
   private static Logger logger_ = Logger.getLogger(DQLExecutor.class);
-  private static int THREAD_POOL_SIZE = 5;
+  private static int THREAD_POOL_SIZE = 15;
 
   private final ExecutorService threadPool_;
   private final ExecutorContext executorContext_;
@@ -49,6 +49,7 @@ public class DQLExecutor extends JobModule {
   private final Set<IDQLValue> returnedValues_;
 
   private final Set<BigInteger> executedQueries_;
+  private final boolean checkForMultipleQueries_;
 
   private static DQLExecutor instance_;
 
@@ -56,7 +57,7 @@ public class DQLExecutor extends JobModule {
     super(dqlJobId);
     // this bounds maximum number of sim. executed queries
     threadPool_ = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-    executorContext_ = new ExecutorContext();
+    executorContext_ = new ExecutorContext("./resources/test/query/pajek-40/");
     visitor_ = new ExecutorVisitor(this);
     interpreter_ = new DQLInterpreter(executorContext_);
     runningQueries_ = 0;
@@ -66,6 +67,10 @@ public class DQLExecutor extends JobModule {
     remoteExecutorsJobIds_ = new HashMap<AppKey, String>();
 
     executedQueries_ = new HashSet<BigInteger>();
+
+    // Switch this to have multiple queries assurances.
+    checkForMultipleQueries_ = false;
+
 
     if (permanentInstance) {
       instance_ = this;
@@ -122,6 +127,9 @@ public class DQLExecutor extends JobModule {
           networkQueue_.add(new QueryAcceptedMessage(message.getId(), null,
               message.getSourceAddress(), message.getQueryId()));
         } else {
+          logger_.info("Refusing computation. Currently runningQueries (" +
+              runningQueries_ + "/" + THREAD_POOL_SIZE + ")  queryID: " +
+              message.getQueryId() + " executedQueries_: " + executedQueries_);
           networkQueue_.add(new QueryErrorMessage(message.getId(), null,
               message.getSourceAddress(), message.getQueryId(),
               "Insufficient resources to run issued query"));
@@ -237,7 +245,7 @@ public class DQLExecutor extends JobModule {
   }
 
   public void addRemoteExecutor(AppKey appKey, String jobId, CommAddress address) {
-    synchronized (DQLExecutor.getInstance().remoteExecutorsAddresses_) {
+    synchronized (remoteExecutorsAddresses_) {
       if (!remoteExecutorsAddresses_.containsKey(appKey)) {
         remoteExecutorsAddresses_.put(appKey, address);
         remoteExecutorsJobIds_.put(appKey, jobId);
@@ -252,13 +260,17 @@ public class DQLExecutor extends JobModule {
   public CommAddress getExecutorCommAddress(AppKey appKey) {
     logger_.debug("Getting commAddress for appKey: " + appKey);
     logger_.debug("remoteCommAddresses_: " + remoteExecutorsAddresses_);
-    return remoteExecutorsAddresses_.get(appKey);
+    synchronized (remoteExecutorsAddresses_) {
+      return remoteExecutorsAddresses_.get(appKey);
+    }
   }
 
   public String getExecutorJobId(AppKey appKey) {
     logger_.debug("Getting jobId for appKey: " + appKey);
     logger_.debug("remoteJobIds: " + remoteExecutorsJobIds_);
-    return remoteExecutorsJobIds_.get(appKey);
+    synchronized (remoteExecutorsAddresses_) {
+      return remoteExecutorsJobIds_.get(appKey);
+    }
   }
 
   public void sendQueryResults(QueryResultsMessage queryResultsMessage) {
@@ -285,6 +297,10 @@ public class DQLExecutor extends JobModule {
       }
 
       if (canBeSent) {
+        if (checkForMultipleQueries_) {
+          returnedValues_.add(queryResultsMessage.getResult());
+        }
+
         logger_.info("It is OK to send this result back: " +
             queryResultsMessage.getResult());
 
@@ -302,4 +318,34 @@ public class DQLExecutor extends JobModule {
     }
 
   }
+
+  public AppKey getExecutorAppKey(CommAddress client) {
+
+    synchronized (remoteExecutorsAddresses_) {
+      for (Map.Entry<AppKey, CommAddress> entry : remoteExecutorsAddresses_
+          .entrySet()) {
+        if (entry.getValue().equals(client)) {
+          return entry.getKey();
+        }
+      }
+    }
+    return null;
+  }
+
+  public ExecutorContext getContext() {
+    return executorContext_;
+  }
+
+  public Set<Integer> getAllAppKeys() {
+    Set<Integer> ret = new HashSet<Integer>();
+    synchronized (remoteExecutorsAddresses_) {
+      for (Map.Entry<AppKey, CommAddress> entry : remoteExecutorsAddresses_
+          .entrySet()) {
+        ret.add(entry.getKey().getKey().intValue());
+      }
+    }
+    return ret;
+  }
 }
+
+

@@ -105,7 +105,7 @@
   </logger>
   
   <logger name="org.nebulostore.appcore.TestingPeer">
-    <level value="INFO" />
+    <level value="DEBUG" />
     <appender-ref ref="CA-testing"/>
     <appender-ref ref="FA-testing"/>
   </logger>

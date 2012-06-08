@@ -19,7 +19,6 @@ import org.nebulostore.testing.TestStatistics;
 import org.nebulostore.testing.TestingModule;
 import org.nebulostore.testing.messages.GatherStatsMessage;
 import org.nebulostore.testing.messages.NewPhaseMessage;
-import org.nebulostore.testing.messages.ReconfigureTestMessage;
 import org.nebulostore.testing.messages.TestInitMessage;
 import org.nebulostore.testing.messages.TestStatsMessage;
 
@@ -29,7 +28,8 @@ public class DHTTestClient extends TestingModule implements Serializable {
   private static final long serialVersionUID = 3479303908516884312L;
 
   private final int testPhases_;
-  CommAddress[] allClients_;
+  private CommAddress[] outClients_;
+  private CommAddress[] inClients_;
   private final int keysMultiplier_;
 
   private final String dhtProvider_;
@@ -44,12 +44,11 @@ public class DHTTestClient extends TestingModule implements Serializable {
     testPhases_ = testPhases;
     dhtProvider_ = dhtProvider;
     keysMultiplier_ = keysMultiplier;
-    allClients_ = allClients;
+    outClients_ = allClients;
     stats_ = new TestStatistics();
     stats_.setDouble("errors", 0.0);
     stats_.setDouble("all", 0.0);
   }
-
 
   @Override
   protected void initVisitors() {
@@ -76,11 +75,13 @@ public class DHTTestClient extends TestingModule implements Serializable {
    * @author Marcin Walas
    */
   final class ConfigurationVisitor extends EmptyInitializationVisitor {
+
     @Override
-    public Void visit(ReconfigureTestMessage message) {
+    public Void visit(ReconfigureDHTTestMessage message) {
       logger_.info("Got reconfiguration message with clients set: " +
           message.getClients());
-      allClients_ = message.getClients().toArray(new CommAddress[0]);
+      outClients_ = message.getClients().toArray(new CommAddress[0]);
+      inClients_ = message.getClientsIn().toArray(new CommAddress[0]);
       phaseFinished();
       return null;
     }
@@ -137,13 +138,13 @@ public class DHTTestClient extends TestingModule implements Serializable {
       refreshVisitor();
 
       String src = CommunicationPeer.getPeerAddress().toString();
-      for (CommAddress destination : allClients_) {
+      for (CommAddress destination : outClients_) {
         String dest = destination.toString();
         for (int i = 0; i < keysMultiplier_; i++) {
           String keyStr = src + i + dest;
           KeyDHT key = KeyDHT.fromSerializableObject(keyStr);
-          networkQueue_
-          .add(new PutDHTMessage(jobId_, key, new ValueDHT(phase_)));
+          networkQueue_.add(new PutDHTMessage(jobId_, key, new ValueDHT(
+              new MergeableInteger(phase_))));
           keysMapping.put(key, keyStr);
         }
       }
@@ -159,17 +160,20 @@ public class DHTTestClient extends TestingModule implements Serializable {
 
     private void increaseReceivedAcks() {
       receivedDHTAcks_++;
-      if (receivedDHTAcks_ >= allClients_.length * keysMultiplier_) {
+      if (receivedDHTAcks_ >= outClients_.length * keysMultiplier_) {
         logger_.info("All OK finished. Phase finished.");
         if (phase_ % 4 == 0) {
           logger_.info(KademliaPeer.getKademliaContents());
         }
+        /*
         try {
           // additional sleep
+
           Thread.sleep(2000);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
+         */
 
         phaseFinished();
       }
@@ -178,7 +182,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
     @Override
     public Void visit(OkDHTMessage message) {
       logger_.info("OK DHT Message received (" + receivedDHTAcks_ + "/" +
-          allClients_.length * keysMultiplier_ + ")");
+          outClients_.length * keysMultiplier_ + ")");
 
       increaseReceivedAcks();
       return null;
@@ -215,7 +219,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
   final class ReceiverDHTVisitor extends TestingModuleVisitor {
 
     private int receivedDHTAcks_;
-    private final String src_ = CommunicationPeer.getPeerAddress().toString();
+    private final String dest_ = CommunicationPeer.getPeerAddress().toString();
     private final int maxRetries_ = 2;
     private Map<String, Integer> retries_ = new HashMap<String, Integer>();
 
@@ -225,10 +229,10 @@ public class DHTTestClient extends TestingModule implements Serializable {
 
       refreshVisitor();
 
-      for (CommAddress destination : allClients_) {
-        String dest = destination.toString();
+      for (CommAddress destination : inClients_) {
+        String src = destination.toString();
         for (int i = 0; i < keysMultiplier_; i++) {
-          String keyStr = dest + i + src_;
+          String keyStr = src + i + dest_;
           KeyDHT key = KeyDHT.fromSerializableObject(keyStr);
           networkQueue_.add(new GetDHTMessage(jobId_, key));
           keysMapping.put(key, keyStr);
@@ -236,7 +240,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
         }
       }
       stats_.setDouble("all", stats_.getDouble("all") + keysMultiplier_ *
-          allClients_.length);
+          inClients_.length);
       logger_.info("Getting DHT Messages - finished. Waiting for replies.");
       return null;
     }
@@ -248,7 +252,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
 
     private void increaseReceivedAcks() {
       receivedDHTAcks_++;
-      if (receivedDHTAcks_ >= allClients_.length * keysMultiplier_) {
+      if (receivedDHTAcks_ >= inClients_.length * keysMultiplier_) {
         logger_.info("All OK finished. Phase finished.");
         if (phase_ % 4 == 0) {
           logger_.info(KademliaPeer.getKademliaContents());
@@ -259,7 +263,8 @@ public class DHTTestClient extends TestingModule implements Serializable {
 
     @Override
     public Void visit(ValueDHTMessage message) {
-      Integer phaseFromDHT = (Integer) message.getValue().getValue();
+      Integer phaseFromDHT = ((MergeableInteger) message.getValue().getValue())
+          .getValue();
       logger_.info("Value DHT Message received with " + phaseFromDHT +
           " (phase " + phase_ + ")");
       if (!retries_.containsKey(message.getKey().toString()))

@@ -19,7 +19,8 @@ public class TestLoad {
    * @param args
    */
   private static String testFilename = "resources/test/query/trivialTest/1/peerData.xml";
-  private static ExecutorContext exectuorContext_ = new ExecutorContext();
+  private static ExecutorContext exectuorContext_ = new ExecutorContext(
+      "./resources/test/query/pajek-40/");
 
   public static void main(String[] args) {
 

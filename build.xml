@@ -71,6 +71,18 @@
     </antcall>
   </target>
 
+  <target name="jar-jxtatest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.JxtaTest" />
+    </antcall>
+  </target>
+
+  <target name="jar-sockettest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.SocketTest" />
+    </antcall>
+  </target>
+
   <target name="jar-bdbtest">
     <antcall target="jar">
       <param name="main-class" value="org.nebulostore.communication.bdbdht.tests.BdbPeerTest" />
