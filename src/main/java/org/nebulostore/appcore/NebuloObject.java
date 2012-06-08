@@ -73,6 +73,7 @@ public abstract class NebuloObject implements Serializable {
 
   protected abstract void runSync() throws NebuloException;
 
+
   public String getLastCommittedVersion() {
     return lastCommittedVersion_;
   }
