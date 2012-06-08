@@ -17,7 +17,7 @@ public final class NebuloFileTest {
 
   @Test
   public void testWriteMultipleChunks() {
-    NebuloFile file = new NebuloFile(new AppKey(BigInteger.ONE), new ObjectId(BigInteger.ONE), 10);
+    NebuloFile file = new NebuloFile(new AppKey(BigInteger.ONE), new ObjectId(BigInteger.ONE));
 
     // Do three writes.
     byte[] as = new byte[35];
