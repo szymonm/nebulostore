@@ -24,7 +24,7 @@ public abstract class TwoStepReturningJobModule<R, SR, A> extends ReturningJobMo
   protected SR semiResult_;
   protected Semaphore answerMutex_;
   protected A answer_;
-  protected boolean afterFirstResult_ = false;
+  protected boolean afterFirstResult_;
 
   public TwoStepReturningJobModule() {
     super();

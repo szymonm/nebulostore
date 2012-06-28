@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.log4j.Logger;
 import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.api.DeleteNebuloObjectModule;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
@@ -18,6 +20,8 @@ import org.nebulostore.communication.address.CommAddress;
 public abstract class NebuloObject implements Serializable {
 
   private static final long serialVersionUID = 7791201890856369839L;
+  private static Logger logger_ = Logger.getLogger(NebuloObject.class);
+
   // TODO(bolek): Is this constant more global?
   protected static final int TIMEOUT_SEC = 60;
   protected static BlockingQueue<Message> dispatcherQueue_;
@@ -40,6 +44,16 @@ public abstract class NebuloObject implements Serializable {
     return module.getResult(TIMEOUT_SEC);
   }
 
+  public static void deleteFromAddress(NebuloAddress address) {
+    // Create a handler and run it through dispatcher.
+    DeleteNebuloObjectModule module = new DeleteNebuloObjectModule(address, dispatcherQueue_);
+    try {
+      module.getResult(TIMEOUT_SEC);
+    } catch (NebuloException e) {
+      logger_.error("Received exception from DeleteNebuloObjectModule");
+    }
+  }
+
   protected NebuloObject() { }
 
   public NebuloAddress getAddress() {
@@ -59,7 +73,13 @@ public abstract class NebuloObject implements Serializable {
   }
 
   public void delete() {
-    // TODO(bolek).
+    // Create a handler and run it through dispatcher.
+    DeleteNebuloObjectModule module = new DeleteNebuloObjectModule(address_, dispatcherQueue_);
+    try {
+      module.getResult(TIMEOUT_SEC);
+    } catch (NebuloException e) {
+      logger_.error("Received exception from DeleteNebuloObjectModule");
+    }
   }
 
   /**

@@ -1,14 +1,20 @@
 package org.nebulostore.appcore;
 
+import org.nebulostore.api.DeleteNebuloObjectModule.DeleteTimeoutMessage;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.BrokerErrorMessage;
+import org.nebulostore.async.messages.DeleteNebuloObjectMessage;
+import org.nebulostore.async.messages.GetAsynchronousMessagesIn;
 import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.NetworkContextChangedMessage;
 import org.nebulostore.async.messages.StoreAsynchronousMessage;
+import org.nebulostore.async.messages.UpdateFileMessage;
+import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
+import org.nebulostore.async.messages.UpdateSmallNebuloObjectMessage;
 import org.nebulostore.broker.messages.ContractOfferMessage;
 import org.nebulostore.broker.messages.OfferReplyMessage;
 import org.nebulostore.communication.dht.ReconfigureDHTTestMessage;
@@ -66,7 +72,6 @@ import org.nebulostore.timer.TimerTestMessage;
 
 /**
  * Generic Message visitor class.
- * 
  * @param <R>
  *          return type.
  */
@@ -173,6 +178,11 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
 
+  /* API messages. */
+  public R visit(DeleteTimeoutMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
   /* Broker messages. */
   public R visit(ContractOfferMessage message) throws NebuloException {
     return visitDefault(message);
@@ -191,6 +201,14 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
 
+  public R visit(DeleteNebuloObjectMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(GetAsynchronousMessagesIn message) throws NebuloException {
+    return visitDefault(message);
+  }
+
   public R visit(GetAsynchronousMessagesMessage message) throws NebuloException {
     return visitDefault(message);
   }
@@ -199,7 +217,23 @@ public abstract class MessageVisitor<R> {
     return visitDefault(message);
   }
 
+  public R visit(NetworkContextChangedMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
   public R visit(StoreAsynchronousMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(UpdateFileMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(UpdateNebuloObjectMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(UpdateSmallNebuloObjectMessage message) throws NebuloException {
     return visitDefault(message);
   }
 
@@ -225,10 +259,6 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(PingMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(NetworkContextChangedMessage message) throws NebuloException {
     return visitDefault(message);
   }
 

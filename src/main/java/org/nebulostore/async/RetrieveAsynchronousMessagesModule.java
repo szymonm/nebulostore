@@ -1,6 +1,7 @@
 package org.nebulostore.async;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.InstanceMetadata;
 import org.nebulostore.appcore.JobModule;
@@ -10,6 +11,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.BrokerErrorMessage;
+import org.nebulostore.async.messages.DeleteNebuloObjectMessage;
 import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
 import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.dht.KeyDHT;
@@ -17,6 +19,8 @@ import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.replicator.DeleteObjectException;
+import org.nebulostore.replicator.Replicator;
 
 /**
  * Class used to handle GetAsynchronousMessagesInMessage.
@@ -84,15 +88,22 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
             // TODO(szm): update file
             logger_.debug("Received update file asynchronous message " +
                 ((UpdateNebuloObjectMessage) m).getMessageId());
+          } else if (m instanceof DeleteNebuloObjectMessage) {
+            NebuloAddress address = ((UpdateNebuloObjectMessage) m).getObjectId();
+            logger_.debug("Received delete asynchronous message " + address);
+            try {
+              Replicator.deleteObject(address.getObjectId());
+            } catch (DeleteObjectException e) {
+              logger_.error("Unable to delete object after receiving asynchronous message.");
+            }
           } else {
-            error(message.getId(), new NebuloException(
-                "Unknown AsynchronousMessage type."));
+            error(message.getId(), new NebuloException("Unknown AsynchronousMessage type."));
           }
         }
       }
-      if (context_.waitingForMessages_.isEmpty())
+      if (context_.waitingForMessages_.isEmpty()) {
         endJobModule();
-
+      }
       return null;
     }
 

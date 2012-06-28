@@ -60,6 +60,14 @@ public class NebuloFile extends NebuloObject {
       isChanged_ = true;
     }
 
+    public void deleteChunk() {
+      if (chunk_ == null) {
+        NebuloObject.deleteFromAddress(address_);
+      } else {
+        chunk_.delete();
+      }
+    }
+
     public WriteNebuloObjectModule sync() {
       if (isChanged_) {
         WriteNebuloObjectModule syncModule = new WriteNebuloObjectModule(address_, chunk_,
@@ -158,7 +166,7 @@ public class NebuloFile extends NebuloObject {
     if (pos > size_) {
       throw new NebuloException("Write attempt after the end of the file!");
     }
-    int chunkIndex = (pos / chunkSize_);
+    int chunkIndex = pos / chunkSize_;
     int currPos = pos;
     int currBufPos = 0;
     while (currPos < pos + buffer.length) {
@@ -198,6 +206,33 @@ public class NebuloFile extends NebuloObject {
     } catch (NebuloException exception) {
       throw new NebuloException("Unable to fetch file", exception);
     }
+  }
+
+  /**
+   * Truncates the file to newSize.
+   * @param newSize
+   * @throws NebuloException The exception is thrown when newSize is greater than current size.
+   */
+  public void truncate(int newSize) throws NebuloException {
+    if (newSize > size_) {
+      throw new NebuloException("Cannot truncate file to greater size!");
+    }
+    int nChunks = (newSize + (chunkSize_ - 1)) / chunkSize_;
+    /// Remove unneeded chunks.
+    while (chunks_.size() > nChunks) {
+      chunks_.lastElement().deleteChunk();
+      chunks_.remove(chunks_.size() - 1);
+    }
+    // Truncate last chunk if necessary.
+    FileChunkWrapper chunk = chunks_.lastElement();
+    if (chunk.endByte_ > newSize) {
+      byte[] newData = new byte[newSize - chunk.startByte_];
+      System.arraycopy(chunk.getData(), 0, newData, 0, newSize - chunk.startByte_);
+      chunk.setData(newData);
+      chunk.endByte_ = newSize;
+    }
+    // Set file size.
+    size_ = newSize;
   }
 
   private void initNewFile() {

@@ -19,9 +19,10 @@ public class DeleteObjectMessage extends CommMessage {
   private final String sourceJobId_;
 
   public DeleteObjectMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress, String sourceJobId) {
+      CommAddress destAddress, ObjectId objectId, String sourceJobId) {
     super(jobId, sourceAddress, destAddress);
     sourceJobId_ = sourceJobId;
+    objectId_ = objectId;
   }
 
   public ObjectId getObjectId() {
@@ -41,6 +42,5 @@ public class DeleteObjectMessage extends CommMessage {
   public JobModule getHandler() {
     return new Replicator(jobId_, null, null);
   }
-
 
 }
