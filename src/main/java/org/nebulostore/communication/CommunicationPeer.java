@@ -10,47 +10,49 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.bdbdht.BdbPeer;
+//import org.nebulostore.communication.bdbdht.BdbPeer;
+import org.nebulostore.communication.bootstrap.BootstrapClient;
 import org.nebulostore.communication.exceptions.CommException;
-import org.nebulostore.communication.jxta.JXTAPeer;
-import org.nebulostore.communication.kademlia.KademliaPeer;
+//import org.nebulostore.communication.kademlia.KademliaPeer;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
-import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
-import org.nebulostore.communication.messages.ReconfigureDHTMessage;
-import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
-import org.nebulostore.communication.messages.bdbdht.HolderAdvertisementMessage;
-import org.nebulostore.communication.messages.dht.DHTMessage;
-import org.nebulostore.communication.messages.dht.InDHTMessage;
-import org.nebulostore.communication.messages.dht.OutDHTMessage;
-import org.nebulostore.communication.messages.kademlia.KademliaMessage;
-import org.nebulostore.communication.messages.streambinding.ErrorStreamBindingMessage;
-import org.nebulostore.communication.messages.streambinding.StreamBindingMessage;
-import org.nebulostore.communication.messages.streambinding.StreamBindingReadyMessage;
-import org.nebulostore.communication.streambinding.StreamBindingService;
+//import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
+//import org.nebulostore.communication.messages.ReconfigureDHTMessage;
+//import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
+//import org.nebulostore.communication.messages.bdbdht.HolderAdvertisementMessage;
+//import org.nebulostore.communication.messages.dht.DHTMessage;
+//import org.nebulostore.communication.messages.dht.InDHTMessage;
+//import org.nebulostore.communication.messages.dht.OutDHTMessage;
+//import org.nebulostore.communication.messages.kademlia.KademliaMessage;
+//import org.nebulostore.communication.messages.streambinding.ErrorStreamBindingMessage;
+//import org.nebulostore.communication.messages.streambinding.StreamBindingMessage;
+//import org.nebulostore.communication.messages.streambinding.StreamBindingReadyMessage;
+import org.nebulostore.communication.socket.ListenerService;
+import org.nebulostore.communication.socket.MessengerService;
+//import org.nebulostore.communication.streambinding.StreamBindingService;
 
 /**
  * @author Marcin Walas
+ * @author Grzegorz Milka
  */
 public class CommunicationPeer extends Module {
+  //private Module dhtPeer_;
 
-  private final JXTAPeer jxtaPeer_;
-  private Module dhtPeer_;
-
-  private final BlockingQueue<Message> jxtaPeerInQueue_;
-  private final BlockingQueue<Message> dhtInQueue_;
+  //private final BlockingQueue<Message> dhtInQueue_;
 
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static final String CONFIGURATION_PATH =
-      "resources/conf/communication/CommunicationPeer.xml";
+    "resources/conf/communication/CommunicationPeer.xml";
 
-  private static JXTAPeer currJxtaPeer_;
+  //private final BlockingQueue<Message> streamBindingInQueue_;
+  //private final StreamBindingService streamBindingService_;
+  //private Thread dhtPeerThread_;
 
-  private final BlockingQueue<Message> streamBindingInQueue_;
-  private final StreamBindingService streamBindingService_;
-  private Thread dhtPeerThread_;
+  private BootstrapClient boostrapClient_;
+  private InputHandler inputHandler_;
+
 
   public CommunicationPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue) throws NebuloException {
@@ -63,31 +65,36 @@ public class CommunicationPeer extends Module {
       logger_.error("Configuration read error in: " + CONFIGURATION_PATH);
     }
 
-    jxtaPeerInQueue_ = new LinkedBlockingQueue<Message>();
-    dhtInQueue_ = new LinkedBlockingQueue<Message>();
+    bootstrapInQueue_ = new LinkedBlockingQueue<Message>();
+    messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
 
-    jxtaPeer_ = new JXTAPeer(jxtaPeerInQueue_, inQueue);
-    currJxtaPeer_ = jxtaPeer_;
+    bootstrapClient_ = new BootstrapClient(bootstrapInQueue_, inQueue);
+    messengerService_ = new MessengerService(messengerServiceInQueue_, inQueue);
+    listenerService_ = new ListenerService(null, inQueue);
+
+    /*dhtInQueue_ = new LinkedBlockingQueue<Message>();
 
     streamBindingInQueue_ = new LinkedBlockingQueue<Message>();
     streamBindingService_ = new StreamBindingService(streamBindingInQueue_,
         inQueue, jxtaPeer_.getStreamDriver());
     new Thread(streamBindingService_,
-        "Nebulostore.Communication.StreamBindingService").start();
+        "Nebulostore.Communication.StreamBindingService").start();*/
 
-    jxtaPeer_.setStreamBindingService(streamBindingService_);
+    //NOTE: why naming like here and not org.nebulostore...
+    new Thread(bootstrapClient_, "Nebulostore.Communication.Bootstrap").start();
+    new Thread(messengerService_, "Nebulostore.Communication.MessengerService").start();
+    new Thread(listenerService_, "Nebulostore.Communication.ListenerService").start();
 
-    new Thread(jxtaPeer_, "Nebulostore.Communication.Jxta").start();
-
-    if (!config.getString("dht.provider", "bdb").equals("none")) {
+    /*if (!config.getString("dht.provider", "bdb").equals("none")) {
       reconfigureDHT(config.getString("dht.provider", "bdb"), null);
     } else {
       dhtPeer_ = null;
-    }
+    }*/
   }
 
   private void reconfigureDHT(String dhtProvider,
       ReconfigureDHTMessage reconfigureRequest) throws NebuloException {
+    /*
 
     if (dhtProvider.equals("bdb") && (dhtPeer_ instanceof BdbPeer)) {
       if (reconfigureRequest != null && ((BdbPeer) dhtPeer_).getHolderAddress() != null) {
@@ -122,6 +129,7 @@ public class CommunicationPeer extends Module {
     }
     dhtPeerThread_ = new Thread(dhtPeer_, "Nebulostore.Communication.DHT");
     dhtPeerThread_.start();
+    */
   }
 
   @Override
@@ -134,6 +142,7 @@ public class CommunicationPeer extends Module {
       return;
     }
 
+    /*
     if (msg instanceof ReconfigureDHTMessage) {
       try {
         logger_.info("Got reconfigure request with jobId: " + msg.getId());
@@ -148,10 +157,11 @@ public class CommunicationPeer extends Module {
     if (msg instanceof HolderAdvertisementMessage) {
       dhtInQueue_.add(msg);
       return;
-    }
+    }*/
+
 
     if (msg instanceof DiscoveryMessage) {
-      jxtaPeerInQueue_.add(msg);
+      bootstrapInQueue_.add(msg);
       return;
     }
 
@@ -161,6 +171,7 @@ public class CommunicationPeer extends Module {
       return;
     }
 
+    /*
     if (msg instanceof DHTMessage) {
       if (msg instanceof InDHTMessage) {
         logger_.debug("InDHTMessage forwarded to DHT");
@@ -209,7 +220,7 @@ public class CommunicationPeer extends Module {
         outQueue_.add(casted.getWrapped());
       }
       return;
-    }
+    }*/
 
     if (msg instanceof CommMessage) {
       if (((CommMessage) msg).getSourceAddress() == null) {
@@ -222,12 +233,12 @@ public class CommunicationPeer extends Module {
       }
 
       if (((CommMessage) msg).getDestinationAddress().equals(
-          jxtaPeer_.getPeerAddress())) {
+            ())) {
         logger_.debug("message forwarded to Dispatcher");
         outQueue_.add(msg);
       } else {
         logger_.debug("message forwarded to jxtaPeer");
-        jxtaPeerInQueue_.add(msg);
+        messengerService_.add(msg);
       }
       return;
     }
@@ -237,10 +248,11 @@ public class CommunicationPeer extends Module {
   }
 
   public static CommAddress getPeerAddress() {
-    return currJxtaPeer_.getPeerAddress();
+    return bootstrapClient_.getPeerAddress();
   }
 
   public Module getDHTPeer() {
-    return dhtPeer_;
+    logger_.error("DHTPeer unsupported yet");
+    throw new UnsupportedOperationException();
   }
 }

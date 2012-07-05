@@ -1,36 +1,31 @@
 package org.nebulostore.communication.address;
 
 import java.io.Serializable;
-
-import net.jxta.peer.PeerID;
+import java.io.InetAddress;
 
 /**
  * @author Marcin Walas
+ * @author Grzegorz Milka
  */
 public class CommAddress implements Serializable {
-  private final PeerID peerId_;
+  private final InetAddress inetAddress_;
 
-  public CommAddress(PeerID peerId) {
-    peerId_ = peerId;
+  public CommAddress(InetAddress inetAddress) {
+    inetAddress_ = inetAddress;
   }
 
-  public PeerID getPeerId() {
-    return peerId_;
-  }
-
-  @Override
-  public int hashCode() {
-    return peerId_.hashCode();
+  public InetAddress getAddress() {
+    return inetAddress_;
   }
 
   @Override
   public boolean equals(Object o) {
-    return (o instanceof CommAddress) &&
-        (peerId_.hashCode() == ((CommAddress) o).peerId_.hashCode());
+    return (o instanceof CommAddress) && 
+        (inetAddress_ == ((CommAddress) o).inetAddress_);
   }
 
   @Override
   public String toString() {
-    return peerId_.toString();
+    return inetAddress_.toString();
   }
 }
