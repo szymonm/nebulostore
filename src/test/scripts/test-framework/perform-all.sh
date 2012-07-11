@@ -39,6 +39,6 @@ echo "Waken up"
 bash kill-all.sh
 
 # 3. fetching log files from hosts
-bash fetch-all.sh $START_TIME "testing"
+bash fetch-all.sh $START_TIME "*"
 
 echo "Finished. Take a look at log files in dir $START_TIME"

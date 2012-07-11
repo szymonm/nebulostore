@@ -1,5 +1,6 @@
 package org.nebulostore.communication;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -18,10 +19,10 @@ import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
+import org.nebulostore.communication.messages.ReconfigureDHTMessage;
+import org.nebulostore.communication.messages.bdbdht.HolderAdvertisementMessage;
 //import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
-//import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 //import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
-//import org.nebulostore.communication.messages.bdbdht.HolderAdvertisementMessage;
 //import org.nebulostore.communication.messages.dht.DHTMessage;
 //import org.nebulostore.communication.messages.dht.InDHTMessage;
 //import org.nebulostore.communication.messages.dht.OutDHTMessage;
@@ -38,21 +39,16 @@ import org.nebulostore.communication.socket.MessengerService;
  * @author Grzegorz Milka
  */
 public class CommunicationPeer extends Module {
-  //private Module dhtPeer_;
-
-  //private final BlockingQueue<Message> dhtInQueue_;
-
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static final String CONFIGURATION_PATH =
     "resources/conf/communication/CommunicationPeer.xml";
 
-  //private final BlockingQueue<Message> streamBindingInQueue_;
-  //private final StreamBindingService streamBindingService_;
-  //private Thread dhtPeerThread_;
+  private BlockingQueue<Message> bootstrapInQueue_;
+  private BlockingQueue<Message> messengerServiceInQueue_;
 
-  private BootstrapClient boostrapClient_;
-  private InputHandler inputHandler_;
-
+  private static BootstrapClient bootstrapClient_;
+  private ListenerService listenerService_;
+  private MessengerService messengerService_;
 
   public CommunicationPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue) throws NebuloException {
@@ -69,67 +65,19 @@ public class CommunicationPeer extends Module {
     messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
 
     bootstrapClient_ = new BootstrapClient(bootstrapInQueue_, inQueue);
-    messengerService_ = new MessengerService(messengerServiceInQueue_, inQueue);
-    listenerService_ = new ListenerService(null, inQueue);
+    try {
+      messengerService_ = new MessengerService(messengerServiceInQueue_, inQueue);
+    } catch (IOException e) {
+      logger_.error("Couldn't initialize sender " + e);
+      throw new NebuloException("Couldn't initialize sender." ,e);
+    }
 
-    /*dhtInQueue_ = new LinkedBlockingQueue<Message>();
-
-    streamBindingInQueue_ = new LinkedBlockingQueue<Message>();
-    streamBindingService_ = new StreamBindingService(streamBindingInQueue_,
-        inQueue, jxtaPeer_.getStreamDriver());
-    new Thread(streamBindingService_,
-        "Nebulostore.Communication.StreamBindingService").start();*/
+    listenerService_ = new ListenerService(inQueue);
 
     //NOTE: why naming like here and not org.nebulostore...
     new Thread(bootstrapClient_, "Nebulostore.Communication.Bootstrap").start();
     new Thread(messengerService_, "Nebulostore.Communication.MessengerService").start();
     new Thread(listenerService_, "Nebulostore.Communication.ListenerService").start();
-
-    /*if (!config.getString("dht.provider", "bdb").equals("none")) {
-      reconfigureDHT(config.getString("dht.provider", "bdb"), null);
-    } else {
-      dhtPeer_ = null;
-    }*/
-  }
-
-  private void reconfigureDHT(String dhtProvider,
-      ReconfigureDHTMessage reconfigureRequest) throws NebuloException {
-    /*
-
-    if (dhtProvider.equals("bdb") && (dhtPeer_ instanceof BdbPeer)) {
-      if (reconfigureRequest != null && ((BdbPeer) dhtPeer_).getHolderAddress() != null) {
-        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest));
-      }
-      return;
-    }
-
-    if (dhtProvider.equals("kademlia") && (dhtPeer_ instanceof KademliaPeer)) {
-      if (reconfigureRequest != null) {
-        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest));
-      }
-      return;
-    }
-
-    if (dhtPeerThread_ != null) {
-      dhtPeer_.endModule();
-      dhtPeerThread_.interrupt();
-    }
-
-    if (dhtProvider.equals("bdb")) {
-      dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue_,
-          jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
-          jxtaPeerInQueue_, reconfigureRequest);
-    } else if (dhtProvider.equals("kademlia")) {
-      dhtPeer_ = new KademliaPeer(dhtInQueue_, outQueue_,
-          jxtaPeer_.getPeerDiscoveryService(), getPeerAddress(),
-          jxtaPeerInQueue_, reconfigureRequest);
-
-    } else {
-      throw new CommException("Unsupported DHT Provider in configuration");
-    }
-    dhtPeerThread_ = new Thread(dhtPeer_, "Nebulostore.Communication.DHT");
-    dhtPeerThread_.start();
-    */
   }
 
   @Override
@@ -142,22 +90,15 @@ public class CommunicationPeer extends Module {
       return;
     }
 
-    /*
     if (msg instanceof ReconfigureDHTMessage) {
-      try {
-        logger_.info("Got reconfigure request with jobId: " + msg.getId());
-        reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
-            (ReconfigureDHTMessage) msg);
-      } catch (NebuloException e) {
-        logger_.error(e);
-      }
+      logger_.info("Got reconfigure request with jobId: " + msg.getId());
       return;
     }
 
     if (msg instanceof HolderAdvertisementMessage) {
-      dhtInQueue_.add(msg);
-      return;
-    }*/
+      //dhtInQueue_.add(msg);
+      //Do nothing
+    }
 
 
     if (msg instanceof DiscoveryMessage) {
@@ -172,55 +113,55 @@ public class CommunicationPeer extends Module {
     }
 
     /*
-    if (msg instanceof DHTMessage) {
-      if (msg instanceof InDHTMessage) {
-        logger_.debug("InDHTMessage forwarded to DHT");
-        dhtInQueue_.add(msg);
-      }
-      if (msg instanceof OutDHTMessage) {
-        logger_.debug("OutDHTMessage forwarded to Dispatcher");
-        outQueue_.add(msg);
-      }
-      return;
-    }
+       if (msg instanceof DHTMessage) {
+       if (msg instanceof InDHTMessage) {
+       logger_.debug("InDHTMessage forwarded to DHT");
+       dhtInQueue_.add(msg);
+       }
+       if (msg instanceof OutDHTMessage) {
+       logger_.debug("OutDHTMessage forwarded to Dispatcher");
+       outQueue_.add(msg);
+       }
+       return;
+       }
 
-    if (msg instanceof KademliaMessage) {
-      logger_.debug("Kademlia DHT message received");
-      dhtInQueue_.add(msg);
-      return;
-    }
+       if (msg instanceof KademliaMessage) {
+       logger_.debug("Kademlia DHT message received");
+       dhtInQueue_.add(msg);
+       return;
+       }
 
-    if (msg instanceof StreamBindingMessage) {
-      logger_.debug("Stream binding message received");
-      streamBindingInQueue_.add(msg);
-      return;
-    }
+       if (msg instanceof StreamBindingMessage) {
+       logger_.debug("Stream binding message received");
+       streamBindingInQueue_.add(msg);
+       return;
+       }
 
-    if (msg instanceof StreamBindingReadyMessage) {
-      logger_.debug("Stream binding ready message received");
-      outQueue_.add(msg);
-      return;
-    }
+       if (msg instanceof StreamBindingReadyMessage) {
+       logger_.debug("Stream binding ready message received");
+       outQueue_.add(msg);
+       return;
+       }
 
-    if (msg instanceof ErrorStreamBindingMessage) {
-      logger_.debug("Stream binding error message received");
-      outQueue_.add(msg);
-      return;
-    }
+       if (msg instanceof ErrorStreamBindingMessage) {
+       logger_.debug("Stream binding error message received");
+       outQueue_.add(msg);
+       return;
+       }
 
-    if (msg instanceof BdbMessageWrapper) {
-      logger_.debug("BDB DHT message received");
-      BdbMessageWrapper casted = (BdbMessageWrapper) msg;
-      if (casted.getWrapped() instanceof InDHTMessage) {
-        logger_.debug("BDB DHT message forwarded to DHT");
-        dhtInQueue_.add(msg);
-      }
-      if (casted.getWrapped() instanceof OutDHTMessage) {
-        logger_.debug("BDB DHT message forwarded to Dispatcher");
-        outQueue_.add(casted.getWrapped());
-      }
-      return;
-    }*/
+       if (msg instanceof BdbMessageWrapper) {
+       logger_.debug("BDB DHT message received");
+       BdbMessageWrapper casted = (BdbMessageWrapper) msg;
+       if (casted.getWrapped() instanceof InDHTMessage) {
+       logger_.debug("BDB DHT message forwarded to DHT");
+       dhtInQueue_.add(msg);
+       }
+       if (casted.getWrapped() instanceof OutDHTMessage) {
+       logger_.debug("BDB DHT message forwarded to Dispatcher");
+       outQueue_.add(casted.getWrapped());
+       }
+       return;
+       }*/
 
     if (msg instanceof CommMessage) {
       if (((CommMessage) msg).getSourceAddress() == null) {
@@ -233,12 +174,12 @@ public class CommunicationPeer extends Module {
       }
 
       if (((CommMessage) msg).getDestinationAddress().equals(
-            ())) {
+            bootstrapClient_.getPeerAddress())) {
         logger_.debug("message forwarded to Dispatcher");
         outQueue_.add(msg);
       } else {
         logger_.debug("message forwarded to jxtaPeer");
-        messengerService_.add(msg);
+        messengerServiceInQueue_.add(msg);
       }
       return;
     }

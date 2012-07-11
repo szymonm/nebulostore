@@ -38,13 +38,17 @@ public class Dispatcher extends Module {
     @Override
     public Void visit(JobEndedMessage message) {
       logger_.debug("Got job ended message " + message.getId());
+
       String jobId = message.getId();
-      if (workersQueues_.containsKey(jobId)) {
-        workersQueues_.remove(jobId);
-      }
-      if (workersThreads_.containsKey(jobId)) {
-        // workersThreads_.get(jobId).interrupt();
-        workersThreads_.remove(jobId);
+      //TODO-GM: HOTFIX: Getting NullPointerException here.
+      if( jobId != null ) {
+          if (workersQueues_.containsKey(jobId)) {
+            workersQueues_.remove(jobId);
+          }
+          if (workersThreads_.containsKey(jobId)) {
+            // workersThreads_.get(jobId).interrupt();
+            workersThreads_.remove(jobId);
+          }
       }
       return null;
     }

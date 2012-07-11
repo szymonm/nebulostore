@@ -328,28 +328,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
   @Override
   public void discoveryEvent(DiscoveryEvent ev) {
-    logger_.debug("DiscoveryEvent: " + ev.getQueryID());
-
-    Advertisement adv;
-    Enumeration<Advertisement> en = ev.getResponse().getAdvertisements();
-
-    if (en != null) {
-      while (en.hasMoreElements()) {
-        adv = en.nextElement();
-        String id = adv.getID() == null ? "null" : adv.getID().toString();
-        if (BDB_HOLDER_ADV_ID_STR.equals(id) /* && holderCommAddress_ == null */) {
-          if (holderCommAddress_ == null && reconfigureRequest_ != null) {
-            outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
-          }
-          holderCommAddress_ = new CommAddress(PeerID.create(URI
-              .create(((PipeAdv) adv).getDescription())));
-          logger_.info("Holder detected at " + holderCommAddress_.toString());
-        }
-      }
-    } else {
-      logger_.debug("discoveryEvent empty...");
-    }
-
+    logger_.error("DiscoveryEvent: JXTA is obsolete");
+    return;
   }
 
   public CommAddress getHolderAddress() {

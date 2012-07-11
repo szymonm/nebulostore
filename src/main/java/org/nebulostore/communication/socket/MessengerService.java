@@ -1,30 +1,39 @@
 package org.nebulostore.communication.socket;
 
+import java.util.concurrent.BlockingQueue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketTimeoutException;
+import java.net.SocketException;
 import org.nebulostore.appcore.Module;
+import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
+import org.nebulostore.communication.messages.ErrorCommMessage;
+import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.socket.MessageWrapper;
+import org.apache.log4j.Logger;
 
 /**
  * Module for sending CommMessages through UDP.
  * It uses simple timeout-interlock mechanism for confirming delivery.
  * @author Grzegorz Milka
  */
-private class MessengerService extends Module {
+public class MessengerService extends Module {
   private DatagramSocket datagramSocket_;
-  private static final int NEBULOSTORE_PORT = 9991;
+  private static final int NEBULOSTORE_PORT = 9987;
   private static final int TIMEOUT = 500;
   private static final int MAX_RETRIES = 3;
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
 
   public MessengerService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue) throws NebuloException {
+      BlockingQueue<Message> outQueue) throws IOException {
     super(inQueue, outQueue);
     datagramSocket_ = new DatagramSocket();
   }
@@ -33,7 +42,7 @@ private class MessengerService extends Module {
   public void processMessage(Message msg) {
     try {
       datagramSocket_.setSoTimeout(TIMEOUT);
-      processMessageRetry(msg, 0);
+      processMessageRetry(msg);
     } catch (Throwable t) {
       logger_.error("Serious error. Sleeping for 5 seconds...");
       t.printStackTrace();
@@ -51,11 +60,19 @@ private class MessengerService extends Module {
   /**
    * Sends message with confirmation of receival in simple interlock mechanism.
    */
-  private void processMessageRetry(Message msg, int retries) { 
+  private void processMessageRetry(Message msg) { 
+    int retries = 0;
     Exception lastError = null;
     MessageWrapper msgWrapper = new MessageWrapper(msg);
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    new ObjectOutputStream(byteArrayOutputStream).writeObject(msgWrapper);
+    try {
+      new ObjectOutputStream(byteArrayOutputStream).writeObject(msgWrapper);
+    } catch (IOException e) {
+        outQueue_.add(new ErrorCommMessage((CommMessage) msg,
+              new CommException("Couldn't serialize message: " + msg.toString())));
+        logger_.error("Couldn't serialize message.");
+        return;
+    }
     byte[] byteMsg = byteArrayOutputStream.toByteArray();
 
     for(retries = 0; retries < MAX_RETRIES; ++retries) {
@@ -74,8 +91,9 @@ private class MessengerService extends Module {
         logger_.debug("Message to be sent over network to: " + destAddress);
 
         DatagramPacket datagramPacket_ = new DatagramPacket(byteMsg,
-            byteMsg.length, destAddress.getAddress, NEBULOSTORE_PORT);
-        datagramSocket_.send(datagramPacket);
+            byteMsg.length, destAddress.getAddress().getAddress(), 
+            NEBULOSTORE_PORT);
+        datagramSocket_.send(datagramPacket_);
         logger_.debug("sent to " + destAddress);
       } catch (IOException e) {
         logger_.error(e);
@@ -87,15 +105,15 @@ private class MessengerService extends Module {
       try {
         DatagramPacket datagramPacket_ = new DatagramPacket(
             new byte[byteMsg.length], byteMsg.length);
-        datagramSocket_.receive(datagramPacket);
+        datagramSocket_.receive(datagramPacket_);
         // TODO Check if source is from sender
         ByteArrayInputStream byteArrayInputStream = 
-          new ByteArrayInputStream(datagramPacket.getData());
+          new ByteArrayInputStream(datagramPacket_.getData());
 
         Object readObj = 
           new ObjectInputStream(byteArrayInputStream).readObject();
 
-        MessageWrapper receivedMessage = (MessageWrapper) readObj();
+        MessageWrapper receivedMessage = (MessageWrapper) readObj;
         if(receivedMessage.isResponse(msgWrapper)) {
           logger_.info("Received acknowledgment for message.");
           return;
@@ -106,15 +124,19 @@ private class MessengerService extends Module {
 
         // TODO More verbose error messages
       } catch (SocketTimeoutException e) {
-        logger_.warning("Timed out getting response, retrying...");
-        datagramSocket_.setSoTimeout(datagramSocket_.getSoTimeout() << 1);
+        logger_.debug("Timed out getting response, retrying...");
+        try {
+          datagramSocket_.setSoTimeout(datagramSocket_.getSoTimeout() << 1);
+        } catch (SocketException err) {
+          logger_.error("Couldn't increase timeout " + err);
+        }
         lastError = e;
       } catch (IOException e) {
         outQueue_.add(new ErrorCommMessage((CommMessage) msg, lastError));
         logger_.error("Error at receiveing acknowledgment: " + e);
         lastError = e;
       } catch (ClassNotFoundException e) {// |ClassCastException, assuming we 
-                                          // might not be using javaSE 7
+        // might not be using javaSE 7
         outQueue_.add(new ErrorCommMessage((CommMessage) msg, lastError));
         logger_.error("Error at receiveing acknowledgment: " + e);
         lastError = e;
@@ -123,11 +145,10 @@ private class MessengerService extends Module {
         logger_.error("Error at receiveing acknowledgment: " + e);
         lastError = e;
       }
-      
-
     }
-    else {
+    if(retries == MAX_RETRIES) {
       outQueue_.add(new ErrorCommMessage((CommMessage) msg, lastError));
       logger_.error("Max retries elapsed, raising error message...");
     }
-  }
+  } 
+}

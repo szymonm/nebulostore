@@ -134,5 +134,11 @@
       <param name="main-class" value="org.nebulostore.appcore.Peer" />
     </antcall>
   </target>
+
+  <target name="test-bootstrap-server">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.bootstrap.BootstrapServer" />
+    </antcall>
+  </target>
   
 </project>

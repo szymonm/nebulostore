@@ -15,9 +15,10 @@ rm -rf ./$TMP_DIR/.svn
 rm -rf ./$TMP_DIR/*.log
 rm -rf ./$TMP_DIR/lib
 
-echo "rm -rf $DEST_DIR && mkdir $DEST_DIR"  | ssh -i $KEY_DIR/planetlab-key -l $USER $HOST 'bash -s'
-scp -i $KEY_DIR/planetlab-key -r ./$TMP_DIR/* $USER@$HOST:~/$DEST_DIR/
-echo "cp -r lib $DEST_DIR/ "  | ssh -i $KEY_DIR/planetlab-key -l $USER $HOST 'bash -s'
+#ssh -i $KEY_DIR/planetlab-key -l $USER $HOST "rm -rf $DEST_DIR && mkdir $DEST_DIR"
+#scp -i $KEY_DIR/planetlab-key -r ./$TMP_DIR/* $USER@$HOST:~/$DEST_DIR/
+rsync -rvu ./$TMP_DIR/* $USER@$HOST:~/$DEST_DIR/
+ssh -i $KEY_DIR/planetlab-key -l $USER $HOST "cp -r lib $DEST_DIR/ "
 
 
 rm -rf $TMP_DIR

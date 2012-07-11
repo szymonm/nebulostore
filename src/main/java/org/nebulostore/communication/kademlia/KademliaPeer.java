@@ -247,30 +247,8 @@ public class KademliaPeer extends Module implements DiscoveryListener {
 
   @Override
   public void discoveryEvent(DiscoveryEvent ev) {
-    logger_.debug("DiscoveryEvent: " + ev.getQueryID());
-
-    Advertisement adv;
-    Enumeration<Advertisement> en = ev.getResponse().getAdvertisements();
-
-    if (en != null) {
-      while (en.hasMoreElements()) {
-        adv = en.nextElement();
-        String id = adv.getID() == null ? "null" : adv.getID().toString();
-        if (KADEMLIA_BOOTSTRAP_ADV_ID_STR.equals(id)) {
-          CommAddress bootstrapAddress = new CommAddress(PeerID.create(URI
-              .create(((PipeAdv) adv).getDescription())));
-
-          if (!bootstrapAddress.toString().equals(peerAddress_.toString()) &&
-              (bootstrapCount_ < MAX_BOOTSTRAP_COUNT)) {
-            bootstrapWithAddress(bootstrapAddress);
-          }
-        }
-
-      }
-    } else {
-      logger_.debug("discoveryEvent empty...");
-    }
-
+    logger_.error("DiscoveryEvent: JXTA is obsolete");
+    return;
   }
 
   private void bootstrapWithAddress(CommAddress bootstrapAddress) {

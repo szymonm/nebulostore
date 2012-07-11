@@ -127,6 +127,16 @@
     <!-- <appender-ref ref="CA-testing"/> -->
     <appender-ref ref="FA-testing"/>
   </logger>
+
+  <logger name="org.nebulostore.communication.bootstrap.BootstrapServer">
+    <level value="DEBUG" />
+    <appender-ref ref="FA-testing"/>
+  </logger>
+
+  <logger name="org.nebulostore.communication.bootstrap.BootstrapClient">
+    <level value="DEBUG" />
+    <appender-ref ref="FA-testing"/>
+  </logger>
   
   <logger name="org.nebulostore.query">
     <level value="DEBUG" />

@@ -1,11 +1,10 @@
 package org.nebulostore.communication.bootstrap;
 
+import java.io.Serializable;
 import org.nebulostore.communication.address.CommAddress;
+import static org.nebulostore.communication.bootstrap.BootstrapMessageType.*;
 
 public class BootstrapMessage implements Serializable {
-  private static enum BootstrapMessageType {
-    KEEP_ALIVE, PEER_DISCOVERY, PEER_INFO
-  }
   private BootstrapMessageType messageType_;
   private CommAddress peerAddress_ = null;
   /**
@@ -17,6 +16,12 @@ public class BootstrapMessage implements Serializable {
           "CommAddress constructor.");
 
     messageType_ = messageType;
+    peerAddress_ = null;
+  }
+
+  public BootstrapMessage(BootstrapMessageType messageType, CommAddress peerAddress) {
+    messageType_ = messageType;
+    peerAddress_ = peerAddress;
   }
 
   /**
@@ -31,7 +36,7 @@ public class BootstrapMessage implements Serializable {
     return messageType_;
   }
 
-  public CommAddress getAddress() {
+  public CommAddress getPeerAddress() {
     return peerAddress_;
   }
 }
