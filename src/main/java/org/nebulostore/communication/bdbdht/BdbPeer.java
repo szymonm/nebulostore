@@ -226,7 +226,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
   private void get(GetDHTMessage message, boolean fromNetwork,
       CommAddress sourceAddress) {
-    logger_.info("GetDHTMessage in holder");
+    logger_.debug("GetDHTMessage in holder");
     GetDHTMessage getMsg = message;
 
     KeyDHT key = getMsg.getKey();
@@ -252,13 +252,10 @@ public class BdbPeer extends Module implements DiscoveryListener {
       outQueue_.add(new ErrorDHTMessage(getMsg, new CommException(
           "Unable to read from bdb database. Operation status: " + operationStatus)));
     }
-    logger_.info("GetDHTMessage processing finished");
+    logger_.debug("GetDHTMessage processing finished");
 
   }
 
-  //NOTE-GM: MW's work says inQueue_ is used for communicating with other
-  //modules but since we have never recognized BdbMessageWrappers,
-  //processmessage also handles communicates from other hosts.
   @Override
   protected void processMessage(Message msg) throws NebuloException {
     logger_.debug("Processing message: " + msg);

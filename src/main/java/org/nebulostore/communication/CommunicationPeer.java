@@ -180,7 +180,7 @@ public class CommunicationPeer extends Module {
       }
       else if (casted.getWrapped() instanceof OutDHTMessage) {
         logger_.debug("BDB DHT message forwarded to Dispatcher");
-        outQueue_.add(casted.getWrapped());
+        outQueue_.add(casted);
       }
       else {
         logger_.error("Unrecognized BdbMessageWrapper: " + msg);
