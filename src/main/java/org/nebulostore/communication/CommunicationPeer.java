@@ -91,7 +91,7 @@ public class CommunicationPeer extends Module {
     bootstrapClient_ = new BootstrapClient(bootstrapInQueue_, inQueue_, commCliPort_);
 
     try {
-      messengerService_ = new MessengerService(messengerServiceInQueue_, inQueue_);
+      messengerService_ = new MessengerService(messengerServiceInQueue_, inQueue_, getPeerAddress());
     } catch (IOException e) {
       logger_.error("Couldn't initialize sender: " + e);
       throw new NebuloException("Couldn't initialize sender.", e);

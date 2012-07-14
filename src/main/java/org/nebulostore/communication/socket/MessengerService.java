@@ -128,22 +128,28 @@ public class MessengerService extends Module {
   }
 
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
+  private CommAddress myAddress_;
   private CachedOOSDispatcher oosDispatcher_;
 
   public MessengerService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue) throws IOException {
+      BlockingQueue<Message> outQueue, CommAddress myAddress) throws IOException {
     super(inQueue, outQueue);
     oosDispatcher_ = new CachedOOSDispatcher();
+    myAddress_ = myAddress;
   }
 
   @Override
   public void processMessage(Message msg) {
     if(!(msg instanceof CommMessage)) {
-      logger_.error("Don't know what to with message: " + msg);
+      logger_.error("Don't know what to do with message: " + msg);
       return;
     }
     Socket socket_ = null;
     CommMessage commMsg = (CommMessage) msg;
+    if(commMsg.getSourceAddress() == null) {
+      logger_.debug("Source address set to null, changing to my address.");
+      commMsg.setSourceAddress(myAddress_);
+    }
     try {
       ObjectOutputStream oos = oosDispatcher_.get(commMsg.getDestinationAddress());
       oos.writeObject(commMsg);
