@@ -1,24 +1,23 @@
 package org.nebulostore.communication.socket;
 
-import java.util.concurrent.BlockingQueue;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketTimeoutException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.net.SocketException;
-import org.nebulostore.appcore.Module;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.BlockingQueue;
+import java.util.Timer;
+import java.util.TimerTask;
+import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
-import org.nebulostore.communication.exceptions.CommException;
-import org.nebulostore.communication.socket.MessageWrapper;
-import org.apache.log4j.Logger;
+
 
 /**
  * Module for sending CommMessages through UDP.
@@ -26,129 +25,137 @@ import org.apache.log4j.Logger;
  * @author Grzegorz Milka
  */
 public class MessengerService extends Module {
-  private DatagramSocket datagramSocket_;
-  private static final int NEBULOSTORE_PORT = 9987;
-  private static final int TIMEOUT = 500;
-  private static final int MAX_RETRIES = 3;
+
+  /**
+   * Factory/Dispatcher for sockets. 
+   * It makes sockets to given CommAddresses and cashes them for given CLEAN_TIME
+   * interval. After every CLEAN_TIME interval it closes unused sockets.
+   * It was introduced to deal with large number of messages to one host causing
+   * depletion of ephemeral hosts.
+   *
+   * Using is based on getting a socket for use and returning it through put
+   * method when it is not needed;
+   * For now it only handles one socket in use at a time, but it should be easy to
+   * extend.
+   */
+  //NOTE-GM: Can't find good name for this class. It should stress the fact that
+  //it is producing sockets, and managing them and expects them to be returned.
+  private class CachedOOSDispatcher {
+    private class SocketOOSPair {
+      public Socket socket;
+      public ObjectOutputStream oos;
+      public SocketOOSPair(Socket newSocket, ObjectOutputStream newOos) {
+        socket = newSocket;
+        oos = newOos;
+      }
+    }
+
+    private Map<CommAddress, SocketOOSPair> cacheMap_;
+    private CommAddress activeAddress_;
+    private SocketOOSPair activeSOOSPair_;
+    private int CLEAN_TIMER = 1000; // 1 second
+
+    private class SocketCleaner extends TimerTask {
+      @Override
+      public void run() {
+        logger_.trace("SocketCleaner cleaning");
+        synchronized(cacheMap_) {
+          for(SocketOOSPair pair: cacheMap_.values()) {
+            Socket socket = pair.socket;
+            try {
+              socket.close();
+              logger_.debug("Socket to: " + socket.getRemoteSocketAddress() + " closed.");
+            } catch (IOException e){
+              logger_.trace("Error when closing socket");
+            }
+          }
+          cacheMap_.clear();
+        }
+      }
+    }
+
+    public CachedOOSDispatcher(){
+      cacheMap_ = new HashMap<CommAddress, SocketOOSPair>();
+      activeAddress_ = null;
+      activeSOOSPair_ = null;
+      Timer socketCleaner = new Timer();
+      socketCleaner.schedule(new SocketCleaner(), CLEAN_TIMER, CLEAN_TIMER);
+    }
+
+    public ObjectOutputStream get(CommAddress commAddress) throws IOException {
+
+      assert commAddress != null;
+      synchronized(cacheMap_) {
+        assert activeAddress_ == null && activeSOOSPair_ == null;
+        if(cacheMap_.containsKey(commAddress)) {
+          logger_.trace("Socket to: " + commAddress + " exists.");
+          activeAddress_ = commAddress;
+          activeSOOSPair_ = cacheMap_.get(commAddress);
+          cacheMap_.remove(commAddress);
+        } else {
+          Socket socket = null;
+          try {
+            socket = new Socket(
+                commAddress.getAddress().getAddress(),
+                commAddress.getAddress().getPort());
+            activeSOOSPair_ = new SocketOOSPair(socket, 
+                new ObjectOutputStream(socket.getOutputStream()));
+          } catch (IOException e) {
+            logger_.error("Socket to: " + commAddress + 
+                " could not be created. " + e);
+            activeSOOSPair_ = null;
+            if(socket != null) {
+              socket.close();
+            }
+            throw new IOException("Socket to: " + commAddress + 
+                " could not be created.", e);
+          }
+          logger_.debug("Socket to: " + commAddress + " created.");
+          activeAddress_ = commAddress;
+        }
+        return activeSOOSPair_.oos;
+      }
+    }
+
+    public void put() {
+      synchronized(cacheMap_) {
+        assert activeAddress_ != null && activeSOOSPair_ != null;
+        cacheMap_.put(activeAddress_, activeSOOSPair_);
+        activeAddress_ = null;
+        activeSOOSPair_ = null;
+      }
+    }
+  }
+
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
+  private CachedOOSDispatcher oosDispatcher_;
 
   public MessengerService(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue) throws IOException {
     super(inQueue, outQueue);
-    datagramSocket_ = new DatagramSocket();
+    oosDispatcher_ = new CachedOOSDispatcher();
   }
 
   @Override
   public void processMessage(Message msg) {
+    if(!(msg instanceof CommMessage)) {
+      logger_.error("Don't know what to with message: " + msg);
+      return;
+    }
+    Socket socket_ = null;
+    CommMessage commMsg = (CommMessage) msg;
     try {
-      datagramSocket_.setSoTimeout(TIMEOUT);
-      processMessageRetry(msg);
-    } catch (Throwable t) {
-      logger_.error("Serious error. Sleeping for 5 seconds...");
-      t.printStackTrace();
-      try {
-        Thread.sleep(5000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      ObjectOutputStream oos = oosDispatcher_.get(commMsg.getDestinationAddress());
+      oos.writeObject(commMsg);
+      logger_.debug("Message: " + commMsg + " sent to: " + commMsg.getDestinationAddress());
+    } catch (IOException e) {
+      logger_.error("IOException when trying to send: " + msg + ", to: " +
+          commMsg.getDestinationAddress() + " " + e);
+      outQueue_.add(new ErrorCommMessage((CommMessage) msg, new CommException(
+              "Message " + msg + " couldn't be sent.")));
+    }
+    finally {
+      oosDispatcher_.put();
     }
   }
-
-  // TODO parallelize receiving responses and sending retries or change to TCP
-  // NOTE Remember that id in message wrappers loops and it might be a problem
-  // in some extremely border cases.
-  /**
-   * Sends message with confirmation of receival in simple interlock mechanism.
-   */
-  private void processMessageRetry(Message msg) { 
-    int retries = 0;
-    Exception lastError = null;
-    MessageWrapper msgWrapper = new MessageWrapper(msg);
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    try {
-      new ObjectOutputStream(byteArrayOutputStream).writeObject(msgWrapper);
-    } catch (IOException e) {
-        outQueue_.add(new ErrorCommMessage((CommMessage) msg,
-              new CommException("Couldn't serialize message: " + msg.toString())));
-        logger_.error("Couldn't serialize message.");
-        return;
-    }
-    byte[] byteMsg = byteArrayOutputStream.toByteArray();
-
-    for(retries = 0; retries < MAX_RETRIES; ++retries) {
-      if (((CommMessage) msg).getDestinationAddress() == null) {
-        outQueue_.add(new ErrorCommMessage((CommMessage) msg,
-              new CommException("Message " + msg.toString() +
-                " with null destination address")));
-        logger_.error("Message with null destination address");
-        return;
-      }
-
-      CommAddress destAddress = ((CommMessage) msg).getDestinationAddress();
-
-      // Send packet
-      try {
-        logger_.debug("Message to be sent over network to: " + destAddress);
-
-        DatagramPacket datagramPacket_ = new DatagramPacket(byteMsg,
-            byteMsg.length, destAddress.getAddress().getAddress(), 
-            NEBULOSTORE_PORT);
-        datagramSocket_.send(datagramPacket_);
-        logger_.debug("sent to " + destAddress);
-      } catch (IOException e) {
-        logger_.error(e);
-        lastError = e;
-        continue;
-      }
-
-      // Receive acknowledgment
-      try {
-        DatagramPacket datagramPacket_ = new DatagramPacket(
-            new byte[byteMsg.length], byteMsg.length);
-        datagramSocket_.receive(datagramPacket_);
-        // TODO Check if source is from sender
-        ByteArrayInputStream byteArrayInputStream = 
-          new ByteArrayInputStream(datagramPacket_.getData());
-
-        Object readObj = 
-          new ObjectInputStream(byteArrayInputStream).readObject();
-
-        MessageWrapper receivedMessage = (MessageWrapper) readObj;
-        if(receivedMessage.isResponse(msgWrapper)) {
-          logger_.info("Received acknowledgment for message.");
-          return;
-        }
-        else {
-          logger_.error("Received response message which is not acknowledgment.");
-        }
-
-        // TODO More verbose error messages
-      } catch (SocketTimeoutException e) {
-        logger_.debug("Timed out getting response, retrying...");
-        try {
-          datagramSocket_.setSoTimeout(datagramSocket_.getSoTimeout() << 1);
-        } catch (SocketException err) {
-          logger_.error("Couldn't increase timeout " + err);
-        }
-        lastError = e;
-      } catch (IOException e) {
-        outQueue_.add(new ErrorCommMessage((CommMessage) msg, lastError));
-        logger_.error("Error at receiveing acknowledgment: " + e);
-        lastError = e;
-      } catch (ClassNotFoundException e) {// |ClassCastException, assuming we 
-        // might not be using javaSE 7
-        outQueue_.add(new ErrorCommMessage((CommMessage) msg, lastError));
-        logger_.error("Error at receiveing acknowledgment: " + e);
-        lastError = e;
-      } catch (ClassCastException e) {
-        outQueue_.add(new ErrorCommMessage((CommMessage) msg, lastError));
-        logger_.error("Error at receiveing acknowledgment: " + e);
-        lastError = e;
-      }
-    }
-    if(retries == MAX_RETRIES) {
-      outQueue_.add(new ErrorCommMessage((CommMessage) msg, lastError));
-      logger_.error("Max retries elapsed, raising error message...");
-    }
-  } 
 }

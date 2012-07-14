@@ -17,7 +17,8 @@ rm -rf ./$TMP_DIR/lib
 
 #ssh -i $KEY_DIR/planetlab-key -l $USER $HOST "rm -rf $DEST_DIR && mkdir $DEST_DIR"
 #scp -i $KEY_DIR/planetlab-key -r ./$TMP_DIR/* $USER@$HOST:~/$DEST_DIR/
-rsync -rvu ./$TMP_DIR/* $USER@$HOST:~/$DEST_DIR/
+#GM size-only because servers have clocks 2 hours behind so we want to avoid it.
+rsync -rvu --size-only --cvs-exclude ./$TMP_DIR/* $USER@$HOST:~/$DEST_DIR/
 ssh -i $KEY_DIR/planetlab-key -l $USER $HOST "cp -r lib $DEST_DIR/ "
 
 

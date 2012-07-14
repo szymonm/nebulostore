@@ -74,7 +74,7 @@
   </appender>  
 
   <logger name="org.nebulostore.communication.bdbdht">
-    <level value="INFO"/>
+    <level value="DEBUG"/>
     <appender-ref ref="FA-dht"/>
   </logger>
 
@@ -84,7 +84,7 @@
   </logger>  
   
   <logger name="org.nebulostore.communication">
-    <level value="INFO"/>
+    <level value="DEBUG"/>
     <appender-ref ref="FA-comm"/>
   </logger>
   
@@ -128,16 +128,6 @@
     <appender-ref ref="FA-testing"/>
   </logger>
 
-  <logger name="org.nebulostore.communication.bootstrap.BootstrapServer">
-    <level value="DEBUG" />
-    <appender-ref ref="FA-testing"/>
-  </logger>
-
-  <logger name="org.nebulostore.communication.bootstrap.BootstrapClient">
-    <level value="DEBUG" />
-    <appender-ref ref="FA-testing"/>
-  </logger>
-  
   <logger name="org.nebulostore.query">
     <level value="DEBUG" />
     <appender-ref ref="FA-query"/>

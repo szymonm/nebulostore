@@ -23,6 +23,8 @@ PRIMARY_HOST=`cat $PRIMARY_SLICE_HOST_FILE`
 
 START_TIME=`date +"%s"`
 
+# -1. Cleaning previous logs
+bash clean-logs.sh
 
 # 0. copying data to remote hosts
 bash prepare-test.sh
@@ -39,6 +41,6 @@ echo "Waken up"
 bash kill-all.sh
 
 # 3. fetching log files from hosts
-bash fetch-all.sh $START_TIME "*"
+#bash fetch-all.sh $START_TIME "*"
 
 echo "Finished. Take a look at log files in dir $START_TIME"

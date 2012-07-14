@@ -42,13 +42,13 @@ public class Dispatcher extends Module {
       String jobId = message.getId();
       //TODO-GM: HOTFIX: Getting NullPointerException here.
       if( jobId != null ) {
-          if (workersQueues_.containsKey(jobId)) {
-            workersQueues_.remove(jobId);
-          }
-          if (workersThreads_.containsKey(jobId)) {
-            // workersThreads_.get(jobId).interrupt();
-            workersThreads_.remove(jobId);
-          }
+        if (workersQueues_.containsKey(jobId)) {
+          workersQueues_.remove(jobId);
+        }
+        if (workersThreads_.containsKey(jobId)) {
+          // workersThreads_.get(jobId).interrupt();
+          workersThreads_.remove(jobId);
+        }
       }
       return null;
     }
@@ -81,24 +81,27 @@ public class Dispatcher extends Module {
       logger_.debug("Received message with jobID: " + jobId + " and class name: " +
           message.getClass().getName());
 
-      if (!workersQueues_.containsKey(jobId)) {
-        // Spawn a new thread to handle the message.
-        try {
-          JobModule handler = message.getHandler();
-          BlockingQueue<Message> newInQueue = new LinkedBlockingQueue<Message>();
-          handler.setInQueue(newInQueue);
-          handler.setOutQueue(inQueue_);
-          // Network queue is dispatcher's out queue.
-          handler.setNetworkQueue(outQueue_);
-          workersQueues_.put(jobId, newInQueue);
-          Thread newThread = new Thread(handler, "Nebulostore.Dispatcher.Job." +
-              handler.getClass().getSimpleName() + "." + jobId);
-          workersThreads_.put(jobId, newThread);
-          newThread.start();
-          logger_.debug("Starting new thread.");
-        } catch (NebuloException exception) {
-          // TODO(bolek): Better log it here than deeper in run().
-          throw exception;
+      //TODO-GM: HOTFIX: Getting NullPointerException here.
+      if( jobId != null ) {
+        if (!workersQueues_.containsKey(jobId)) {
+          // Spawn a new thread to handle the message.
+          try {
+            JobModule handler = message.getHandler();
+            BlockingQueue<Message> newInQueue = new LinkedBlockingQueue<Message>();
+            handler.setInQueue(newInQueue);
+            handler.setOutQueue(inQueue_);
+            // Network queue is dispatcher's out queue.
+            handler.setNetworkQueue(outQueue_);
+            workersQueues_.put(jobId, newInQueue);
+            Thread newThread = new Thread(handler, "Nebulostore.Dispatcher.Job." +
+                handler.getClass().getSimpleName() + "." + jobId);
+            workersThreads_.put(jobId, newThread);
+            newThread.start();
+            logger_.debug("Starting new thread.");
+          } catch (NebuloException exception) {
+            // TODO(bolek): Better log it here than deeper in run().
+            throw exception;
+          }
         }
       }
       // Delegate message to a waiting worker thread.

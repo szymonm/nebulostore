@@ -36,9 +36,9 @@ public class BootstrapClient extends Module {
 
   //TODO Is it correct address; move it to config file;
   private final String bootstrapServerAddress_ = "planetlab1.ci.pwr.wroc.pl";
-  private final int commCliPort_ = 9987; 
   private final int bootstrapCliPort_ = 9989; 
   private final int bootstrapServPort_ = 9991; 
+  private int commCliPort_ = 9987; 
 
   private static BootstrapMessage keepAliveMsg_;
   private static BootstrapMessage peerDiscoveryMsg_;
@@ -76,8 +76,9 @@ public class BootstrapClient extends Module {
   }
 
   public BootstrapClient(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue) throws NebuloException {
+      BlockingQueue<Message> outQueue, int commCliPort) throws NebuloException {
     super(inQueue, outQueue);
+    commCliPort_ = commCliPort;
 
     // Find my address
     logger_.info("Finding out my address.");

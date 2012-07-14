@@ -33,6 +33,7 @@ import static org.nebulostore.communication.bootstrap.BootstrapMessageType.*;
 // and close session without gaps so polling advantage is lost.
 public class BootstrapServer implements Runnable {
   private static Logger logger_ = Logger.getLogger(BootstrapServer.class);
+  private int bootstrapCliPort_ = 9989;
   private int bootstrapServPort_ = 9991;
   private ServerSocket serverSocket_;
   private Set<CommAddress> presentHosts = Collections.synchronizedSet(
@@ -86,9 +87,9 @@ public class BootstrapServer implements Runnable {
                 Socket hostSocket = null;
                 try {
                   logger_.debug("Sending PEER_INFO about: " + clientAddress_ + 
-                      " to: " + host.getAddress());
+                      " to: " + host.getAddress().getAddress());
                   hostSocket = new Socket(host.getAddress().getAddress(),
-                      host.getAddress().getPort());
+                      bootstrapCliPort_);
                   ObjectOutputStream oos = 
                     new ObjectOutputStream(hostSocket.getOutputStream());
                   oos.writeObject(peerInfoMsg);
