@@ -32,7 +32,7 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
   </appender>
-  
+
   <appender name="FA-comm" class="org.apache.log4j.FileAppender">
     <param name="File" value="comm.log" />
     <param name="Threshold" value="DEBUG" />
@@ -40,6 +40,22 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
   </appender>
+
+  <appender name="FA-comm-bootstrap" class="org.apache.log4j.FileAppender">
+    <param name="File" value="bootstrap.log" />
+    <param name="Threshold" value="ALL" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
+
+  <appender name="FA-dht" class="org.apache.log4j.FileAppender">
+    <param name="File" value="dht.log" />
+    <param name="Threshold" value="ALL" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender> 
 
   <appender name="FA-query" class="org.apache.log4j.FileAppender">
     <param name="File" value="dql.log" />
@@ -56,14 +72,6 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
   </appender>
-
-  <appender name="FA-dht" class="org.apache.log4j.FileAppender">
-    <param name="File" value="dht.log" />
-    <param name="Threshold" value="DEBUG" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
-    </layout>
-  </appender> 
   
   <appender name="FA-replicator" class="org.apache.log4j.FileAppender">
     <param name="File" value="replicator.log" />
@@ -73,25 +81,30 @@
     </layout>
   </appender>  
 
-  <logger name="org.nebulostore.communication.bdbdht">
-    <level value="DEBUG"/>
-    <appender-ref ref="FA-dht"/>
-  </logger>
-
-  <logger name="org.nebulostore.communication.kademlia">
+  <!--<logger name="org.nebulostore.communication.kademlia">
     <level value="INFO"/>
     <appender-ref ref="FA-dht"/>
-  </logger>  
+  </logger>  -->
   
   <logger name="org.nebulostore.communication">
     <level value="DEBUG"/>
     <appender-ref ref="FA-comm"/>
   </logger>
+
+  <logger name="org.nebulostore.communication.bootstrap">
+    <level value="ALL"/>
+    <appender-ref ref="FA-comm-bootstrap"/>
+  </logger>
+
+  <logger name="org.nebulostore.communication.bdbdht">
+    <level value="ALL"/>
+    <appender-ref ref="FA-dht"/>
+  </logger>
   
-  <logger name="org.nebulostore.communication.streambinding">
+  <!-- <logger name="org.nebulostore.communication.streambinding">
     <level value="INFO"/>
     <appender-ref ref="FA-stream"/>
-  </logger>
+  </logger> -->
   
   <logger name="org.planx.xmlstore.routing">
     <level value="INFO"/>

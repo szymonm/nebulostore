@@ -8,16 +8,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
-import net.jxta.discovery.DiscoveryEvent;
-import net.jxta.discovery.DiscoveryListener;
-import net.jxta.document.Advertisement;
-import net.jxta.document.AdvertisementFactory;
-import net.jxta.id.ID;
-import net.jxta.impl.protocol.PipeAdv;
-import net.jxta.peer.PeerID;
-import net.jxta.pipe.PipeService;
-import net.jxta.protocol.PipeAdvertisement;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
@@ -30,7 +20,6 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.exceptions.CommException;
-import org.nebulostore.communication.jxta.PeerDiscoveryService;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
@@ -56,13 +45,10 @@ import com.sleepycat.je.Transaction;
  * Implementation of berkely db based engine for...
  * @author marcin
  */
-public class BdbPeer extends Module implements DiscoveryListener {
+public class BdbPeer extends Module {
 
   private static String configurationPath_ = "resources/conf/communication/BdbPeer.xml";
   private static Logger logger_ = Logger.getLogger(BdbPeer.class);
-
-  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:" +
-      "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
 
   private String storagePath_;
   private String storeName_;
@@ -71,10 +57,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
   private boolean isProxy_;
   private CommAddress holderCommAddress_;
-  //TODO-GM Implements advertisements
   //host1.planetlab.informatik.tu-darmstadt.de
-  private final CommAddress bdbHolderCommAddress = 
-    new CommAddress(new InetSocketAddress("130.83.166.243", 9987)); 
+  private final CommAddress bdbHolderCommAddress = null;
 
   private final BlockingQueue<Message> senderInQueue_;
   private CommAddress peerAddress_;
@@ -177,18 +161,6 @@ public class BdbPeer extends Module implements DiscoveryListener {
     return env;
   }
 
-  public PipeAdvertisement getBdbAdvertisement() {
-    PipeAdvertisement advertisement = (PipeAdvertisement) AdvertisementFactory
-        .newAdvertisement(PipeAdvertisement.getAdvertisementType());
-
-    advertisement.setPipeID(ID.create(URI.create(BDB_HOLDER_ADV_ID_STR)));
-    advertisement.setDescription(peerAddress_.getPeerId().toString());
-    advertisement.setType(PipeService.UnicastType);
-    advertisement.setName("Nebulostore bdb dht holder");
-    advertisement.setType(BDB_HOLDER_ADV_ID_STR);
-    return advertisement;
-  }
-
   private void put(PutDHTMessage putMsg, boolean fromNetwork,
       CommAddress sourceAddress) {
     logger_.info("PutDHTMessage (" + putMsg.getId() + ") in holder with " +
@@ -253,7 +225,6 @@ public class BdbPeer extends Module implements DiscoveryListener {
           "Unable to read from bdb database. Operation status: " + operationStatus)));
     }
     logger_.debug("GetDHTMessage processing finished");
-
   }
 
   @Override
@@ -315,13 +286,6 @@ public class BdbPeer extends Module implements DiscoveryListener {
         logger_.error("BdbPeer got message that is not supported");
       }
     }
-  }
-
-  //TODO-GM: Find out what is this supposed to do?
-  @Override
-  public void discoveryEvent(DiscoveryEvent ev) {
-    logger_.error("DiscoveryEvent: JXTA is obsolete");
-    return;
   }
 
   public CommAddress getHolderAddress() {

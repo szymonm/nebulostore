@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
@@ -17,6 +18,7 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
+import org.nebulostore.communication.bootstrap.CommAddressResolver;
 
 
 /**
@@ -53,7 +55,7 @@ public class MessengerService extends Module {
     private Map<CommAddress, SocketOOSPair> cacheMap_;
     private CommAddress activeAddress_;
     private SocketOOSPair activeSOOSPair_;
-    private int CLEAN_TIMER = 1000; // 1 second
+    private final int CLEAN_TIMER = 1000; // 1 second
 
     private class SocketCleaner extends TimerTask {
       @Override
@@ -83,7 +85,6 @@ public class MessengerService extends Module {
     }
 
     public ObjectOutputStream get(CommAddress commAddress) throws IOException {
-
       assert commAddress != null;
       synchronized(cacheMap_) {
         assert activeAddress_ == null && activeSOOSPair_ == null;
@@ -95,9 +96,8 @@ public class MessengerService extends Module {
         } else {
           Socket socket = null;
           try {
-            socket = new Socket(
-                commAddress.getAddress().getAddress(),
-                commAddress.getAddress().getPort());
+            InetSocketAddress socketAddress = resolver_.resolve(commAddress);
+            socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());
             activeSOOSPair_ = new SocketOOSPair(socket, 
                 new ObjectOutputStream(socket.getOutputStream()));
           } catch (IOException e) {
@@ -128,14 +128,14 @@ public class MessengerService extends Module {
   }
 
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
-  private CommAddress myAddress_;
+  private CommAddressResolver resolver_;
   private CachedOOSDispatcher oosDispatcher_;
 
   public MessengerService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue, CommAddress myAddress) throws IOException {
+      BlockingQueue<Message> outQueue, CommAddressResolver resolver) throws IOException {
     super(inQueue, outQueue);
+    resolver_ = resolver;
     oosDispatcher_ = new CachedOOSDispatcher();
-    myAddress_ = myAddress;
   }
 
   @Override
@@ -148,7 +148,7 @@ public class MessengerService extends Module {
     CommMessage commMsg = (CommMessage) msg;
     if(commMsg.getSourceAddress() == null) {
       logger_.debug("Source address set to null, changing to my address.");
-      commMsg.setSourceAddress(myAddress_);
+      commMsg.setSourceAddress(resolver_.getMyCommAddress());
     }
     try {
       ObjectOutputStream oos = oosDispatcher_.get(commMsg.getDestinationAddress());

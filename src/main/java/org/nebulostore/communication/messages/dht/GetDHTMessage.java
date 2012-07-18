@@ -25,4 +25,10 @@ public class GetDHTMessage extends InDHTMessage {
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }
+
+  @Override
+  public String toString() {
+      return "GetDHTMessage for key: " + getKey();
+  }
+
 }

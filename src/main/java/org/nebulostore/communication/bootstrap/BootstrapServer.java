@@ -11,14 +11,24 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
 import java.util.LinkedHashSet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import net.tomp2p.futures.FutureDHT;
+import net.tomp2p.p2p.Peer;
+import net.tomp2p.p2p.PeerMaker;
+import net.tomp2p.peers.Number160;
+import net.tomp2p.peers.PeerAddress;
+import net.tomp2p.storage.Data;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import org.nebulostore.communication.bootstrap.BootstrapMessage;
+import org.nebulostore.communication.bootstrap.CommAddressResolver;
+import org.nebulostore.communication.bootstrap.HashAddressResolver;
 import org.nebulostore.communication.address.CommAddress;
 import static org.nebulostore.communication.bootstrap.BootstrapMessageType.*;
 
@@ -33,11 +43,19 @@ import static org.nebulostore.communication.bootstrap.BootstrapMessageType.*;
 // and close session without gaps so polling advantage is lost.
 public class BootstrapServer implements Runnable {
   private static Logger logger_ = Logger.getLogger(BootstrapServer.class);
-  private int bootstrapCliPort_ = 9989;
-  private int bootstrapServPort_ = 9991;
+  private static final int BOOTSTRAP_CLI_PORT_ = 9989;
+  private static final int BOOTSTRAP_SERV_PORT_ = 9991;
+  private static final int TOMP2P_PORT_ = 9993;
+  private int bootstrapCliPort_ = BOOTSTRAP_CLI_PORT_;
+  private int bootstrapServPort_ = BOOTSTRAP_SERV_PORT_;
+  private int tomp2pPort_ = TOMP2P_PORT_; 
   private ServerSocket serverSocket_;
   private Set<CommAddress> presentHosts = Collections.synchronizedSet(
       new LinkedHashSet<CommAddress>());
+
+  private final UUID myUUID_;
+  private final Peer myPeer_;
+  private final CommAddressResolver resolver_;
 
   private class BootstrapProtocol implements Runnable {
     Socket clientSocket_;
@@ -57,7 +75,7 @@ public class BootstrapServer implements Runnable {
           return;
         } catch (EOFException e) {
           //GM Possibly client has just checked if this server works
-          logger_.warn("EOF at the beginning of connection with: " +
+          logger_.debug("EOF at the beginning of connection with: " +
               clientSocket_.getRemoteSocketAddress());
           return;
         }
@@ -75,20 +93,21 @@ public class BootstrapServer implements Runnable {
               isAbsent_ = !presentHosts.contains(clientAddress_);
             }
             if(isAbsent_) {
-              logger_.debug("Host: " + clientAddress_ + " not present broadcasting...");
+              logger_.debug("Host: " + clientAddress_ + " not present, broadcasting...");
               BootstrapMessage peerInfoMsg = 
                 new BootstrapMessage(BootstrapMessageType.PEER_INFO, clientAddress_);
               Set<CommAddress> peers = new LinkedHashSet<CommAddress>();
               synchronized (presentHosts) {
                 peers.addAll(presentHosts);
+                presentHosts.add(clientAddress_);
               }
-              presentHosts.add(clientAddress_);
+              logger_.debug("Sending PEER_INFO to " + peers.size() + " peers.");
               for(CommAddress host: peers) {
                 Socket hostSocket = null;
                 try {
                   logger_.debug("Sending PEER_INFO about: " + clientAddress_ + 
-                      " to: " + host.getAddress().getAddress());
-                  hostSocket = new Socket(host.getAddress().getAddress(),
+                      " to: " + resolver_.resolve(host).getAddress());
+                  hostSocket = new Socket(resolver_.resolve(host).getAddress(),
                       bootstrapCliPort_);
                   ObjectOutputStream oos = 
                     new ObjectOutputStream(hostSocket.getOutputStream());
@@ -96,7 +115,7 @@ public class BootstrapServer implements Runnable {
                   hostSocket.close();
                 } catch(IOException e) {
                   logger_.error("IOException when sending peer info to: " + 
-                      host.getAddress() + ", error: "  + e);
+                      host + ", error: "  + e);
                 }
                 finally{
                   try {
@@ -121,6 +140,8 @@ public class BootstrapServer implements Runnable {
                 clientSocket_.getOutputStream());
             for(CommAddress peer: peers) {
               BootstrapMessage peerInfoMsg = new BootstrapMessage(PEER_INFO, peer);
+              logger_.debug("Sending PEER_INFO about: " + peer + 
+                  " to: " + clientSocket_.getRemoteSocketAddress());
               oos.writeObject(peerInfoMsg);
             }
             break;
@@ -142,23 +163,30 @@ public class BootstrapServer implements Runnable {
   }
 
   public BootstrapServer() throws IOException {
-    serverSocket_ = new ServerSocket(bootstrapServPort_);
+    this(BOOTSTRAP_CLI_PORT_, BOOTSTRAP_SERV_PORT_, TOMP2P_PORT_);
   }
 
-  public BootstrapServer(int servPort) throws IOException {
-    bootstrapServPort_ = servPort;
+  public BootstrapServer(int bootstrapCliPort, int bootstrapServPort, 
+      int tomp2pPort) throws IOException{
+    bootstrapCliPort_ = bootstrapCliPort;
+    bootstrapServPort_ = bootstrapServPort;
+    tomp2pPort_ = tomp2pPort;
+    myUUID_ = UUID.randomUUID();
+    myPeer_ = new PeerMaker(new Number160(myUUID_.hashCode())).
+      setPorts(tomp2pPort_).makeAndListen();
+    resolver_ = new HashAddressResolver(CommAddress.getZero(), myPeer_);
+
     serverSocket_ = new ServerSocket(bootstrapServPort_);
   }
 
   public static void main(String[] args) throws IOException{
-    //TODO Is it safe with having logger_ init in class space?
     DOMConfigurator.configure("resources/conf/log4j.xml");
     try {
       Executor exec = Executors.newSingleThreadExecutor();
       logger_.info("Starting BootstrapServer");
       exec.execute(new BootstrapServer());
     } catch(IOException e) {
-      logger_.fatal("IOException when executing BootstrapServer " + e);
+      logger_.fatal("IOException when executing BootstrapServer: " + e);
       throw e;
     }
   }
@@ -178,6 +206,12 @@ public class BootstrapServer implements Runnable {
       }
       service.execute(new BootstrapProtocol(clientSocket));
     }
+  }
+
+  @Override
+  public String toString() {
+    return "BootstrapServer with UUID: " + myUUID_ + ", peer: " + myPeer_;
+
   }
 
 }

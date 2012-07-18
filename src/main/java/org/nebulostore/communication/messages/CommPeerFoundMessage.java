@@ -28,4 +28,9 @@ public class CommPeerFoundMessage extends CommMessage {
   public JobModule getHandler() throws NebuloException {
     return new PeerFoundHandler();
   }
+
+  @Override
+  public String toString() {
+    return "CommPeerFoundMessage about peer: " + getSourceAddress();
+  }
 }

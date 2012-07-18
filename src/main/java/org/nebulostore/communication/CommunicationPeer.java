@@ -91,7 +91,8 @@ public class CommunicationPeer extends Module {
     bootstrapClient_ = new BootstrapClient(bootstrapInQueue_, inQueue_, commCliPort_);
 
     try {
-      messengerService_ = new MessengerService(messengerServiceInQueue_, inQueue_, getPeerAddress());
+      messengerService_ = new MessengerService(messengerServiceInQueue_, 
+          inQueue_, bootstrapClient_.getResolver());
     } catch (IOException e) {
       logger_.error("Couldn't initialize sender: " + e);
       throw new NebuloException("Couldn't initialize sender.", e);
@@ -112,7 +113,7 @@ public class CommunicationPeer extends Module {
   }
 
   public static CommAddress getPeerAddress() {
-    return bootstrapClient_.getPeerAddress();
+    return bootstrapClient_.getResolver().getMyCommAddress();
   }
 
   public Module getDHTPeer() {
@@ -199,7 +200,7 @@ public class CommunicationPeer extends Module {
       }
 
       if (((CommMessage) msg).getDestinationAddress().equals(
-            bootstrapClient_.getPeerAddress())) {
+            bootstrapClient_.getResolver().getMyCommAddress())) {
         logger_.debug("message forwarded to Dispatcher");
         outQueue_.add(msg);
       } else {

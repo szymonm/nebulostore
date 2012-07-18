@@ -38,8 +38,8 @@ public final class GetAsynchronousMessagesModuleTest {
     BlockingQueue<Message> inQueue = new LinkedBlockingQueue<Message>();
     BlockingQueue<Message> outQueue = new LinkedBlockingQueue<Message>();
 
-    BrokerContext.getInstance().setInstanceID(new InstanceID(new CommAddress(null)));
-    InstanceID synchroPeerId = new InstanceID(new CommAddress(null));
+    BrokerContext.getInstance().setInstanceID(new InstanceID(CommAddress.getZero()));
+    InstanceID synchroPeerId = new InstanceID(CommAddress.getZero());
     GetAsynchronousMessagesModule module = new GetAsynchronousMessagesModule(outQueue, networkQueue,
         outQueue, BrokerContext.getInstance(), synchroPeerId);
     module.setInQueue(inQueue);
