@@ -12,15 +12,6 @@ import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import net.jxta.discovery.DiscoveryEvent;
-import net.jxta.discovery.DiscoveryListener;
-import net.jxta.document.Advertisement;
-import net.jxta.document.AdvertisementFactory;
-import net.jxta.id.ID;
-import net.jxta.impl.protocol.PipeAdv;
-import net.jxta.peer.PeerID;
-import net.jxta.pipe.PipeService;
-import net.jxta.protocol.PipeAdvertisement;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
@@ -31,7 +22,6 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.dht.exceptions.ValueNotFound;
 import org.nebulostore.communication.exceptions.CommException;
-import org.nebulostore.communication.jxta.PeerDiscoveryService;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
@@ -50,16 +40,15 @@ import org.planx.xmlstore.routing.RoutingException;
  * 
  * @author Marcin Walas
  */
-public class KademliaPeer extends Module implements DiscoveryListener {
+public class KademliaPeer extends Module {
 
   private static Logger logger_ = Logger.getLogger(KademliaPeer.class);
 
-  private static final String KADEMLIA_BOOTSTRAP_ADV_ID_STR = "urn:jxta:"
-      + "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
+  private static final String KADEMLIA_BOOTSTRAP_ADV_ID_STR = "";/*"urn:jxta:"
+                                                                   + "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";*/
 
   private static final int MAX_BOOTSTRAP_COUNT = 3;
 
-  private final BlockingQueue<Message> jxtaInQueue_;
   private final CommAddress peerAddress_;
 
   private final BlockingQueue<Message> kademliaQueue_;
@@ -69,7 +58,6 @@ public class KademliaPeer extends Module implements DiscoveryListener {
   private static Kademlia kademliaStatic_;
 
   private int bootstrapCount_;
-  private final PeerDiscoveryService peerDiscoveryService_;
 
   private final List<MessageWorker> messageWorkers_;
 
@@ -80,47 +68,11 @@ public class KademliaPeer extends Module implements DiscoveryListener {
 
   public KademliaPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue,
-      PeerDiscoveryService peerDiscoveryService, CommAddress peerAddress,
+      CommAddress peerAddress,
       BlockingQueue<Message> jxtaInQueue,
       ReconfigureDHTMessage reconfigureRequest) throws NebuloException {
     super(inQueue, outQueue);
-    this.peerDiscoveryService_ = peerDiscoveryService;
-
-    jxtaInQueue_ = jxtaInQueue;
-    reconfigureRequest_ = reconfigureRequest;
-    kademliaQueue_ = new LinkedBlockingQueue<Message>();
-    workerInQueue_ = new LinkedBlockingQueue<Message>();
-    peerAddress_ = peerAddress;
-    bootstrapCount_ = 0;
-    alreadyBootstraped_ = new HashSet<CommAddress>();
-
-    try {
-      kademlia_ = new Kademlia(null, jxtaInQueue, kademliaQueue_, peerAddress);
-    } catch (RoutingException e) {
-      logger_.error(e);
-      throw new NebuloException(e);
-    } catch (IOException e) {
-      logger_.error(e);
-      throw new NebuloException(e);
-    }
-
-    kademliaStatic_ = kademlia_;
-
-    // peerDiscoveryService_.addAdvertisement(getKademliaAdvertisement());
-    // peerDiscoveryService_.getDiscoveryService().addDiscoveryListener(this);
-
-    messageWorkers_ = new LinkedList<MessageWorker>();
-
-    bootstrapTimer_ = new Timer();
-
-    bootstrapTimer_.schedule(new BootstrapTask(), 1000, 10000);
-
-    for (int i = 0; i < 16; i++) {
-      MessageWorker tmp = new MessageWorker(workerInQueue_, this);
-      new Thread(tmp, "Nebulostore.Communication.DHT.KademliaMsgWorker-" + i)
-      .start();
-      messageWorkers_.add(tmp);
-    }
+    throw new UnsupportedOperationException("Kademlia unsupported for now");
   }
 
   class BootstrapTask extends TimerTask {
@@ -136,20 +88,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
 
   @Override
   public void endModule() {
-    peerDiscoveryService_.removeAdvertisement(getKademliaAdvertisement());
-    peerDiscoveryService_.getDiscoveryService().removeDiscoveryListener(this);
-    bootstrapTimer_.cancel();
-
-    for (MessageWorker worker : messageWorkers_) {
-      worker.endModule();
-    }
-
-    try {
-      kademlia_.close();
-    } catch (IOException e) {
-      logger_.error(e);
-    }
-    super.endModule();
+    throw new UnsupportedOperationException("Kademlia unsupported for now");
   }
 
   @Override
@@ -232,23 +171,8 @@ public class KademliaPeer extends Module implements DiscoveryListener {
 
   }
 
-  public PipeAdvertisement getKademliaAdvertisement() {
-    PipeAdvertisement advertisement = (PipeAdvertisement) AdvertisementFactory
-        .newAdvertisement(PipeAdvertisement.getAdvertisementType());
-
-    advertisement
-    .setPipeID(ID.create(URI.create(KADEMLIA_BOOTSTRAP_ADV_ID_STR)));
-    advertisement.setDescription(peerAddress_.getPeerId().toString());
-    advertisement.setType(PipeService.UnicastType);
-    advertisement.setName("Nebulostore bdb dht holder");
-    advertisement.setType(KADEMLIA_BOOTSTRAP_ADV_ID_STR);
-    return advertisement;
-  }
-
-  @Override
-  public void discoveryEvent(DiscoveryEvent ev) {
-    logger_.error("DiscoveryEvent: JXTA is obsolete");
-    return;
+  public Object getKademliaAdvertisement() {
+    throw new UnsupportedOperationException("Kademlia unsupported for now");
   }
 
   private void bootstrapWithAddress(CommAddress bootstrapAddress) {

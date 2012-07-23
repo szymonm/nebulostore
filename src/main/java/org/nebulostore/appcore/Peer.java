@@ -13,7 +13,6 @@ import org.nebulostore.async.AddSynchroPeerModule;
 import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
 import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.CommunicationPeer;
-import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
@@ -109,8 +108,6 @@ public class Peer {
       e.printStackTrace();
     }
     dispatcherThread_.start();
-
-    JXTAPeer.startFeeding_ = true;
 
     runInitialModules(dispatcherInQueue_);
   }

@@ -5,22 +5,22 @@ import java.net.InetSocketAddress;
 import java.util.UUID;
 
 /**
- * @author Marcin Walas
  * @author Grzegorz Milka
  */
 public class CommAddress implements Serializable {
   private final UUID uuid_;
-  /**
-   * Placeholder
-   */
   private static CommAddress zeroCommAddress_ = null;
 
-  private CommAddress(long mostSigBits, long leastSigBits) {
+  public CommAddress(long mostSigBits, long leastSigBits) {
     uuid_ = new UUID(mostSigBits, leastSigBits);
   }
 
-  public CommAddress() {
-    uuid_ = UUID.randomUUID();
+  public CommAddress(UUID uuid) {
+    uuid_ = uuid;
+  }
+
+  public static CommAddress newRandomCommAddress() {
+    return new CommAddress(UUID.randomUUID());
   }
 
   /**

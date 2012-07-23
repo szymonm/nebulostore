@@ -44,13 +44,3 @@ mkdir $path
 cp ./$JAR_DIR/*.jar ./$JAR_DIR/1/
 cp -r ./$JAR_DIR/lib ./$JAR_DIR/1/
 cp -r resources ./$JAR_DIR/1/
-
-ant test-bootstrap-server
-
-echo "Building bootstrap-server done. Copying..."
-
-path="./$JAR_DIR/bootstrap_server"
-mkdir $path
-cp ./$JAR_DIR/*.jar ./$JAR_DIR/bootstrap_server/
-cp -r ./$JAR_DIR/lib ./$JAR_DIR/bootstrap_server/
-cp -r resources ./$JAR_DIR/bootstrap_server/

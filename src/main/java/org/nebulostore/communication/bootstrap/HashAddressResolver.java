@@ -12,7 +12,7 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.bootstrap.CommAddressResolver;
 
 /**
- * author Grzegorz Milka
+ * @author Grzegorz Milka
  */
 //TODO-GM Add address unable to resolve exception
 class HashAddressResolver implements CommAddressResolver {

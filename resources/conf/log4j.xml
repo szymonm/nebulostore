@@ -33,8 +33,16 @@
     </layout>
   </appender>
 
-  <appender name="FA-comm" class="org.apache.log4j.FileAppender">
+  <appender name="FA-comm:INFO" class="org.apache.log4j.FileAppender">
     <param name="File" value="comm.log" />
+    <param name="Threshold" value="INFO" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
+
+  <appender name="FA-comm:DEBUG" class="org.apache.log4j.FileAppender">
+    <param name="File" value="comm_debug.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
@@ -43,6 +51,14 @@
 
   <appender name="FA-comm-bootstrap" class="org.apache.log4j.FileAppender">
     <param name="File" value="bootstrap.log" />
+    <param name="Threshold" value="ALL" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
+
+  <appender name="FA-comm-gossip" class="org.apache.log4j.FileAppender">
+    <param name="File" value="gossip.log" />
     <param name="Threshold" value="ALL" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
@@ -88,7 +104,8 @@
   
   <logger name="org.nebulostore.communication">
     <level value="DEBUG"/>
-    <appender-ref ref="FA-comm"/>
+    <appender-ref ref="FA-comm:INFO"/>
+    <appender-ref ref="FA-comm:DEBUG"/>
   </logger>
 
   <logger name="org.nebulostore.communication.bootstrap">
@@ -100,6 +117,11 @@
     <level value="ALL"/>
     <appender-ref ref="FA-dht"/>
   </logger>
+
+  <logger name="org.nebulostore.communication.gossip">
+    <level value="ALL"/>
+    <appender-ref ref="FA-comm-gossip"/>
+  </logger>
   
   <!-- <logger name="org.nebulostore.communication.streambinding">
     <level value="INFO"/>
@@ -108,7 +130,7 @@
   
   <logger name="org.planx.xmlstore.routing">
     <level value="INFO"/>
-    <appender-ref ref="FA-comm"/>
+    <appender-ref ref="FA-comm:INFO"/>
   </logger> 
   
   <logger name="org.nebulostore.testing">
@@ -122,12 +144,6 @@
     <appender-ref ref="CA-testing"/>
     <appender-ref ref="FA-testing"/>
   </logger>
-  
-   <!--<logger name="org.nebulostore.appcore">
-    <level value="INFO" />
-    <appender-ref ref="CA"/>
-    <appender-ref ref="FA"/>
-  </logger> -->
   
   <logger name="org.nebulostore.communication.dht">
     <level value="INFO" />
@@ -144,12 +160,6 @@
   <logger name="org.nebulostore.query">
     <level value="DEBUG" />
     <appender-ref ref="FA-query"/>
-  </logger>
-  
-  
-  <logger name="net.jxta">
-    <level value="INFO" />
-    <appender-ref ref="FA-comm" />
   </logger>
   
   <root>

@@ -5,7 +5,7 @@ import java.net.InetSocketAddress;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
- * author Grzegorz Milka
+ * @author Grzegorz Milka
  */
 
 public interface CommAddressResolver {

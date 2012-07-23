@@ -35,7 +35,8 @@ HOST_NO=1
 ALL_HOSTS=`cat $SLICE_HOSTS_FILE | wc -l`
 
 echo "Copying to BootstrapServer: $BOOTSTRAP_SERVER"
-bash scp.sh $BOOTSTRAP_SERVER $BOOTSTRAP_BUILD_DIR $KEY_LOCATION $REMOTE_DIR 
+bash scp.sh $BOOTSTRAP_SERVER $BUILD_DIR $KEY_LOCATION $REMOTE_DIR && \
+ssh -i $KEY_LOCATION/planetlab-key -l $USER $BOOTSTRAP_SERVER "ulimit -u 2000;\ cd $REMOTE_DIR/resources/conf/communication; cp JxtaPeer_$RDV.xml JxtaPeer.xml; cp CommunicationPeerServer.xml CommunicationPeer.xml"
 
 echo "Configuring BDB DHT holder at $BDB_HOLDER"
 bash scp.sh $BDB_HOLDER $BUILD_DIR $KEY_LOCATION $REMOTE_DIR 
@@ -44,13 +45,14 @@ ssh -i $KEY_LOCATION/planetlab-key -l $USER $BDB_HOLDER "cd $REMOTE_DIR; cp ./re
 echo "Copying to $PRIMARY_HOST"
 
 bash scp.sh host2.planetlab.informatik.tu-darmstadt.de $PRIMARY_BUILD_DIR $KEY_LOCATION $REMOTE_DIR 
-ssh -i $KEY_LOCATION/planetlab-key -l $USER host2.planetlab.informatik.tu-darmstadt.de "ulimit -u 2000; cd $REMOTE_DIR/resources/conf/communication; mv JxtaPeer_0.xml JxtaPeer.xml" &
+ssh -i $KEY_LOCATION/planetlab-key -l $USER host2.planetlab.informatik.tu-darmstadt.de "ulimit -u 2000; cd $REMOTE_DIR/resources/conf/communication; cp JxtaPeer_0.xml JxtaPeer.xml" &
 
 IFS=$'\n'; 
 for HOST in $SLICE_HOSTS; do 
     echo "Copying to $HOST ($HOST_NO/$ALL_HOSTS)"
     RDV=`expr $HOST_NO % 1`
-    bash scp.sh $HOST $BUILD_DIR $KEY_LOCATION $REMOTE_DIR && ssh -i $KEY_LOCATION/planetlab-key -l $USER $HOST "ulimit -u 2000; cd $REMOTE_DIR/resources/conf/communication; mv JxtaPeer_$RDV.xml JxtaPeer.xml"
+    bash scp.sh $HOST $BUILD_DIR $KEY_LOCATION $REMOTE_DIR && ssh -i
+    $KEY_LOCATION/planetlab-key -l $USER $HOST "ulimit -u 2000; cd $REMOTE_DIR/resources/conf/communication; cp JxtaPeer_$RDV.xml JxtaPeer.xml"
     ((HOST_NO++))
 done
 

@@ -7,16 +7,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
+import org.nebulostore.communication.gossip.PeerGossipService;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.bdbdht.BdbPeer;
 import org.nebulostore.communication.bootstrap.BootstrapClient;
+import org.nebulostore.communication.bootstrap.BootstrapService;
+import org.nebulostore.communication.bootstrap.BootstrapServer;
 import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.communication.messages.DiscoveryMessage;
+import org.nebulostore.communication.messages.PeerDiscoveryMessage;
+import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
@@ -36,6 +40,8 @@ import org.nebulostore.communication.socket.MessengerService;
  * @author Marcin Walas
  * @author Grzegorz Milka
  */
+//NOTE-GM CommPeer should be made singleton since getPeer is forced to be static
+//function.
 public class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static final String CONFIGURATION_PATH =
@@ -44,13 +50,14 @@ public class CommunicationPeer extends Module {
   private Module dhtPeer_;
   private Thread dhtPeerThread_;
 
-  private BlockingQueue<Message> bootstrapInQueue_;
   private BlockingQueue<Message> messengerServiceInQueue_;
+  private BlockingQueue<Message> gossipServiceInQueue_;
   private final BlockingQueue<Message> dhtInQueue_;
 
-  private static BootstrapClient bootstrapClient_;
+  private static BootstrapService bootstrapService_;
   private ListenerService listenerService_;
   private MessengerService messengerService_;
+  private PeerGossipService gossipService_;
 
   private int commCliPort_ = 9987;
   private static final int MIN_LISTENER_PORT = 9970;
@@ -67,8 +74,8 @@ public class CommunicationPeer extends Module {
       logger_.error("Configuration read error in: " + CONFIGURATION_PATH);
     }
 
-    bootstrapInQueue_ = new LinkedBlockingQueue<Message>();
     messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
+    gossipServiceInQueue_ = new LinkedBlockingQueue<Message>();
     dhtInQueue_ = new LinkedBlockingQueue<Message>();
 
     //Init listener, if you can't try different ports 
@@ -88,22 +95,54 @@ public class CommunicationPeer extends Module {
       }
     }
 
-    bootstrapClient_ = new BootstrapClient(bootstrapInQueue_, inQueue_, commCliPort_);
+    if (config.getString("bootstrap.mode", "client").equals("client")) {
+      bootstrapService_ = new BootstrapClient(commCliPort_);
+      logger_.info("Created BootstrapClient.");
+      inQueue_.add(new CommPeerFoundMessage(bootstrapService_.getBootstrapCommAddress(), 
+          bootstrapService_.getResolver().getMyCommAddress()));
+    } else {
+      while(true) {
+        try {
+          bootstrapService_ = new BootstrapServer(commCliPort_);
+          break;
+        } catch(IOException e) {
+          logger_.error("IOException: " + e + 
+              " caught when creating BootstrapServer. Retrying.");
+        }
+      }
+      Thread bootstrap = new Thread((BootstrapServer)bootstrapService_, 
+          "Nebulostore.Communication.Bootstrap");
+      bootstrap.setDaemon(true);
+      bootstrap.start();
+      logger_.info("Created BootstrapServer.");
+    }
 
     try {
       messengerService_ = new MessengerService(messengerServiceInQueue_, 
-          inQueue_, bootstrapClient_.getResolver());
+          inQueue_, bootstrapService_.getResolver());
     } catch (IOException e) {
       logger_.error("Couldn't initialize sender: " + e);
       throw new NebuloException("Couldn't initialize sender.", e);
     }
 
+    gossipService_ = new PeerGossipService(gossipServiceInQueue_, inQueue_, 
+        bootstrapService_.getResolver().getMyCommAddress(), 
+        bootstrapService_.getBootstrapCommAddress());
 
     //NOTE-GM: why naming like here and not org.nebulostore...
     //NOTE-GM: Used thread, because it's copied, but Executor might be more OO
-    new Thread(bootstrapClient_, "Nebulostore.Communication.Bootstrap").start();
-    new Thread(messengerService_, "Nebulostore.Communication.MessengerService").start();
-    new Thread(listenerService_, "Nebulostore.Communication.ListenerService").start();
+    Thread gossipThread = 
+      new Thread(gossipService_, "Nebulostore.Communication.GossipService");
+    gossipThread.setDaemon(true);
+    gossipThread.start();
+    Thread messengerThread = new Thread(
+        messengerService_, "Nebulostore.Communication.MessengerService");
+    messengerThread.setDaemon(true);
+    messengerThread.start();
+    Thread listenerThread = new Thread(
+        listenerService_, "Nebulostore.Communication.ListenerService");
+    listenerThread.setDaemon(true);
+    listenerThread.start();
 
     if (!config.getString("dht.provider", "bdb").equals("none")) {
       reconfigureDHT(config.getString("dht.provider", "bdb"), null);
@@ -113,7 +152,7 @@ public class CommunicationPeer extends Module {
   }
 
   public static CommAddress getPeerAddress() {
-    return bootstrapClient_.getResolver().getMyCommAddress();
+    return bootstrapService_.getResolver().getMyCommAddress();
   }
 
   public Module getDHTPeer() {
@@ -144,11 +183,6 @@ public class CommunicationPeer extends Module {
 
     if (msg instanceof HolderAdvertisementMessage) {
       dhtInQueue_.add(msg);
-    }
-
-    if (msg instanceof DiscoveryMessage) {
-      bootstrapInQueue_.add(msg);
-      return;
     }
 
     if (msg instanceof CommPeerFoundMessage) {
@@ -189,6 +223,15 @@ public class CommunicationPeer extends Module {
       return;
     }
 
+    if(msg instanceof PeerGossipMessage) {
+      if(((CommMessage) msg).getDestinationAddress().equals(
+            bootstrapService_.getResolver().getMyCommAddress()))
+        gossipServiceInQueue_.add(msg);
+      else
+        messengerServiceInQueue_.add(msg);
+      return;
+    }
+
     if (msg instanceof CommMessage) {
       if (((CommMessage) msg).getSourceAddress() == null) {
         ((CommMessage) msg).setSourceAddress(getPeerAddress());
@@ -200,7 +243,7 @@ public class CommunicationPeer extends Module {
       }
 
       if (((CommMessage) msg).getDestinationAddress().equals(
-            bootstrapClient_.getResolver().getMyCommAddress())) {
+            bootstrapService_.getResolver().getMyCommAddress())) {
         logger_.debug("message forwarded to Dispatcher");
         outQueue_.add(msg);
       } else {
@@ -211,7 +254,6 @@ public class CommunicationPeer extends Module {
     }
 
     logger_.warn("Unrecognized message of type " + msg.toString());
-
   }
 
   private void reconfigureDHT(String dhtProvider,

@@ -4,6 +4,6 @@
     <provider>bdb</provider>
   </dht>
   <bootstrap>
-    <mode>client</mode>
+    <mode>server</mode>
   </bootstrap>
 </communication-peer>

@@ -22,7 +22,6 @@ import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.CommSendDataMessage;
 import org.nebulostore.communication.messages.DataExchangeMessage;
-import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
@@ -134,10 +133,6 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(CommSendDataMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(DiscoveryMessage message) throws NebuloException {
     return visitDefault(message);
   }
 

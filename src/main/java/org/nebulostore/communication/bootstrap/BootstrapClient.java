@@ -24,9 +24,7 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.bootstrap.BootstrapMessage;
 import org.nebulostore.communication.bootstrap.CommAddressResolver;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.communication.messages.DiscoveryMessage;
-
-import static org.nebulostore.communication.bootstrap.BootstrapMessageType.*;
+import org.nebulostore.communication.messages.PeerDiscoveryMessage;
 
 import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.futures.FutureBootstrap;
@@ -40,29 +38,17 @@ import net.tomp2p.storage.Data;
 /**
  * Bootstrap Client. 
  * BootstrapClient makes initial contact with BootstrapServer signaling
- * its entry to the nebulostore network and getting list of hosts present in the
- * network. 
+ * its entry to the nebulostore network and getting its address for gossiping
  * It also handles persistent addressing.
  *
  * @author Grzegorz Milka
  */
-public class BootstrapClient extends Module {
+public final class BootstrapClient extends BootstrapService {
   private static Logger logger_ = Logger.getLogger(BootstrapClient.class);
 
-  private final int ADDRESS_DISCOVERY_PERIOD = 4000; // 4 seconds
+  private final int ADDRESS_DISCOVERY_PERIOD_ = 4000; // 4 seconds
 
   private final String bootstrapServerAddress_ = "planetlab1.ci.pwr.wroc.pl";
-  private static final int COMM_CLI_PORT_ = 9987;
-  private static final int BOOTSTRAP_CLI_PORT_ = 9989;
-  private static final int BOOTSTRAP_SERV_PORT_ = 9991;
-  private static final int TOMP2P_PORT_ = 9993;
-  private int commCliPort_ = COMM_CLI_PORT_; 
-  private int bootstrapCliPort_ = BOOTSTRAP_CLI_PORT_;
-  private int bootstrapServPort_ = BOOTSTRAP_SERV_PORT_;
-  private int tomp2pPort_ = TOMP2P_PORT_; 
-
-  private static BootstrapMessage keepAliveMsg_;
-  private static BootstrapMessage peerDiscoveryMsg_;
 
   //NOTE-GM Addresses for normal communication
   private CommAddress myCommAddress_;
@@ -70,18 +56,21 @@ public class BootstrapClient extends Module {
   //NOTE-GM TomP2P communication
   private Peer myPeer_;
   private PeerAddress bootstrapServerPeerAddress_;
+  private CommAddress bootstrapServerCommAddress_;
   private final CommAddressResolver resolver_;
 
   /**
    * Discovers current external address.
-   * Runs every ADDRESS_DISCOVERY_PERIOD miliseconds to find if our internet
+   * Runs every ADDRESS_DISCOVERY_PERIOD_ miliseconds to find if our internet
    * address has changed. If so it tries to change it.
    *
    * If a try to change has failed it returns quietly, perhaps internet is down
    * and it needs to wait.
+   *
    * @author Grzegorz Milka
    */
   private class CurrentAddressDiscoverer extends TimerTask {
+    @Override
     public void run() {
       logger_.trace("Running periodical address discovery.");
       FutureDiscover discovery = myPeer_.discover().
@@ -115,44 +104,12 @@ public class BootstrapClient extends Module {
     }
   }
 
-  private class PeerFoundListener implements Runnable {
-    private ServerSocket serverSocket;
-    public PeerFoundListener() throws IOException {
-      serverSocket = new ServerSocket(bootstrapCliPort_);
-    }
-    public void run() {
-      while(true) {
-        try {
-          Socket socket = serverSocket.accept();
-          ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-          BootstrapMessage msg = (BootstrapMessage) ois.readObject();
-          if(msg.getType() != PEER_INFO) {
-            logger_.error("Received message different than PEER_INFO");
-          }
-          else {
-            outQueue_.add(new CommPeerFoundMessage(msg.getPeerAddress(),
-                  myCommAddress_));
-          }
-          socket.close();
-        } catch (IOException e) {
-          logger_.error("Error when receiving peer info" + e);
-          //TODO We might ask for resending peer info
-        } catch (ClassNotFoundException e) {
-          logger_.error("Error when receiving peer info" + e);
-        }
-
-      }
-    }
-  }
-
-  public BootstrapClient(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue, int commCliPort) throws NebuloException {
-    super(inQueue, outQueue);
-    commCliPort_ = commCliPort;
+  public BootstrapClient(int commCliPort) throws NebuloException {
+    super(commCliPort);
 
     // Find my address
     logger_.info("Finding out my address.");
-    myCommAddress_ = new CommAddress();
+    myCommAddress_ = CommAddress.newRandomCommAddress();
     bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO, 
         new InetSocketAddress(bootstrapServerAddress_, tomp2pPort_));
 
@@ -211,7 +168,7 @@ public class BootstrapClient extends Module {
     resolver_ = new HashAddressResolver(myCommAddress_, myPeer_);
     Timer currentAddressDiscoverer = new Timer();
     currentAddressDiscoverer.schedule(new CurrentAddressDiscoverer(), 
-        ADDRESS_DISCOVERY_PERIOD, ADDRESS_DISCOVERY_PERIOD);
+        ADDRESS_DISCOVERY_PERIOD_, ADDRESS_DISCOVERY_PERIOD_);
     logger_.info("Started CurrentAddressDiscoverer.");
     //TODO-GM DELETE IT
     try {
@@ -224,105 +181,54 @@ public class BootstrapClient extends Module {
     //TODO-GM Collision handling
     //TODO-GM Automic refreshing handling
 
-    keepAliveMsg_ = new BootstrapMessage(KEEP_ALIVE, myCommAddress_);
-    peerDiscoveryMsg_ = new BootstrapMessage(PEER_DISCOVERY, myCommAddress_);
-
-    // Start listening for new peers
-    Executor exec = Executors.newSingleThreadExecutor();
-    try {
-      exec.execute(new PeerFoundListener());
-    } catch (IOException e) {
-      logger_.error("Error when trying to initilize bootstrap listener " + e);
-      throw new NebuloException("Error when trying to initilize bootstrap listener", e);
-    }
-
     // Send hello keep alive
     while(true) {
       try {
-        sendKeepAliveMsg();
+        sendAndReceiveHelloMsg();
         break;
       } catch (IOException e) {
         logger_.error("Error when sending hello message " + e);
       }
     }
-
-    // Get all current peers
-    while(true) {
-      try {
-        sendAndListenPeerDiscoveryMsg();
-        break;
-      } catch (IOException e) {
-        logger_.error("Error when sending peer discovery message " + e);
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException err) {
-          // ignore
-        }
-      }
-    }
   }
 
   @Override
-  protected void processMessage(Message msg) {
-    if (msg instanceof DiscoveryMessage) {
-      while(true) {
-        try {
-          sendAndListenPeerDiscoveryMsg();
-          break;
-        } catch (IOException e) {
-          logger_.error("Error when sending peer discovery message " + e);
-        }
-      }
-    }
+  public CommAddress getBootstrapCommAddress() {
+    return bootstrapServerCommAddress_;
   }
 
-  private void sendKeepAliveMsg() throws IOException {
-    logger_.info("Sending KEEP_ALIVE to server.");
-    Socket socket = new Socket(bootstrapServerAddress_, bootstrapServPort_);
-    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-    oos.writeObject(keepAliveMsg_);
-    socket.close();
-  }
-
-  private void sendAndListenPeerDiscoveryMsg() throws IOException {
-    logger_.info("Sending PEER_DISCOVERY to server.");
-    Socket socket = new Socket(bootstrapServerAddress_, bootstrapServPort_);
-    ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-    oos.writeObject(peerDiscoveryMsg_);
-    logger_.info("PEER_DISCOVERY sent to server.");
-    BootstrapMessage msg = null;
-    try {
-      ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-      while(! socket.isInputShutdown()) {
-        msg = (BootstrapMessage) ois.readObject();
-        if(msg.getType() != PEER_INFO) {
-          logger_.error("Received message different than PEER_INFO");
-        }
-        else {
-          outQueue_.add(new CommPeerFoundMessage(msg.getPeerAddress(),
-                myCommAddress_));
-        }
-      }
-    } catch (EOFException e) {
-      //ignore
-    } catch (ClassNotFoundException e) {
-      String errMsg = "Received message different than BootstrapMessage: " + 
-        msg + "as a response to PEER_DISCOVERY.";
-      logger_.error(errMsg);
-      throw new IOException(errMsg, e);
-    }
-    finally {
-      socket.close();
-    }
-  }
-
+  @Override
   public CommAddressResolver getResolver() {
     return resolver_;
   }
 
   @Override
   public String toString() {
-    return "BootstrapClient with address: " + myCommAddress_ + ", peer: " +
-      myPeer_ + ", socketAddress: " + myInetSocketAddress_;
+    return "BootstrapClient with address: " + 
+      myCommAddress_ + ", peer: " + myPeer_ + 
+      ", socketAddress: " + myInetSocketAddress_;
+  }
+
+  private void sendAndReceiveHelloMsg() throws IOException {
+    logger_.info("Sending Hello message to server.");
+    Socket socket = new Socket(bootstrapServerAddress_, bootstrapPort_);
+    try {
+      ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+      oos.writeObject(new BootstrapMessage(myCommAddress_));
+      logger_.info("Sent Hello message to server.");
+      ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+      BootstrapMessage message = (BootstrapMessage)ois.readObject();
+      bootstrapServerCommAddress_ = message.getPeerAddress();
+      logger_.info("Received Hello message from server. His address: " + 
+          bootstrapServerCommAddress_);
+    } catch (IOException e) {
+      throw e;
+    } catch (ClassNotFoundException e) {
+      String errMsg = "Read object is not BootstrapMessage.";
+      logger_.error("errMsg");
+      throw new IOException(errMsg, e);
+    } finally {
+      socket.close();
+    }
   }
 }
