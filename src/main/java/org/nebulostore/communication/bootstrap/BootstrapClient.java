@@ -1,42 +1,34 @@
 package org.nebulostore.communication.bootstrap;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.EOFException;
-import java.net.InetSocketAddress;
 import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.Logger;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.Module;
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.bootstrap.BootstrapMessage;
-import org.nebulostore.communication.bootstrap.CommAddressResolver;
-import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.communication.messages.PeerDiscoveryMessage;
-
-import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.futures.FutureBootstrap;
-import net.tomp2p.futures.FutureDHT;
+import net.tomp2p.futures.FutureDiscover;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.storage.Data;
 
+import org.apache.log4j.Logger;
+import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.exceptions.AddressNotPresentException;
+import org.teleal.cling.UpnpService;
+import org.teleal.cling.UpnpServiceImpl;
+import org.teleal.cling.model.types.UnsignedIntegerTwoBytes;
+import org.teleal.cling.support.igd.PortMappingListener;
+import org.teleal.cling.support.model.PortMapping;
+
 /**
- * Bootstrap Client. 
+ * Bootstrap Client.
  * BootstrapClient makes initial contact with BootstrapServer signaling
  * its entry to the nebulostore network and getting its address for gossiping
  * It also handles persistent addressing.
@@ -46,7 +38,8 @@ import net.tomp2p.storage.Data;
 public final class BootstrapClient extends BootstrapService {
   private static Logger logger_ = Logger.getLogger(BootstrapClient.class);
 
-  private final int ADDRESS_DISCOVERY_PERIOD_ = 4000; // 4 seconds
+  // 4 seconds
+  private static final int ADDRESS_DISCOVERY_PERIOD = 4000;
 
   private final String bootstrapServerAddress_ = "planetlab1.ci.pwr.wroc.pl";
 
@@ -61,7 +54,7 @@ public final class BootstrapClient extends BootstrapService {
 
   /**
    * Discovers current external address.
-   * Runs every ADDRESS_DISCOVERY_PERIOD_ miliseconds to find if our internet
+   * Runs every ADDRESS_DISCOVERY_PERIOD miliseconds to find if our internet
    * address has changed. If so it tries to change it.
    *
    * If a try to change has failed it returns quietly, perhaps internet is down
@@ -76,8 +69,8 @@ public final class BootstrapClient extends BootstrapService {
       FutureDiscover discovery = myPeer_.discover().
         setPeerAddress(bootstrapServerPeerAddress_).start();
       discovery.awaitUninterruptibly();
-      if( !discovery.isSuccess() ) {
-        String errMsg = "Couldn't perform tomp2p discovery: " + 
+      if (!discovery.isSuccess()) {
+        String errMsg = "Couldn't perform tomp2p discovery: " +
           discovery.getFailedReason();
         logger_.error(errMsg);
         return;
@@ -86,8 +79,8 @@ public final class BootstrapClient extends BootstrapService {
       InetSocketAddress myInetSocketAddress = new InetSocketAddress(
           myPeer_.getPeerAddress().getInetAddress(), commCliPort_);
 
-      if(! myInetSocketAddress_.equals(myInetSocketAddress) ) {
-        logger_.info("Discovered change in network address from: " + 
+      if (!myInetSocketAddress_.equals(myInetSocketAddress)) {
+        logger_.info("Discovered change in network address from: " +
             myInetSocketAddress_ + " to: " + myInetSocketAddress);
         try {
           myPeer_.put(new Number160(myCommAddress_.hashCode())).
@@ -98,19 +91,20 @@ public final class BootstrapClient extends BootstrapService {
           logger_.error(errMsg + " " + e);
           return;
         }
-        logger_.info("Info about my address has been put to kademlia."); 
+        logger_.info("Info about my address has been put to kademlia.");
         myInetSocketAddress_ = myInetSocketAddress;
       }
     }
   }
 
+  //TODO-GM Collision handling
   public BootstrapClient(int commCliPort) throws NebuloException {
     super(commCliPort);
 
     // Find my address
     logger_.info("Finding out my address.");
     myCommAddress_ = CommAddress.newRandomCommAddress();
-    bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO, 
+    bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO,
         new InetSocketAddress(bootstrapServerAddress_, tomp2pPort_));
 
     //Discover and bootstrap to TomP2P's kademlia network.
@@ -119,6 +113,7 @@ public final class BootstrapClient extends BootstrapService {
     try {
       myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).
         setPorts(tomp2pPort_).makeAndListen();
+      myPeer_.getConfiguration().setBehindFirewall(true);
     } catch (IOException e) {
       String errMsg = "Error when making peer";
       logger_.error(errMsg + " " + e);
@@ -128,8 +123,8 @@ public final class BootstrapClient extends BootstrapService {
     FutureDiscover discovery = myPeer_.discover().
       setPeerAddress(bootstrapServerPeerAddress_).start();
     discovery.awaitUninterruptibly();
-    if( !discovery.isSuccess() ) {
-      String errMsg = "Couldn't perform tomp2p discovery: " + 
+    if (!discovery.isSuccess()) {
+      String errMsg = "Couldn't perform tomp2p discovery: " +
         discovery.getFailedReason();
       logger_.error(errMsg);
       throw new NebuloException(errMsg);
@@ -139,8 +134,8 @@ public final class BootstrapClient extends BootstrapService {
     FutureBootstrap bootstrap = myPeer_.bootstrap().
       setPeerAddress(bootstrapServerPeerAddress_).start();
     bootstrap.awaitUninterruptibly();
-    if( !bootstrap.isSuccess() ) {
-      String errMsg = "Couldn't perform tomp2p bootstrap: " + 
+    if (!bootstrap.isSuccess()) {
+      String errMsg = "Couldn't perform tomp2p bootstrap: " +
         bootstrap.getFailedReason();
       logger_.error(errMsg);
       throw new NebuloException(errMsg);
@@ -148,10 +143,19 @@ public final class BootstrapClient extends BootstrapService {
     myInetSocketAddress_ = new InetSocketAddress(
         myPeer_.getPeerAddress().getInetAddress(), commCliPort_);
 
-    logger_.info("TomP2P initialization finished. My address is: " + 
+    logger_.info("TomP2P initialization finished. My address is: " +
         myInetSocketAddress_ + ".");
 
     //TomP2P initialization finished.
+    //
+    //Set up Upnp port mapping
+
+    try {
+      setUpUpnpPortMapping();
+      logger_.info("Upnp port mapping set up.");
+    } catch (IOException e) {
+      logger_.error("Couldn't set up Upnp port mapping: " + e);
+    }
 
     // UpdateMyAddress to DHT
 
@@ -164,25 +168,26 @@ public final class BootstrapClient extends BootstrapService {
       logger_.error(errMsg + " " + e);
       throw new NebuloException(errMsg, e);
     }
-    logger_.info("Info about my address has been put to kademlia."); 
+    logger_.info("Info about my address has been put to kademlia.");
     resolver_ = new HashAddressResolver(myCommAddress_, myPeer_);
     Timer currentAddressDiscoverer = new Timer();
-    currentAddressDiscoverer.schedule(new CurrentAddressDiscoverer(), 
-        ADDRESS_DISCOVERY_PERIOD_, ADDRESS_DISCOVERY_PERIOD_);
+    currentAddressDiscoverer.schedule(new CurrentAddressDiscoverer(),
+        ADDRESS_DISCOVERY_PERIOD, ADDRESS_DISCOVERY_PERIOD);
     logger_.info("Started CurrentAddressDiscoverer.");
-    //TODO-GM DELETE IT
+    //TODO-GM DELETE IT. It was added just as safety measure
     try {
-      logger_.debug("Resolver resolved my address to: " + 
-          resolver_.resolve(myCommAddress_) + "."); 
+      logger_.debug("Resolver resolved my address to: " +
+          resolver_.resolve(myCommAddress_) + ".");
     } catch (IOException e) {
+      throw new NebuloException(e);
+    } catch (AddressNotPresentException e) {
+      //Something is really bad if this has happened
       throw new NebuloException(e);
     }
 
-    //TODO-GM Collision handling
-    //TODO-GM Automic refreshing handling
 
     // Send hello keep alive
-    while(true) {
+    while (true) {
       try {
         sendAndReceiveHelloMsg();
         break;
@@ -204,9 +209,23 @@ public final class BootstrapClient extends BootstrapService {
 
   @Override
   public String toString() {
-    return "BootstrapClient with address: " + 
-      myCommAddress_ + ", peer: " + myPeer_ + 
+    return "BootstrapClient with address: " +
+      myCommAddress_ + ", peer: " + myPeer_ +
       ", socketAddress: " + myInetSocketAddress_;
+  }
+
+  private void setUpUpnpPortMapping() throws IOException {
+    InetAddress myLocalAddr = InetAddress.getLocalHost();
+    PortMapping desiredMapping = new PortMapping(commCliPort_,
+        myLocalAddr.toString(),
+        PortMapping.Protocol.TCP);
+    desiredMapping.setExternalPort(new UnsignedIntegerTwoBytes(commCliPort_));
+    desiredMapping.setInternalPort(new UnsignedIntegerTwoBytes(commCliPort_));
+
+    UpnpService upnpService =
+      new UpnpServiceImpl(new PortMappingListener(desiredMapping));
+
+    upnpService.getControlPoint().search();
   }
 
   private void sendAndReceiveHelloMsg() throws IOException {
@@ -217,9 +236,9 @@ public final class BootstrapClient extends BootstrapService {
       oos.writeObject(new BootstrapMessage(myCommAddress_));
       logger_.info("Sent Hello message to server.");
       ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-      BootstrapMessage message = (BootstrapMessage)ois.readObject();
+      BootstrapMessage message = (BootstrapMessage) ois.readObject();
       bootstrapServerCommAddress_ = message.getPeerAddress();
-      logger_.info("Received Hello message from server. His address: " + 
+      logger_.info("Received Hello message from server. His address: " +
           bootstrapServerCommAddress_);
     } catch (IOException e) {
       throw e;

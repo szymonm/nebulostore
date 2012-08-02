@@ -33,8 +33,10 @@ public final class BdbPeerTest {
   private BdbPeerTest() {
   }
 
+  /**
+   * @author Marcin Walas
+   */
   public static void main(String[] args) {
-
     DOMConfigurator.configure("resources/conf/log4j.xml");
 
     Logger logger = Logger.getLogger(BdbPeerTest.class);

@@ -28,7 +28,7 @@ public class GetDHTMessage extends InDHTMessage {
 
   @Override
   public String toString() {
-      return "GetDHTMessage for key: " + getKey();
+    return "GetDHTMessage for key: " + getKey();
   }
 
 }

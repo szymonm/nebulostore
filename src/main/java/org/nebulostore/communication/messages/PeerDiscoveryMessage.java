@@ -2,7 +2,6 @@ package org.nebulostore.communication.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.address.CommAddress;
 
 /**
  * @author Grzegorz Milka

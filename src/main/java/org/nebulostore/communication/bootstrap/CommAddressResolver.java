@@ -2,14 +2,18 @@ package org.nebulostore.communication.bootstrap;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.exceptions.AddressNotPresentException;
 
 /**
+ * Resolver from persitent address to network one.
+ *
  * @author Grzegorz Milka
  */
-
 public interface CommAddressResolver {
-  public InetSocketAddress resolve(CommAddress commAddress) throws IOException;
+  InetSocketAddress resolve(CommAddress commAddress)
+    throws IOException, AddressNotPresentException;
   //NOTE-GM Assuming persistent CommAddress so no setter
-  public CommAddress getMyCommAddress();
+  CommAddress getMyCommAddress();
 }

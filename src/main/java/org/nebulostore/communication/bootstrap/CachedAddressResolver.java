@@ -7,18 +7,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.bootstrap.CommAddressResolver;
+import org.nebulostore.communication.exceptions.AddressNotPresentException;
 
 /**
  * Decorator adding caching of addresses.
  * @author Grzegorz Milka
  */
 class CachedAddressResolver implements CommAddressResolver {
-  private static final long CACHE_TIMEOUT_ = 60000; //60 seconds
+  // 60 seconds
+  private static final long CACHE_TIMEOUT = 60000;
   private static Logger logger_ = Logger.getLogger(CommAddressResolver.class);
-  private Map<CommAddress, InetSocketAddress> cache_ = 
+  private Map<CommAddress, InetSocketAddress> cache_ =
     Collections.synchronizedMap(new HashMap<CommAddress, InetSocketAddress>());
   private Timer timer_ = new Timer(true);
   private CommAddressResolver resolver_;
@@ -28,17 +30,17 @@ class CachedAddressResolver implements CommAddressResolver {
   }
 
   @Override
-  public InetSocketAddress resolve(CommAddress commAddress) throws IOException {
+  public InetSocketAddress resolve(CommAddress commAddress)
+    throws IOException, AddressNotPresentException {
     InetSocketAddress inetSocketAddress = cache_.get(commAddress);
-    if(inetSocketAddress == null) {
-      logger_.trace("CommAddress: " + commAddress + 
+    if (inetSocketAddress == null) {
+      logger_.trace("CommAddress: " + commAddress +
           " not present. Putting into cache.");
       inetSocketAddress = resolver_.resolve(commAddress);
       cache_.put(commAddress, inetSocketAddress);
-      timer_.schedule(new CacheCleaner(commAddress), CACHE_TIMEOUT_);
+      timer_.schedule(new CacheCleaner(commAddress), CACHE_TIMEOUT);
     }
     return inetSocketAddress;
-
   }
 
   @Override
@@ -64,7 +66,7 @@ class CachedAddressResolver implements CommAddressResolver {
    */
   private class CacheCleaner extends TimerTask {
     /**
-     * Address to delete
+     * Address to delete.
      */
     private CommAddress commAddress_;
 
@@ -74,8 +76,7 @@ class CachedAddressResolver implements CommAddressResolver {
 
     @Override
     public void run() {
-        cache_.remove(commAddress_);
+      cache_.remove(commAddress_);
     }
   }
-
 }

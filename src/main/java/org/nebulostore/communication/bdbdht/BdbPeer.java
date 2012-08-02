@@ -1,9 +1,16 @@
 package org.nebulostore.communication.bdbdht;
 
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.Durability;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
+import com.sleepycat.je.Transaction;
+
 import java.io.File;
-import java.net.URI;
-import java.net.InetSocketAddress;
-import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
@@ -31,16 +38,6 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.Durability;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
-import com.sleepycat.je.Transaction;
-
 /**
  * Implementation of berkely db based engine for...
  * @author marcin
@@ -58,7 +55,7 @@ public class BdbPeer extends Module {
   private boolean isProxy_;
   private CommAddress holderCommAddress_;
   //host1.planetlab.informatik.tu-darmstadt.de
-  private final CommAddress bdbHolderCommAddress = null;
+  private final CommAddress bdbHolderCommAddress_ = null;
 
   private final BlockingQueue<Message> senderInQueue_;
   private CommAddress peerAddress_;
@@ -119,11 +116,14 @@ public class BdbPeer extends Module {
     } else {
       logger_.info("Configuring as proxy");
       isProxy_ = true;
-      holderCommAddress_ = bdbHolderCommAddress;
+      holderCommAddress_ = bdbHolderCommAddress_;
     }
     logger_.info("fully initialized");
   }
 
+  /**
+   * @author Marcin Walas
+   */
   public class SendAdvertisement extends TimerTask {
     @Override
     public void run() {
@@ -137,9 +137,7 @@ public class BdbPeer extends Module {
   @Override
   public void endModule() {
     logger_.info("Ending bdb peer");
-
-    if (isProxy_) {
-    } else {
+    if (!isProxy_) {
       advertisementsTimer_.cancel();
       logger_.info("Closing database...");
       database_.close();
@@ -173,8 +171,10 @@ public class BdbPeer extends Module {
     Transaction t = env_.beginTransaction(null, null);
 
     DatabaseEntry data = new DatabaseEntry();
-    OperationStatus operationStatus = database_.get(t, new DatabaseEntry(key.toString().getBytes()), data,
-        LockMode.DEFAULT);
+    OperationStatus operationStatus = database_.get(t,
+            new DatabaseEntry(key.toString().getBytes()),
+            data,
+            LockMode.DEFAULT);
 
     if (operationStatus == OperationStatus.SUCCESS) {
       logger_.info("Performing merge on object from DHT");

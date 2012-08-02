@@ -65,7 +65,7 @@ public class ValueDHT implements Serializable {
     }
 
     try {
-      return new ValueDHT((Mergeable)ois.readObject());
+      return new ValueDHT((Mergeable) ois.readObject());
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {

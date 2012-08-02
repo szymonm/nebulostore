@@ -1,7 +1,6 @@
 package org.nebulostore.communication.address;
 
 import java.io.Serializable;
-import java.net.InetSocketAddress;
 import java.util.UUID;
 
 /**
@@ -9,7 +8,7 @@ import java.util.UUID;
  */
 public class CommAddress implements Serializable {
   private final UUID uuid_;
-  private static CommAddress zeroCommAddress_ = null;
+  private static CommAddress zeroCommAddress_;
 
   public CommAddress(long mostSigBits, long leastSigBits) {
     uuid_ = new UUID(mostSigBits, leastSigBits);
@@ -26,8 +25,8 @@ public class CommAddress implements Serializable {
   /**
    * Return CommAddress symbolizing any or none address depending on context.
    */
-  public static CommAddress getZero(){
-    if(zeroCommAddress_ == null) {
+  public static CommAddress getZero() {
+    if (zeroCommAddress_ == null) {
       zeroCommAddress_ = new CommAddress(0L, 0L);
     }
     return zeroCommAddress_;
@@ -39,7 +38,7 @@ public class CommAddress implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    return (o instanceof CommAddress) && 
+    return (o instanceof CommAddress) &&
       (uuid_.equals(((CommAddress) o).uuid_));
   }
 

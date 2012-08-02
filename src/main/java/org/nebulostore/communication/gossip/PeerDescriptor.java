@@ -1,7 +1,9 @@
 package org.nebulostore.communication.gossip;
 
-import org.nebulostore.communication.address.CommAddress;
 import java.io.Serializable;
+
+import org.nebulostore.communication.address.CommAddress;
+
 /**
  * @author Grzegorz Milka
  */
@@ -28,11 +30,11 @@ public class PeerDescriptor implements Serializable {
   }
 
   /**
-   * Equal iff address is equal
+   * Equal iff address is equal.
    */
   @Override
   public boolean equals(Object o) {
-    return (o instanceof PeerDescriptor) && 
+    return (o instanceof PeerDescriptor) &&
       (peerAddress_.equals(((PeerDescriptor) o).getPeerAddress()));
   }
 
@@ -43,7 +45,7 @@ public class PeerDescriptor implements Serializable {
 
   @Override
   public String toString() {
-    return "PeerDescriptor with address: " + getPeerAddress() + 
+    return "PeerDescriptor with address: " + getPeerAddress() +
       ", age: " + getAge();
   }
 }

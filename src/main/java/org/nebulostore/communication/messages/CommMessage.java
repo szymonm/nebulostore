@@ -14,7 +14,7 @@ import org.nebulostore.communication.address.CommAddress;
 public abstract class CommMessage extends Message implements Serializable {
 
   private CommAddress commSourceAddress_;
-  private final CommAddress commDestAddress_;
+  private CommAddress commDestAddress_;
 
   public CommMessage(CommAddress sourceAddress, CommAddress destAddress) {
     commSourceAddress_ = sourceAddress;
@@ -37,6 +37,10 @@ public abstract class CommMessage extends Message implements Serializable {
 
   public void setSourceAddress(CommAddress sourceAddress) {
     commSourceAddress_ = sourceAddress;
+  }
+
+  public void setDestinationAddress(CommAddress destAddress) {
+    commDestAddress_ = destAddress;
   }
 
   @Override

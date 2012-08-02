@@ -1,16 +1,11 @@
 package org.nebulostore.communication.kademlia;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 
 import org.apache.log4j.Logger;
@@ -33,19 +28,17 @@ import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.communication.messages.kademlia.KademliaMessage;
 import org.planx.xmlstore.routing.Identifier;
 import org.planx.xmlstore.routing.Kademlia;
-import org.planx.xmlstore.routing.RoutingException;
 
 /**
  * Internal Module wrapper for DHT based on Kademlia functionlity.
- * 
+ *
  * @author Marcin Walas
  */
 public class KademliaPeer extends Module {
 
   private static Logger logger_ = Logger.getLogger(KademliaPeer.class);
-
-  private static final String KADEMLIA_BOOTSTRAP_ADV_ID_STR = "";/*"urn:jxta:"
-                                                                   + "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";*/
+  /*"urn:jxta:" + "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04"*/
+  private static final String KADEMLIA_BOOTSTRAP_ADV_ID_STR = "";
 
   private static final int MAX_BOOTSTRAP_COUNT = 3;
 
@@ -75,6 +68,9 @@ public class KademliaPeer extends Module {
     throw new UnsupportedOperationException("Kademlia unsupported for now");
   }
 
+  /**
+   * @author Marcin Walas
+   */
   class BootstrapTask extends TimerTask {
     @Override
     public void run() {
@@ -142,7 +138,7 @@ public class KademliaPeer extends Module {
    * Introduced because of the fact that queue for incoming messages in
    * KademliaPeer is collecting operations from modules as well as network
    * reponses from remote hosts.
-   * 
+   *
    * @author Marcin Walas
    */
   class MessageWorker extends Module {

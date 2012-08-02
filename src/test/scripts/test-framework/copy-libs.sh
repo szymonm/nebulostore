@@ -1,13 +1,29 @@
 #!/bin/bash
 
 BUILD_LOCATION_FILE=build-location.txt
-SLICE_HOSTS_FILE=all-hosts.txt
+SLICE_HOSTS_FILE=slice-hosts.txt
 KEY_LOCATION_FILE=key-location.txt
+PRIMARY_SLICE_HOST_FILE=primary-slice-host.txt
+BOOTSTRAP_SERVER_FILE=bootstrap-server.txt
 
 BUILD_DIR=`cat $BUILD_LOCATION_FILE`
 SLICE_HOSTS=`cat $SLICE_HOSTS_FILE`
+PRIMARY_HOST=`cat $PRIMARY_SLICE_HOST_FILE`
 KEY_LOCATION=`cat $KEY_LOCATION_FILE`
+BOOTSTRAP_SERVER=`cat $BOOTSTRAP_SERVER_FILE`
+BDB_HOLDER="host1.planetlab.informatik.tu-darmstadt.de"
 
+USER=`cat ssh-user.txt`
+
+echo "Copying to $PRIMARY_HOST"
+bash scp.sh host2.planetlab.informatik.tu-darmstadt.de $PRIMARY_BUILD_DIR/lib $KEY_LOCATION  lib 
+:w
+
+echo "Copying to BootstrapServer: $BOOTSTRAP_SERVER"
+bash scp.sh $BOOTSTRAP_SERVER $BUILD_DIR/lib $KEY_LOCATION lib
+
+echo "Configuring BDB DHT holder at $BDB_HOLDER"
+bash scp.sh $BDB_HOLDER/lib $BUILD_DIR $KEY_LOCATION lib
 
 IFS=$'\n'; 
 for HOST in $SLICE_HOSTS; do 

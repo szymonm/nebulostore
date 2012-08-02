@@ -135,4 +135,12 @@
     </antcall>
   </target>
 
+  <!-- Test builds -->
+
+  <target name="runpingpong">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.testing.RunPingPong" />
+    </antcall>
+  </target>
+
 </project>
