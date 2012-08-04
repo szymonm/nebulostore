@@ -12,7 +12,6 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.StoreAsynchronousMessage;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
@@ -28,8 +27,8 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
 public class SendAsynchronousMessagesForPeerModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(ResponseWithAsynchronousMessagesModule.class);
 
-  private CommAddress recipient_;
-  private AsynchronousMessage message_;
+  private final CommAddress recipient_;
+  private final AsynchronousMessage message_;
 
   public SendAsynchronousMessagesForPeerModule(CommAddress recipient,
       AsynchronousMessage message, BlockingQueue<Message> dispatcherQueue) {
@@ -38,7 +37,7 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
     runThroughDispatcher(dispatcherQueue);
   }
 
-  private MessageVisitor<Void> visitor_ = new SendAsynchronousMessagesForPeerModuleVisitor();
+  private final MessageVisitor<Void> visitor_ = new SendAsynchronousMessagesForPeerModuleVisitor();
 
   @Override
   protected void processMessage(Message message) throws NebuloException {
@@ -51,15 +50,14 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
   public class SendAsynchronousMessagesForPeerModuleVisitor extends MessageVisitor<Void> {
     @Override
     public Void visit(JobInitMessage message) {
-      GetDHTMessage m = new GetDHTMessage(jobId_,
-          KeyDHT.fromSerializableObject(new InstanceID(recipient_)));
+      GetDHTMessage m = new GetDHTMessage(jobId_, recipient_.toKeyDHT());
       networkQueue_.add(m);
       return null;
     }
 
     @Override
     public Void visit(ValueDHTMessage message) {
-      if (message.getKey().equals(KeyDHT.fromSerializableObject(new InstanceID(recipient_)))) {
+      if (message.getKey().equals(recipient_.toKeyDHT())) {
         if (message.getValue().getValue() instanceof InstanceMetadata) {
           InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
           for (InstanceID inboxHolder : metadata.getInboxHolders()) {

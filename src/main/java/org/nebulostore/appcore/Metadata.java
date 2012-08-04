@@ -42,8 +42,7 @@ public class Metadata implements Mergeable, Serializable {
 
   @Override
   public Mergeable merge(Mergeable other) {
-    // TODO: Implement this properly,
-    //       Maybe composite objects also mergeable?
+    // TODO: implement this!
     return this;
   }
 

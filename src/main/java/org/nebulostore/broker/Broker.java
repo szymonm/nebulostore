@@ -17,7 +17,10 @@ import org.nebulostore.broker.messages.OfferReplyMessage;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
+import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.networkmonitor.NetworkContext;
+import org.nebulostore.timer.IMessageGenerator;
 
 /**
  * @author bolek
@@ -36,8 +39,13 @@ public class Broker extends JobModule {
     visitor_ = new BrokerVisitor();
     // The instance that is always running (responsible for timers etc).
     if (permanentInstance) {
-      NetworkContext.getInstance().addContextChangeMessage(
-          new CommPeerFoundMessage(jobId, null, null));
+      NetworkContext.getInstance().addContextChangeMessageGenerator(
+          new IMessageGenerator() {
+            @Override
+            public Message generate() {
+              return new CommPeerFoundMessage(jobId_, null, null);
+            }
+          });
     }
   }
 
@@ -47,7 +55,7 @@ public class Broker extends JobModule {
   private class BrokerVisitor extends MessageVisitor<Void> {
     @Override
     public Void visit(JobInitMessage message) {
-      // Currently empty.
+      logger_.debug("Initialized");
       return null;
     }
 
@@ -72,11 +80,11 @@ public class Broker extends JobModule {
         ReplicationGroup currGroup = new ReplicationGroup(BrokerContext.getInstance().getReplicas(),
             new BigInteger("0"), new BigInteger("1000000"));
         PutKeyModule module = new PutKeyModule(NetworkContext.getAppKey(), currGroup, outQueue_);
-        // Exception from getResult() is simply passed to the user.
+
         try {
           module.getResult(TIMEOUT_SEC);
         } catch (NebuloException exception) {
-          logger_.debug("Unsuccessful DHT update.");
+          logger_.warn("Unsuccessful DHT update.");
         }
       } else {
         logger_.debug("Peer " + message.getSourceAddress() + " rejected our offer.");
@@ -87,7 +95,7 @@ public class Broker extends JobModule {
 
     @Override
     public Void visit(CommPeerFoundMessage message) {
-      // New peer found, send an offer.
+      logger_.debug("Found new peer - sending offers.");
       Vector<CommAddress> knownPeers = NetworkContext.getInstance().getKnownPeers();
       Iterator<CommAddress> iterator = knownPeers.iterator();
       while (iterator.hasNext()) {
@@ -95,7 +103,7 @@ public class Broker extends JobModule {
         if (BrokerContext.getInstance().getUserContracts(new InstanceID(address)) == null &&
             !address.equals(CommunicationPeer.getPeerAddress())) {
           // Send offer to new peer (10MB by default).
-          networkQueue_.add(new ContractOfferMessage(message.getId(), null, address,
+          networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), null, address,
               new Contract("contract", new InstanceID(address), 10 * 1024)));
         }
       }

@@ -64,6 +64,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
    */
   public WriteNebuloObjectModule(NebuloAddress nebuloKey, NebuloObject object,
       BlockingQueue<Message> dispatcherQueue, Set<String> previousVersionSHAs) {
+    logger_.debug("ctor");
     address_ = nebuloKey;
     object_ = object;
     previousVersionSHAs_ = previousVersionSHAs;
@@ -102,6 +103,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
     @Override
     public Void visit(JobInitMessage message) {
       if (state_ == STATE.INIT) {
+        logger_.debug("Initializing...");
         // State 1 - Send groupId to DHT and wait for reply.
         state_ = STATE.DHT_QUERY;
         jobId_ = message.getId();
@@ -161,6 +163,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
 
     @Override
     public Void visit(ConfirmationMessage message) {
+      logger_.debug("received confirmation");
       if (state_ == STATE.REPLICA_UPDATE || state_ == STATE.RETURNED_WAITING_FOR_REST) {
         confirmations_++;
         recipientsSet_.remove(message.getSourceAddress());
@@ -173,6 +176,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
 
     @Override
     public Void visit(UpdateRejectMessage message) {
+      logger_.debug("received updateRejectMessage");
       switch (state_) {
         case REPLICA_UPDATE:
           recipientsSet_.remove(message.getSourceAddress());
@@ -193,6 +197,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
 
     @Override
     public Void visit(UpdateWithholdMessage message) {
+      logger_.debug("reject UpdateWithholdMessage");
       if (state_ == STATE.REPLICA_UPDATE || state_ == STATE.RETURNED_WAITING_FOR_REST) {
         recipientsSet_.remove(message.getSourceAddress());
         waitingForTransactionResult_.remove(message.getDestinationAddress());
@@ -206,6 +211,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
 
     @Override
     public Void visit(ErrorCommMessage message) {
+      logger_.debug("received ErrorCommMessage");
       if (state_ == STATE.REPLICA_UPDATE || state_ == STATE.RETURNED_WAITING_FOR_REST) {
         waitingForTransactionResult_.remove(message.getMessage().getDestinationAddress());
         tryReturnSemiResult();
@@ -216,6 +222,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
     }
 
     private void tryReturnSemiResult() {
+      logger_.debug("trying to return semi result");
       if (recipientsSet_.isEmpty() && confirmations_ < CONFIRMATIONS_REQUIRED) {
         sendTransactionAnswer(TransactionAnswer.ABORT);
         endWithError(new NebuloException("Not enough replicas responding to update file."));
@@ -224,14 +231,17 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
           /* big file - requires only CONFIRMATIONS_REQUIERED ConfirmationMessages,
            * returns from write and updates other replicas in background */
           if (confirmations_ >= CONFIRMATIONS_REQUIRED && state_ == STATE.REPLICA_UPDATE) {
+            logger_.debug("Query phase completed, waiting for result.");
             returnSemiResult(null);
             state_ = STATE.RETURNED_WAITING_FOR_REST;
           }
           if (recipientsSet_.isEmpty()) {
+            logger_.debug("Query phase completed, waiting for result.");
             returnSemiResult(null);
           }
         } else {
           if (recipientsSet_.isEmpty()) {
+            logger_.debug("Query phase completed, waiting for result.");
             returnSemiResult(null);
           }
         }
@@ -240,6 +250,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
 
     @Override
     public Void visit(TransactionAnswerInMessage message) {
+      logger_.debug("received TransactionResult from parent");
       sendTransactionAnswer(message.answer_);
       if (message.answer_ == TransactionAnswer.COMMIT) {
         // Peers that didn't response should get an AM.
@@ -259,11 +270,12 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         // TODO(szm): don't like updating version here
         object_.newVersionCommitted(commitVersion_);
       }
-      endJobModule();
+      endWithSuccess(null);
       return null;
     }
 
     private void sendTransactionAnswer(TransactionAnswer answer) {
+      logger_.debug("sending transaction answer");
       for (Map.Entry<CommAddress, String> entry : waitingForTransactionResult_.entrySet()) {
         networkQueue_.add(new TransactionResultMessage(entry.getValue(), null, entry.getKey(),
             answer));
@@ -298,6 +310,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
 
   @Override
   protected void performSecondPhase(TransactionAnswer answer) {
+    logger_.debug("Performing second phase");
     inQueue_.add(new TransactionAnswerInMessage(answer));
   }
 }

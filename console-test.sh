@@ -47,7 +47,7 @@ else
 fi
 
 sequence='unknown'
-if [[ $platform=='mac' ]]; then
+if [[ $platform == 'mac' ]]; then
   sequence=`jot $PEERS_NUM`
 else
   sequence=`seq 1 $PEERS_NUM`
@@ -70,6 +70,6 @@ do
 done
 
 cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR/1/resources/conf/communication/BdbPeer.xml
-rm -rf /Users/bolek/tmp/baza_nebulo/
-mkdir /Users/bolek/tmp/baza_nebulo/
+rm -rf /tmp/nebulostore/nebulo_baza
+mkdir -p /tmp/nebulostore/nebulo_baza
 

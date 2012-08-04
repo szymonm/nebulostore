@@ -17,7 +17,7 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
 public class TimerModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(TimerModule.class);
 
-  private MessageVisitor<Void> visitor_ = new TimerModuleVisitor();
+  private final MessageVisitor<Void> visitor_ = new TimerModuleVisitor();
 
 
   TimerModule(BlockingQueue<Message> dispatcherQueue) {
@@ -42,14 +42,15 @@ public class TimerModule extends JobModule {
    */
   private class TimerModuleVisitor extends MessageVisitor<Void> {
     TimerContext context_ = TimerContext.getInstance();
+    @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
-      logger_.warn("timer module started");
+      logger_.debug("timer module started");
       context_.lock_.lock();
       try {
         while (context_.nextMessageTime() != null) {
           if (context_.nextMessageTime() <= System.currentTimeMillis()) {
-            logger_.warn("sending delayed message");
+            logger_.debug("sending delayed message");
             outQueue_.add(context_.pollNextMessage());
           } else {
             context_.waitingOnNext_.await(

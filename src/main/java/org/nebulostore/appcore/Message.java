@@ -2,6 +2,7 @@ package org.nebulostore.appcore;
 
 import java.io.Serializable;
 
+import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 
@@ -9,6 +10,8 @@ import org.nebulostore.crypto.CryptoUtils;
  * Base class for messages.
  */
 public abstract class Message implements Serializable {
+  private static Logger logger_ = Logger.getLogger(Message.class);
+
   private static final long serialVersionUID = -2032656006415029507L;
 
   public Message() {
@@ -25,7 +28,7 @@ public abstract class Message implements Serializable {
 
   public JobModule getHandler() throws NebuloException {
     // TODO(bolek): Change it into a more specific exception type.
-    throw new NebuloException("This is not an initializing message!");
+    throw new NebuloException("This is not an initializing message: " + this.getClass().toString());
   }
 
   public String getId() {

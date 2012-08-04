@@ -54,6 +54,7 @@ public class GetNebuloObjectModule extends GetModule<NebuloObject> {
     @Override
     public Void visit(SendObjectMessage message) {
       if (state_ == STATE.REPLICA_FETCH) {
+        logger_.debug("Got object - returning");
         NebuloObject nebuloObject;
         try {
           nebuloObject = (NebuloObject) CryptoUtils.decryptObject(message.getEncryptedEntity());

@@ -23,11 +23,11 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
+import org.nebulostore.communication.dht.exceptions.ValueNotFound;
 import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.jxta.PeerDiscoveryService;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
@@ -40,6 +40,7 @@ import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
+import org.nebulostore.networkmonitor.NetworkContext;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
@@ -143,6 +144,9 @@ public class BdbPeer extends Module implements DiscoveryListener {
     logger_.info("fully initialized");
   }
 
+  /**
+   * Module that sends holder advertisements.
+   */
   public class SendAdvertisement extends TimerTask {
 
     @Override
@@ -210,8 +214,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
     Transaction t = env_.beginTransaction(null, null);
 
     DatabaseEntry data = new DatabaseEntry();
-    OperationStatus operationStatus = database_.get(t, new DatabaseEntry(key.toString().getBytes()), data,
-        LockMode.DEFAULT);
+    OperationStatus operationStatus = database_.get(t, new DatabaseEntry(key.toString().getBytes()),
+        data, LockMode.DEFAULT);
 
     if (operationStatus == OperationStatus.SUCCESS) {
       logger_.info("Performing merge on object from DHT");
@@ -235,7 +239,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
   private void get(GetDHTMessage message, boolean fromNetwork,
       CommAddress sourceAddress) {
-    logger_.info("GetDHTMessage in holder");
+    logger_.info("GetDHTMessage in holder key:" + message.getKey().toString());
     GetDHTMessage getMsg = message;
 
     KeyDHT key = getMsg.getKey();
@@ -257,9 +261,22 @@ public class BdbPeer extends Module implements DiscoveryListener {
     } else {
       // TODO: Error handling
       logger_
-      .error("Unable to read from database. Should send an ErrorDHTMessage back");
-      outQueue_.add(new ErrorDHTMessage(getMsg, new CommException(
+      .warn("Unable to read from database. Key: " + message.getKey() +
+          ". Should send an ErrorDHTMessage back. " +
+          "Operation status: " + operationStatus);
+      if (fromNetwork) {
+        if (operationStatus == OperationStatus.NOTFOUND) {
+          jxtaInQueue_.add(new BdbMessageWrapper(null, sourceAddress, new ErrorDHTMessage(getMsg,
+              new ValueNotFound("key not found"))));
+        } else {
+          jxtaInQueue_.add(new BdbMessageWrapper(null, sourceAddress, new ErrorDHTMessage(getMsg,
+              new NebuloException("Unable to read from bdb database. Operation status: " +
+                  operationStatus))));
+        }
+      } else {
+        outQueue_.add(new ErrorDHTMessage(getMsg, new CommException(
           "Unable to read from bdb database. Operation status: " + operationStatus)));
+      }
     }
     logger_.info("GetDHTMessage processing finished");
 
@@ -284,6 +301,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
     if (isProxy_ && holderCommAddress_ == null) {
       try {
+        logger_.debug("Holder not set up, waiting...");
         Thread.sleep(500);
       } catch (InterruptedException e) {
         logger_.error(e);
@@ -295,8 +313,8 @@ public class BdbPeer extends Module implements DiscoveryListener {
     if (isProxy_) {
       if (msg instanceof DHTMessage) {
         logger_.info("Message accepted. " + msg);
-        logger_.info("Putting message to be sent to holder (taskId = " +
-            msg.getId() + ")");
+        logger_.info("Putting message " + msg.getClass().getName() + " to be sent to holder " +
+            "(taskId = " + msg.getId() + ")");
         jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
             (DHTMessage) msg));
       } else {
@@ -304,7 +322,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
       }
 
     } else {
-      logger_.info("Message accepted. " + msg);
+      logger_.info("Message accepted. " + msg.getClass());
       boolean fromNetwork = false;
       CommAddress sourceAddress = null;
       Message message;

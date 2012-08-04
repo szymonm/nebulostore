@@ -1,5 +1,6 @@
 package org.nebulostore.timer;
 
+import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Condition;
@@ -9,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.TimeoutMessage;
 
 /**
  * Context for delayed messages(timer module).
@@ -17,7 +19,7 @@ import org.nebulostore.appcore.Message;
 public final class TimerContext {
   private static Logger logger_ = Logger.getLogger(TimerContext.class);
 
-  private PriorityQueue<TimedMessage> delayedMessagesQueue_;
+  private final PriorityQueue<TimedMessage> delayedMessagesQueue_;
   private static TimerContext instance_;
 
   TimerModule timerModule_;
@@ -40,6 +42,26 @@ public final class TimerContext {
     else {
       if (curNextTime != null && time < curNextTime) {
         waitingOnNext_.signal();
+      }
+    }
+    lock_.unlock();
+  }
+
+  public void notifyWithTimeoutMessageAfter(String jobId, long miliseconds) {
+    addDelayedMessage(miliseconds, new TimeoutMessage(jobId));
+  }
+
+  public void cancelNotifications(String jobId) {
+    cancelDelayedMessages(jobId);
+  }
+
+  public synchronized void cancelDelayedMessages(String jobId) {
+    lock_.lock();
+    Iterator<TimedMessage> it = delayedMessagesQueue_.iterator();
+    while (it.hasNext()) {
+      TimedMessage message = it.next();
+      if (message.message_.getId().equals(jobId)) {
+        it.remove();
       }
     }
     lock_.unlock();
@@ -77,8 +99,8 @@ public final class TimerContext {
    * Delayed message class.
    */
   private class TimedMessage implements Comparable<TimedMessage> {
-    private Long time_;
-    private Message message_;
+    private final Long time_;
+    private final Message message_;
 
     public TimedMessage(Long time, Message message) {
       time_ = time;

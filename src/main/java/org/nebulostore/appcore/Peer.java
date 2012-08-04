@@ -10,18 +10,16 @@ import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.AddSynchroPeerModule;
-import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
-import org.nebulostore.broker.NetworkContext;
+import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.query.client.DQLClient;
-import org.nebulostore.query.executor.DQLExecutor;
 import org.nebulostore.timer.IMessageGenerator;
-import org.nebulostore.timer.PeriodicMessageSender;
 
 /**
  * @author marcin This is the entry point for a regular peer with full
@@ -88,17 +86,14 @@ public class Peer {
       exception.printStackTrace();
       System.exit(-1);
     }
-    // Create Broker.
-    //String brokerJobId = CryptoUtils.getRandomId().toString();
-    //dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(
-    //        brokerJobId, true)));
+
     NetworkContext.getInstance().setAppKey(appKey);
     GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
 
     // Create DQL Interpreter
-    String dqlJobId = CryptoUtils.getRandomId().toString();
-    dispatcherInQueue_.add(new JobInitMessage(dqlJobId, new DQLExecutor(
-        dqlJobId, true)));
+//    String dqlJobId = CryptoUtils.getRandomId().toString();
+//    dispatcherInQueue_.add(new JobInitMessage(dqlJobId, new DQLExecutor(
+//        dqlJobId, true)));
 
     // Run everything.
     networkThread_.start();
@@ -108,6 +103,16 @@ public class Peer {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+
+    //Register instance in DHT
+    GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
+    dispatcherInQueue_.add(new JobInitMessage(new RegisterInstanceInDHTModule()));
+
+//  Create Broker.
+    String brokerJobId = CryptoUtils.getRandomId().toString();
+    dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(
+        brokerJobId, true)));
+
     dispatcherThread_.start();
 
     JXTAPeer.startFeeding_ = true;
@@ -116,18 +121,19 @@ public class Peer {
   }
 
   protected static void runInitialModules(BlockingQueue<Message> dispatcherQueue) {
-    //TODO(szm) move it somewhere
+    // TODO(szm) move it somewhere
 
     /* Periodically checking asynchronous messages. */
-    IMessageGenerator retriveAMGenerator = new IMessageGenerator() {
-      @Override
-      public Message generate() {
-        return new JobInitMessage(new RetrieveAsynchronousMessagesModule());
-      }
-    };
-    PeriodicMessageSender sender = new PeriodicMessageSender(retriveAMGenerator,
-        RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL, dispatcherQueue);
-    dispatcherQueue.add(new JobInitMessage(sender));
+//    IMessageGenerator retriveAMGenerator = new IMessageGenerator() {
+//      @Override
+//      public Message generate() {
+//        return new JobInitMessage(new RetrieveAsynchronousMessagesModule());
+//      }
+//    };
+//    PeriodicMessageSender sender = new PeriodicMessageSender(
+//        retriveAMGenerator, RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL,
+//        dispatcherQueue);
+//    dispatcherQueue.add(new JobInitMessage(sender));
 
     /* Adds found peer to synchro peers */
     IMessageGenerator addFoundSynchroPeer = new IMessageGenerator() {
@@ -136,7 +142,20 @@ public class Peer {
         return new JobInitMessage(new AddSynchroPeerModule());
       }
     };
-    NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
+    NetworkContext.getInstance().addContextChangeMessageGenerator(
+        addFoundSynchroPeer);
+
+    /* Turning on statistics gossiping module */
+//    IMessageGenerator gossipingModuleGenerator = new IMessageGenerator() {
+//      @Override
+//      public Message generate() {
+//        return new JobInitMessage(new RandomPeersGossipingModule());
+//      }
+//    };
+//    PeriodicMessageSender gossiping = new PeriodicMessageSender(
+//        gossipingModuleGenerator, RandomPeersGossipingModule.INTERVAL,
+//        dispatcherQueue);
+//    dispatcherQueue.add(new JobInitMessage(gossiping));
   }
 
   protected static void finishPeer() {

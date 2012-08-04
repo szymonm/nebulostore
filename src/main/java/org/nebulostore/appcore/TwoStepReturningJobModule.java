@@ -23,12 +23,17 @@ public abstract class TwoStepReturningJobModule<R, SR, A> extends ReturningJobMo
 
   protected SR semiResult_;
   protected Semaphore answerMutex_;
+  protected Semaphore semiResultMutex_;
   protected A answer_;
   protected boolean afterFirstResult_;
 
   public TwoStepReturningJobModule() {
     super();
     answerMutex_ = new Semaphore(0);
+    if (answerMutex_.availablePermits() != 0) {
+      logger_.error("Failed to initialize mutex.");
+    }
+    semiResultMutex_ = new Semaphore(0);
     if (answerMutex_.availablePermits() != 0) {
       logger_.error("Failed to initialize mutex.");
     }
@@ -42,10 +47,9 @@ public abstract class TwoStepReturningJobModule<R, SR, A> extends ReturningJobMo
    */
   protected void returnSemiResult(SR semiResult) {
     semiResult_ = semiResult;
-    mutex_.release();
+    semiResultMutex_.release();
     try {
       answerMutex_.acquire();
-      mutex_.acquire();
       performSecondPhase(answer_);
     } catch (InterruptedException exception) {
       endWithError(new NebuloException("Interrupted", exception));
@@ -63,7 +67,7 @@ public abstract class TwoStepReturningJobModule<R, SR, A> extends ReturningJobMo
    */
   public SR getSemiResult(int timeout) throws NebuloException {
     try {
-      if (!mutex_.tryAcquire(timeout, TimeUnit.SECONDS))
+      if (!semiResultMutex_.tryAcquire(timeout, TimeUnit.SECONDS))
           throw new NebuloException("Timeout");
     } catch (InterruptedException exception) {
       throw new NebuloException("Interrupted", exception);
@@ -72,7 +76,6 @@ public abstract class TwoStepReturningJobModule<R, SR, A> extends ReturningJobMo
       throw error_;
     } else {
       SR result = semiResult_;
-      mutex_.release();
       afterFirstResult_ = true;
       return result;
     }

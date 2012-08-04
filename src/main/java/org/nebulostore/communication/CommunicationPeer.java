@@ -11,7 +11,6 @@ import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.bdbdht.BdbPeer;
-import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.communication.kademlia.KademliaPeer;
 import org.nebulostore.communication.messages.CommMessage;
@@ -118,7 +117,7 @@ public class CommunicationPeer extends Module {
           jxtaPeerInQueue_, reconfigureRequest);
 
     } else {
-      throw new CommException("Unsupported DHT Provider in configuration");
+      throw new NebuloException("Unsupported DHT Provider in configuration");
     }
     dhtPeerThread_ = new Thread(dhtPeer_, "Nebulostore.Communication.DHT");
     dhtPeerThread_.start();
@@ -163,12 +162,13 @@ public class CommunicationPeer extends Module {
 
     if (msg instanceof DHTMessage) {
       if (msg instanceof InDHTMessage) {
-        logger_.debug("InDHTMessage forwarded to DHT");
+        logger_.debug("InDHTMessage forwarded to DHT: " + msg.getClass().toString());
         dhtInQueue_.add(msg);
-      }
-      if (msg instanceof OutDHTMessage) {
-        logger_.debug("OutDHTMessage forwarded to Dispatcher");
+      } else if (msg instanceof OutDHTMessage) {
+        logger_.debug("OutDHTMessage forwarded to Dispatcher: " + msg.getClass().toString());
         outQueue_.add(msg);
+      } else {
+        logger_.warn("Message lost");
       }
       return;
     }

@@ -2,6 +2,7 @@ package org.nebulostore.async;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.InstanceMetadata;
 import org.nebulostore.appcore.JobModule;
@@ -14,7 +15,6 @@ import org.nebulostore.async.messages.BrokerErrorMessage;
 import org.nebulostore.async.messages.DeleteNebuloObjectMessage;
 import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
 import org.nebulostore.broker.BrokerContext;
-import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
@@ -35,7 +35,7 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
   protected void processMessage(Message message) throws NebuloException {
     message.accept(visitor_);
   }
-  private RAMVisitor visitor_ = new RAMVisitor();
+  private final RAMVisitor visitor_ = new RAMVisitor();
 
   /**
    * Visitor.
@@ -43,22 +43,26 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
    */
   private class RAMVisitor extends MessageVisitor<Void> {
     BrokerContext context_ = BrokerContext.getInstance();
+    InstanceID instanceID_ = GlobalContext.getInstance().getInstanceID();
 
     /** Start of download of AM. Requests for Metadata containing inboxHolders. */
+    @Override
     public Void visit(JobInitMessage message) {
       GetDHTMessage m = new GetDHTMessage(jobId_,
-          KeyDHT.fromSerializableObject(context_.instanceID_));
+          instanceID_.toKeyDHT());
       networkQueue_.add(m);
       return null;
     }
 
+    @Override
     public Void visit(ErrorDHTMessage message) {
       error(message.getId(), new NebuloException("Unable to get synchro peers from DHT."));
       return null;
     }
 
+    @Override
     public Void visit(ValueDHTMessage message) {
-      if (message.getKey().equals(KeyDHT.fromSerializableObject(context_.instanceID_))) {
+      if (message.getKey().equals(instanceID_.toKeyDHT())) {
         if (message.getValue().getValue() instanceof InstanceMetadata) {
           InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
           context_.myInboxHolders_ = metadata.getInboxHolders();
@@ -74,6 +78,7 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
+    @Override
     public Void visit(AsynchronousMessagesMessage message) {
       if (!context_.waitingForMessages_.remove(message.getId())) {
         logger_.warn("Received not expected message.");

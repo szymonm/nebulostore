@@ -4,10 +4,14 @@ import java.io.Serializable;
 
 import net.jxta.peer.PeerID;
 
+import org.nebulostore.communication.dht.KeyDHT;
+
 /**
  * @author Marcin Walas
  */
 public class CommAddress implements Serializable {
+  private static final long serialVersionUID = 3073640256547487088L;
+
   private final PeerID peerId_;
 
   public CommAddress(PeerID peerId) {
@@ -32,5 +36,9 @@ public class CommAddress implements Serializable {
   @Override
   public String toString() {
     return peerId_.toString();
+  }
+
+  public KeyDHT toKeyDHT() {
+    return KeyDHT.fromSerializableObject(this);
   }
 }

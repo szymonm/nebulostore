@@ -49,14 +49,17 @@ public class Replicator extends JobModule {
 
   private static final int UPDATE_TIMEOUT_SEC = 10;
 
-  private static final int LOCK_TIMEOUT_SEC = 2;
+  private static final int LOCK_TIMEOUT_SEC = 5;
 
   private static final int GET_OBJECT_TIMEOUT_SEC = 10;
 
   // Hashtable is synchronized.
+
+  //TODO(szm): filesLocations and previousVersions should be stored on disk!!
   private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
   private static Hashtable<ObjectId, Set<String>> previousVersions_ = new Hashtable<ObjectId,
       Set<String>>();
+
   private static Hashtable<ObjectId, Boolean> freshnessMap_ =
       new Hashtable<ObjectId, Boolean>(256);
 
@@ -66,7 +69,7 @@ public class Replicator extends JobModule {
 
   public Replicator(String jobId, BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
     super(jobId);
-    logger_.info("Replicator ctor");
+    logger_.debug("Replicator ctor");
     setInQueue(inQueue);
     setOutQueue(outQueue);
     visitor_ = new ReplicatorVisitor();
@@ -87,7 +90,9 @@ public class Replicator extends JobModule {
 
     @Override
     public Void visit(QueryToStoreObjectMessage message) throws NebuloException {
-      logger_.info("StoreObjectMessage received");
+      logger_.debug("StoreObjectMessage received");
+      jobId_ = message.getId();
+
       QueryToStoreResult result = queryToUpdateObject(message.getObjectId(),
           message.getEncryptedEntity(), message.getPreviousVersionSHAs());
       switch (result) {
@@ -111,6 +116,7 @@ public class Replicator extends JobModule {
             abortUpdateObject(message.getObjectId());
             throw new NebuloException("Wrong message type received.", exception);
           }
+          endJobModule();
           break;
         case OBJECT_OUT_OF_DATE:
           networkQueue_.add(new UpdateWithholdMessage(message.getSourceJobId(),
@@ -140,7 +146,7 @@ public class Replicator extends JobModule {
 
     @Override
     public Void visit(TransactionResultMessage message) {
-      logger_.info("CommitObjectMessage received");
+      logger_.debug("TransactionResultMessage received: " + message.getResult());
       if (storeWaitingForCommit_ == null) {
         //TODO(szm): ignore late abort transaction messages send by timer.
         logger_.warn("Unexpected commit message received.");
@@ -160,6 +166,7 @@ public class Replicator extends JobModule {
 
     @Override
     public Void visit(GetObjectMessage message) {
+      jobId_ = message.getId();
       EncryptedObject enc;
       Set<String> versions;
       try {
@@ -186,6 +193,7 @@ public class Replicator extends JobModule {
 
     @Override
     public Void visit(DeleteObjectMessage message) {
+      jobId_ = message.getId();
       try {
         deleteObject(message.getObjectId());
         networkQueue_.add(new ConfirmationMessage(message.getSourceJobId(), message
@@ -201,6 +209,7 @@ public class Replicator extends JobModule {
 
     @Override
     public Void visit(ObjectOutdatedMessage message) {
+      jobId_ = message.getId();
       freshnessMap_.put(message.getAddress().getObjectId(), false);
       try {
         GetEncryptedObjectModule getModule = new GetEncryptedObjectModule(message.getAddress(),
@@ -250,7 +259,7 @@ public class Replicator extends JobModule {
    */
   public static QueryToStoreResult queryToUpdateObject(ObjectId objectId,
       EncryptedObject encryptedObject, Set<String> previousVersions) {
-    logger_.info("Checking store consistency");
+    logger_.debug("Checking store consistency");
 
     String currentObjectVersion = null;
 
@@ -268,6 +277,7 @@ public class Replicator extends JobModule {
         return QueryToStoreResult.INVALID_VERSION;
       }
     } else {
+      logger_.debug("storing new file");
       location = getLocationPrefix() + objectId.toString();
       locksMap_.put(objectId, new Semaphore(1));
     }
@@ -287,6 +297,7 @@ public class Replicator extends JobModule {
       fos = new FileOutputStream(f);
       fos.write(encryptedObject.getEncryptedData());
       fos.close();
+      logger_.debug("File written to tmp location");
     } catch (IOException exception) {
       logger_.error(exception.getMessage());
       return QueryToStoreResult.SAVE_FAILED;
@@ -297,11 +308,12 @@ public class Replicator extends JobModule {
 
   public static void commitUpdateObject(ObjectId objectId, Set<String> previousVersions,
       String currentVersion) {
-    logger_.info("Commit storing object");
+    logger_.debug("Commit storing object " + objectId.toString());
 
     String location = filesLocations_.get(objectId);
 
     if (location == null) {
+      logger_.debug("commiting new file");
       location = getLocationPrefix() + objectId.toString();
     }
 
@@ -312,7 +324,6 @@ public class Replicator extends JobModule {
 
     tmp.renameTo(previous);
 
-
     if (filesLocations_.get(objectId) == null) {
       previousVersions_.put(objectId, new HashSet<String>(previousVersions));
       previousVersions_.get(objectId).addAll(previousVersions);
@@ -320,14 +331,15 @@ public class Replicator extends JobModule {
       filesLocations_.put(objectId, location);
     } else {
       previousVersions_.get(objectId).addAll(previousVersions);
-
     }
 
 
     locksMap_.get(objectId).release();
+    logger_.debug("Commit successful");
   }
 
   public static void abortUpdateObject(ObjectId objectId) {
+    logger_.debug("Aborting transaction " + objectId.toString());
     String location = filesLocations_.get(objectId);
     boolean newObjectTransaction = false;
     if (location == null) {

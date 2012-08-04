@@ -36,6 +36,7 @@ public class PeriodicMessageSender extends JobModule {
   private class PeriodicMessageSenderVisitor extends MessageVisitor<Void> {
     @Override
     public Void visit(JobInitMessage message) {
+      jobId_ = message.getId();
       Message m = messageGenerator_.generate();
       outQueue_.add(m);
       TimerContext.getInstance().addDelayedMessage(period_, message);

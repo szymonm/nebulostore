@@ -3,6 +3,7 @@ package org.nebulostore.async;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
@@ -24,15 +25,15 @@ public class GetAsynchronousMessagesModule extends JobModule {
 
   /** Parent module. Used to return downloaded messages.
    */
-  private BlockingQueue<Message> resultQueue_;
+  private final BlockingQueue<Message> resultQueue_;
 
   /**
    * Peer, from that this module downloades messages.
    */
-  private InstanceID synchroPeer_;
+  private final InstanceID synchroPeer_;
 
   /** This peer instance ID. */
-  private InstanceID instanceID_;
+  private final InstanceID instanceID_;
 
   public GetAsynchronousMessagesModule(BlockingQueue<Message> outQueue,
       BlockingQueue<Message> networkQueue, BlockingQueue<Message> resultQueue,
@@ -42,11 +43,11 @@ public class GetAsynchronousMessagesModule extends JobModule {
     setNetworkQueue(networkQueue);
     resultQueue_ = resultQueue;
     synchroPeer_ = synchroPeer;
-    instanceID_ = context.getInstanceID();
+    instanceID_ = GlobalContext.getInstance().getInstanceID();
     runThroughDispatcher(outQueue_);
   }
 
-  private GetAsynchronousMessagesVisitor visitor_ = new GetAsynchronousMessagesVisitor();
+  private final GetAsynchronousMessagesVisitor visitor_ = new GetAsynchronousMessagesVisitor();
 
   @Override
   protected void processMessage(Message message) throws NebuloException {
@@ -66,6 +67,7 @@ public class GetAsynchronousMessagesModule extends JobModule {
   private class GetAsynchronousMessagesVisitor extends MessageVisitor<Void> {
     private STATE state_ = STATE.NONE;
 
+    @Override
     public Void visit(JobInitMessage message) {
       GetAsynchronousMessagesMessage m = new GetAsynchronousMessagesMessage(message.getId(),
           null, synchroPeer_.getAddress(), instanceID_);
@@ -74,6 +76,7 @@ public class GetAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
+    @Override
     public Void visit(AsynchronousMessagesMessage message) {
       if (state_ != STATE.WAITING_FOR_MESSAGES) {
         logger_.warn("AsynchronousMessages(" + message.getId() + ") unexpected in this state.");

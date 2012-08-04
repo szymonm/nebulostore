@@ -3,7 +3,7 @@
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
   <appender name="CA" class="org.apache.log4j.ConsoleAppender">
-    <param name="Threshold" value="ERROR" />
+    <param name="Threshold" value="WARN" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
@@ -14,6 +14,10 @@
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
+    <filter class="org.apache.log4j.varia.LevelRangeFilter">
+      <param name="levelMin" value="DEBUG" />
+      <param name="levelMax" value="INFO" />
+    </filter>
   </appender>
 
   <appender name="FA-testing" class="org.apache.log4j.FileAppender">
@@ -72,9 +76,25 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
   </appender>  
+    
+  <appender name="FA-nm" class="org.apache.log4j.FileAppender">
+    <param name="File" value="nm.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
 
+  <appender name="FA-broker" class="org.apache.log4j.FileAppender">
+    <param name="File" value="broker.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
+  
   <logger name="org.nebulostore.communication.bdbdht">
-    <level value="INFO"/>
+    <level value="DEBUG"/>
     <appender-ref ref="FA-dht"/>
   </logger>
 
@@ -84,7 +104,7 @@
   </logger>  
   
   <logger name="org.nebulostore.communication">
-    <level value="INFO"/>
+    <level value="DEBUG"/>
     <appender-ref ref="FA-comm"/>
   </logger>
   
@@ -104,21 +124,26 @@
     <appender-ref ref="FA-testing"/>    
   </logger>
   
+  <logger name="org.nebulostore.appcore.RegisterInstanceInDHTModule">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing"/>
+    <appender-ref ref="FA-testing"/>    
+  </logger>
+  
+   <logger name="org.nebulostore.broker">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing"/>
+    <appender-ref ref="FA-broker"/>    
+  </logger>
+  
   <logger name="org.nebulostore.appcore.TestingPeer">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing"/>
     <appender-ref ref="FA-testing"/>
   </logger>
   
-   <!--<logger name="org.nebulostore.appcore">
-    <level value="INFO" />
-    <appender-ref ref="CA"/>
-    <appender-ref ref="FA"/>
-  </logger> -->
-  
   <logger name="org.nebulostore.communication.dht">
     <level value="INFO" />
-    <!--<appender-ref ref="CA-testing"/> -->
     <appender-ref ref="FA-testing"/>
   </logger>
   
@@ -131,6 +156,39 @@
   <logger name="org.nebulostore.query">
     <level value="DEBUG" />
     <appender-ref ref="FA-query"/>
+  </logger>
+  
+  <logger name="org.nebulostore.api.WriteNebuloObjectModule">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing" />
+  </logger>
+  
+ 
+  <logger name="org.nebulostore.api.GetModule">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing" />
+  </logger>
+  
+  
+  <logger name="org.nebulostore.api.PutKeyModule">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing" />
+  </logger>
+    
+  <logger name="org.nebulostore.api.GetNebuloObjectModule">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing" />
+  </logger>
+  
+  <logger name="org.nebulostore.async">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing" />
+    <appender-ref ref="FA" />
+  </logger>
+  
+  <logger name="org.nebulostore.replicator">
+    <level value="DEBUG" />
+    <appender-ref ref="CA-testing" />
   </logger>
   
   

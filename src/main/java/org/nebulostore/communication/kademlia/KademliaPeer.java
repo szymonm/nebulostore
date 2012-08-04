@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.broker.NetworkContext;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.dht.exceptions.ValueNotFound;
@@ -41,6 +40,7 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.communication.messages.kademlia.KademliaMessage;
+import org.nebulostore.networkmonitor.NetworkContext;
 import org.planx.xmlstore.routing.Identifier;
 import org.planx.xmlstore.routing.Kademlia;
 import org.planx.xmlstore.routing.RoutingException;
@@ -181,7 +181,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
       logger_.info("get of key: " + keyId + " finished");
     } catch (Exception e) {
       logger_.error(e);
-      outQueue_.add(new ErrorDHTMessage(msg, new CommException(e)));
+      outQueue_.add(new ErrorDHTMessage(msg, new NebuloException(e)));
     }
   }
 
@@ -194,7 +194,7 @@ public class KademliaPeer extends Module implements DiscoveryListener {
       outQueue_.add(new OkDHTMessage(msg));
     } catch (IOException e) {
       logger_.error(e);
-      outQueue_.add(new ErrorDHTMessage(msg, new CommException(e)));
+      outQueue_.add(new ErrorDHTMessage(msg, new NebuloException(e)));
     }
   }
 

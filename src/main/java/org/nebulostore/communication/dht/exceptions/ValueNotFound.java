@@ -1,6 +1,11 @@
 package org.nebulostore.communication.dht.exceptions;
 
-public class ValueNotFound extends Exception {
+import org.nebulostore.appcore.exceptions.NebuloException;
+
+/**
+ * DHT value not found.
+ */
+public class ValueNotFound extends NebuloException {
 
 
   public ValueNotFound(String msg) {

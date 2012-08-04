@@ -15,11 +15,13 @@ public class JobInitMessage extends Message {
     jobModule_ = jobModule;
   }
 
+  @Deprecated
   public JobInitMessage(String jobId, JobModule jobModule) {
     super(jobId);
     jobModule_ = jobModule;
   }
 
+  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }
@@ -29,5 +31,5 @@ public class JobInitMessage extends Message {
     return jobModule_;
   }
 
-  private JobModule jobModule_;
+  private final JobModule jobModule_;
 }

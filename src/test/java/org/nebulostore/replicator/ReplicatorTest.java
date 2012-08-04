@@ -55,7 +55,7 @@ public class ReplicatorTest {
    */
   @Test
   public void testStoreGetMessages() throws InterruptedException, NebuloException {
-    ObjectId objectId1 = new ObjectId(new BigInteger("3"));
+    ObjectId objectId1 = new ObjectId(new BigInteger("3444444"));
     byte[] enc = {33, 12};
     EncryptedObject entity1 = new EncryptedObject(enc);
 
@@ -90,8 +90,8 @@ public class ReplicatorTest {
     // replicator thread died here
     Thread.sleep(100);
 
-    replicatorThread_ = new Thread(replicator1_);
     replicator1_.setNetworkQueue(networkQueue_);
+    replicatorThread_ = new Thread(replicator1_);
     replicatorThread_.start();
 
     GetObjectMessage getMessage = new GetObjectMessage(null, null, objectId1, "");

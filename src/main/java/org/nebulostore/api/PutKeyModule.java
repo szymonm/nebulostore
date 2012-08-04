@@ -78,6 +78,7 @@ public class PutKeyModule extends ReturningJobModule<Void> {
         } catch (IntervalCollisionException exception) {
           endWithError(new NebuloException("Error while creating replication group", exception));
         }
+        logger_.debug("Updating top dir in DHT, contracts list: " + contractList.toString());
         networkQueue_.add(new PutDHTMessage(jobId_, new KeyDHT(appKey_.getKey()),
             new ValueDHT(new Metadata(appKey_, contractList))));
       } else {
@@ -89,6 +90,7 @@ public class PutKeyModule extends ReturningJobModule<Void> {
     @Override
     public Void visit(OkDHTMessage message) {
       if (state_ == STATE.DHT_INSERT) {
+        logger_.debug("Successfully updated top dir in DHT");
         endWithSuccess(null);
       } else {
         logger_.warn("OkDHTMessage received in state " + state_);

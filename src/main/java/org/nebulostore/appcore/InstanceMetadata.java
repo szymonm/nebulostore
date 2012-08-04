@@ -2,10 +2,12 @@ package org.nebulostore.appcore;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.Mergeable;
+import org.nebulostore.networkmonitor.PeerConnectionSurvey;
 
 /**
  * Metadata stored in DHT for Nebulostore instance.
@@ -20,6 +22,9 @@ public class InstanceMetadata implements Serializable, Mergeable {
   CommAddress currentAddress_;
   /* Communication addresses of peers that store messages for @instance.*/
   LinkedList<InstanceID> inboxHolders_;
+
+  private final ConcurrentLinkedQueue<PeerConnectionSurvey> statistics_ =
+      new ConcurrentLinkedQueue<PeerConnectionSurvey>();
 
   public InstanceMetadata(AppKey owner, LinkedList<InstanceID> inboxHolders) {
     owner_ = owner;
@@ -44,5 +49,19 @@ public class InstanceMetadata implements Serializable, Mergeable {
   @Override
   public Mergeable merge(Mergeable other) {
     return this;
+  }
+
+  public ConcurrentLinkedQueue<PeerConnectionSurvey> getStatistics() {
+    return statistics_;
+  }
+
+  public void removeOldStatistics() {
+    // TODO(szm)
+  }
+
+  @Override
+  public String toString() {
+    return "InstanceMetadata: owner: " + owner_.toString() + " current address: " +
+        currentAddress_.toString() + " synchro-peer num: " + inboxHolders_.size();
   }
 }

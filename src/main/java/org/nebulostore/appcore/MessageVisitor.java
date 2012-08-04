@@ -41,6 +41,9 @@ import org.nebulostore.communication.messages.pingpong.PongMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.networkmonitor.messages.ConnectionTestMessage;
+import org.nebulostore.networkmonitor.messages.ConnectionTestResponseMessage;
+import org.nebulostore.networkmonitor.messages.RandomPeersSampleMessage;
 import org.nebulostore.query.messages.GossipExecutorsMessage;
 import org.nebulostore.query.messages.QueryAcceptedMessage;
 import org.nebulostore.query.messages.QueryErrorMessage;
@@ -360,6 +363,22 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(ReconfigureDHTTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(RandomPeersSampleMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(ConnectionTestMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(ConnectionTestResponseMessage message) throws NebuloException {
+    return visitDefault(message);
+  }
+
+  public R visit(TimeoutMessage message) throws NebuloException {
     return visitDefault(message);
   }
 }

@@ -2,6 +2,7 @@ package org.nebulostore.appcore;
 
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.log4j.Logger;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
@@ -12,8 +13,11 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
  * Message queues outQueue_ and inQueue_ are always connected to dispatcher.
  */
 public abstract class JobModule extends Module {
+  private static Logger logger_ = Logger.getLogger(JobModule.class);
+
   protected BlockingQueue<Message> networkQueue_;
   protected String jobId_;
+  protected boolean isStarted_;
 
   public JobModule() {
     jobId_ = null;
@@ -30,7 +34,13 @@ public abstract class JobModule extends Module {
   /*
    * Run this module through a JobInitMessage (with new random ID) sent to Dispatcher.
    */
-  protected void runThroughDispatcher(BlockingQueue<Message> dispatcherQueue) {
+  public void runThroughDispatcher(BlockingQueue<Message> dispatcherQueue) {
+    if (isStarted_) {
+      logger_.error("Module already ran.");
+      return;
+    }
+
+    isStarted_ = true;
     jobId_ = CryptoUtils.getRandomId().toString();
     dispatcherQueue.add(new JobInitMessage(jobId_, this));
   }
@@ -54,4 +64,6 @@ public abstract class JobModule extends Module {
   public String getJobId() {
     return jobId_;
   }
+
+
 }

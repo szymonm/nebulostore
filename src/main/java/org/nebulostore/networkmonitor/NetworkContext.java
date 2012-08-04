@@ -1,6 +1,7 @@
-package org.nebulostore.broker;
+package org.nebulostore.networkmonitor;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
@@ -26,7 +27,8 @@ public final class NetworkContext {
   private final HashSet<CommAddress> knownPeers_;
   private final Vector<CommAddress> knownPeersVector_;
 
-  //TODO(szm): complete events-notifications module
+  private Set<CommAddress> randomPeersSample_ = new HashSet<CommAddress>();
+
   /**
    * Messages to be send to dispatcher when context changes.
    */
@@ -82,12 +84,16 @@ public final class NetworkContext {
     return new Vector<CommAddress>(knownPeersVector_);
   }
 
-  protected synchronized void addFoundPeer(CommAddress address) {
+  public synchronized void addFoundPeer(CommAddress address) {
     // TODO(mbw): address != null, because of Broker.java:40
     if (!knownPeers_.contains(address) && address != null) {
       logger_.debug("Adding a CommAddress: " + address);
       knownPeers_.add(address);
       knownPeersVector_.add(address);
+
+      if (randomPeersSample_.size() < RandomPeersGossipingModule.RANDOM_PEERS_SAMPLE_SIZE) {
+        randomPeersSample_.add(address);
+      }
       contextChanged();
     }
   }
@@ -106,4 +112,14 @@ public final class NetworkContext {
     }
     return GlobalContext.getInstance().getDispatcherQueue();
   }
+
+  public Set<CommAddress> getRandomPeersSample() {
+    return randomPeersSample_;
+  }
+
+  public void setRandomPeersSample(Set<CommAddress> randomPeersSample) {
+    randomPeersSample_ = randomPeersSample;
+  }
+
+
 }

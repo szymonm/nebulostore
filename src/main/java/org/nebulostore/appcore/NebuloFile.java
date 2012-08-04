@@ -178,6 +178,7 @@ public class NebuloFile extends NebuloObject {
       ++chunkIndex;
     }
     size_ = Math.max(size_, pos + buffer.length);
+    runSync();
     return buffer.length;
   }
 
@@ -273,6 +274,7 @@ public class NebuloFile extends NebuloObject {
       }
       throw caughtException;
     } else {
+      logger_.debug("Commiting transaction");
       for (WriteNebuloObjectModule update : updateModules) {
         update.answer(TransactionAnswer.COMMIT);
       }

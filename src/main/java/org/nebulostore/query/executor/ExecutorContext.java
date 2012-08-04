@@ -7,7 +7,7 @@ import java.util.Random;
 
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.broker.NetworkContext;
+import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.query.language.interpreter.datatypes.values.IDQLValue;
 
 public class ExecutorContext {

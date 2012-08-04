@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
 import org.junit.Test;
+import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.async.messages.AsynchronousMessage;
@@ -38,7 +39,7 @@ public final class GetAsynchronousMessagesModuleTest {
     BlockingQueue<Message> inQueue = new LinkedBlockingQueue<Message>();
     BlockingQueue<Message> outQueue = new LinkedBlockingQueue<Message>();
 
-    BrokerContext.getInstance().setInstanceID(new InstanceID(new CommAddress(null)));
+    GlobalContext.getInstance().setInstanceID(new InstanceID(new CommAddress(null)));
     InstanceID synchroPeerId = new InstanceID(new CommAddress(null));
     GetAsynchronousMessagesModule module = new GetAsynchronousMessagesModule(outQueue, networkQueue,
         outQueue, BrokerContext.getInstance(), synchroPeerId);
@@ -71,7 +72,7 @@ public final class GetAsynchronousMessagesModuleTest {
     GetAsynchronousMessagesMessage gam = (GetAsynchronousMessagesMessage) msg;
     assertEquals(gam.getId(), jobId);
     assertTrue(gam.getDestinationAddress() == synchroPeerId.getAddress());
-    assertTrue(gam.getRecipient() == BrokerContext.getInstance().instanceID_);
+    assertTrue(gam.getRecipient() == GlobalContext.getInstance().instanceID_);
 
     LinkedList<AsynchronousMessage> list = new LinkedList<AsynchronousMessage>();
     AsynchronousMessagesMessage messages = new AsynchronousMessagesMessage(jobId, null, null,

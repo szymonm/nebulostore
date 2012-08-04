@@ -22,12 +22,10 @@ public final class BrokerContext {
   private static Logger logger_ = Logger.getLogger(BrokerContext.class);
   private static BrokerContext instance_;
 
-  public InstanceID instanceID_;
-
   //TODO(szm,bolek): make fields private and create synchronized methods for accessing them.
 
-  private HashSet<Contract> contracts_ = new HashSet<Contract>();
-  private HashMap<InstanceID, Vector<Contract>> contractMap_ =
+  private final HashSet<Contract> contracts_ = new HashSet<Contract>();
+  private final HashMap<InstanceID, Vector<Contract>> contractMap_ =
       new HashMap<InstanceID, Vector<Contract>>();
 
   /**
@@ -68,14 +66,6 @@ public final class BrokerContext {
    */
   public Set<String> waitingForMessages_ = new HashSet<String>();
 
-  public InstanceID getInstanceID() {
-    return instanceID_;
-  }
-
-  public void setInstanceID(InstanceID instanceID) {
-    instanceID_ = instanceID;
-  }
-
   public static BrokerContext getInstance() {
     if (instance_ == null)
       instance_ = new BrokerContext();
@@ -86,6 +76,7 @@ public final class BrokerContext {
     // TODO(bolek,szm): better way to synchronize?
     synchronized (contracts_) {
       synchronized (contractMap_) {
+        logger_.debug("Adding contract with: " + contract.getPeer().getAddress().toString());
         contracts_.add(contract);
         if (contractMap_.containsKey(contract.getPeer())) {
           contractMap_.get(contract.getPeer()).add(contract);
@@ -109,6 +100,7 @@ public final class BrokerContext {
       int i = 0;
       while (iter.hasNext()) {
         addresses[i] = iter.next().getPeer().getAddress();
+        i++;
       }
       return addresses;
     }

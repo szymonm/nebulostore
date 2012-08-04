@@ -22,6 +22,7 @@ public class GetDHTMessage extends InDHTMessage {
     return key_;
   }
 
+  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }
