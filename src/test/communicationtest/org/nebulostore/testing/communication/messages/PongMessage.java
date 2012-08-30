@@ -2,18 +2,17 @@ package org.nebulostore.testing.communication.messages;
 
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.testing.communication.messages.PingMessage;
 
 /**
  * @author Grzegorz Milka
  */
 public final class PongMessage extends CommMessage {
   /**
-   * Peer who sent the pong
+   * Peer who sent the pong.
    */
   private final int peerId_;
   /**
-   * Message's id number. 
+   * Message's id number.
    * Id of the pong message it's responding to.
    */
   private final int id_;
@@ -35,6 +34,8 @@ public final class PongMessage extends CommMessage {
 
   @Override
   public String toString() {
-    return String.format("PongMessage of id: %d, from: %d", id_, peerId_);
+    return String.format("PongMessage of id: %d, from (peerID): %d ," +
+        "(sourceAddress): %s, to: %s.", id_, peerId_, getSourceAddress(),
+        getDestinationAddress().toString());
   }
 }

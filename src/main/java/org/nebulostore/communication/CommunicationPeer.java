@@ -60,7 +60,13 @@ public class CommunicationPeer extends Module {
   private MessengerService messengerService_;
   private PeerGossipService gossipService_;
 
+  private Thread listenerThread_;
+  private Thread messengerThread_;
+  private Thread gossipThread_;
+
   private boolean isServer_;
+  // Is the server shutting down.
+  private Boolean isEnding_ = false;
 
   private int commCliPort_ = COMM_CLI_PORT;
 
@@ -121,18 +127,18 @@ public class CommunicationPeer extends Module {
         bootstrapService_.getResolver().getMyCommAddress(),
         bootstrapService_.getBootstrapCommAddress());
 
-    Thread listenerThread = new Thread(
+    listenerThread_ = new Thread(
         listenerService_, "Nebulostore.Communication.ListenerService");
-    listenerThread.setDaemon(true);
-    listenerThread.start();
-    Thread gossipThread =
+    listenerThread_.setDaemon(true);
+    listenerThread_.start();
+    gossipThread_ =
       new Thread(gossipService_, "Nebulostore.Communication.GossipService");
-    gossipThread.setDaemon(true);
-    gossipThread.start();
-    Thread messengerThread = new Thread(
+    gossipThread_.setDaemon(true);
+    gossipThread_.start();
+    messengerThread_ = new Thread(
         messengerService_, "Nebulostore.Communication.MessengerService");
-    messengerThread.setDaemon(true);
-    messengerThread.start();
+    messengerThread_.setDaemon(true);
+    messengerThread_.start();
 
     logger_.info("Created and started auxiliary services.");
 
@@ -149,78 +155,131 @@ public class CommunicationPeer extends Module {
     return bootstrapService_.getResolver().getMyCommAddress();
   }
 
-  //NOTE-GM This function is only used in testing, but those tests are not mine
-  //so I can't simply delete. Ask about it on nebulo mailing. (TODO)
-  public Module getDHTPeer() {
-    logger_.error("DHTPeer unsupported yet");
-    throw new UnsupportedOperationException();
+  /**
+   * Kills this peer with its submodules.
+   *
+   * During the shutting down any messages sent to this peer will generate warn
+   * log message. Remember to call interrupt when after call to endModule.
+   *
+   * @author Grzegorz Milka
+   */
+  @Override
+  public void endModule() {
+    logger_.info("Starting endModule procedure of CommunicationPeer.");
+    synchronized (isEnding_) {
+      isEnding_ = true;
+    }
+    messengerService_.endModule();
+    messengerThread_.interrupt();
+    while (true) {
+      try {
+        messengerThread_.join();
+        break;
+      } catch (InterruptedException e) {
+        logger_.warn("Caught InterruptedException when joining messengerThread.");
+      }
+    }
+    logger_.info("MessengerThread ended.");
+    listenerService_.endModule();
+    listenerThread_.interrupt();
+    while (true) {
+      try {
+        listenerThread_.join();
+        break;
+      } catch (InterruptedException e) {
+        logger_.warn("Caught InterruptedException when joining listener.");
+      }
+    }
+    logger_.info("ListenerThread ended.");
+    gossipService_.endModule();
+    gossipThread_.interrupt();
+    while (true) {
+      try {
+        gossipThread_.join();
+        break;
+      } catch (InterruptedException e) {
+        logger_.warn("Caught InterruptedException when joining gossiper.");
+      }
+    }
+    logger_.info("GossipThread ended.");
+    bootstrapService_.shutdownService();
+    logger_.info("BootstrapService shutdown.");
+    super.endModule();
   }
 
   @Override
   protected void processMessage(Message msg) {
-    logger_.debug("Processing message: " + msg);
+    synchronized (isEnding_) {
+      if (isEnding_) {
+        logger_.warn("Can not process message, because commPeer is " +
+            "shutting down.");
+        return;
+      }
+      logger_.debug("Processing message: " + msg);
 
-    if (msg instanceof ErrorCommMessage) {
-      logger_.info("Error comm message. Returning it to Dispatcher");
-      outQueue_.add(msg);
-    } else if (msg instanceof ReconfigureDHTMessage) {
-      try {
-        logger_.info("Got reconfigure request with jobId: " + msg.getId());
-        reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
-            (ReconfigureDHTMessage) msg);
-      } catch (NebuloException e) {
-        logger_.error(e);
-      }
-    } else if (msg instanceof HolderAdvertisementMessage) {
-      dhtInQueue_.add(msg);
-    } else if (msg instanceof CommPeerFoundMessage) {
-      logger_.debug("CommPeerFound message forwarded to Dispatcher");
-      outQueue_.add(msg);
-    } else if (msg instanceof DHTMessage) {
-      if (msg instanceof InDHTMessage) {
-        logger_.debug("InDHTMessage forwarded to DHT");
-        dhtInQueue_.add(msg);
-      } else if (msg instanceof OutDHTMessage) {
-        logger_.debug("OutDHTMessage forwarded to Dispatcher");
-        outQueue_.add(msg);
-      } else {
-        logger_.error("Unrecognized DHTMessage: " + msg);
-      }
-    } else if (msg instanceof BdbMessageWrapper) {
-      logger_.debug("BDB DHT message received");
-      BdbMessageWrapper casted = (BdbMessageWrapper) msg;
-      if (casted.getWrapped() instanceof InDHTMessage) {
-        logger_.debug("BDB DHT message forwarded to DHT");
-        dhtInQueue_.add(casted.getWrapped());
-      } else if (casted.getWrapped() instanceof OutDHTMessage) {
-        logger_.debug("BDB DHT message forwarded to Dispatcher");
-        outQueue_.add(casted);
-      } else {
-        logger_.error("Unrecognized BdbMessageWrapper: " + msg);
-      }
-    } else if (msg instanceof PeerGossipMessage) {
-      if (((CommMessage) msg).getDestinationAddress().equals(
-            bootstrapService_.getResolver().getMyCommAddress()))
+      if (msg instanceof ErrorCommMessage) {
+        logger_.info("Error comm message. Returning it to Dispatcher");
         gossipServiceInQueue_.add(msg);
-      else
-        messengerServiceInQueue_.add(msg);
-    } else if (msg instanceof CommMessage) {
-      if (((CommMessage) msg).getSourceAddress() == null) {
-        ((CommMessage) msg).setSourceAddress(getPeerAddress());
-      }
-
-      if (((CommMessage) msg).getDestinationAddress() == null) {
-        logger_.error("Null destination address set for " + msg + ". Dropping the message.");
-      } else if (((CommMessage) msg).getDestinationAddress().equals(
-            bootstrapService_.getResolver().getMyCommAddress())) {
-        logger_.debug("message forwarded to Dispatcher");
         outQueue_.add(msg);
+      } else if (msg instanceof ReconfigureDHTMessage) {
+        try {
+          logger_.info("Got reconfigure request with jobId: " + msg.getId());
+          reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
+              (ReconfigureDHTMessage) msg);
+        } catch (NebuloException e) {
+          logger_.error(e);
+        }
+      } else if (msg instanceof HolderAdvertisementMessage) {
+        dhtInQueue_.add(msg);
+      } else if (msg instanceof CommPeerFoundMessage) {
+        logger_.debug("CommPeerFound message forwarded to Dispatcher");
+        outQueue_.add(msg);
+      } else if (msg instanceof DHTMessage) {
+        if (msg instanceof InDHTMessage) {
+          logger_.debug("InDHTMessage forwarded to DHT");
+          dhtInQueue_.add(msg);
+        } else if (msg instanceof OutDHTMessage) {
+          logger_.debug("OutDHTMessage forwarded to Dispatcher");
+          outQueue_.add(msg);
+        } else {
+          logger_.error("Unrecognized DHTMessage: " + msg);
+        }
+      } else if (msg instanceof BdbMessageWrapper) {
+        logger_.debug("BDB DHT message received");
+        BdbMessageWrapper casted = (BdbMessageWrapper) msg;
+        if (casted.getWrapped() instanceof InDHTMessage) {
+          logger_.debug("BDB DHT message forwarded to DHT");
+          dhtInQueue_.add(casted.getWrapped());
+        } else if (casted.getWrapped() instanceof OutDHTMessage) {
+          logger_.debug("BDB DHT message forwarded to Dispatcher");
+          outQueue_.add(casted);
+        } else {
+          logger_.error("Unrecognized BdbMessageWrapper: " + msg);
+        }
+      } else if (msg instanceof PeerGossipMessage) {
+        if (((CommMessage) msg).getDestinationAddress().equals(
+              bootstrapService_.getResolver().getMyCommAddress()))
+          gossipServiceInQueue_.add(msg);
+        else
+          messengerServiceInQueue_.add(msg);
+      } else if (msg instanceof CommMessage) {
+        if (((CommMessage) msg).getSourceAddress() == null) {
+          ((CommMessage) msg).setSourceAddress(getPeerAddress());
+        }
+
+        if (((CommMessage) msg).getDestinationAddress() == null) {
+          logger_.error("Null destination address set for " + msg + ". Dropping the message.");
+        } else if (((CommMessage) msg).getDestinationAddress().equals(
+              bootstrapService_.getResolver().getMyCommAddress())) {
+          logger_.debug("message forwarded to Dispatcher");
+          outQueue_.add(msg);
+        } else {
+          logger_.debug("message forwarded to MessengerService");
+          messengerServiceInQueue_.add(msg);
+        }
       } else {
-        logger_.debug("message forwarded to MessengerService");
-        messengerServiceInQueue_.add(msg);
+        logger_.warn("Unrecognized message of type " + msg);
       }
-    } else {
-      logger_.warn("Unrecognized message of type " + msg);
     }
   }
 

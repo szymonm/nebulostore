@@ -8,17 +8,15 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import net.tomp2p.p2p.Peer;
-import net.tomp2p.p2p.PeerMaker;
-import net.tomp2p.peers.Number160;
-import net.tomp2p.storage.Data;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.address.CommAddressResolver;
+import org.nebulostore.communication.address.PersistentAddressingPeer;
+import org.nebulostore.communication.address.TomP2PServer;
 
 /**
  * Simple Bootstrap Server.
@@ -46,8 +44,83 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   // TODO-GM make some ip address discovery here like in client
   private final InetSocketAddress myInetSocketAddress_ =
     new InetSocketAddress("planetlab1.ci.pwr.wroc.pl", commCliPort_);
-  private final Peer myPeer_;
-  private final CommAddressResolver resolver_;
+  private PersistentAddressingPeer pAPeer_;
+  private ExecutorService service_ = Executors.newCachedThreadPool();
+  private Boolean isEnding_ = false;
+
+  public BootstrapServer(int commCliPort) throws IOException, NebuloException {
+    this(commCliPort, BOOTSTRAP_PORT, TOMP2P_PORT);
+  }
+
+  public BootstrapServer(int commCliPort, int bootstrapPort, int tomp2pPort)
+    throws IOException, NebuloException {
+    super(commCliPort);
+    bootstrapPort_ = bootstrapPort;
+    tomp2pPort_ = tomp2pPort;
+    myCommAddress_ = CommAddress.newRandomCommAddress();
+    myWelcomeMessage_ = new BootstrapMessage(myCommAddress_);
+    logger_.info("Set server at address: " + myCommAddress_ + ".");
+
+    pAPeer_ = new TomP2PServer();
+    pAPeer_.setDHTPort(tomp2pPort_);
+    pAPeer_.setCommPort(commCliPort_);
+    pAPeer_.setBootstrapServerAddress("planetlab1.ci.pwr.wroc.pl");
+    pAPeer_.setMyCommAddress(myCommAddress_);
+    pAPeer_.setUpAndRun();
+
+    serverSocket_ = new ServerSocket(bootstrapPort_);
+  }
+
+  @Override
+  public void run() {
+    boolean isEnding;
+    synchronized (isEnding_) {
+      isEnding = isEnding_;
+    }
+
+    while (!isEnding) {
+      Socket clientSocket;
+      try {
+        clientSocket = serverSocket_.accept();
+        logger_.info("Accepted connection from: " +
+            clientSocket.getRemoteSocketAddress());
+      } catch (IOException e) {
+        logger_.error("IOException when accepting connection " + e);
+        continue;
+      }
+      service_.execute(new BootstrapProtocol(clientSocket));
+    }
+  }
+
+  @Override
+  public CommAddress getBootstrapCommAddress() {
+    return myCommAddress_;
+  }
+
+  @Override
+  public CommAddressResolver getResolver() {
+    return pAPeer_.getResolver();
+  }
+
+  @Override
+  public void shutdownService() {
+    synchronized (isEnding_) {
+      isEnding_ = true;
+    }
+    pAPeer_.tearDown();
+    try {
+      serverSocket_.close();
+    } catch (IOException e) {
+      logger_.error("Error when closing serverSocket: " + e);
+    }
+    service_.shutdownNow();
+  }
+
+  @Override
+  public String toString() {
+    return "BootstrapServer with CommAddress: " + myCommAddress_ + ", peer: " +
+      pAPeer_;
+  }
 
   /**
    * @author Grzegorz Milka
@@ -95,71 +168,5 @@ public class BootstrapServer extends BootstrapService implements Runnable {
         }
       }
     }
-  }
-
-  public BootstrapServer(int commCliPort) throws IOException, NebuloException {
-    this(commCliPort, BOOTSTRAP_PORT, TOMP2P_PORT);
-  }
-
-  public BootstrapServer(int commCliPort, int bootstrapPort, int tomp2pPort)
-    throws IOException, NebuloException {
-    super(commCliPort);
-    bootstrapPort_ = bootstrapPort;
-    tomp2pPort_ = tomp2pPort;
-    myCommAddress_ = CommAddress.newRandomCommAddress();
-    myWelcomeMessage_ = new BootstrapMessage(myCommAddress_);
-    logger_.info("Set server at address: " + myCommAddress_ + ".");
-    myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).
-      setPorts(tomp2pPort_).makeAndListen();
-
-    // UpdateMyAddress to DHT
-    try {
-      myPeer_.put(new Number160(myCommAddress_.hashCode())).
-        setData(new Data(myInetSocketAddress_)).start().
-        awaitUninterruptibly();
-    } catch (IOException e) {
-      String errMsg = "Error when trying to update address to kademlia";
-      logger_.error(errMsg + " " + e);
-      throw new NebuloException(errMsg, e);
-    }
-    logger_.info("Info about my address has been put to kademlia.");
-
-    resolver_ = new HashAddressResolver(myCommAddress_, myPeer_);
-
-    serverSocket_ = new ServerSocket(bootstrapPort_);
-  }
-
-  @Override
-  public void run() {
-    Executor service = Executors.newCachedThreadPool();
-
-    while (true) {
-      Socket clientSocket;
-      try {
-        clientSocket = serverSocket_.accept();
-        logger_.info("Accepted connection from: " +
-            clientSocket.getRemoteSocketAddress());
-      } catch (IOException e) {
-        logger_.error("IOException when accepting connection " + e);
-        continue;
-      }
-      service.execute(new BootstrapProtocol(clientSocket));
-    }
-  }
-
-  @Override
-  public CommAddress getBootstrapCommAddress() {
-    return myCommAddress_;
-  }
-
-  @Override
-  public CommAddressResolver getResolver() {
-    return resolver_;
-  }
-
-  @Override
-  public String toString() {
-    return "BootstrapServer with CommAddress: " + myCommAddress_ + ", peer: " +
-      myPeer_;
   }
 }

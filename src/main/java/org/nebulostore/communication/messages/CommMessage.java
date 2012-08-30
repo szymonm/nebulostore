@@ -27,12 +27,12 @@ public abstract class CommMessage extends Message implements Serializable {
     commDestAddress_ = destAddress;
   }
 
-  public CommAddress getDestinationAddress() {
-    return commDestAddress_;
-  }
-
   public CommAddress getSourceAddress() {
     return commSourceAddress_;
+  }
+
+  public CommAddress getDestinationAddress() {
+    return commDestAddress_;
   }
 
   public void setSourceAddress(CommAddress sourceAddress) {

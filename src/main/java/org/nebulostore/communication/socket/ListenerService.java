@@ -8,7 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
@@ -21,6 +21,7 @@ import org.nebulostore.communication.CommunicationPeer;
  *
  * Module simply listens for incomming TCP connections and passes serialized
  * CommMessages back to CommunicationPeer through outQueue_.
+ *
  * @author Grzegorz Milka
  */
 public class ListenerService extends Module {
@@ -28,6 +29,8 @@ public class ListenerService extends Module {
   private static final int COMM_CLI_PORT = CommunicationPeer.COMM_CLI_PORT;
   private int commCliPort_ = COMM_CLI_PORT;
   private static Logger logger_ = Logger.getLogger(ListenerService.class);
+  private ExecutorService service_ = Executors.newCachedThreadPool();
+  private Boolean isEnding_ = false;
 
   /**
    * @author Grzegorz Milka
@@ -40,6 +43,7 @@ public class ListenerService extends Module {
       clientSocket_ = clientSocket;
     }
 
+    //TODO-GM Add Interrupt handler.
     public void run() {
       Message msg = null;
       try {
@@ -79,33 +83,55 @@ public class ListenerService extends Module {
     try {
       serverSocket_ = new ServerSocket(commCliPort_);
     } catch (IOException e) {
-      logger_.error("Could not initialize listening socket due to " +
-          "IOException: " + e);
+      logger_.error("Could not initialize listening socket on port: " +
+              commCliPort_ + ", due to IOException: " + e);
       throw new IOException("Could not initialize listening socket " +
-          "due to IOException: " + e);
+          "due to IOException.", e);
     }
+    logger_.info("Created listenerService's socket on port: " + commCliPort_);
     try {
       serverSocket_.setReuseAddress(true);
     } catch (SocketException e) {
-      logger_.trace("Couldn't set serverSocket to reuse address: " + e);
+      logger_.warn("Couldn't set serverSocket to reuse address: " + e);
     }
   }
 
   @Override
   public void run() {
-    Executor service = Executors.newCachedThreadPool();
-    while (true) {
+    boolean isEnding;
+    synchronized (isEnding_) {
+      isEnding = isEnding_;
+    }
+    while (!isEnding) {
       Socket clientSocket = null;
       try {
         clientSocket = serverSocket_.accept();
       } catch (IOException e) {
         logger_.error("IOException when accepting connection " + e);
         continue;
+      } finally {
+        synchronized (isEnding_) {
+          isEnding = isEnding_;
+        }
       }
       logger_.debug("Accepted connection from: " +
           clientSocket.getRemoteSocketAddress());
-      service.execute(new ListenerProtocol(clientSocket));
+      service_.execute(new ListenerProtocol(clientSocket));
     }
+  }
+
+  @Override
+  public void endModule() {
+    synchronized (isEnding_) {
+      isEnding_ = true;
+    }
+    try {
+      serverSocket_.close();
+    } catch (IOException e) {
+      logger_.error("Error when closing serverSocket: " + e);
+    }
+    service_.shutdownNow();
+    super.endModule();
   }
 
   @Override

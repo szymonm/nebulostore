@@ -1,8 +1,7 @@
 #!/bin/bash
 HOST=$1
 BUILD_DIR=$2
-KEY_DIR=$3
-DEST_DIR=$4
+DEST_DIR=$3
 TMP_DIR="tmp_`date +"%s"`_$RANDOM"
 USER=`cat ssh-user.txt`
 
@@ -19,7 +18,7 @@ rm -rf ./$TMP_DIR/lib
 #scp -i $KEY_DIR/planetlab-key -r ./$TMP_DIR/* $USER@$HOST:~/$DEST_DIR/
 #GM size-only because servers have clocks 2 hours behind so we want to avoid it.
 rsync -rvu --size-only --cvs-exclude ./$TMP_DIR/* $USER@$HOST:~/$DEST_DIR/
-ssh -i $KEY_DIR/planetlab-key -l $USER $HOST "cp -r lib $DEST_DIR/ "
+ssh -l $USER $HOST "cp -r lib $DEST_DIR/ "
 
 
 rm -rf $TMP_DIR

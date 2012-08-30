@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.bootstrap.CommAddressResolver;
+import org.nebulostore.communication.address.CommAddressResolver;
 import org.nebulostore.communication.exceptions.AddressNotPresentException;
 import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.messages.CommMessage;
@@ -29,6 +29,60 @@ import org.nebulostore.communication.messages.ErrorCommMessage;
  * @author Grzegorz Milka
  */
 public class MessengerService extends Module {
+  private static Logger logger_ = Logger.getLogger(MessengerService.class);
+  private CommAddressResolver resolver_;
+  private CachedOOSDispatcher oosDispatcher_;
+  private Boolean isEnding_ = false;
+
+  public MessengerService(BlockingQueue<Message> inQueue,
+      BlockingQueue<Message> outQueue, CommAddressResolver resolver) {
+    super(inQueue, outQueue);
+    resolver_ = resolver;
+    oosDispatcher_ = new CachedOOSDispatcher();
+  }
+
+  @Override
+  public void endModule() {
+    synchronized (isEnding_) {
+      isEnding_ = true;
+    }
+    // Nothing to do here, because socket cache cleans up automatically after 1
+    // second.
+    super.endModule();
+  }
+
+  @Override
+  public void processMessage(Message msg) {
+    synchronized (isEnding_) {
+      if (isEnding_) {
+        logger_.warn("Can not process message, because commPeer is " +
+            "shutting down.");
+        return;
+      }
+    }
+    if (!(msg instanceof CommMessage)) {
+      logger_.error("Don't know what to do with message: " + msg);
+      return;
+    }
+    CommMessage commMsg = (CommMessage) msg;
+    if (commMsg.getSourceAddress() == null) {
+      logger_.debug("Source address set to null, changing to my address.");
+      commMsg.setSourceAddress(resolver_.getMyCommAddress());
+    }
+    logger_.info("Sending msg: " + commMsg + " to: " + commMsg.getDestinationAddress());
+    try {
+      ObjectOutputStream oos = oosDispatcher_.get(commMsg.getDestinationAddress());
+      oos.writeObject(commMsg);
+      logger_.debug("Message: " + commMsg + " sent to: " + commMsg.getDestinationAddress());
+    } catch (IOException e) {
+      logger_.error("IOException when trying to send: " + msg + ", to: " +
+          commMsg.getDestinationAddress() + " " + e);
+      outQueue_.add(new ErrorCommMessage((CommMessage) msg, new CommException(
+              "Message " + msg + " couldn't be sent.")));
+    } finally {
+      oosDispatcher_.put();
+    }
+  }
 
   /**
    * Factory/Dispatcher for sockets.
@@ -147,42 +201,6 @@ public class MessengerService extends Module {
         activeAddress_ = null;
         activeSOOSPair_ = null;
       }
-    }
-  }
-
-  private static Logger logger_ = Logger.getLogger(MessengerService.class);
-  private CommAddressResolver resolver_;
-  private CachedOOSDispatcher oosDispatcher_;
-
-  public MessengerService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue, CommAddressResolver resolver) {
-    super(inQueue, outQueue);
-    resolver_ = resolver;
-    oosDispatcher_ = new CachedOOSDispatcher();
-  }
-
-  @Override
-  public void processMessage(Message msg) {
-    if (!(msg instanceof CommMessage)) {
-      logger_.error("Don't know what to do with message: " + msg);
-      return;
-    }
-    CommMessage commMsg = (CommMessage) msg;
-    if (commMsg.getSourceAddress() == null) {
-      logger_.debug("Source address set to null, changing to my address.");
-      commMsg.setSourceAddress(resolver_.getMyCommAddress());
-    }
-    try {
-      ObjectOutputStream oos = oosDispatcher_.get(commMsg.getDestinationAddress());
-      oos.writeObject(commMsg);
-      logger_.debug("Message: " + commMsg + " sent to: " + commMsg.getDestinationAddress());
-    } catch (IOException e) {
-      logger_.error("IOException when trying to send: " + msg + ", to: " +
-          commMsg.getDestinationAddress() + " " + e);
-      outQueue_.add(new ErrorCommMessage((CommMessage) msg, new CommException(
-              "Message " + msg + " couldn't be sent.")));
-    } finally {
-      oosDispatcher_.put();
     }
   }
 }

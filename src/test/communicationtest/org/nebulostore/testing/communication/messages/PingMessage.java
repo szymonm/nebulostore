@@ -8,19 +8,26 @@ import org.nebulostore.communication.messages.CommMessage;
  */
 public final class PingMessage extends CommMessage {
   /**
-   * Peer who sent the ping
+   * Peer who sent the ping.
    */
   private final int peerId_;
   /**
-   * Message's id number. 
+   * Message's id number.
    * Used to distinguish old or pong messages.
    */
   private final int id_;
+  private CommAddress rootSourceAddress_;
 
-  public PingMessage(CommAddress destAddress, int peerId, int id) {
+  public PingMessage(CommAddress rootSource, CommAddress destAddress,
+          int peerId, int id) {
     super(null, null, destAddress);
+    rootSourceAddress_ = rootSource;
     peerId_ = peerId;
     id_ = id;
+  }
+
+  public CommAddress getRootSourceAddress() {
+    return rootSourceAddress_;
   }
 
   public int getPeerId() {
@@ -33,6 +40,7 @@ public final class PingMessage extends CommMessage {
 
   @Override
   public String toString() {
-    return String.format("PingMessage of id: %d, from: %d", id_, peerId_);
+    return String.format("PingMessage of id: %d, from: %d, to: %s",
+            id_, peerId_, getDestinationAddress());
   }
 }

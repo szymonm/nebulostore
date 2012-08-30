@@ -2,6 +2,7 @@ package org.nebulostore.communication.bootstrap;
 
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.address.CommAddressResolver;
 
 /**
  * @author Grzegorz Milka
@@ -21,4 +22,6 @@ public abstract class BootstrapService {
   public abstract CommAddress getBootstrapCommAddress();
 
   public abstract CommAddressResolver getResolver();
+
+  public abstract void shutdownService();
 }

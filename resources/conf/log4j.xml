@@ -16,9 +16,17 @@
     </layout>
   </appender>
 
-  <appender name="FA-testing" class="org.apache.log4j.FileAppender">
-    <param name="File" value="testing.log" />
+  <appender name="FA-testing:DEBUG" class="org.apache.log4j.FileAppender">
+    <param name="File" value="testing_debug.log" />
     <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>  
+
+  <appender name="FA-testing:INFO" class="org.apache.log4j.FileAppender">
+    <param name="File" value="testing_info.log" />
+    <param name="Threshold" value="INFO" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
@@ -44,6 +52,14 @@
   <appender name="FA-comm:DEBUG" class="org.apache.log4j.FileAppender">
     <param name="File" value="comm_debug.log" />
     <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>
+
+  <appender name="FA-comm-address" class="org.apache.log4j.FileAppender">
+    <param name="File" value="address.log" />
+    <param name="Threshold" value="ALL" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
@@ -88,6 +104,14 @@
       <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
     </layout>
   </appender>
+
+  <appender name="FA-tomp2p" class="org.apache.log4j.FileAppender">
+    <param name="File" value="tomp2p.log" />
+    <param name="Threshold" value="ALL" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+    </layout>
+  </appender>  
   
   <appender name="FA-replicator" class="org.apache.log4j.FileAppender">
     <param name="File" value="replicator.log" />
@@ -106,6 +130,11 @@
     <level value="DEBUG"/>
     <appender-ref ref="FA-comm:INFO"/>
     <appender-ref ref="FA-comm:DEBUG"/>
+  </logger>
+
+  <logger name="org.nebulostore.communication.address">
+    <level value="ALL"/>
+    <appender-ref ref="FA-comm-address"/>
   </logger>
 
   <logger name="org.nebulostore.communication.bootstrap">
@@ -127,16 +156,21 @@
     <level value="INFO"/>
     <appender-ref ref="FA-stream"/>
   </logger> -->
+
+  <logger name="net.tomp2p">
+    <level value="TRACE"/>
+    <appender-ref ref="FA-tomp2p"/>
+  </logger>
   
   <logger name="org.planx.xmlstore.routing">
     <level value="INFO"/>
     <appender-ref ref="FA-comm:INFO"/>
   </logger> 
-  
+
   <logger name="org.nebulostore.testing">
-    <level value="DEBUG" />
-    <appender-ref ref="CA-testing"/>
-    <appender-ref ref="FA-testing"/>    
+    <level value="ALL" />
+    <appender-ref ref="FA-testing:INFO"/>    
+    <appender-ref ref="FA-testing:DEBUG"/>    
   </logger>
   
   <logger name="org.nebulostore.appcore.TestingPeer">
@@ -161,7 +195,7 @@
     <level value="DEBUG" />
     <appender-ref ref="FA-query"/>
   </logger>
-  
+
   <root>
     <appender-ref ref="CA" />
     <appender-ref ref="FA" />

@@ -39,10 +39,12 @@ public class PeerGossipService extends Module {
   private final Logger logger_ = Logger.getLogger(PeerGossipService.class);
 
   private static final Random RANDOMIZER = new Random();
-  //4 seconds
-  private static final int GOSSIP_PERIOD = 4000;
+  //20 seconds
+  private static final int GOSSIP_PERIOD = 20000;
   /**
    * Equivalent of c in the paper.
+   *
+   * It has to be greater than 1 (or even 3) to ensure non-empty gossips.
    */
   private static final int MAX_PEERS_SIZE = 20;
   /**
@@ -55,6 +57,7 @@ public class PeerGossipService extends Module {
   private static final int SWAPPING_FACTOR = 1;
   private List<PeerDescriptor> peers_ =
     Collections.synchronizedList(new LinkedList<PeerDescriptor>());
+  Timer gossipSender_ = new Timer();
 
   private CommAddress myCommAddress_;
   /**
@@ -62,39 +65,19 @@ public class PeerGossipService extends Module {
    */
   private CommAddress bootstrapCommAddress_;
 
-  /**
-   * @author Grzegorz Milka
-   */
-  private class GossipSender extends TimerTask {
-    @Override
-    public void run() {
-      PeerDescriptor recipient = selectPeer();
-      if (recipient == null && !bootstrapCommAddress_.equals(myCommAddress_)) {
-        peers_.add(new PeerDescriptor(bootstrapCommAddress_));
-        recipient = new PeerDescriptor(bootstrapCommAddress_);
-      }
-
-      if (recipient != null) {
-        logger_.info("Sending gossip to: " + recipient.getPeerAddress());
-        outQueue_.add(prepareMsgToSend(recipient.getPeerAddress(),
-              EnumSet.of(
-                PeerGossipMessage.MessageType.PUSH,
-                PeerGossipMessage.MessageType.PULL)));
-        recipient.setAge(0);
-      } else {
-        logger_.info("Couldn't send gossip due to lack possible recipients.");
-      }
-    }
-  }
-
   public PeerGossipService(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue, CommAddress myCommAddress,
       CommAddress bootstrapCommAddress) throws NebuloException {
     super(inQueue, outQueue);
     myCommAddress_ = myCommAddress;
     bootstrapCommAddress_ = bootstrapCommAddress;
-    Timer gossipSender = new Timer();
-    gossipSender.schedule(new GossipSender(), GOSSIP_PERIOD, GOSSIP_PERIOD);
+    gossipSender_.schedule(new GossipSender(), GOSSIP_PERIOD, GOSSIP_PERIOD);
+  }
+
+  @Override
+  public void endModule() {
+    gossipSender_.cancel();
+    super.endModule();
   }
 
   @Override
@@ -142,6 +125,46 @@ public class PeerGossipService extends Module {
   }
 
   /**
+   * @author Grzegorz Milka
+   */
+  private class GossipSender extends TimerTask {
+    @Override
+    public void run() {
+      PeerDescriptor recipient = selectPeer();
+      if (recipient == null && !bootstrapCommAddress_.equals(myCommAddress_)) {
+        peers_.add(new PeerDescriptor(bootstrapCommAddress_));
+        recipient = new PeerDescriptor(bootstrapCommAddress_);
+      }
+
+      if (recipient != null) {
+        logger_.info("Sending gossip to: " + recipient.getPeerAddress());
+        outQueue_.add(prepareMsgToSend(recipient.getPeerAddress(),
+              EnumSet.of(
+                PeerGossipMessage.MessageType.PUSH,
+                PeerGossipMessage.MessageType.PULL)));
+        recipient.setAge(0);
+      } else {
+        logger_.info("Couldn't send gossip due to lack possible recipients.");
+      }
+    }
+  }
+
+  /**
+   * @author Grzegorz Milka
+   */
+  private class AgeComparator implements Comparator<PeerDescriptor> {
+    public int compare(PeerDescriptor a, PeerDescriptor b) {
+      int diff = a.getAge() - b.getAge();
+      if (diff == 0) {
+        return a.getPeerAddress().toString().compareTo(
+            b.getPeerAddress().toString());
+      } else {
+        return diff;
+      }
+    }
+  }
+
+  /**
    * Select peer using rand strategy.
    *
    * It returns null if no peer is present.
@@ -186,7 +209,6 @@ public class PeerGossipService extends Module {
       bufferToSend.removeAll(hOldest);
       bufferToSend.addAll(hOldest);
     }
-
 
     if (bufferToSend.size() > (MAX_PEERS_SIZE / 2 - 1))
       bufferToSend.subList(MAX_PEERS_SIZE / 2 - 1, bufferToSend.size() - 1).clear();
@@ -253,21 +275,6 @@ public class PeerGossipService extends Module {
       logger_.debug("Size of new peers: " + newPeers.size());
       for (PeerDescriptor peer : newPeers) {
         outQueue_.add(new CommPeerFoundMessage(peer.getPeerAddress(), myCommAddress_));
-      }
-    }
-  }
-
-  /**
-   * @author Grzegorz Milka
-   */
-  private class AgeComparator implements Comparator<PeerDescriptor> {
-    public int compare(PeerDescriptor a, PeerDescriptor b) {
-      int diff = a.getAge() - b.getAge();
-      if (diff == 0) {
-        return a.getPeerAddress().toString().compareTo(
-            b.getPeerAddress().toString());
-      } else {
-        return diff;
       }
     }
   }
