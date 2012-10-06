@@ -12,5 +12,5 @@ for HOST in $(get_all_hosts)
 do
     echo "Copying lib to $HOST"
     rsync -rvu --size-only --cvs-exclude --delete \
-        $BUILD_DIR/lib $USER@$HOST:~/lib
+        $BUILD_DIR/lib/* $USER@$HOST:~/lib/
 done

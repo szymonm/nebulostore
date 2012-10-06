@@ -34,7 +34,7 @@ import org.nebulostore.communication.address.TomP2PServer;
 //    Check if kademlia has some timestamping and automatic deletion
 //    Clients send "Possibly out of network" message when they can't connect to
 //    someone
-// TODO-GM Inactive address cleanup
+// TODO(grzegorzmilka) Inactive address cleanup
 public class BootstrapServer extends BootstrapService implements Runnable {
   private static Logger logger_ = Logger.getLogger(BootstrapServer.class);
   private ServerSocket serverSocket_;
@@ -42,29 +42,37 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   private final CommAddress myCommAddress_;
   private final BootstrapMessage myWelcomeMessage_;
   // TODO-GM make some ip address discovery here like in client
-  private final InetSocketAddress myInetSocketAddress_ =
-    new InetSocketAddress("planetlab1.ci.pwr.wroc.pl", commCliPort_);
+  private final InetSocketAddress myInetSocketAddress_;
   private PersistentAddressingPeer pAPeer_;
   private ExecutorService service_ = Executors.newCachedThreadPool();
   private Boolean isEnding_ = false;
 
-  public BootstrapServer(int commCliPort) throws IOException, NebuloException {
-    this(commCliPort, BOOTSTRAP_PORT, TOMP2P_PORT);
+  public BootstrapServer(String bootstrapServerAddress,
+      int commCliPort) throws NebuloException {
+    this(bootstrapServerAddress, commCliPort, BOOTSTRAP_PORT, TOMP2P_PORT);
   }
 
-  public BootstrapServer(int commCliPort, int bootstrapPort, int tomp2pPort)
-    throws IOException, NebuloException {
+  public BootstrapServer(String bootstrapServerAddress,
+      int commCliPort, int bootstrapPort, int tomp2pPort)
+    throws NebuloException {
     super(commCliPort);
+    myInetSocketAddress_ = new InetSocketAddress(bootstrapServerAddress, commCliPort_);
     bootstrapPort_ = bootstrapPort;
     tomp2pPort_ = tomp2pPort;
     myCommAddress_ = CommAddress.newRandomCommAddress();
     myWelcomeMessage_ = new BootstrapMessage(myCommAddress_);
+    pAPeer_ = null;
+    serverSocket_ = null;
     logger_.info("Set server at address: " + myCommAddress_ + ".");
 
+  }
+
+  @Override
+  public void startUpService() throws IOException {
     pAPeer_ = new TomP2PServer();
     pAPeer_.setDHTPort(tomp2pPort_);
     pAPeer_.setCommPort(commCliPort_);
-    pAPeer_.setBootstrapServerAddress("planetlab1.ci.pwr.wroc.pl");
+    pAPeer_.setBootstrapServerAddress(myInetSocketAddress_.getHostName());
     pAPeer_.setMyCommAddress(myCommAddress_);
     pAPeer_.setUpAndRun();
 

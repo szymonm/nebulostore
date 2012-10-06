@@ -7,7 +7,7 @@ import org.nebulostore.communication.address.CommAddress;
 /**
  * @author Grzegorz Milka
  */
-//TODO-GM serialVersionUID;
+//TODO(grzegorzmilka) serialVersionUID;
 public class PeerDescriptor implements Serializable {
   private CommAddress peerAddress_;
   private int age_;

@@ -143,4 +143,10 @@
     </antcall>
   </target>
 
+  <target name="gossiptest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.testing.moduletest.gossiptest.GossipTest" />
+    </antcall>
+  </target>
+
 </project>

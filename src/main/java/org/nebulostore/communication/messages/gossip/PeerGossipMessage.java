@@ -16,7 +16,7 @@ import org.nebulostore.communication.messages.CommMessage;
 /**
  * @author Grzegorz Milka
  */
-//TODO-GM serialVersionUID;
+//TODO(grzegorzmilka) serialVersionUID;
 public class PeerGossipMessage extends CommMessage {
   /**
    * @author Grzegorz Milka

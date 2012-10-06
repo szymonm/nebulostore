@@ -33,6 +33,8 @@ public class ListenerService extends Module {
   private Boolean isEnding_ = false;
 
   /**
+   * Handler for incoming connection.
+   *
    * @author Grzegorz Milka
    */
   private class ListenerProtocol implements Runnable {
@@ -43,7 +45,7 @@ public class ListenerService extends Module {
       clientSocket_ = clientSocket;
     }
 
-    //TODO-GM Add Interrupt handler.
+    //TODO(grzegorzmilka) Add Interrupt handler.
     public void run() {
       Message msg = null;
       try {

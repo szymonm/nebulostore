@@ -5,5 +5,6 @@
   </dht>
   <bootstrap>
     <mode>server</mode>
+    <address>host3-plb.loria.fr</address>
   </bootstrap>
 </communication-peer>

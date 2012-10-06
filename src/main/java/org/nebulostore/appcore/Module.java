@@ -25,6 +25,14 @@ public abstract class Module implements Runnable {
     inQueue_ = inQueue;
   }
 
+  public BlockingQueue<Message> getInQueue() {
+      return inQueue_;
+  }
+
+  public BlockingQueue<Message> getOutQueue() {
+      return outQueue_;
+  }
+
   public void setInQueue(BlockingQueue<Message> inQueue) {
     inQueue_ = inQueue;
   }

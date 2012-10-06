@@ -1,5 +1,7 @@
 package org.nebulostore.communication.bootstrap;
 
+import java.io.IOException;
+
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.address.CommAddressResolver;
@@ -23,5 +25,6 @@ public abstract class BootstrapService {
 
   public abstract CommAddressResolver getResolver();
 
+  public abstract void startUpService() throws IOException;
   public abstract void shutdownService();
 }

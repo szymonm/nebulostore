@@ -22,8 +22,10 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * @author Grzegorz Milka
  */
 public final class RunPingPong {
-  // 10 seconds
-  private static final int RMI_SERVER_BOOTSTRAP_PERIOD_ = 10000;
+  /**
+   * Allow testing server to start.
+   */
+  private static final int RMI_SERVER_BOOTSTRAP_PERIOD_ = 20000;
 
   private static final Random randGenerator = new Random();
   private final Map<Integer, PingPongPeer> otherPeers_ = null;

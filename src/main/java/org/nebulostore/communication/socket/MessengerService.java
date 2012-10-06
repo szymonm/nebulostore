@@ -94,7 +94,8 @@ public class MessengerService extends Module {
    * Using is based on getting a socket for use and returning it through put
    * method when it is not needed;
    * For now it only handles one socket in use at a time, but it should be easy to
-   * extend.
+   * extend. It should the first thing too look into when it is found that
+   * communication is too slow.
    *
    * @author Grzegorz Milka
    */
@@ -165,7 +166,7 @@ public class MessengerService extends Module {
             socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());
             activeSOOSPair_ = new SocketOOSPair(socket,
                 new ObjectOutputStream(socket.getOutputStream()));
-            //TODO-GM: Can we group those exceptions?
+            //TODO(grzegorzmilka): Can we group those exceptions?
           } catch (IOException e) {
             logger_.error("Socket to: " + commAddress +
                 " could not be created. " + e);

@@ -1,1 +1,1 @@
-planetlab1.ci.pwr.wroc.pl
+host3-plb.loria.fr

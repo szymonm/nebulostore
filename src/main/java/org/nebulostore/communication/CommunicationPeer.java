@@ -31,7 +31,9 @@ import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
 import org.nebulostore.communication.socket.ListenerService;
 import org.nebulostore.communication.socket.MessengerService;
 
-//TODO-GM add kademlia support
+//TODO(grzegorzmilka) add kademlia support
+//TODO(grzegorzmilka) add closing through message instead of interrupt
+//TODO(grzegorzmilka) apply Visitator pattern to message communication
 /**
  * Main module for communication with outside world.
  *
@@ -39,8 +41,6 @@ import org.nebulostore.communication.socket.MessengerService;
  * @author Marcin Walas
  * @author Grzegorz Milka
  */
-//NOTE-GM CommPeer should be made singleton since getPeer is forced to be static
-//function.
 public class CommunicationPeer extends Module {
   public static final int COMM_CLI_PORT = 9987;
 
@@ -48,21 +48,47 @@ public class CommunicationPeer extends Module {
   private static final String CONFIGURATION_PATH =
     "resources/conf/communication/CommunicationPeer.xml";
 
+  /**
+   * Module for handling bootstraping peer to network.
+   *
+   * It can be either server or client, depending on configuration
+   */
+  private static BootstrapService bootstrapService_;
+
+  /**
+   * DHT module available to higher layers.
+   *
+   * Note that it was implemented by Marcin and I(grzegorzmilka) left it mostly
+   * as is. Only BDB works.
+   */
   private Module dhtPeer_;
+  private final BlockingQueue<Message> dhtPeerInQueue_;
   private Thread dhtPeerThread_;
 
-  private BlockingQueue<Message> messengerServiceInQueue_;
-  private BlockingQueue<Message> gossipServiceInQueue_;
-  private final BlockingQueue<Message> dhtInQueue_;
-
-  private static BootstrapService bootstrapService_;
+  /**
+   * Main module for listening for messages.
+   *
+   * It works listens for incoming TCP connections from messengerService
+   */
   private ListenerService listenerService_;
-  private MessengerService messengerService_;
-  private PeerGossipService gossipService_;
-
   private Thread listenerThread_;
+
+  /**
+   * Main module for sending messages across the network.
+   */
+  private MessengerService messengerService_;
+  private BlockingQueue<Message> messengerServiceInQueue_;
   private Thread messengerThread_;
+
+  /**
+   * Module handling peer gossiping.
+   *
+   * Once every x seconds gossiper gossips to get updated view on the network.
+   */
+  private BlockingQueue<Message> gossipServiceInQueue_;
+  private PeerGossipService gossipService_;
   private Thread gossipThread_;
+
 
   private boolean isServer_;
   // Is the server shutting down.
@@ -84,7 +110,7 @@ public class CommunicationPeer extends Module {
 
     messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
     gossipServiceInQueue_ = new LinkedBlockingQueue<Message>();
-    dhtInQueue_ = new LinkedBlockingQueue<Message>();
+    dhtPeerInQueue_ = new LinkedBlockingQueue<Message>();
 
     try {
       listenerService_ = new ListenerService(inQueue_);
@@ -92,26 +118,29 @@ public class CommunicationPeer extends Module {
       throw new NebuloException("Couldn't initialize listener.", e);
     }
 
-    if (config.getString("bootstrap.mode", "client").equals("server")) {
-      isServer_ = true;
-    } else {
-      isServer_ = false;
-    }
+    isServer_ = config.getString("bootstrap.mode", "client").equals("server");
 
+    String bootstrapServerAddress = config.getString("bootstrap.address", "none");
+    if (bootstrapServerAddress.equals("none")) {
+      throw new IllegalArgumentException("Bootstrap client address is not set.");
+    }
     if (!isServer_) {
-      bootstrapService_ = new BootstrapClient(commCliPort_);
+
+      bootstrapService_ = new BootstrapClient(bootstrapServerAddress,
+          commCliPort_);
       logger_.info("Created BootstrapClient.");
       inQueue_.add(new CommPeerFoundMessage(bootstrapService_.getBootstrapCommAddress(),
             bootstrapService_.getResolver().getMyCommAddress()));
     } else {
-      while (true) {
-        try {
-          bootstrapService_ = new BootstrapServer(commCliPort_);
-          break;
-        } catch (IOException e) {
-          logger_.error("IOException: " + e +
-              " caught when creating BootstrapServer. Retrying.");
-        }
+      //TODO(grzegorzmilka) - apply bol fixes
+      bootstrapService_ = new BootstrapServer(bootstrapServerAddress,
+              commCliPort_);
+      try {
+        bootstrapService_.startUpService();
+      } catch (IOException e) {
+        logger_.error("IOException: " + e +
+            " caught when starting up BootstrapServer.");
+        throw new NebuloException("IOException at bootstrap", e);
       }
       Thread bootstrap = new Thread((BootstrapServer) bootstrapService_,
           "Nebulostore.Communication.Bootstrap");
@@ -230,14 +259,14 @@ public class CommunicationPeer extends Module {
           logger_.error(e);
         }
       } else if (msg instanceof HolderAdvertisementMessage) {
-        dhtInQueue_.add(msg);
+        dhtPeerInQueue_.add(msg);
       } else if (msg instanceof CommPeerFoundMessage) {
         logger_.debug("CommPeerFound message forwarded to Dispatcher");
         outQueue_.add(msg);
       } else if (msg instanceof DHTMessage) {
         if (msg instanceof InDHTMessage) {
           logger_.debug("InDHTMessage forwarded to DHT");
-          dhtInQueue_.add(msg);
+          dhtPeerInQueue_.add(msg);
         } else if (msg instanceof OutDHTMessage) {
           logger_.debug("OutDHTMessage forwarded to Dispatcher");
           outQueue_.add(msg);
@@ -249,7 +278,7 @@ public class CommunicationPeer extends Module {
         BdbMessageWrapper casted = (BdbMessageWrapper) msg;
         if (casted.getWrapped() instanceof InDHTMessage) {
           logger_.debug("BDB DHT message forwarded to DHT");
-          dhtInQueue_.add(casted.getWrapped());
+          dhtPeerInQueue_.add(casted.getWrapped());
         } else if (casted.getWrapped() instanceof OutDHTMessage) {
           logger_.debug("BDB DHT message forwarded to Dispatcher");
           outQueue_.add(casted);
@@ -283,6 +312,11 @@ public class CommunicationPeer extends Module {
     }
   }
 
+  /**
+   * Starts up and configures DHTPeer
+   *
+   * @author Marcin Walas
+   */
   private void reconfigureDHT(String dhtProvider,
       ReconfigureDHTMessage reconfigureRequest) throws NebuloException {
 
@@ -297,7 +331,7 @@ public class CommunicationPeer extends Module {
       }
 
       if (dhtProvider.equals("bdb")) {
-        dhtPeer_ = new BdbPeer(dhtInQueue_, outQueue_, getPeerAddress(),
+        dhtPeer_ = new BdbPeer(dhtPeerInQueue_, outQueue_, getPeerAddress(),
             messengerServiceInQueue_, reconfigureRequest);
       } else {
         throw new CommException("Unsupported DHT Provider in configuration");

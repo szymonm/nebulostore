@@ -30,7 +30,7 @@ import org.teleal.cling.support.model.PortMapping;
 public final class BootstrapClient extends BootstrapService {
   private static Logger logger_ = Logger.getLogger(BootstrapClient.class);
 
-  private final String bootstrapServerAddress_ = "planetlab1.ci.pwr.wroc.pl";
+  private String bootstrapServerAddress_;
 
   //NOTE-GM Addresses for normal communication
   private CommAddress myCommAddress_;
@@ -40,9 +40,11 @@ public final class BootstrapClient extends BootstrapService {
 
   private Boolean isEnding_ = false;
 
-  //TODO-GM Collision handling
-  public BootstrapClient(int commCliPort) throws NebuloException {
+  //TODO(grzegorzmilka) Collision handling
+  public BootstrapClient(String bootstrapServerAddress,
+      int commCliPort) throws NebuloException {
     super(commCliPort);
+    bootstrapServerAddress_ = bootstrapServerAddress;
 
     // Find my address
     logger_.info("Finding out my address.");
@@ -92,6 +94,15 @@ public final class BootstrapClient extends BootstrapService {
   @Override
   public CommAddress getBootstrapCommAddress() {
     return bootstrapServerCommAddress_;
+  }
+
+
+  @Override
+  //NOTE(grzegorzmilka) Do nothing for now.
+  //TODO(grzegorzmilka) Ask whether it is better to start up as separate
+  //function even though the object is useless otherwise
+  public void startUpService() {
+      return;
   }
 
   @Override

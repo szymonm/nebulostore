@@ -9,6 +9,8 @@ gschembra4.diit.unict.it
 host147-82-static.93-94-b.business.telecomitalia.it
 inriarennes2.irisa.fr
 inriarennes1.irisa.fr
+host4-plb.loria.fr
+host3-plb.loria.fr
 iraplab1.iralab.uni-karlsruhe.de
 iraplab2.iralab.uni-karlsruhe.de
 itchy.comlab.bth.se

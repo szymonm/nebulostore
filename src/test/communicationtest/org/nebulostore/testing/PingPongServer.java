@@ -13,8 +13,8 @@ public final class PingPongServer extends TestingServer {
   private Map<Integer, IPingPongPeer> peers_ =
     new HashMap<Integer, IPingPongPeer>();
   private Boolean hasStarted_ = false;
-  // 120 seconds
-  private static final int WAIT_PERIOD_ = 120000;
+  // 5 minutes
+  private static final int WAIT_PERIOD_ = 600000;
   // 60 seconds
   private static final int PING_DELAY_ = 60000;
 
@@ -79,12 +79,7 @@ public final class PingPongServer extends TestingServer {
         }
         logger_.info(String.format("Peer %2d received response from: %s", peerId,
               respondents.toString()));
-        if (!respondents.containsAll(expectedRespondents)) {
-          logger_.error(String.format("Respondents do not contain all expected " +
-                "respondents %s. Shutting down.",
-                expectedRespondents.toString()));
-          break;
-        }
+        logger_.info(String.format("Responsiveness level is: %d/%d.", respondents.size(), expectedRespondents.size()));
         ++pingId;
       }
 

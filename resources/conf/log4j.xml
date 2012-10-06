@@ -16,19 +16,11 @@
     </layout>
   </appender>
 
-  <appender name="FA-testing:DEBUG" class="org.apache.log4j.FileAppender">
-    <param name="File" value="testing_debug.log" />
+  <appender name="FA-testing" class="org.apache.log4j.FileAppender">
+    <param name="File" value="testing.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
-    </layout>
-  </appender>  
-
-  <appender name="FA-testing:INFO" class="org.apache.log4j.FileAppender">
-    <param name="File" value="testing_info.log" />
-    <param name="Threshold" value="INFO" />
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>  
 
@@ -45,7 +37,7 @@
     <param name="File" value="comm.log" />
     <param name="Threshold" value="INFO" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>
 
@@ -53,7 +45,7 @@
     <param name="File" value="comm_debug.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>
 
@@ -61,7 +53,7 @@
     <param name="File" value="address.log" />
     <param name="Threshold" value="ALL" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>
 
@@ -69,7 +61,7 @@
     <param name="File" value="bootstrap.log" />
     <param name="Threshold" value="ALL" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>
 
@@ -77,7 +69,7 @@
     <param name="File" value="gossip.log" />
     <param name="Threshold" value="ALL" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>
 
@@ -85,7 +77,7 @@
     <param name="File" value="dht.log" />
     <param name="Threshold" value="ALL" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender> 
 
@@ -93,7 +85,7 @@
     <param name="File" value="dql.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>
   
@@ -101,7 +93,7 @@
     <param name="File" value="stream.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>
 
@@ -109,7 +101,7 @@
     <param name="File" value="tomp2p.log" />
     <param name="Threshold" value="ALL" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>  
   
@@ -117,7 +109,7 @@
     <param name="File" value="replicator.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %c %x %n%-5p - %m%n" />
     </layout>
   </appender>  
 
@@ -166,12 +158,6 @@
     <level value="INFO"/>
     <appender-ref ref="FA-comm:INFO"/>
   </logger> 
-
-  <logger name="org.nebulostore.testing">
-    <level value="ALL" />
-    <appender-ref ref="FA-testing:INFO"/>    
-    <appender-ref ref="FA-testing:DEBUG"/>    
-  </logger>
   
   <logger name="org.nebulostore.appcore.TestingPeer">
     <level value="DEBUG" />
@@ -194,6 +180,11 @@
   <logger name="org.nebulostore.query">
     <level value="DEBUG" />
     <appender-ref ref="FA-query"/>
+  </logger>
+
+  <logger name="org.nebulostore.testing" additivity="false">
+    <level value="ALL"/>
+    <appender-ref ref="FA-testing"/>    
   </logger>
 
   <root>
