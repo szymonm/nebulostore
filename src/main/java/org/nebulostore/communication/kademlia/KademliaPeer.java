@@ -29,7 +29,6 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.dht.exceptions.ValueNotFound;
-import org.nebulostore.communication.exceptions.CommException;
 import org.nebulostore.communication.jxta.PeerDiscoveryService;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;

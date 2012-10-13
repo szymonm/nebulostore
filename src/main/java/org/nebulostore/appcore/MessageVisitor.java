@@ -44,11 +44,6 @@ import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.networkmonitor.messages.ConnectionTestMessage;
 import org.nebulostore.networkmonitor.messages.ConnectionTestResponseMessage;
 import org.nebulostore.networkmonitor.messages.RandomPeersSampleMessage;
-import org.nebulostore.query.messages.GossipExecutorsMessage;
-import org.nebulostore.query.messages.QueryAcceptedMessage;
-import org.nebulostore.query.messages.QueryErrorMessage;
-import org.nebulostore.query.messages.QueryMessage;
-import org.nebulostore.query.messages.QueryResultsMessage;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.DeleteObjectMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
@@ -314,26 +309,6 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(UpdateWithholdMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(QueryMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(QueryAcceptedMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(QueryErrorMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(QueryResultsMessage message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(GossipExecutorsMessage message) throws NebuloException {
     return visitDefault(message);
   }
 

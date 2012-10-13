@@ -18,7 +18,6 @@ import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.query.client.DQLClient;
 import org.nebulostore.timer.IMessageGenerator;
 
 /**
@@ -72,7 +71,6 @@ public class Peer {
     dispatcherInQueue_ = new LinkedBlockingQueue<Message>();
     ApiFacade.initApi(dispatcherInQueue_);
     NebuloObject.initObjectApi(dispatcherInQueue_);
-    DQLClient.setDispatcherQueue(dispatcherInQueue_);
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
     dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_,

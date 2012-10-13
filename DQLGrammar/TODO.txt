@@ -1,5 +1,0 @@
-
-
-	[0]. Type for files instead of "StringValue" emulation??
-	
-	[1]. 
