@@ -1,0 +1,22 @@
+2012-09-04 21:59:47,166 [main] INFO  org.nebulostore.testing.RunPingPong  - Creating server.
+2012-09-04 21:59:50,606 [main] INFO  org.nebulostore.testing.PingPongPeer  - CommunicationPeer started.
+2012-09-04 21:59:50,625 [main] INFO  org.nebulostore.testing.PingPongPeer  - Created peer of id: 0.
+2012-09-04 21:59:50,675 [main] INFO  org.nebulostore.testing.RunPingPong  - Local registry created
+2012-09-04 21:59:50,704 [main] INFO  org.nebulostore.testing.RunPingPong  - Server: org.nebulostore.testing.PingPongServer@1a68ef9 has been put to remote.
+2012-09-04 21:59:50,711 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Running server. Entering wait period.
+2012-09-04 21:59:54,362 [RMI TCP Connection(2)-156.17.10.51] INFO  org.nebulostore.testing.PingPongServer  - Peer:  1 with address: 9989d293-1a85-4836-a1a8-ce81eb5f398a added to map.
+2012-09-04 22:00:01,566 [RMI TCP Connection(4)-128.232.103.203] INFO  org.nebulostore.testing.PingPongServer  - Peer:  2 with address: 4f8b185c-14aa-434f-9c43-48160621f5bc added to map.
+2012-09-04 22:01:50,854 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Wait period ended.
+2012-09-04 22:01:50,857 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Sent ping of id  0 from peer:  0
+2012-09-04 22:02:50,858 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Peer  0 received response from: [1, 2]
+2012-09-04 22:02:50,983 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Sent ping of id  1 from peer:  1
+2012-09-04 22:03:51,117 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Peer  1 received response from: [0, 2]
+2012-09-04 22:03:51,215 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Sent ping of id  2 from peer:  2
+2012-09-04 22:04:51,320 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Peer  2 received response from: [0, 1]
+2012-09-04 22:04:51,321 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Shutting down peer: 0
+2012-09-04 22:04:51,410 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongPeer  - CommunicationPeer stopped and killed
+2012-09-04 22:04:51,410 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Shutdown of: 0 complete
+2012-09-04 22:04:51,410 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Shutting down peer: 1
+2012-09-04 22:04:51,542 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Shutdown of: 1 complete
+2012-09-04 22:04:51,543 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Shutting down peer: 2
+2012-09-04 22:04:51,615 [Org.Nebulostore.Testing.TestingServer] INFO  org.nebulostore.testing.PingPongServer  - Shutdown of: 2 complete

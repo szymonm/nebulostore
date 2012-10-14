@@ -134,5 +134,19 @@
       <param name="main-class" value="org.nebulostore.appcore.Peer" />
     </antcall>
   </target>
-  
+
+  <!-- Test builds -->
+
+  <target name="runpingpong">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.testing.RunPingPong" />
+    </antcall>
+  </target>
+
+  <target name="gossiptest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.testing.moduletest.gossiptest.GossipTest" />
+    </antcall>
+  </target>
+
 </project>

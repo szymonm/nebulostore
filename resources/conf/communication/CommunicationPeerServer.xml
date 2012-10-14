@@ -4,7 +4,7 @@
     <provider>bdb</provider>
   </dht>
   <bootstrap>
-    <mode>client</mode>
+    <mode>server</mode>
     <address>planetlab1.ci.pwr.wroc.pl</address>
   </bootstrap>
 </communication-peer>
