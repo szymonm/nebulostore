@@ -65,6 +65,8 @@ public class MessagesTestClient extends TestingModule implements Serializable {
     super.endModule();
   }
 
+  /**
+   */
   final class ConfigurationVisitor extends EmptyInitializationVisitor {
 
     @Override
@@ -78,6 +80,8 @@ public class MessagesTestClient extends TestingModule implements Serializable {
     }
   }
 
+  /**
+   */
   final class StatisticsGatherVisitor extends TestingModuleVisitor {
 
     @Override
@@ -96,6 +100,8 @@ public class MessagesTestClient extends TestingModule implements Serializable {
 
   }
 
+  /**
+   */
   final class MessagesVisitor extends TestingModuleVisitor {
 
     private Set<String> receivedMessages_ = new HashSet<String>();
@@ -115,6 +121,8 @@ public class MessagesTestClient extends TestingModule implements Serializable {
       phaseCheckTimer_.cancel();
     }
 
+    /**
+     */
     final class PhaseCheckTask extends TimerTask {
 
       private int lastSeenReceivedSize_ = -1;

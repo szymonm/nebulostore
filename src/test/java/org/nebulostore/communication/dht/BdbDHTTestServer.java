@@ -1,5 +1,8 @@
 package org.nebulostore.communication.dht;
 
+/**
+ * @author grzegorzmilka
+ */
 public class BdbDHTTestServer extends DHTTestServer {
 
   public BdbDHTTestServer(int testPhases, int peersFound, int peersInTest,

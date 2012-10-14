@@ -17,6 +17,8 @@ import org.nebulostore.testing.ServerTestingModule;
 import org.nebulostore.testing.TestStatistics;
 import org.nebulostore.testing.messages.TestInitMessage;
 
+/**
+ */
 public class PerformanceMessagesTestServer extends ServerTestingModule {
 
   private static Logger logger_ = Logger
@@ -26,10 +28,10 @@ public class PerformanceMessagesTestServer extends ServerTestingModule {
   private final int messagesNumber_;
   private final int shortPhases_;
 
-  private final static double errorThreshold_ = 0.5;
+  private static final double ERROR_THRESHOLD = 0.5;
 
-  private double issued_ = 0.0;
-  private double received_ = 0.0;
+  private double issued_;
+  private double received_;
 
   private Double shouldReceive_;
 
@@ -116,7 +118,7 @@ public class PerformanceMessagesTestServer extends ServerTestingModule {
 
   @Override
   protected boolean isSuccessful() {
-    return (received_ / shouldReceive_) < errorThreshold_;
+    return (received_ / shouldReceive_) < ERROR_THRESHOLD;
   }
 
   @Override

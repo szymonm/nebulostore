@@ -7,6 +7,9 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.testing.messages.ReconfigureTestMessage;
 
+/**
+ * @author grzegorzmilka
+ */
 public class ReconfigureDHTTestMessage extends ReconfigureTestMessage {
 
   private static final long serialVersionUID = -2396699754933460615L;

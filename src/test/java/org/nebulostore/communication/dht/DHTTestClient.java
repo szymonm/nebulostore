@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.kademlia.KademliaPeer;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -22,6 +21,10 @@ import org.nebulostore.testing.messages.NewPhaseMessage;
 import org.nebulostore.testing.messages.TestInitMessage;
 import org.nebulostore.testing.messages.TestStatsMessage;
 
+/**
+ * @author grzegorzmilka
+ *
+ */
 public class DHTTestClient extends TestingModule implements Serializable {
 
   private static Logger logger_ = Logger.getLogger(DHTTestClient.class);
@@ -87,6 +90,8 @@ public class DHTTestClient extends TestingModule implements Serializable {
     }
   }
 
+  /**
+   */
   final class InitializationVisitor extends EmptyInitializationVisitor {
 
     @Override
@@ -125,11 +130,13 @@ public class DHTTestClient extends TestingModule implements Serializable {
 
   }
 
+  /**
+   */
   final class SenderDHTVisitor extends TestingModuleVisitor {
 
     private int receivedDHTAcks_;
     private int retries_;
-    private static final int maxRetries_ = 20;
+    private static final int MAX_RETRIES = 20;
 
     @Override
     public Void visit(NewPhaseMessage message) {
@@ -162,9 +169,9 @@ public class DHTTestClient extends TestingModule implements Serializable {
       receivedDHTAcks_++;
       if (receivedDHTAcks_ >= outClients_.length * keysMultiplier_) {
         logger_.info("All OK finished. Phase finished.");
-        if (phase_ % 4 == 0) {
+        /*if (phase_ % 4 == 0) {
           logger_.info(KademliaPeer.getKademliaContents());
-        }
+        }*/
         /*
         try {
           // additional sleep
@@ -194,7 +201,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
         return null;
       }
       KeyDHT key = ((PutDHTMessage) message.getRequestMessage()).getKey();
-      if (retries_ < maxRetries_) {
+      if (retries_ < MAX_RETRIES) {
         logger_.info("Error DHT Message received with: " +
             message.getException() + " key: " + key + " string: " +
             keysMapping_.get(key) + ". Retrying...");
@@ -216,6 +223,8 @@ public class DHTTestClient extends TestingModule implements Serializable {
     }
   }
 
+  /**
+   */
   final class ReceiverDHTVisitor extends TestingModuleVisitor {
 
     private int receivedDHTAcks_;
@@ -254,9 +263,9 @@ public class DHTTestClient extends TestingModule implements Serializable {
       receivedDHTAcks_++;
       if (receivedDHTAcks_ >= inClients_.length * keysMultiplier_) {
         logger_.info("All OK finished. Phase finished.");
-        if (phase_ % 4 == 0) {
+        /*if (phase_ % 4 == 0) {
           logger_.info(KademliaPeer.getKademliaContents());
-        }
+        }*/
         phaseFinished();
       }
     }

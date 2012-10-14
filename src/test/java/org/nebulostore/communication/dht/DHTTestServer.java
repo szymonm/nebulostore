@@ -20,6 +20,9 @@ import org.nebulostore.testing.ServerTestingModule;
 import org.nebulostore.testing.TestStatistics;
 import org.nebulostore.testing.messages.TestInitMessage;
 
+/**
+ * @author grzegorzmilka
+ */
 public class DHTTestServer extends ServerTestingModule {
   private static Logger logger_ = Logger.getLogger(DHTTestServer.class);
 
@@ -31,8 +34,8 @@ public class DHTTestServer extends ServerTestingModule {
 
   private final int keysMultiplier_;
 
-  private double all_ = 0.0;
-  private double errors_ = 0.0;
+  private double all_;
+  private double errors_;
 
   public DHTTestServer(int testPhases, int peersFound, int peersInTest,
       int timeout, int phaseTimeout, int keysMultiplier, String dhtProvider,
@@ -46,6 +49,8 @@ public class DHTTestServer extends ServerTestingModule {
     visitor_ = new DHTTestServerVisitor();
   }
 
+  /**
+   */
   class DHTTestServerVisitor extends ServerTestingModuleVisitor {
     @Override
     public Void visit(ReconfigureDHTAckMessage message) {
@@ -106,7 +111,7 @@ public class DHTTestServer extends ServerTestingModule {
 
     Random rand = new Random(System.currentTimeMillis());
 
-    // TODO: Move it as a test parameter
+    // TODO(grzegorzmilka): Move it as a test parameter
     int outDegree = 5;
 
     for (CommAddress client : clients_) {

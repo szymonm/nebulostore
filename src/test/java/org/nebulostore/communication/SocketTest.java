@@ -22,24 +22,26 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-public class SocketTest {
+/**
+ * @author grzegorzmilka
+ */
+public final class SocketTest {
 
   private static Logger logger_ = Logger.getLogger(SocketTest.class);
 
   private final int port_ = 9789;
-  private final int fallbackPort = 9790;
+  private final int fallbackPort_ = 9790;
 
   private final int bootstrapPort_ = 9788;
   //private final String bootstrapAddress_ = "127.0.0.1";
   private final String bootstrapAddress_ = "130.83.166.245";
 
+  private boolean isBootstrap_;
+  private final Set<String> remoteHosts_ = new HashSet<String>();
 
-  private boolean isBootstrap_ = false;
-  private final Set<String> remoteHosts = new HashSet<String>();
+  private final Map<String, Socket> remoteConnections_ = new HashMap<String, Socket>();
 
-  private final Map<String, Socket> remoteConnections = new HashMap<String, Socket>();
-
-  public SocketTest(boolean isBootstrap) {
+  private SocketTest(boolean isBootstrap) {
     isBootstrap_ = isBootstrap;
   }
 
@@ -55,13 +57,15 @@ public class SocketTest {
     test.run();
   }
 
+  /**
+   */
   class BootstrapServer implements Runnable {
-    ServerSocket server;
+    ServerSocket server_;
 
     public BootstrapServer() throws IOException {
       logger_.info("Init on bootstrap server");
       try {
-        server = new ServerSocket(bootstrapPort_);
+        server_ = new ServerSocket(bootstrapPort_);
       } catch (IOException e) {
         logger_.error(e);
         throw e;
@@ -77,18 +81,18 @@ public class SocketTest {
       while (true) {
 
         try {
-          Socket socket = server.accept();
+          Socket socket = server_.accept();
 
-          synchronized (remoteHosts) {
+          synchronized (remoteHosts_) {
             String addr = socket.getRemoteSocketAddress().toString()
                 .replaceAll("/", "").replaceAll(":.*", "");
             logger_.info("Feeding host: " + addr);
-            remoteHosts.add(addr);
+            remoteHosts_.add(addr);
 
             OutputStream outputStream = socket.getOutputStream();
             BufferedWriter bufferedWriter = new BufferedWriter(
                 new OutputStreamWriter(outputStream));
-            for (String host : remoteHosts) {
+            for (String host : remoteHosts_) {
               bufferedWriter.write(host + "\n");
             }
             bufferedWriter.write("END\n");
@@ -105,6 +109,8 @@ public class SocketTest {
 
   }
 
+  /**
+   */
   class BootstrapClient extends TimerTask {
 
     @Override
@@ -124,8 +130,8 @@ public class SocketTest {
             readed = true;
           } else {
             logger_.info("Readed address: " + line);
-            synchronized (remoteHosts) {
-              remoteHosts.add(line);
+            synchronized (remoteHosts_) {
+              remoteHosts_.add(line);
             }
           }
         }
@@ -143,17 +149,19 @@ public class SocketTest {
 
   }
 
+  /**
+   */
   class OutputHandler extends TimerTask {
 
     @Override
     public void run() {
 
-      synchronized (remoteHosts) {
-        for (String address : remoteHosts) {
-          if (!remoteConnections.containsKey(address)) {
+      synchronized (remoteHosts_) {
+        for (String address : remoteHosts_) {
+          if (!remoteConnections_.containsKey(address)) {
             try {
               logger_.info("Opening new connection to : " + address);
-              remoteConnections.put(address, new Socket(address, port_));
+              remoteConnections_.put(address, new Socket(address, port_));
             } catch (UnknownHostException e) {
               logger_.error(e);
 
@@ -170,7 +178,7 @@ public class SocketTest {
       }
       int messagesPerPeer = 5;
 
-      for (Socket socket : remoteConnections.values()) {
+      for (Socket socket : remoteConnections_.values()) {
 
         logger_.info("Trying to write data to host: " +
             socket.getRemoteSocketAddress().toString());
@@ -181,8 +189,8 @@ public class SocketTest {
 
           for (int i = 0; i < messagesPerPeer; i++) {
             String data = "Hello world!" + payload + " \n";
-            bytesSent += data.length();
-            count++;
+            bytesSent_ += data.length();
+            count_++;
             writer.write(data);
           }
           writer.flush();
@@ -196,6 +204,8 @@ public class SocketTest {
 
   }
 
+  /**
+   */
   class IncomingHandler implements Runnable {
 
     private final Socket socket_;
@@ -221,8 +231,8 @@ public class SocketTest {
       while (true) {
         try {
           String data = reader.readLine();
-          countR++;
-          bytesR += data.length();
+          countR_++;
+          bytesR_ += data.length();
           logger_.info("Readed line of length: " + data.length());
 
         } catch (IOException e) {
@@ -235,40 +245,43 @@ public class SocketTest {
 
   }
 
-  private long count = 0;
-  private long lastCount = 0;
+  // All of these are initialized to 0 by default.
+  private long count_;
+  private long lastCount_;
 
-  private long bytesSent = 0;
-  private long lastBytes = 0;
+  private long bytesSent_;
+  private long lastBytes_;
 
-  private long lastCountR = 0;
-  private long countR = 0;
+  private long lastCountR_;
+  private long countR_;
 
-  private long bytesR = 0;
-  private long lastBytesR = 0;
+  private long bytesR_;
+  private long lastBytesR_;
 
-  private long lastTime;
+  private long lastTime_;
 
+  /**
+   */
   class StatTask extends TimerTask {
 
     @Override
     public void run() {
       long now = System.currentTimeMillis();
       int peers = 0;
-      synchronized (remoteHosts) {
-        peers = remoteHosts.size();
+      synchronized (remoteHosts_) {
+        peers = remoteHosts_.size();
       }
 
       logger_.info("STATS: peers: " + peers + " sent msg : " +
-          ((count - lastCount) * 1000 / (now - lastTime)) + " bytes: " +
-          ((bytesSent - lastBytes) * 1000 / (now - lastTime)) + " recv msg: " +
-          ((countR - lastCountR) * 1000 / (now - lastTime)) + " bytes: " +
-          ((bytesR - lastBytesR) * 1000 / (now - lastTime)));
-      lastTime = now;
-      lastCount = count;
-      lastBytes = bytesSent;
-      lastCountR = countR;
-      lastBytesR = bytesR;
+          ((count_ - lastCount_) * 1000 / (now - lastTime_)) + " bytes: " +
+          ((bytesSent_ - lastBytes_) * 1000 / (now - lastTime_)) + " recv msg: " +
+          ((countR_ - lastCountR_) * 1000 / (now - lastTime_)) + " bytes: " +
+          ((bytesR_ - lastBytesR_) * 1000 / (now - lastTime_)));
+      lastTime_ = now;
+      lastCount_ = count_;
+      lastBytes_ = bytesSent_;
+      lastCountR_ = countR_;
+      lastBytesR_ = bytesR_;
     }
 
   }
@@ -305,9 +318,9 @@ public class SocketTest {
       server = new ServerSocket(port_);
     } catch (IOException e) {
       logger_.info("Failed to bind to " + port_ + " retrying on " +
-          fallbackPort);
+          fallbackPort_);
       try {
-        server = new ServerSocket(fallbackPort);
+        server = new ServerSocket(fallbackPort_);
       } catch (IOException e1) {
         logger_.error("Unable to bind to fallback port. Closing...", e);
         return;

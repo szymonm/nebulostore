@@ -18,7 +18,7 @@ import org.nebulostore.testing.messages.TestInitMessage;
 
 /**
  * Testing server module of communication layer.
- * 
+ *
  * @author Marcin Walas
  */
 public class MessagesTestServer extends ServerTestingModule {
@@ -29,8 +29,8 @@ public class MessagesTestServer extends ServerTestingModule {
 
   private final int testPhases_;
 
-  private double lost_ = 0.0;
-  private double all_ = 0.0;
+  private double lost_;
+  private double all_;
   private final double errorThreshold_ = 0.15;
 
   public MessagesTestServer(int testPhases, int peersFound, int peersNeeded,

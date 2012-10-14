@@ -14,6 +14,8 @@ import org.nebulostore.testing.messages.GatherStatsMessage;
 import org.nebulostore.testing.messages.NewPhaseMessage;
 import org.nebulostore.testing.messages.TestStatsMessage;
 
+/**
+ */
 public class PerformanceMessagesTestClient extends TestingModule {
 
   private static Logger logger_ = Logger
@@ -29,7 +31,7 @@ public class PerformanceMessagesTestClient extends TestingModule {
   private int expectedInClients_;
 
   private final TestStatistics stats_;
-  private Timer sendTimer_ = null;
+  private Timer sendTimer_;
 
   public PerformanceMessagesTestClient(String serverJobId, int messagesNumber,
       int shortPhases, long shortPhaseTimeout) {
@@ -56,6 +58,8 @@ public class PerformanceMessagesTestClient extends TestingModule {
 
   }
 
+  /**
+   */
   final class ConfigurationVisitor extends EmptyInitializationVisitor {
 
     @Override
@@ -72,6 +76,8 @@ public class PerformanceMessagesTestClient extends TestingModule {
     }
   }
 
+  /**
+   */
   final class StatisticsGatherVisitor extends TestingModuleVisitor {
 
     @Override
@@ -89,10 +95,12 @@ public class PerformanceMessagesTestClient extends TestingModule {
 
   }
 
+  /**
+   */
   class SendTimer extends TimerTask {
 
     private final String payload_ = "Hello world";
-    private int shortPhasesCount_ = 0;
+    private int shortPhasesCount_;
 
     @Override
     public void run() {
@@ -119,9 +127,9 @@ public class PerformanceMessagesTestClient extends TestingModule {
 
   }
 
+  /**
+   */
   final class MessagesVisitor extends TestingModuleVisitor {
-
-
 
     @Override
     public Void visit(NewPhaseMessage message) {

@@ -40,24 +40,24 @@ public final class PeerGossipService extends Module {
    * Period at which GossipSender sends its advertisments.
    */
   // Default: 40 seconds
-  private final int GOSSIP_PERIOD_;
+  private final int gossipPeriod_;
   /**
    * Equivalent of c in the paper.
    *
    * It has to be greater than 1 (or even 3) to ensure non-empty gossips.
    */
   // Default: 20
-  private final int MAX_PEERS_SIZE_;
+  private final int maxPeersSize_;
   /**
    * Equivalent of H in the paper.
    */
   // Default: 1
-  private final int HEALING_FACTOR_;
+  private final int healingFactor_;
   /**
    * Equivalent of S in the paper.
    */
   // Default: 5
-  private final int SWAPPING_FACTOR_;
+  private final int swappingFactor_;
   private List<PeerDescriptor> peers_ =
     Collections.synchronizedList(new LinkedList<PeerDescriptor>());
   private final Timer gossipSender_ = new Timer();
@@ -86,10 +86,10 @@ public final class PeerGossipService extends Module {
     super(inQueue, outQueue);
     myCommAddress_ = myCommAddress;
     bootstrapCommAddress_ = bootstrapCommAddress;
-    GOSSIP_PERIOD_ = gossipPeriod;
-    MAX_PEERS_SIZE_ = maxPeersSize;
-    HEALING_FACTOR_ = healingFactor;
-    SWAPPING_FACTOR_ = swappingFactor;
+    gossipPeriod_ = gossipPeriod;
+    maxPeersSize_ = maxPeersSize;
+    healingFactor_ = healingFactor;
+    swappingFactor_ = swappingFactor;
     startGossipSender();
   }
 
@@ -128,7 +128,7 @@ public final class PeerGossipService extends Module {
    * Get period at which gossiper sends it's advertisments.
    */
   public int getGossipPeriod() {
-    return GOSSIP_PERIOD_;
+    return gossipPeriod_;
   }
 
   /**
@@ -243,17 +243,17 @@ public final class PeerGossipService extends Module {
     Collections.shuffle(bufferToSend);
 
     // Finding H oldest address and moving them to the end of list
-    if (HEALING_FACTOR_ < bufferToSend.size()) {
+    if (healingFactor_ < bufferToSend.size()) {
       ArrayList<PeerDescriptor> hOldest =
         new ArrayList<PeerDescriptor>(bufferToSend);
       Collections.sort(hOldest, new AgeComparator());
-      hOldest.subList(0, hOldest.size() - HEALING_FACTOR_ - 1).clear();
+      hOldest.subList(0, hOldest.size() - healingFactor_ - 1).clear();
       bufferToSend.removeAll(hOldest);
       bufferToSend.addAll(hOldest);
     }
 
-    if (bufferToSend.size() > (MAX_PEERS_SIZE_ / 2 - 1))
-      bufferToSend.subList(MAX_PEERS_SIZE_ / 2 - 1, bufferToSend.size() - 1).clear();
+    if (bufferToSend.size() > (maxPeersSize_ / 2 - 1))
+      bufferToSend.subList(maxPeersSize_ / 2 - 1, bufferToSend.size() - 1).clear();
 
     bufferToSend.add(0, new PeerDescriptor(myCommAddress_));
 
@@ -289,10 +289,10 @@ public final class PeerGossipService extends Module {
 
       //Delete old items
       ArrayList<PeerDescriptor> peerList = new ArrayList<PeerDescriptor>(peers_);
-      if (peers_.size() > MAX_PEERS_SIZE_) {
+      if (peers_.size() > maxPeersSize_) {
         Collections.sort(peerList, new AgeComparator());
         peerList.subList(0, peerList.size() -
-            Math.min(HEALING_FACTOR_, peers_.size() - MAX_PEERS_SIZE_) - 1).
+            Math.min(healingFactor_, peers_.size() - maxPeersSize_) - 1).
           clear();
         peers_.removeAll(peerList);
       }
@@ -300,17 +300,17 @@ public final class PeerGossipService extends Module {
       //Delete head
       //Note: Head in the paper refers to the end of list as implemented here
       final int headRange =
-        Math.max(Math.min(SWAPPING_FACTOR_, peers_.size() - MAX_PEERS_SIZE_), 0);
+        Math.max(Math.min(swappingFactor_, peers_.size() - maxPeersSize_), 0);
       for (int i = 0; i < headRange; ++i) {
         peers_.remove(peers_.size() - 1);
       }
 
       //Remove at random
-      if (peers_.size() > MAX_PEERS_SIZE_) {
+      if (peers_.size() > maxPeersSize_) {
         peerList.clear();
         peerList.addAll(peers_);
         Collections.shuffle(peerList);
-        peerList.subList(MAX_PEERS_SIZE_, peers_.size() - 1).clear();
+        peerList.subList(maxPeersSize_, peers_.size() - 1).clear();
         peers_.retainAll(peerList);
       }
 
@@ -330,7 +330,7 @@ public final class PeerGossipService extends Module {
   }
 
   private void startGossipSender() {
-    gossipSender_.schedule(new GossipSender(), GOSSIP_PERIOD_, GOSSIP_PERIOD_);
+    gossipSender_.schedule(new GossipSender(), gossipPeriod_, gossipPeriod_);
   }
 
   private void stopGossipSender() {
