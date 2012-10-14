@@ -1,14 +1,14 @@
 package org.nebulostore.communication.dht;
 
 /**
- * @author marcin
+ * @author bolek
  */
-public class MergeableInteger implements IMergeable {
+public class MergeableString implements IMergeable {
 
   private static final long serialVersionUID = -3772950029401952797L;
-  private final int value_;
+  private final String value_;
 
-  public MergeableInteger(int value) {
+  public MergeableString(String value) {
     value_ = value;
   }
 
@@ -17,7 +17,7 @@ public class MergeableInteger implements IMergeable {
     return this;
   }
 
-  public int getValue() {
+  public String getValue() {
     return value_;
   }
 

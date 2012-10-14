@@ -1,4 +1,4 @@
-package org.nebulostore.communication.bdbdht.tests;
+package org.nebulostore.communication.dht;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -11,9 +11,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
-import org.nebulostore.communication.dht.KeyDHT;
-import org.nebulostore.communication.dht.ValueDHT;
-import org.nebulostore.communication.kademlia.MergeableString;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
