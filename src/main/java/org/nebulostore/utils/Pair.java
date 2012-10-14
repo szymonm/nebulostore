@@ -1,7 +1,11 @@
 package org.nebulostore.utils;
 
+/**
+ * @author szymonmatejczyk
+ * @param <A>  first element
+ * @param <B>  second element
+ */
 public class Pair<A, B> {
-
   private final A first_;
   private final B second_;
 

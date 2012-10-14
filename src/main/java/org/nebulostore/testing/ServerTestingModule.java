@@ -157,6 +157,9 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
         false, testDescription);
   }
 
+  /**
+   * @author szymonmatejczyk
+   */
   class PeriodicCheck extends TimerTask {
     private static final long MAX_DELAY = 5000;
 
@@ -197,7 +200,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
           sendTics();
           if (startTime_ > 0 && stopTime_ < 0) {
             logger_.debug("Elapsed milis: " + (time - startTime_));
-            startTime_ += (time - postponeStart_);
+            startTime_ += time - postponeStart_;
             logger_.debug("After reduction: " + (time - startTime_));
           }
           postponeStart_ = -1;

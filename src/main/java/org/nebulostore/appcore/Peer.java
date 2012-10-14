@@ -12,7 +12,6 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.AddSynchroPeerModule;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
-import org.nebulostore.communication.jxta.JXTAPeer;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
@@ -103,8 +102,8 @@ public class Peer {
     }
 
     //Register instance in DHT
-    GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
-    dispatcherInQueue_.add(new JobInitMessage(new RegisterInstanceInDHTModule()));
+    /*GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
+    dispatcherInQueue_.add(new JobInitMessage(new RegisterInstanceInDHTModule()));*/
 
 //  Create Broker.
     String brokerJobId = CryptoUtils.getRandomId().toString();
@@ -112,8 +111,6 @@ public class Peer {
         brokerJobId, true)));
 
     dispatcherThread_.start();
-
-    JXTAPeer.startFeeding_ = true;
 
     runInitialModules(dispatcherInQueue_);
   }

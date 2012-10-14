@@ -7,6 +7,9 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
+/**
+ * @author szymonmatejczyk
+ */
 public class ReconfigureTestMessage extends CommMessage {
 
   private static final long serialVersionUID = -7407814653868855140L;

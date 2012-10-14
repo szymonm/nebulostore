@@ -5,9 +5,10 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
+/**
+ * @author szymonmatejczyk
+ */
 public class GatherStatsMessage extends CommMessage {
-
-
   private static final long serialVersionUID = -7578909223429521722L;
 
   public GatherStatsMessage(String jobId, CommAddress sourceAddress,

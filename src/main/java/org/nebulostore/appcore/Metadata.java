@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ContractList;
-import org.nebulostore.communication.dht.Mergeable;
+import org.nebulostore.communication.dht.IMergeable;
 
 /**
  * Metadata object is stored in main DHT. It contains data necessary for system,
@@ -13,7 +13,7 @@ import org.nebulostore.communication.dht.Mergeable;
  * @author szymonmatejczyk
  * @author bolek
  */
-public class Metadata implements Mergeable, Serializable {
+public class Metadata implements IMergeable, Serializable {
   private static final long serialVersionUID = 8900375455728664721L;
 
   /* Id of user, that this metadata applies to. */
@@ -41,8 +41,9 @@ public class Metadata implements Mergeable, Serializable {
   }
 
   @Override
-  public Mergeable merge(Mergeable other) {
-    // TODO: implement this!
+  public IMergeable merge(IMergeable other) {
+    // TODO: Implement this properly,
+    //       Maybe composite objects also mergeable?
     return this;
   }
 

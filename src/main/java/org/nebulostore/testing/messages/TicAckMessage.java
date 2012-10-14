@@ -5,8 +5,10 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
+/**
+ * @author szymonmatejczyk
+ */
 public class TicAckMessage extends CommMessage {
-
   private static final long serialVersionUID = -5694999477137661326L;
   private final int phase_;
 

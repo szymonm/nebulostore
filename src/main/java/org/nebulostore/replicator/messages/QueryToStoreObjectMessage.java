@@ -2,6 +2,8 @@ package org.nebulostore.replicator.messages;
 
 import java.util.Set;
 
+import com.rits.cloning.Cloner;
+
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.EncryptedObject;
 import org.nebulostore.appcore.JobModule;
@@ -10,8 +12,6 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.replicator.Replicator;
-
-import com.rits.cloning.Cloner;
 
 
 /**

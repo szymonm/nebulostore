@@ -52,7 +52,8 @@ public class Node implements Streamable {
     short len = (short) (in.readShort() & 0xFFFF);
     byte[] a = new byte[len];
     in.readFully(a);
-    commAddress_ = new CommAddress(PeerID.create(URI.create(new String(a))));
+    //TODO-GM Fix to new ID address system
+    commAddress_ = null;
     firstSeen = System.currentTimeMillis();
     seenNow();
   }

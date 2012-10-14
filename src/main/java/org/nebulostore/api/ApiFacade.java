@@ -17,7 +17,7 @@ import org.nebulostore.communication.address.CommAddress;
 public final class ApiFacade {
   // TODO(bolek): This class is going to be removed!
 
-  private static final int TIMEOUT_SEC = 30;
+  private static final int TIMEOUT_SEC = 60;
   private static BlockingQueue<Message> dispatcherQueue_;
 
   // TODO(szm) Temporaly setting to 0 for testing purposes.

@@ -75,8 +75,6 @@ public final class KademliaPerfTest {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
-      logger_.info(communicationPeer_.getDHTPeer().toString());
-
     }
 
   }

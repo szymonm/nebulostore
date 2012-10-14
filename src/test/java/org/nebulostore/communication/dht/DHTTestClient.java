@@ -34,7 +34,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
 
   private final String dhtProvider_;
 
-  private final Map<KeyDHT, String> keysMapping = new HashMap<KeyDHT, String>();
+  private final Map<KeyDHT, String> keysMapping_ = new HashMap<KeyDHT, String>();
 
   private final TestStatistics stats_;
 
@@ -145,7 +145,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
           KeyDHT key = KeyDHT.fromSerializableObject(keyStr);
           networkQueue_.add(new PutDHTMessage(jobId_, key, new ValueDHT(
               new MergeableInteger(phase_))));
-          keysMapping.put(key, keyStr);
+          keysMapping_.put(key, keyStr);
         }
       }
       logger_.info("Putting DHT Messages - finished. Waiting for replies.");
@@ -197,7 +197,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
       if (retries_ < maxRetries_) {
         logger_.info("Error DHT Message received with: " +
             message.getException() + " key: " + key + " string: " +
-            keysMapping.get(key) + ". Retrying...");
+            keysMapping_.get(key) + ". Retrying...");
         retries_++;
         try {
           Thread.sleep(500);
@@ -209,7 +209,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
       } else {
         logger_.info("Error DHT Message received with: " +
             message.getException() + " key: " + key + " string: " +
-            keysMapping.get(key) + ". Not retrying...");
+            keysMapping_.get(key) + ". Not retrying...");
         increaseReceivedAcks();
       }
       return null;
@@ -235,7 +235,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
           String keyStr = src + i + dest_;
           KeyDHT key = KeyDHT.fromSerializableObject(keyStr);
           networkQueue_.add(new GetDHTMessage(jobId_, key));
-          keysMapping.put(key, keyStr);
+          keysMapping_.put(key, keyStr);
           retries_.put(key.toString(), 0);
         }
       }
@@ -307,7 +307,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
       if (retries_.get(key.toString()) < maxRetries_) {
         logger_.info("Error DHT Message received with: " +
             message.getException() + " key: " + key + " string: " +
-            keysMapping.get(key) + ". Retrying...");
+            keysMapping_.get(key) + ". Retrying...");
 
         retries_.put(key.toString(), retries_.get(key.toString()) + 1);
         try {
@@ -320,7 +320,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
       } else {
         logger_.info("Error DHT Message received with: " +
             message.getException() + " key: " + key + " string: " +
-            keysMapping.get(key) + ". Not retrying.");
+            keysMapping_.get(key) + ". Not retrying.");
         stats_.setDouble("errors", stats_.getDouble("errors") + 1.0);
 
         increaseReceivedAcks();

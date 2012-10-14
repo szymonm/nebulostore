@@ -4,11 +4,10 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
+/**
+ * @author Marcin Walas
+ */
 public class ReconfigureDHTMessage extends Message {
-
-  /**
-   * 
-   */
   private static final long serialVersionUID = -6393928079883663656L;
   private final String provider_;
 

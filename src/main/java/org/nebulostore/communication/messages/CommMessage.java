@@ -14,7 +14,7 @@ import org.nebulostore.communication.address.CommAddress;
 public abstract class CommMessage extends Message implements Serializable {
 
   private CommAddress commSourceAddress_;
-  private final CommAddress commDestAddress_;
+  private CommAddress commDestAddress_;
 
   public CommMessage(CommAddress sourceAddress, CommAddress destAddress) {
     commSourceAddress_ = sourceAddress;
@@ -27,23 +27,21 @@ public abstract class CommMessage extends Message implements Serializable {
     commDestAddress_ = destAddress;
   }
 
-  public CommAddress getDestinationAddress() {
-    return commDestAddress_;
-  }
-
   public CommAddress getSourceAddress() {
     return commSourceAddress_;
+  }
+
+  public CommAddress getDestinationAddress() {
+    return commDestAddress_;
   }
 
   public void setSourceAddress(CommAddress sourceAddress) {
     commSourceAddress_ = sourceAddress;
   }
 
-  /**
-   * Method used to implement functionality of cleaning message before sending
-   * over the network.
-   */
-  public void prepareToSend() { }
+  public void setDestinationAddress(CommAddress destAddress) {
+    commDestAddress_ = destAddress;
+  }
 
   @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {

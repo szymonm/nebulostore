@@ -6,8 +6,10 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.testing.TestStatistics;
 
+/**
+ * @author szymonmatejczyk
+ */
 public class TestStatsMessage extends CommMessage {
-
   private static final long serialVersionUID = 2946080833935513302L;
 
   private final TestStatistics stats_;

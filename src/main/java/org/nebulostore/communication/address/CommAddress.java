@@ -1,41 +1,58 @@
 package org.nebulostore.communication.address;
 
 import java.io.Serializable;
-
-import net.jxta.peer.PeerID;
+import java.util.UUID;
 
 import org.nebulostore.communication.dht.KeyDHT;
 
 /**
- * @author Marcin Walas
+ * @author Grzegorz Milka
  */
 public class CommAddress implements Serializable {
-  private static final long serialVersionUID = 3073640256547487088L;
+  private static final long serialVersionUID = -1730034659685291738L;
+  private final UUID uuid_;
+  private static CommAddress zeroCommAddress_;
 
-  private final PeerID peerId_;
-
-  public CommAddress(PeerID peerId) {
-    peerId_ = peerId;
+  public CommAddress(long mostSigBits, long leastSigBits) {
+    uuid_ = new UUID(mostSigBits, leastSigBits);
   }
 
-  public PeerID getPeerId() {
-    return peerId_;
+  public CommAddress(UUID uuid) {
+    uuid_ = uuid;
   }
 
-  @Override
-  public int hashCode() {
-    return peerId_.hashCode();
+  public static CommAddress newRandomCommAddress() {
+    return new CommAddress(UUID.randomUUID());
+  }
+
+  /**
+   * Return CommAddress symbolizing any or none address depending on context.
+   */
+  public static CommAddress getZero() {
+    if (zeroCommAddress_ == null) {
+      zeroCommAddress_ = new CommAddress(0L, 0L);
+    }
+    return zeroCommAddress_;
+  }
+
+  public UUID getPeerId() {
+    return uuid_;
   }
 
   @Override
   public boolean equals(Object o) {
     return (o instanceof CommAddress) &&
-        (peerId_.hashCode() == ((CommAddress) o).peerId_.hashCode());
+      (uuid_.equals(((CommAddress) o).uuid_));
+  }
+
+  @Override
+  public int hashCode() {
+    return uuid_.hashCode();
   }
 
   @Override
   public String toString() {
-    return peerId_.toString();
+    return uuid_.toString();
   }
 
   public KeyDHT toKeyDHT() {

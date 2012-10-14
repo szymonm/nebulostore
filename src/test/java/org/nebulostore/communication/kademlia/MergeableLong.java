@@ -1,8 +1,8 @@
 package org.nebulostore.communication.kademlia;
 
-import org.nebulostore.communication.dht.Mergeable;
+import org.nebulostore.communication.dht.IMergeable;
 
-public class MergeableLong implements Mergeable {
+public class MergeableLong implements IMergeable {
 
   private static final long serialVersionUID = -480496520354124642L;
 
@@ -17,7 +17,7 @@ public class MergeableLong implements Mergeable {
   }
 
   @Override
-  public Mergeable merge(Mergeable other) {
+  public IMergeable merge(IMergeable other) {
     return this;
   }
 

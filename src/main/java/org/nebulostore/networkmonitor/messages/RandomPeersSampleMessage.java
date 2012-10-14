@@ -2,14 +2,14 @@ package org.nebulostore.networkmonitor.messages;
 
 import java.util.Set;
 
+import com.rits.cloning.Cloner;
+
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.networkmonitor.RandomPeersGossipingModule;
-
-import com.rits.cloning.Cloner;
 
 /**
  * Message containing set of random peers. Used by gossiping random peers protocol.

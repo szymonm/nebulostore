@@ -23,10 +23,6 @@ public class InstanceID implements Serializable {
     return address_;
   }
 
-  public KeyDHT toKeyDHT() {
-    return address_.toKeyDHT();
-  }
-
   @Override
   public String toString() {
     return "InstanceID: " + address_.toString();
@@ -55,5 +51,9 @@ public class InstanceID implements Serializable {
     } else if (!address_.equals(other.address_))
       return false;
     return true;
+  }
+
+  public KeyDHT toKeyDHT() {
+    return null;
   }
 }

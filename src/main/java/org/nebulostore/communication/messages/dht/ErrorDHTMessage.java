@@ -7,9 +7,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * @author marcin
  */
 public class ErrorDHTMessage extends OutDHTMessage {
-
-  /**
-   */
+  private static final long serialVersionUID = 5310737378968440051L;
   private final NebuloException exception_;
 
   public ErrorDHTMessage(InDHTMessage reqMessage, NebuloException exception) {
@@ -21,7 +19,6 @@ public class ErrorDHTMessage extends OutDHTMessage {
     return exception_;
   }
 
-  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }

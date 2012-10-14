@@ -1,21 +1,19 @@
 package org.nebulostore.communication.bdbdht;
 
 import java.io.File;
-import java.net.URI;
-import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
-import net.jxta.discovery.DiscoveryEvent;
-import net.jxta.discovery.DiscoveryListener;
-import net.jxta.document.Advertisement;
-import net.jxta.document.AdvertisementFactory;
-import net.jxta.id.ID;
-import net.jxta.impl.protocol.PipeAdv;
-import net.jxta.peer.PeerID;
-import net.jxta.pipe.PipeService;
-import net.jxta.protocol.PipeAdvertisement;
+import com.sleepycat.je.Database;
+import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.je.Durability;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
+import com.sleepycat.je.Transaction;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -27,9 +25,6 @@ import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
-import org.nebulostore.communication.dht.exceptions.ValueNotFound;
-import org.nebulostore.communication.exceptions.CommException;
-import org.nebulostore.communication.jxta.PeerDiscoveryService;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
@@ -42,27 +37,14 @@ import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 
-import com.sleepycat.je.Database;
-import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseEntry;
-import com.sleepycat.je.Durability;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.je.LockMode;
-import com.sleepycat.je.OperationStatus;
-import com.sleepycat.je.Transaction;
-
 /**
  * Implementation of berkely db based engine for...
  * @author marcin
  */
-public class BdbPeer extends Module implements DiscoveryListener {
+public class BdbPeer extends Module {
 
   private static String configurationPath_ = "resources/conf/communication/BdbPeer.xml";
   private static Logger logger_ = Logger.getLogger(BdbPeer.class);
-
-  private static final String BDB_HOLDER_ADV_ID_STR = "urn:jxta:" +
-      "uuid-59616261646162614E504720503250338944BCED387C4A2BBD8E9411B78C28FF04";
 
   private String storagePath_;
   private String storeName_;
@@ -70,32 +52,29 @@ public class BdbPeer extends Module implements DiscoveryListener {
   private Environment env_;
 
   private boolean isProxy_;
-  /**
-   */
   private CommAddress holderCommAddress_;
+  //host1.planetlab.informatik.tu-darmstadt.de
+  private final CommAddress bdbHolderCommAddress_ = null;
 
-  private final BlockingQueue<Message> jxtaInQueue_;
+  private final BlockingQueue<Message> senderInQueue_;
   private CommAddress peerAddress_;
-  private final PeerDiscoveryService peerDiscoveryService_;
   private final ReconfigureDHTMessage reconfigureRequest_;
   private Timer advertisementsTimer_;
 
   /**
    * @param inQueue
    * @param outQueue
-   * @param peerDiscoveryService
-   * @param jxtaInQueue
-   *          queue to jxtaPeer module for direct messages sending
+   * @param senderInQueue Queue to module for direct sending of messages to
+   * other peers
    */
   public BdbPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue,
-      PeerDiscoveryService peerDiscoveryService, CommAddress peerAddress,
-      BlockingQueue<Message> jxtaInQueue,
+      CommAddress peerAddress,
+      BlockingQueue<Message> senderInQueue,
       ReconfigureDHTMessage reconfigureRequest) {
     super(inQueue, outQueue);
 
-    peerDiscoveryService_ = peerDiscoveryService;
-    jxtaInQueue_ = jxtaInQueue;
+    senderInQueue_ = senderInQueue;
     reconfigureRequest_ = reconfigureRequest;
 
     // TODO: move to factory in appcore
@@ -106,7 +85,6 @@ public class BdbPeer extends Module implements DiscoveryListener {
       logger_.error("Configuration read error in: " + configurationPath_);
     }
     if (config.getString("type", "proxy").equals("storage-holder")) {
-
       logger_.info("Configuring as bdb database holder");
 
       storagePath_ = config.getString("sleepycat.storage-path",
@@ -125,21 +103,19 @@ public class BdbPeer extends Module implements DiscoveryListener {
       database_ = env_.openDatabase(null, storeName_, dbConfig);
 
       peerAddress_ = peerAddress;
-      // peerDiscoveryService_.addAdvertisement(getBdbAdvertisement());
 
       advertisementsTimer_ = new Timer();
-      advertisementsTimer_.schedule(new SendAdvertisement(), 4000, 10000);
+      advertisementsTimer_.schedule(new SendAdvertisement(), 4000, 2000);
 
       if (reconfigureRequest_ != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
       }
 
       holderCommAddress_ = CommunicationPeer.getPeerAddress();
-
     } else {
       logger_.info("Configuring as proxy");
       isProxy_ = true;
-      // peerDiscoveryService_.getDiscoveryService().addDiscoveryListener(this);
+      holderCommAddress_ = bdbHolderCommAddress_;
     }
     logger_.info("fully initialized");
   }
@@ -148,32 +124,24 @@ public class BdbPeer extends Module implements DiscoveryListener {
    * Module that sends holder advertisements.
    */
   public class SendAdvertisement extends TimerTask {
-
     @Override
     public void run() {
       logger_.info("Sending holder advertisements to remote hosts...");
       for (CommAddress address : NetworkContext.getInstance().getKnownPeers()) {
-        jxtaInQueue_.add(new HolderAdvertisementMessage(address));
+        senderInQueue_.add(new HolderAdvertisementMessage(address));
       }
     }
-
   }
 
   @Override
   public void endModule() {
     logger_.info("Ending bdb peer");
-
-
-    if (isProxy_) {
-      peerDiscoveryService_.getDiscoveryService().removeDiscoveryListener(this);
-    } else {
+    if (!isProxy_) {
       advertisementsTimer_.cancel();
-      peerDiscoveryService_.removeAdvertisement(getBdbAdvertisement());
       logger_.info("Closing database...");
       database_.close();
       env_.close();
     }
-
 
     super.endModule();
   }
@@ -190,18 +158,6 @@ public class BdbPeer extends Module implements DiscoveryListener {
     return env;
   }
 
-  public PipeAdvertisement getBdbAdvertisement() {
-    PipeAdvertisement advertisement = (PipeAdvertisement) AdvertisementFactory
-        .newAdvertisement(PipeAdvertisement.getAdvertisementType());
-
-    advertisement.setPipeID(ID.create(URI.create(BDB_HOLDER_ADV_ID_STR)));
-    advertisement.setDescription(peerAddress_.getPeerId().toString());
-    advertisement.setType(PipeService.UnicastType);
-    advertisement.setName("Nebulostore bdb dht holder");
-    advertisement.setType(BDB_HOLDER_ADV_ID_STR);
-    return advertisement;
-  }
-
   private void put(PutDHTMessage putMsg, boolean fromNetwork,
       CommAddress sourceAddress) {
     logger_.info("PutDHTMessage (" + putMsg.getId() + ") in holder with " +
@@ -214,8 +170,10 @@ public class BdbPeer extends Module implements DiscoveryListener {
     Transaction t = env_.beginTransaction(null, null);
 
     DatabaseEntry data = new DatabaseEntry();
-    OperationStatus operationStatus = database_.get(t, new DatabaseEntry(key.toString().getBytes()),
-        data, LockMode.DEFAULT);
+    OperationStatus operationStatus = database_.get(t,
+            new DatabaseEntry(key.toString().getBytes()),
+            data,
+            LockMode.DEFAULT);
 
     if (operationStatus == OperationStatus.SUCCESS) {
       logger_.info("Performing merge on object from DHT");
@@ -229,7 +187,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
     t.commit();
     if (fromNetwork) {
-      jxtaInQueue_.add(new BdbMessageWrapper(null, sourceAddress,
+      senderInQueue_.add(new BdbMessageWrapper(null, sourceAddress,
           new OkDHTMessage(putMsg)));
     } else {
       outQueue_.add(new OkDHTMessage(putMsg));
@@ -239,7 +197,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
   private void get(GetDHTMessage message, boolean fromNetwork,
       CommAddress sourceAddress) {
-    logger_.info("GetDHTMessage in holder key:" + message.getKey().toString());
+    logger_.debug("GetDHTMessage in holder");
     GetDHTMessage getMsg = message;
 
     KeyDHT key = getMsg.getKey();
@@ -252,7 +210,7 @@ public class BdbPeer extends Module implements DiscoveryListener {
       ValueDHT value = ValueDHT.build(new String(data.getData()));
 
       if (fromNetwork) {
-        jxtaInQueue_.add(new BdbMessageWrapper(null, sourceAddress,
+        senderInQueue_.add(new BdbMessageWrapper(null, sourceAddress,
             new ValueDHTMessage(getMsg, key, value)));
       } else {
         outQueue_.add(new ValueDHTMessage(getMsg, key, value));
@@ -260,48 +218,35 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
     } else {
       // TODO: Error handling
-      logger_
-      .warn("Unable to read from database. Key: " + message.getKey() +
-          ". Should send an ErrorDHTMessage back. " +
-          "Operation status: " + operationStatus);
-      if (fromNetwork) {
-        if (operationStatus == OperationStatus.NOTFOUND) {
-          jxtaInQueue_.add(new BdbMessageWrapper(null, sourceAddress, new ErrorDHTMessage(getMsg,
-              new ValueNotFound("key not found"))));
-        } else {
-          jxtaInQueue_.add(new BdbMessageWrapper(null, sourceAddress, new ErrorDHTMessage(getMsg,
-              new NebuloException("Unable to read from bdb database. Operation status: " +
-                  operationStatus))));
-        }
-      } else {
-        outQueue_.add(new ErrorDHTMessage(getMsg, new CommException(
+      logger_.error("Unable to read from database." +
+          " Should send an ErrorDHTMessage back");
+      outQueue_.add(new ErrorDHTMessage(getMsg, new NebuloException(
           "Unable to read from bdb database. Operation status: " + operationStatus)));
-      }
     }
-    logger_.info("GetDHTMessage processing finished");
-
+    logger_.debug("GetDHTMessage processing finished");
   }
 
   @Override
   protected void processMessage(Message msg) throws NebuloException {
-
-
+    logger_.debug("Processing message: " + msg);
     if (msg instanceof HolderAdvertisementMessage) {
-
-      logger_.info("Message accepted. " + msg);
+      logger_.info("Message accepted: " + msg);
 
       if (holderCommAddress_ == null && reconfigureRequest_ != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
       }
       holderCommAddress_ = ((HolderAdvertisementMessage) msg)
           .getSourceAddress();
-      logger_.info("Holder detected at " + holderCommAddress_.toString());
+      logger_.info("Holder detected at " + holderCommAddress_);
       return;
     }
 
     if (isProxy_ && holderCommAddress_ == null) {
+      logger_.debug("Holder not set up, waiting...");
+      logger_.debug("Sleeping and waiting for holderCommAddress");
+      //TODO-GM Why are we sleeping? Couldn't we add those messages to some kind
+      //of queue?
       try {
-        logger_.debug("Holder not set up, waiting...");
         Thread.sleep(500);
       } catch (InterruptedException e) {
         logger_.error(e);
@@ -312,17 +257,16 @@ public class BdbPeer extends Module implements DiscoveryListener {
 
     if (isProxy_) {
       if (msg instanceof DHTMessage) {
-        logger_.info("Message accepted. " + msg);
-        logger_.info("Putting message " + msg.getClass().getName() + " to be sent to holder " +
-            "(taskId = " + msg.getId() + ")");
-        jxtaInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
+        logger_.debug("Message accepted. " + msg);
+        logger_.debug("Putting message to be sent to holder (taskId = " +
+            msg.getId() + ")");
+        senderInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
             (DHTMessage) msg));
       } else {
         logger_.error("Unknown message of type: " + msg);
       }
-
     } else {
-      logger_.info("Message accepted. " + msg.getClass());
+      logger_.info("Message accepted: " + msg);
       boolean fromNetwork = false;
       CommAddress sourceAddress = null;
       Message message;
@@ -342,32 +286,6 @@ public class BdbPeer extends Module implements DiscoveryListener {
         logger_.error("BdbPeer got message that is not supported");
       }
     }
-  }
-
-  @Override
-  public void discoveryEvent(DiscoveryEvent ev) {
-    logger_.debug("DiscoveryEvent: " + ev.getQueryID());
-
-    Advertisement adv;
-    Enumeration<Advertisement> en = ev.getResponse().getAdvertisements();
-
-    if (en != null) {
-      while (en.hasMoreElements()) {
-        adv = en.nextElement();
-        String id = adv.getID() == null ? "null" : adv.getID().toString();
-        if (BDB_HOLDER_ADV_ID_STR.equals(id) /* && holderCommAddress_ == null */) {
-          if (holderCommAddress_ == null && reconfigureRequest_ != null) {
-            outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
-          }
-          holderCommAddress_ = new CommAddress(PeerID.create(URI
-              .create(((PipeAdv) adv).getDescription())));
-          logger_.info("Holder detected at " + holderCommAddress_.toString());
-        }
-      }
-    } else {
-      logger_.debug("discoveryEvent empty...");
-    }
-
   }
 
   public CommAddress getHolderAddress() {

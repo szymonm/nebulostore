@@ -15,13 +15,13 @@ import org.bouncycastle.util.encoders.Base64;
 
 public class ValueDHT implements Serializable {
 
-  private final Mergeable value_;
+  private final IMergeable value_;
 
-  public Mergeable getValue() {
+  public IMergeable getValue() {
     return value_;
   }
 
-  public ValueDHT(Mergeable v) {
+  public ValueDHT(IMergeable v) {
     value_ = v;
   }
 
@@ -65,7 +65,7 @@ public class ValueDHT implements Serializable {
     }
 
     try {
-      return new ValueDHT((Mergeable)ois.readObject());
+      return new ValueDHT((IMergeable) ois.readObject());
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {

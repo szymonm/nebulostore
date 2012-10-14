@@ -57,6 +57,9 @@ public abstract class TestingModule extends JobModule implements Serializable {
     tocSentTime_ = -1;
   }
 
+  /**
+   * @author szymonmatejczyk
+   */
   class CheckPendingTocs extends TimerTask {
     private static final int MAX_RETRIES = 5;
     long lastSeen_;

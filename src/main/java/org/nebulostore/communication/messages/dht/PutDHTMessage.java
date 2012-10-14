@@ -33,4 +33,10 @@ public class PutDHTMessage extends InDHTMessage {
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }
+
+  @Override
+  public String toString() {
+    return "PutDHTMessage for (key, value): (" + getKey() + ", " +
+          getValue() + ")";
+  }
 }

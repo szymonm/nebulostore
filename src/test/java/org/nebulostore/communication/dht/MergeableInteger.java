@@ -1,6 +1,6 @@
 package org.nebulostore.communication.dht;
 
-public class MergeableInteger implements Mergeable {
+public class MergeableInteger implements IMergeable {
 
   private static final long serialVersionUID = -3772950029401952797L;
   private final int value_;
@@ -10,7 +10,7 @@ public class MergeableInteger implements Mergeable {
   }
 
   @Override
-  public Mergeable merge(Mergeable other) {
+  public IMergeable merge(IMergeable other) {
     return this;
   }
 

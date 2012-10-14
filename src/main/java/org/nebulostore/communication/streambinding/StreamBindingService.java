@@ -20,7 +20,7 @@ public class StreamBindingService extends Module {
 
   private static Logger logger_ = Logger.getLogger(StreamBindingService.class);
 
-  private static final long TIMEOUT_ = 3000;
+  private static final long TIMEOUT = 3000;
   private final IStreamBindingDriver bindingDriver_;
 
   public StreamBindingService(BlockingQueue<Message> inQueue,
@@ -39,7 +39,7 @@ public class StreamBindingService extends Module {
       try {
         OutputStream outStream = bindingDriver_.bindStream(
             casted.getDestAddress(), casted.getId(), casted.getStreamId(),
-            TIMEOUT_);
+            TIMEOUT);
 
         logger_.debug("Sending ready response");
 

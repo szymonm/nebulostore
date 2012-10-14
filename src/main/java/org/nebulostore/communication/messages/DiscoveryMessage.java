@@ -14,7 +14,9 @@ public class DiscoveryMessage extends CommMessage {
   private static final long serialVersionUID = 840036305899527524L;
   private final List<CommAddress> knownPeers_;
 
-  public DiscoveryMessage(CommAddress sourceAddress, CommAddress destAddress, List<CommAddress> knownPeers) {
+  public DiscoveryMessage(CommAddress sourceAddress,
+                          CommAddress destAddress,
+                          List<CommAddress> knownPeers) {
     super(sourceAddress, destAddress);
     knownPeers_ = knownPeers;
   }
