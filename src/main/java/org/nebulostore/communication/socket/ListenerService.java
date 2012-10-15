@@ -26,7 +26,7 @@ import org.nebulostore.communication.CommunicationPeer;
  */
 public class ListenerService extends Module {
   private ServerSocket serverSocket_;
-  private static final int COMM_CLI_PORT = CommunicationPeer.COMM_CLI_PORT;
+  private static final int COMM_CLI_PORT = CommunicationPeer.commCliPort_;
   private int commCliPort_ = COMM_CLI_PORT;
   private static Logger logger_ = Logger.getLogger(ListenerService.class);
   private ExecutorService service_ = Executors.newCachedThreadPool();

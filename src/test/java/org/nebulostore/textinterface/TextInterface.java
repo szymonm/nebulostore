@@ -16,6 +16,7 @@ import org.nebulostore.appcore.NebuloFile;
 import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.communication.CommunicationPeer;
 
 /**
  * @author bolek
@@ -49,6 +50,9 @@ public final class TextInterface {
     if (args.length < 1) {
       System.out.println("Provide Peer AppKey (number)!");
       return;
+    }
+    if (args.length >= 2) {
+      CommunicationPeer.setCommPort(Integer.parseInt(args[1]));
     }
     final AppKey appKey = new AppKey(new BigInteger(args[0]));
     // Run NebuloStore in a separate thread.

@@ -8,10 +8,10 @@
 #       java -jar Nebulostore.jar 11
 # 3. On second terminal:
 #       cd build/jar/2/
-#       java -jar Nebulostore.jar 22
-# 4. On third terminal (not on terminal 2!):
+#       java -jar Nebulostore.jar 22 9001
+# 4. On third terminal:
 #       cd build/jar/3/
-#       java -jar Nebulostore.jar 33
+#       java -jar Nebulostore.jar 33 9002
 #       (press enter to see the command prompt)
 #       type "write 22 123 zawartosc" and press enter
 #       (expect messages "Successfully created new file." and "Successfully written x bytes.")

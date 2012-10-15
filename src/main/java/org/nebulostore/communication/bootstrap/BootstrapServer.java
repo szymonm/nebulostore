@@ -49,7 +49,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
 
   public BootstrapServer(String bootstrapServerAddress,
       int commCliPort) throws NebuloException {
-    this(bootstrapServerAddress, commCliPort, BOOTSTRAP_PORT, TOMP2P_PORT);
+    this(bootstrapServerAddress, commCliPort, BOOTSTRAP_PORT, BOOTSTRAP_TOMP2P_PORT);
   }
 
   public BootstrapServer(String bootstrapServerAddress,

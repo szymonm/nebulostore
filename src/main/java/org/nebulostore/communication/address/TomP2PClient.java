@@ -46,7 +46,7 @@ public final class TomP2PClient extends TomP2PPeer {
     }
 
     bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO,
-        new InetSocketAddress(bootstrapServerAddress_, tomp2pPort_));
+        new InetSocketAddress(bootstrapServerAddress_, bootstrapTomP2PPort_));
 
     myPeer_.getConfiguration().setBehindFirewall(true);
 

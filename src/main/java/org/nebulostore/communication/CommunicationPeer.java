@@ -93,7 +93,12 @@ public class CommunicationPeer extends Module {
   // Is the server shutting down.
   private Boolean isEnding_ = false;
 
-  private int commCliPort_ = COMM_CLI_PORT;
+  public static int commCliPort_ = COMM_CLI_PORT;
+
+  // TODO(bolek): Change it into conf file field.
+  public static void setCommPort(int commPort) {
+    commCliPort_ = commPort;
+  }
 
   public CommunicationPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue) throws NebuloException {
