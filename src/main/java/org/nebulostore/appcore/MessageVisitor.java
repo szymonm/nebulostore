@@ -4,6 +4,7 @@ import org.nebulostore.api.DeleteNebuloObjectModule.DeleteTimeoutMessage;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
+import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.BrokerErrorMessage;
 import org.nebulostore.async.messages.DeleteNebuloObjectMessage;
@@ -69,7 +70,7 @@ import org.nebulostore.timer.InitSimpleTimerTestMessage;
 import org.nebulostore.timer.TimerTestMessage;
 
 /**
- * Generic Message visitor class.
+ * Generic Message visitor class. All 'visit' methods should call handlers for base classes.
  * @param <R>
  *          return type.
  */
@@ -86,274 +87,278 @@ public abstract class MessageVisitor<R> {
 
   /* Dispatcher messages. */
   public R visit(JobEndedMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(JobInitMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(KillDispatcherMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   /* Replicator messages. */
   public R visit(GetObjectMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(DeleteObjectMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(SendObjectMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(QueryToStoreObjectMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ConfirmationMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ReplicatorErrorMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   /* Network messages. */
   public R visit(CommMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(CommPeerFoundMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(CommSendDataMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(DiscoveryMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   /* DHT messages. */
   public R visit(DHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(DelDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((InDHTMessage) message);
   }
 
   public R visit(ErrorDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((OutDHTMessage) message);
   }
 
   public R visit(GetDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((InDHTMessage) message);
   }
 
   public R visit(InDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((DHTMessage) message);
   }
 
   public R visit(OkDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((OutDHTMessage) message);
   }
 
   public R visit(OutDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((DHTMessage) message);
   }
 
   public R visit(PutDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((InDHTMessage) message);
   }
 
   public R visit(ValueDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((OutDHTMessage) message);
   }
 
   /* API messages. */
   public R visit(DeleteTimeoutMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   /* Broker messages. */
   public R visit(ContractOfferMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(OfferReplyMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   /* Broker Asynchronous Messaging messages. */
   public R visit(AsynchronousMessagesMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
+  }
+
+  public R visit(AsynchronousMessage message) throws NebuloException {
+    return visit((Message) message);
   }
 
   public R visit(BrokerErrorMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(DeleteNebuloObjectMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((AsynchronousMessage) message);
   }
 
   public R visit(GetAsynchronousMessagesIn message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(GetAsynchronousMessagesMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(GotAsynchronousMessagesMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(NetworkContextChangedMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(StoreAsynchronousMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(UpdateFileMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((AsynchronousMessage) message);
   }
 
   public R visit(UpdateNebuloObjectMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((AsynchronousMessage) message);
   }
 
   public R visit(UpdateSmallNebuloObjectMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((AsynchronousMessage) message);
   }
 
   /* TestingModule. */
   public R visit(FinishTestMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(NewPhaseMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(TicMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(TocMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(PongMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(PingMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(TestInitMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ReconfigureTestMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ErrorTestMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(TestStatsMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(GatherStatsMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ReconfigureDHTAckMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(ReconfigureDHTMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(DataExchangeMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   // Timer module tests.
   public R visit(TimerTestMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(InitSimpleTimerTestMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
   public R visit(ErrorCommMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(UpdateRejectMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(UpdateWithholdMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(WriteNebuloObjectModule.TransactionAnswerInMessage message)
     throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 
   public R visit(TransactionResultMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ObjectOutdatedMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(TocAckMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(TicAckMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ReconfigureMessagesTestMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((ReconfigureTestMessage) message);
   }
 
   public R visit(ReconfigureDHTTestMessage message) throws NebuloException {
-    return visitDefault(message);
+    return  visit((ReconfigureTestMessage) message);
   }
 
   public R visit(RandomPeersSampleMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ConnectionTestMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(ConnectionTestResponseMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((CommMessage) message);
   }
 
   public R visit(TimeoutMessage message) throws NebuloException {
-    return visitDefault(message);
+    return visit((Message) message);
   }
 }

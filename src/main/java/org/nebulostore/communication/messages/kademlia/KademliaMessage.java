@@ -1,5 +1,7 @@
 package org.nebulostore.communication.messages.kademlia;
 
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
@@ -10,7 +12,7 @@ import org.nebulostore.communication.messages.CommMessage;
  * @author Marcin Walas *
  */
 public class KademliaMessage extends CommMessage {
-
+  private static final long serialVersionUID = -7308102705214338084L;
   private final byte[] data_;
 
   public KademliaMessage(CommAddress sourceAddress, CommAddress destAddress,
@@ -23,6 +25,8 @@ public class KademliaMessage extends CommMessage {
     return data_;
   }
 
-  private static final long serialVersionUID = -7308102705214338084L;
-
+  @Override
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
+  }
 }

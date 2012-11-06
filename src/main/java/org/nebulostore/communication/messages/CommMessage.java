@@ -12,6 +12,7 @@ import org.nebulostore.communication.address.CommAddress;
  * @author  Marcin Walas
  */
 public abstract class CommMessage extends Message implements Serializable {
+  private static final long serialVersionUID = -8777470468391282076L;
 
   private CommAddress commSourceAddress_;
   private CommAddress commDestAddress_;
@@ -44,7 +45,5 @@ public abstract class CommMessage extends Message implements Serializable {
   }
 
   @Override
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
-  }
+  public abstract <R> R accept(MessageVisitor<R> visitor) throws NebuloException;
 }

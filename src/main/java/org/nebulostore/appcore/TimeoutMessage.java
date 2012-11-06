@@ -1,5 +1,7 @@
 package org.nebulostore.appcore;
 
+import org.nebulostore.appcore.exceptions.NebuloException;
+
 /**
  * Message indicating that some time is up.
  * @author szymonmatejczyk
@@ -11,5 +13,8 @@ public class TimeoutMessage extends Message {
     super(jobID);
   }
 
-
+  @Override
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
+  }
 }

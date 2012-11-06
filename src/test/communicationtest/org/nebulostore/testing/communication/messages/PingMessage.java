@@ -1,5 +1,7 @@
 package org.nebulostore.testing.communication.messages;
 
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
@@ -42,5 +44,10 @@ public final class PingMessage extends CommMessage {
   public String toString() {
     return String.format("PingMessage of id: %d, from: %d, to: %s",
             id_, peerId_, getDestinationAddress());
+  }
+
+  @Override
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 }

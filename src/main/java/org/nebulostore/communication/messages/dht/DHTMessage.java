@@ -15,7 +15,6 @@ public abstract class DHTMessage extends Message implements Serializable {
     super(id);
   }
 
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
-  }
+  @Override
+  public abstract <R> R accept(MessageVisitor<R> visitor) throws NebuloException;
 }

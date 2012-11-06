@@ -1,13 +1,14 @@
 package org.nebulostore.communication.messages.streambinding;
 
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
  * @author Marcin Walas
  *
  */
 public class ErrorStreamBindingMessage extends Message {
-
   private static final long serialVersionUID = 5064300465038959656L;
 
   private final StreamBindingMessage message_;
@@ -36,4 +37,8 @@ public class ErrorStreamBindingMessage extends Message {
     return networkException_;
   }
 
+  @Override
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
+  }
 }

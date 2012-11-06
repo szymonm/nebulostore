@@ -3,6 +3,8 @@ package org.nebulostore.async.messages;
 import java.io.Serializable;
 
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 
 /**
@@ -51,4 +53,6 @@ public abstract class AsynchronousMessage extends Message implements Serializabl
     return true;
   }
 
+  @Override
+  public abstract <R> R accept(MessageVisitor<R> visitor) throws NebuloException;
 }

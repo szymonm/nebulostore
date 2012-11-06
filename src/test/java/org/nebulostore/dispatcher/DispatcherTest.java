@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
@@ -83,6 +85,11 @@ public class DispatcherTest {
       @Override
       public JobModule getHandler() {
         return new DummyModule();
+      }
+
+      @Override
+      public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+        return visitor.visit(this);
       }
     }
 

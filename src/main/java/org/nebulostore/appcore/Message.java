@@ -2,7 +2,6 @@ package org.nebulostore.appcore;
 
 import java.io.Serializable;
 
-import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 
@@ -10,9 +9,10 @@ import org.nebulostore.crypto.CryptoUtils;
  * Base class for messages.
  */
 public abstract class Message implements Serializable {
-  private static Logger logger_ = Logger.getLogger(Message.class);
-
   private static final long serialVersionUID = -2032656006415029507L;
+
+  // ID used by Dispatcher to forward the message to proper thread (= running JobModule).
+  protected String jobId_;
 
   public Message() {
     jobId_ = CryptoUtils.getRandomString();
@@ -22,9 +22,11 @@ public abstract class Message implements Serializable {
     jobId_ = jobID;
   }
 
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
-  }
+  /**
+   * Accept method required by the visitor pattern. Use the following body in implementations.
+   *     { return visitor.visit(this); }
+   */
+  public abstract <R> R accept(MessageVisitor<R> visitor) throws NebuloException;
 
   public JobModule getHandler() throws NebuloException {
     // TODO(bolek): Change it into a more specific exception type.
@@ -34,8 +36,4 @@ public abstract class Message implements Serializable {
   public String getId() {
     return jobId_;
   }
-
-  // ID used by Dispatcher to forward the message to proper thread (= running JobModule).
-  protected String jobId_;
-
 }

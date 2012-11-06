@@ -1,6 +1,8 @@
 package org.nebulostore.communication.messages.streambinding;
 
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
@@ -32,4 +34,8 @@ public class StreamBindingMessage extends Message {
     return destAddress_;
   }
 
+  @Override
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
+  }
 }

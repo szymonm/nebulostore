@@ -1,6 +1,8 @@
 package org.nebulostore.async.messages;
 
 import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
@@ -28,5 +30,10 @@ public class UpdateFileMessage extends AsynchronousMessage {
 
   public CommAddress getUpdateFrom() {
     return updateFrom_;
+  }
+
+  @Override
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
   }
 }
