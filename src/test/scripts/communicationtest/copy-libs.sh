@@ -2,10 +2,6 @@
 
 . init_util.sh
 
-BUILD_LOCATION_FILE=build-location.txt
-BUILD_DIR=`cat $BUILD_LOCATION_FILE`
-BUILD_DIR=$BUILD_DIR/$TEST_NAME
-
 USER=`cat ssh-user.txt`
 
 for HOST in $(get_all_hosts)

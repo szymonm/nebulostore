@@ -71,12 +71,6 @@
     </antcall>
   </target>
 
-  <target name="jar-jxtatest">
-    <antcall target="jar">
-      <param name="main-class" value="org.nebulostore.communication.JxtaTest" />
-    </antcall>
-  </target>
-
   <target name="jar-sockettest">
     <antcall target="jar">
       <param name="main-class" value="org.nebulostore.communication.SocketTest" />

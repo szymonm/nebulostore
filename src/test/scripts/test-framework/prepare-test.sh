@@ -37,7 +37,7 @@ IFS=$'\n';
 for HOST in $SLICE_HOSTS; do 
     echo "Copying to $HOST ($HOST_NO/$ALL_HOSTS)"
     RDV=`expr $HOST_NO % 7`
-    bash scp.sh $HOST $BUILD_DIR $KEY_LOCATION $REMOTE_DIR && ssh -i $KEY_LOCATION/planetlab-key -l $USER $HOST "ulimit -u 2000; cd $REMOTE_DIR/resources/conf/communication; mv JxtaPeer_$RDV.xml JxtaPeer.xml" &
+    bash scp.sh $HOST $BUILD_DIR $KEY_LOCATION $REMOTE_DIR && ssh -i $KEY_LOCATION/planetlab-key -l $USER $HOST "ulimit -u 2000; cd $REMOTE_DIR/resources/conf/communication;" &
     ((HOST_NO++))
     sleep 7
 done
@@ -62,7 +62,8 @@ echo "Copying to $PRIMARY_HOST"
 #bash scp.sh host1.planetlab.informatik.tu-darmstadt.de $BUILD_DIR $KEY_LOCATION $REMOTE_DIR &
 
 bash scp.sh host2.planetlab.informatik.tu-darmstadt.de $PRIMARY_BUILD_DIR $KEY_LOCATION $REMOTE_DIR 
-ssh -i $KEY_LOCATION/planetlab-key -l $USER host2.planetlab.informatik.tu-darmstadt.de "ulimit -u 2000; cd $REMOTE_DIR/resources/conf/communication; mv JxtaPeer_3.xml JxtaPeer.xml" &
+ssh -i $KEY_LOCATION/planetlab-key -l $USER
+host2.planetlab.informatik.tu-darmstadt.de "ulimit -u 2000; cd $REMOTE_DIR/resources/conf/communication;" &
 
 echo "Configuring BDB DHT holder at $BDB_HOLDER"
 ssh -i $KEY_LOCATION/planetlab-key -l $USER $BDB_HOLDER "cd $REMOTE_DIR; cp ./resources/conf/communication/BdbPeer_holder.xml ./resources/conf/communication/BdbPeer.xml"

@@ -1,12 +1,9 @@
 #!/bin/bash
 
-. init_util.sh
 TEST_NAME_FILE=test_name.txt
 TEST_NAME=`cat $TEST_NAME_FILE`
 
-BUILD_LOCATION_FILE=build-location.txt
-BUILD_DIR=`cat $BUILD_LOCATION_FILE`
-BUILD_DIR=$BUILD_DIR/$TEST_NAME
+. init_util.sh
 
 echo "Cleaning temporary files on $PRIMARY_HOST"
 ssh -l $USER $PRIMARY_HOST "rm -rf /tmp/*"

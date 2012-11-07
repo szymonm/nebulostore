@@ -48,17 +48,12 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   private Boolean isEnding_ = false;
 
   public BootstrapServer(String bootstrapServerAddress,
-      int commCliPort) throws NebuloException {
-    this(bootstrapServerAddress, commCliPort, BOOTSTRAP_PORT, BOOTSTRAP_TOMP2P_PORT);
-  }
-
-  public BootstrapServer(String bootstrapServerAddress,
-      int commCliPort, int bootstrapPort, int tomp2pPort)
+      int commCliPort, int bootstrapPort, int tomP2PPort)
     throws NebuloException {
-    super(commCliPort);
+    super(commCliPort, bootstrapPort, tomP2PPort, tomP2PPort);
     myInetSocketAddress_ = new InetSocketAddress(bootstrapServerAddress, commCliPort_);
     bootstrapPort_ = bootstrapPort;
-    tomp2pPort_ = tomp2pPort;
+    tomP2PPort_ = tomP2PPort;
     myCommAddress_ = CommAddress.newRandomCommAddress();
     myWelcomeMessage_ = new BootstrapMessage(myCommAddress_);
     pAPeer_ = null;
@@ -70,7 +65,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   @Override
   public void startUpService() throws IOException {
     pAPeer_ = new TomP2PServer();
-    pAPeer_.setDHTPort(tomp2pPort_);
+    pAPeer_.setDHTPort(tomP2PPort_);
     pAPeer_.setCommPort(commCliPort_);
     pAPeer_.setBootstrapServerAddress(myInetSocketAddress_.getHostName());
     pAPeer_.setMyCommAddress(myCommAddress_);

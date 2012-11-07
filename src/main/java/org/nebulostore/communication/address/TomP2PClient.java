@@ -38,7 +38,7 @@ public final class TomP2PClient extends TomP2PPeer {
 
     try {
       myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).
-        setPorts(tomp2pPort_).makeAndListen();
+        setPorts(tomP2PPort_).makeAndListen();
     } catch (IOException e) {
       String errMsg = "Error when making peer";
       logger_.error(errMsg + " " + e);

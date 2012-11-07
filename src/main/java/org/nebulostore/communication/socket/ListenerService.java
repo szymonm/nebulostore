@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
-import org.nebulostore.communication.CommunicationPeer;
 
 /**
  * Module responsible for receiving CommMessages through TCP.
@@ -26,8 +25,7 @@ import org.nebulostore.communication.CommunicationPeer;
  */
 public class ListenerService extends Module {
   private ServerSocket serverSocket_;
-  private static final int COMM_CLI_PORT = CommunicationPeer.commCliPort_;
-  private int commCliPort_ = COMM_CLI_PORT;
+  private int commCliPort_;
   private static Logger logger_ = Logger.getLogger(ListenerService.class);
   private ExecutorService service_ = Executors.newCachedThreadPool();
   private Boolean isEnding_ = false;
@@ -72,10 +70,6 @@ public class ListenerService extends Module {
         }
       }
     }
-  }
-
-  public ListenerService(BlockingQueue<Message> outQueue) throws IOException {
-    this(outQueue, COMM_CLI_PORT);
   }
 
   public ListenerService(BlockingQueue<Message> outQueue, int commCliPort)

@@ -2,7 +2,6 @@ package org.nebulostore.communication.bootstrap;
 
 import java.io.IOException;
 
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.address.ICommAddressResolver;
 
@@ -10,26 +9,29 @@ import org.nebulostore.communication.address.ICommAddressResolver;
  * @author Grzegorz Milka
  */
 public abstract class BootstrapService {
-  protected static final int COMM_CLI_PORT = CommunicationPeer.commCliPort_;
+  protected int commCliPort_;
   /*
    * Port used by bootstrapping server for sending welcome message
    */
-  protected static final int BOOTSTRAP_PORT = 9989;
+  protected int bootstrapPort_;
   /*
    * Port used by bootstrapping server for tomp2p
    */
-  protected static final int BOOTSTRAP_TOMP2P_PORT = 9991;
+  protected int bootstrapTomP2PPort_;
   /*
-   * Port used by bootstrapping server for tomp2p by everyone else
+   * Port used for tomp2p by everyone else
    */
-  protected static final int TOMP2P_PORT = COMM_CLI_PORT + 100;
-  protected int commCliPort_ = COMM_CLI_PORT;
-  protected int bootstrapPort_ = BOOTSTRAP_PORT;
-  protected int bootstrapTomP2PPort_ = BOOTSTRAP_TOMP2P_PORT;
-  protected int tomp2pPort_ = TOMP2P_PORT;
+  protected int tomP2PPort_;
 
-  public BootstrapService(int commCliPort) {
+  public BootstrapService(
+      int commCliPort,
+      int bootstrapPort,
+      int tomP2PPort,
+      int bootstrapTomP2PPort) {
     commCliPort_ = commCliPort;
+    bootstrapPort_ = bootstrapPort;
+    tomP2PPort_ = tomP2PPort;
+    bootstrapTomP2PPort_ = bootstrapTomP2PPort;
   }
 
   public abstract CommAddress getBootstrapCommAddress();

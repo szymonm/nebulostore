@@ -10,6 +10,7 @@ import java.net.InetSocketAddress;
  * @author Grzegorz Milka
  */
 public interface IPersistentAddressingPeer {
+  void setBootstrapDHTPort(int port);
   void setDHTPort(int port);
   void setCommPort(int port);
   void setBootstrapServerAddress(String bootstrapServerAddress);

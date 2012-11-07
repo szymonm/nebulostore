@@ -5,6 +5,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
@@ -30,7 +31,6 @@ import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
 import org.nebulostore.communication.socket.ListenerService;
 import org.nebulostore.communication.socket.MessengerService;
 
-//TODO(grzegorzmilka) add kademlia support
 //TODO(grzegorzmilka) add closing through message instead of interrupt
 //TODO(grzegorzmilka) apply Visitator pattern to message communication
 /**
@@ -41,8 +41,6 @@ import org.nebulostore.communication.socket.MessengerService;
  * @author Grzegorz Milka
  */
 public class CommunicationPeer extends Module {
-  public static final int COMM_CLI_PORT = 9987;
-
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static final String CONFIGURATION_PATH =
     "resources/conf/communication/CommunicationPeer.xml";
@@ -93,12 +91,7 @@ public class CommunicationPeer extends Module {
   // Is the server shutting down.
   private Boolean isEnding_ = false;
 
-  public static int commCliPort_ = COMM_CLI_PORT;
-
-  // TODO(bolek): Change it into conf file field.
-  public static void setCommPort(int commPort) {
-    commCliPort_ = commPort;
-  }
+  private static int commCliPort_;
 
   public CommunicationPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue) throws NebuloException {
@@ -106,10 +99,43 @@ public class CommunicationPeer extends Module {
     logger_.debug("Starting CommunicationPeer");
 
     XMLConfiguration config = null;
+
     try {
       config = new XMLConfiguration(CONFIGURATION_PATH);
     } catch (ConfigurationException cex) {
       logger_.error("Configuration read error in: " + CONFIGURATION_PATH);
+      throw new NebuloException("Couldn't read configuration file at: " +
+          CONFIGURATION_PATH, cex);
+    }
+
+    /* Load port numbers from config file */
+    int bootstrapPort;
+    int bootstrapTP2PPort;
+    int tP2PPort;
+
+    try {
+      String commCliPortConf = "ports.comm-cli-port";
+      String bPortConf = "ports.bootstrap-port";
+      String bServTP2PPortConf = "ports.bootstrap-server-tomp2p-port";
+      String tP2PPortConf = "ports.tomp2p-port";
+
+      commCliPort_ = config.getInt(commCliPortConf, -1);
+      bootstrapPort = config.getInt(bPortConf, -1);
+      bootstrapTP2PPort = config.getInt(bServTP2PPortConf, -1);
+      tP2PPort = config.getInt(tP2PPortConf, -1);
+
+      if (commCliPort_ == -1 || bootstrapPort == -1 ||
+          bootstrapTP2PPort == -1 || tP2PPort == -1) {
+        logger_.error(
+            "One of port numbers is not specified in configuration file.");
+        throw new NebuloException(
+            "One of port numbers is not specified in configuration file.");
+      }
+    } catch (ConversionException e) {
+      logger_.error("One of port numbers is not correctly " +
+          "specified in configuration file: " + e);
+      throw new NebuloException("One of port numbers is not correctly " +
+          "specified in configuration file.", e);
     }
 
     messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
@@ -117,7 +143,7 @@ public class CommunicationPeer extends Module {
     dhtPeerInQueue_ = new LinkedBlockingQueue<Message>();
 
     try {
-      listenerService_ = new ListenerService(inQueue_);
+      listenerService_ = new ListenerService(inQueue_, commCliPort_);
     } catch (IOException e) {
       throw new NebuloException("Couldn't initialize listener.", e);
     }
@@ -129,16 +155,14 @@ public class CommunicationPeer extends Module {
       throw new IllegalArgumentException("Bootstrap client address is not set.");
     }
     if (!isServer_) {
-
       bootstrapService_ = new BootstrapClient(bootstrapServerAddress,
-          commCliPort_);
+          commCliPort_, bootstrapPort, tP2PPort, bootstrapTP2PPort);
       logger_.info("Created BootstrapClient.");
       inQueue_.add(new CommPeerFoundMessage(bootstrapService_.getBootstrapCommAddress(),
             bootstrapService_.getResolver().getMyCommAddress()));
     } else {
-      //TODO(grzegorzmilka) - apply bol fixes
       bootstrapService_ = new BootstrapServer(bootstrapServerAddress,
-              commCliPort_);
+              commCliPort_, bootstrapPort, bootstrapTP2PPort);
       try {
         bootstrapService_.startUpService();
       } catch (IOException e) {

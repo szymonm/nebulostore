@@ -42,8 +42,11 @@ public final class BootstrapClient extends BootstrapService {
 
   //TODO(grzegorzmilka) Collision handling
   public BootstrapClient(String bootstrapServerAddress,
-      int commCliPort) throws NebuloException {
-    super(commCliPort);
+      int commCliPort,
+      int bootstrapPort,
+      int tomP2PPort,
+      int bootstrapTomP2PPort) throws NebuloException {
+    super(commCliPort, bootstrapPort, tomP2PPort, bootstrapTomP2PPort);
     bootstrapServerAddress_ = bootstrapServerAddress;
 
     // Find my address
@@ -52,6 +55,8 @@ public final class BootstrapClient extends BootstrapService {
 
     pAPeer_ = new TomP2PClient();
     pAPeer_.setCommPort(commCliPort_);
+    pAPeer_.setDHTPort(tomP2PPort_);
+    pAPeer_.setBootstrapDHTPort(bootstrapTomP2PPort_);
     pAPeer_.setBootstrapServerAddress(bootstrapServerAddress_);
     pAPeer_.setMyCommAddress(myCommAddress_);
     try {

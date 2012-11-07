@@ -40,8 +40,6 @@ do
     cp ./$JAR_DIR/*.jar ./$JAR_DIR/$i/
     cp -r ./$JAR_DIR/lib ./$JAR_DIR/$i/
     cp -r resources ./$JAR_DIR/$i/
-    rm ./$JAR_DIR/$i/resources/conf/communication/JxtaPeer.xml
-    mv ./$JAR_DIR/$i/resources/conf/communication/JxtaPeer_query.xml ./$JAR_DIR/$i/resources/conf/communication/JxtaPeer.xml
 done
 
 echo "`date` Building server..."
@@ -54,8 +52,6 @@ mkdir ./$JAR_DIR_SERVER
 cp ./$JAR_DIR/*.jar ./$JAR_DIR_SERVER/
 cp -r ./$JAR_DIR/lib ./$JAR_DIR_SERVER/
 cp -r resources ./$JAR_DIR_SERVER/
-rm ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer.xml
-mv ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer_query.xml ./$JAR_DIR_SERVER/resources/conf/communication/JxtaPeer.xml
 
 echo "`date` Building and copying server done."
 

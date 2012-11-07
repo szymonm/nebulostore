@@ -10,7 +10,6 @@ import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.storage.Data;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.communication.CommunicationPeer;
 
 /**
  * TomP2P's kademlia based implementation of persistent addressing service.
@@ -21,15 +20,11 @@ import org.nebulostore.communication.CommunicationPeer;
 public abstract class TomP2PPeer implements IPersistentAddressingPeer {
   protected static Logger logger_;
 
-  protected static final int COMM_CLI_PORT = CommunicationPeer.commCliPort_;
-  protected static final int BOOTSTRAP_TOMP2P_PORT = 9991;
-  protected static final int TOMP2P_PORT = COMM_CLI_PORT + 100;
-
   protected Peer myPeer_;
   protected ICommAddressResolver resolver_;
-  protected int bootstrapTomP2PPort_ = BOOTSTRAP_TOMP2P_PORT;
-  protected int tomp2pPort_ = TOMP2P_PORT;
-  protected int commCliPort_ = COMM_CLI_PORT;
+  protected int bootstrapTomP2PPort_ = -1;
+  protected int tomP2PPort_ = -1;
+  protected int commCliPort_ = -1;
 
   protected InetSocketAddress myInetSocketAddress_;
 
@@ -47,8 +42,13 @@ public abstract class TomP2PPeer implements IPersistentAddressingPeer {
   }
 
   @Override
+  public void setBootstrapDHTPort(int port) {
+    bootstrapTomP2PPort_ = port;
+  }
+
+  @Override
   public void setDHTPort(int port) {
-    tomp2pPort_ = port;
+    tomP2PPort_ = port;
   }
 
   @Override

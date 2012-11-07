@@ -191,12 +191,6 @@
     <appender-ref ref="CA-testing" />
   </logger>
   
-  
-  <logger name="net.jxta">
-    <level value="INFO" />
-    <appender-ref ref="FA-comm" />
-  </logger>
-  
   <root>
     <appender-ref ref="CA" />
     <appender-ref ref="FA" />
