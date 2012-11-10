@@ -1,0 +1,12 @@
+How to run ping-pong test:
+
+1. Go to build_scripts/testing and run 'runpingpong.sh' to build the test.
+2. Go to src/test/scripts/communicationtest.
+3. Edit build-location.txt and insert your build directory there.
+4. Copy 3-5 random hosts from slice-hosts.all to slice-hosts.txt.
+5. Set 'primary-slice-host.txt' and 'bootstrap-server.txt' to your favourite hosts (or leave them as they are).
+6. In trunk/resources/conf/comunication/ edit 'CommunicationPeerServer.xml' and 'CommunicationPeer.xml' to what is set in 'bootstrap-server.txt'.
+7. Run 'perform-all.sh 300' (5 mins of delay).
+8. Download 'testing.log' file from any of the hosts you used, (e.g. planetlab1.montefiore.ulg.ac.be):
+      scp mimuw_nebulostore@planetlab1.montefiore.ulg.ac.be:~/grzesiek/testing.log .
+9. Check if the file contains 'Found new peer' and 'Received msg' messages and no errors.

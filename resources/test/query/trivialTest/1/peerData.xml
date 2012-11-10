@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<peerData id="1">
+	<age>
+		<private-conditional-my/>
+		<integer/>
+		<value>24</value>
+		<noise>5</noise>
+	</age>
+	
+	<age-public>
+		<public-my/>
+		<integer/>
+		<value>24</value>
+	</age-public>
+	
+	<name>
+		<private-my/>
+		<string/>
+		<value>Test Man</value>
+	</name>
+	
+	<name-public>
+		<public-my/>
+		<string/>
+		<value>Test Man</value>
+	</name-public>
+	
+	<likes>
+		<like>
+			<private-my/>
+			<integer/>
+			<value>3</value>
+			<noise>1</noise>			
+		</like>
+		<like>
+			<private-my/>
+			<integer/>
+			<value>4</value>
+			<noise>1</noise>			
+		</like>
+		<like>
+			<private-my/>
+			<integer/>
+			<value>5</value>
+			<noise>1</noise>			
+		</like>
+	</likes>
+		
+	<sports>
+		<private-conditional-my/>
+		<integer/>
+		<value>2</value>		
+	</sports>
+
+	<friends>
+		<friend>
+			<value>1</value>
+			<integer/>
+			<private-my/>
+			<noise>100</noise>
+		</friend>
+		<friend>
+			<value>2</value>
+			<integer/>
+			<private-my/>
+			<noise>100</noise>
+		</friend>
+		<friend>
+			<value>3</value>
+			<integer/>
+			<private-my/>
+			<noise>100</noise>
+		</friend>
+		<friend>
+			<value>4</value>
+			<integer/>
+			<private-my/>
+			<noise>100</noise>
+		</friend>	
+	</friends>	
+</peerData>

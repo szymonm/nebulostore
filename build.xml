@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="Nebulostore" default="text-interface" basedir=".">
+
+  <property name="src.dir" value="src" />
+
+  <property name="build.dir" value="build" />
+  <property name="build.dir.testServer" value="build_server" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="jar.dir" value="${build.dir}/jar" />
+
+  <property name="lib.dir" value="lib" />
+  <property name="resources.dir" value="resources" />
+
+
+  <path id="classpath">
+    <fileset dir="${lib.dir}" includes="**/*.jar" />
+  </path>
+
+  <property name="main-class" value="org.nebulostore.communication.tests.RunPingPong" />
+
+  <target name="clean">
+    <delete dir="${build.dir}" />
+  </target>
+
+  <target name="compile">
+    <mkdir dir="${classes.dir}" />
+    <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+  </target>
+
+  <target name="jar" depends="compile">
+    <pathconvert property="libs.project" pathsep=" ">
+      <mapper>
+        <chainedmapper>
+
+          <!-- remove absolute path -->
+          <flattenmapper />
+
+          <!-- add lib/ prefix -->
+          <globmapper from="*" to="lib/*" />
+        </chainedmapper>
+      </mapper>
+
+      <path>
+        <!-- lib.home contains all jar files, in several subdirectories -->
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar" />
+        </fileset>
+      </path>
+    </pathconvert>
+
+    <mkdir dir="${jar.dir}" />
+    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}" filesetmanifest="merge">
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}" />
+        <attribute name="Class-Path" value="${libs.project}" />
+      </manifest>
+      <fileset dir="${src.dir}" includes="**/*.java"/>
+    </jar>
+    <copy todir="${jar.dir}/lib">
+      <fileset dir="${lib.dir}" />
+    </copy>
+
+    <copy todir="${jar.dir}">
+      <fileset dir="${resources.dir}" />
+    </copy>
+  </target>
+
+  <target name="jar-pingpong">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.RunPingPong" />
+    </antcall>
+  </target>
+
+  <target name="jar-sockettest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.SocketTest" />
+    </antcall>
+  </target>
+
+  <target name="jar-bdbtest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.bdbdht.tests.BdbPeerTest" />
+    </antcall>
+  </target>
+	
+  <target name="jar-kademliatest">
+	<antcall target="jar">
+	  <param name="main-class" value="org.nebulostore.communication.kademlia.KademliaPeerTest" />
+	 </antcall>
+  </target>
+
+  <target name="jar-perfkademliatest">
+	<antcall target="jar">
+	  <param name="main-class" value="org.nebulostore.communication.kademlia.KademliaPerfTest" />
+	</antcall>
+  </target>
+
+  <target name="text-interface">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.textinterface.TextInterface" />
+    </antcall>
+  </target>
+	
+  <target name="jar-streambindingtest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.communication.streambinding.StreamBindingTest" />
+    </antcall>
+  </target>
+
+  <target name="run-pingpong" depends="jar-pingpong">
+    <java fork="true" classname="org.nebulostore.communication.tests.RunPingPong">
+      <classpath>
+        <path location="${jar.dir}/${ant.project.name}.jar" />
+      </classpath>
+    </java>
+  </target>
+
+  <target name="main" depends="clean,run-pingpong" />
+
+  <target name="test-server">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.appcore.TestingPeer" />
+    </antcall>
+  </target>
+
+  <target name="test-client">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.appcore.Peer" />
+    </antcall>
+  </target>
+
+  <!-- Test builds -->
+
+  <target name="runpingpong">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.testing.RunPingPong" />
+    </antcall>
+  </target>
+
+  <target name="gossiptest">
+    <antcall target="jar">
+      <param name="main-class" value="org.nebulostore.testing.moduletest.gossiptest.GossipTest" />
+    </antcall>
+  </target>
+
+</project>

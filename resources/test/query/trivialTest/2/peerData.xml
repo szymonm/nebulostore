@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<peerData id="1">
+	<age>
+		<private-conditional-my/>
+		<integer/>
+		<value>60</value>
+		<noise>20</noise>
+	</age>
+	<age-public>
+		<public-my/>
+		<integer/>
+		<value>24</value>
+	</age-public>
+	
+	<name>
+		<private-my/>
+		<string/>
+		<value>Test Man 2</value>
+	</name>
+	<name-public>
+		<public-my/>
+		<string/>
+		<value>Test Man 2</value>
+	</name-public>	
+	
+	<likes>
+		<like>
+			<private-my/>
+			<integer/>
+			<value>3</value>
+			<noise>1</noise>			
+		</like>
+	</likes>
+	
+	<sports>
+		<private-conditional-my/>
+		<integer/>
+		<value>0</value>
+	</sports>
+
+	<friends>
+		<friend>
+			<value>1</value>
+			<integer/>
+			<private-my/>
+			<noise>100</noise>
+		</friend>
+		<friend>
+			<value>5</value>
+			<integer/>
+			<private-my/>
+			<noise>100</noise>
+		</friend>
+		<friend>
+			<value>6</value>
+			<integer/>
+			<private-my/>
+			<noise>100</noise>
+		</friend>
+		<friend>
+			<value>7</value>
+			<integer/>
+			<private-my/>
+			<noise>100</noise>
+		</friend>
+	</friends>	
+</peerData>

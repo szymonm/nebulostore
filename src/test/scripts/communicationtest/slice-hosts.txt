@@ -1,0 +1,3 @@
+planetlab-um00.di.uminho.pt
+planetlab1.montefiore.ulg.ac.be
+ple6.ipv6.lip6.fr

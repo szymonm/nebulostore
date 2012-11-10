@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<peerData id="1" xmlns:access="http://dosn.org/schemas/access">
+	<age>
+		<access:privacy>
+			<access:private-my/>
+		</access:privacy>
+		<value>24</value>
+	</age>
+	<friends>
+		<access:privacy>
+			<access:public-my/>
+		</access:privacy>		
+		<friend>2</friend>
+	</friends>	
+</peerData>

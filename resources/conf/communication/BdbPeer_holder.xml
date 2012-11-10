@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<bdb-peer>
+  <type>storage-holder</type>
+  <sleepycat>
+    <storage-path>/tmp/</storage-path>
+    <storage-name>nebulostore-bdb</storage-name>
+  </sleepycat>
+</bdb-peer>

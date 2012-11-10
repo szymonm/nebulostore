@@ -1,0 +1,3 @@
+bolek:/Users/bolek/code/nebulostore/trunk/build/jar
+grzesiek:/home/grzesiek/Documents/Job/Nebulostore/repo/nebulostore/trunk/build/jar
+marcin:/home/marcin/5ROK/praca/nebulostore/repo/nebulostore.newest/nebulostore/branches/DQL/build/jar

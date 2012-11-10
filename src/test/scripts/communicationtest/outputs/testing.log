@@ -1,0 +1,12 @@
+2012-11-10 20:10:54,059 [main] INFO  org.nebulostore.testing.RunPingPong  - Creating client.
+2012-11-10 20:10:56,334 [main] INFO  org.nebulostore.testing.PingPongPeer  - CommunicationPeer started.
+2012-11-10 20:10:56,336 [main] INFO  org.nebulostore.testing.PingPongPeer  - Created peer of id: 3.
+2012-11-10 20:10:56,336 [Nebulostore.Testing.AbstractPeer$Listener] DEBUG org.nebulostore.testing.PingPongPeer  - Received msg: CommPeerFoundMessage about peer: 543a4b27-c6c3-4a59-99a7-c490993edaf6.
+2012-11-10 20:10:56,336 [Nebulostore.Testing.AbstractPeer$Listener] DEBUG org.nebulostore.testing.PingPongPeer  - Found new peer: 543a4b27-c6c3-4a59-99a7-c490993edaf6
+2012-11-10 20:10:56,420 [main] INFO  org.nebulostore.testing.RunPingPong  - Local registry created
+2012-11-10 20:10:56,420 [main] INFO  org.nebulostore.testing.RunPingPong  - Peer: org.nebulostore.testing.PingPongPeer@1d2b9b7 has been put to remote.
+2012-11-10 20:11:29,058 [main] INFO  org.nebulostore.testing.RunPingPong  - Registered myself(planetlab1.montefiore.ulg.ac.be) at server
+2012-11-10 20:11:36,871 [Nebulostore.Testing.AbstractPeer$Listener] DEBUG org.nebulostore.testing.PingPongPeer  - Received msg: CommPeerFoundMessage about peer: 0efb9e55-5584-4a0a-bf96-66ebda0e4b4f.
+2012-11-10 20:11:36,871 [Nebulostore.Testing.AbstractPeer$Listener] DEBUG org.nebulostore.testing.PingPongPeer  - Found new peer: 0efb9e55-5584-4a0a-bf96-66ebda0e4b4f
+2012-11-10 20:11:36,871 [Nebulostore.Testing.AbstractPeer$Listener] DEBUG org.nebulostore.testing.PingPongPeer  - Received msg: CommPeerFoundMessage about peer: c92d619b-e31a-4e58-aaf6-89480a8cdcb8.
+2012-11-10 20:11:36,871 [Nebulostore.Testing.AbstractPeer$Listener] DEBUG org.nebulostore.testing.PingPongPeer  - Found new peer: c92d619b-e31a-4e58-aaf6-89480a8cdcb8
