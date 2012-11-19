@@ -1,1 +1,2 @@
-/home/grzesiek/Documents/Job/Nebulostore/repo/nebulostore/branches/CommLayerRebuild/build/jar/
+bolek:/Users/bolek/code/nebulostore/trunk/build/jar
+grzesiek:/home/grzesiek/Documents/Job/Nebulostore/repo/nebulostore/trunk/build/jar

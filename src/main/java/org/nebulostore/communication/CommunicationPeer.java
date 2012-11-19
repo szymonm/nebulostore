@@ -1,8 +1,10 @@
 package org.nebulostore.communication;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.LogManager;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
@@ -42,6 +44,8 @@ import org.nebulostore.communication.socket.MessengerService;
  */
 public class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
+  private static final String CLING_CONFIGURATION_PATH =
+    "resources/conf/communication/logging.properties";
   private static final String CONFIGURATION_PATH =
     "resources/conf/communication/CommunicationPeer.xml";
 
@@ -97,6 +101,17 @@ public class CommunicationPeer extends Module {
       BlockingQueue<Message> outQueue) throws NebuloException {
     super(inQueue, outQueue);
     logger_.debug("Starting CommunicationPeer");
+
+    /* Turn off cling's logging by turning off JUL - java.util.logging*/
+    try {
+      LogManager logManager = LogManager.getLogManager();
+      FileInputStream fileIS = new FileInputStream(CLING_CONFIGURATION_PATH);
+      logManager.readConfiguration(fileIS);
+      fileIS.close();
+    } catch (IOException e) {
+      logger_.warn("IOException: " + e + " was thrown when trying to read " +
+          "cling configuration");
+    }
 
     XMLConfiguration config = null;
 

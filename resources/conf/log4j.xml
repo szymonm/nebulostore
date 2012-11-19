@@ -190,8 +190,14 @@
     <level value="DEBUG" />
     <appender-ref ref="CA-testing" />
   </logger>
+
+  <logger name="net.tomp2p">
+    <level value="OFF" />
+    <appender-ref ref="FA" />
+  </logger>
   
   <root>
+    <level value="ERROR" />
     <appender-ref ref="CA" />
     <appender-ref ref="FA" />
   </root>
