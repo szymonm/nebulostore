@@ -73,11 +73,11 @@ public class Peer {
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
     dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_,
-        networkInQueue_));
+        networkInQueue_), "Dispatcher");
     // Create network module.
     try {
       networkThread_ = new Thread(new CommunicationPeer(networkInQueue_,
-          dispatcherInQueue_));
+          dispatcherInQueue_), "CommunicationPeer");
     } catch (NebuloException exception) {
       logger_.fatal("Error while creating CommunicationPeer");
       exception.printStackTrace();
@@ -137,8 +137,8 @@ public class Peer {
         return new JobInitMessage(new AddSynchroPeerModule());
       }
     };
-    NetworkContext.getInstance().addContextChangeMessageGenerator(
-        addFoundSynchroPeer);
+    // TODO(bolek,szm): Temporarily disabled due to errors.
+    //NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
 
     /* Turning on statistics gossiping module */
 //    IMessageGenerator gossipingModuleGenerator = new IMessageGenerator() {

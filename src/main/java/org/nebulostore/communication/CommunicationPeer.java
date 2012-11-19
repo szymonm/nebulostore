@@ -321,10 +321,10 @@ public class CommunicationPeer extends Module {
         BdbMessageWrapper casted = (BdbMessageWrapper) msg;
         if (casted.getWrapped() instanceof InDHTMessage) {
           logger_.debug("BDB DHT message forwarded to DHT");
-          dhtPeerInQueue_.add(casted.getWrapped());
+          dhtPeerInQueue_.add(casted);
         } else if (casted.getWrapped() instanceof OutDHTMessage) {
           logger_.debug("BDB DHT message forwarded to Dispatcher");
-          outQueue_.add(casted);
+          outQueue_.add(casted.getWrapped());
         } else {
           logger_.error("Unrecognized BdbMessageWrapper: " + msg);
         }

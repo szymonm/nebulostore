@@ -160,8 +160,10 @@ public class BdbPeer extends Module {
 
   private void put(PutDHTMessage putMsg, boolean fromNetwork,
       CommAddress sourceAddress) {
+    String srcAddr = sourceAddress == null ? "null" : sourceAddress.toString();
     logger_.info("PutDHTMessage (" + putMsg.getId() + ") in holder with " +
-        putMsg.getKey().toString() + " : " + putMsg.getValue().toString());
+        putMsg.getKey().toString() + " : " + putMsg.getValue().toString() +
+        " and sourceAddress = " + srcAddr);
 
     KeyDHT key = putMsg.getKey();
     ValueDHT valueDHT = putMsg.getValue();

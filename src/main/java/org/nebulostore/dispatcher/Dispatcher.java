@@ -15,8 +15,8 @@ import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
 /**
- * Dispatcher.
- *
+ * Dispatcher - core module that assigns threads to tasks and distributes messages
+ *     among existing job modules.
  */
 public class Dispatcher extends Module {
 
@@ -37,10 +37,9 @@ public class Dispatcher extends Module {
      */
     @Override
     public Void visit(JobEndedMessage message) {
-      logger_.debug("Got job ended message " + message.getId());
-      String jobId = message.getId();
-      //TODO-GM: HOTFIX: Getting NullPointerException here.
-      if (jobId != null) {
+      if (message.getId() != null) {
+        String jobId = message.getId();
+        logger_.debug("Got job ended message with ID: " + jobId);
         if (workersQueues_.containsKey(jobId)) {
           workersQueues_.remove(jobId);
         }
@@ -48,6 +47,8 @@ public class Dispatcher extends Module {
           // workersThreads_.get(jobId).interrupt();
           workersThreads_.remove(jobId);
         }
+      } else {
+        logger_.debug("Got job ended message with NULL ID.");
       }
       return null;
     }
@@ -76,12 +77,11 @@ public class Dispatcher extends Module {
      */
     @Override
     public Void visitDefault(Message message) throws NebuloException {
-      String jobId = message.getId();
-      logger_.debug("Received message with jobID: " + jobId + " and class name: " +
-          message.getClass().getName());
+      if (message.getId() != null) {
+        String jobId = message.getId();
+        logger_.debug("Received message with jobID: " + jobId + " and class name: " +
+            message.getClass().getName());
 
-      // TODO-GM: HOTFIX: Getting NullPointerException here.
-      if (jobId != null) {
         if (!workersQueues_.containsKey(jobId)) {
           // Spawn a new thread to handle the message.
           try {
@@ -92,19 +92,24 @@ public class Dispatcher extends Module {
             // Network queue is dispatcher's out queue.
             handler.setNetworkQueue(outQueue_);
             workersQueues_.put(jobId, newInQueue);
-            Thread newThread = new Thread(handler, "Nebulostore.Dispatcher.Job." +
-                handler.getClass().getSimpleName() + "." + jobId);
+            Thread newThread = new Thread(handler, handler.getClass().getSimpleName() + ":" +
+                jobId);
             workersThreads_.put(jobId, newThread);
-            newThread.start();
             logger_.debug("Starting new thread.");
+            newThread.start();
+            newInQueue.add(message);
           } catch (NebuloException exception) {
-            // TODO(bolek): Better log it here than deeper in run().
-            throw exception;
+            logger_.debug("Message does not contain a handler.");
           }
+        } else {
+          logger_.debug("Delegate message to an existing worker thread.");
+          workersQueues_.get(jobId).add(message);
         }
+        return null;
+      } else {
+        logger_.debug("Received message with NULL jobID and class name: " +
+            message.getClass().getName());
       }
-      // Delegate message to a waiting worker thread.
-      workersQueues_.get(jobId).add(message);
       return null;
     }
   }

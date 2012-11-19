@@ -19,7 +19,6 @@
 	<classpathentry kind="lib" path="lib/google-collections-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-3.3-complete.jar"/>
-	<classpathentry kind="lib" path="lib/jxta.jar"/>
 	<classpathentry kind="lib" path="lib/objenesis-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/cloning-1.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/TomP2P-4.3-SNAPSHOT.jar"/>

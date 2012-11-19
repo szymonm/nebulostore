@@ -69,7 +69,8 @@ public class MessengerService extends Module {
       logger_.debug("Source address set to null, changing to my address.");
       commMsg.setSourceAddress(resolver_.getMyCommAddress());
     }
-    logger_.info("Sending msg: " + commMsg + " to: " + commMsg.getDestinationAddress());
+    logger_.info("Sending msg: " + commMsg + " of class: " + commMsg.getClass().getName() +
+        " to: " + commMsg.getDestinationAddress());
     try {
       ObjectOutputStream oos = oosDispatcher_.get(commMsg.getDestinationAddress());
       oos.writeObject(commMsg);

@@ -5,14 +5,14 @@
   <appender name="CA" class="org.apache.log4j.ConsoleAppender">
     <param name="Threshold" value="WARN" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
   </appender>
-  
+
   <appender name="CA-testing" class="org.apache.log4j.ConsoleAppender">
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
     <filter class="org.apache.log4j.varia.LevelRangeFilter">
       <param name="levelMin" value="DEBUG" />
@@ -24,24 +24,24 @@
     <param name="File" value="testing.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
-  </appender>  
+  </appender>
 
-  <!--  TODO MBW: Remove this repetitions -->  
+  <!--  TODO: How to set common pattern for all of these? -->
   <appender name="FA" class="org.apache.log4j.FileAppender">
     <param name="File" value="all.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
   </appender>
-  
+
   <appender name="FA-comm" class="org.apache.log4j.FileAppender">
     <param name="File" value="comm.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
   </appender>
 
@@ -49,15 +49,15 @@
     <param name="File" value="dql.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
   </appender>
-  
+
   <appender name="FA-stream" class="org.apache.log4j.FileAppender">
     <param name="File" value="stream.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
   </appender>
 
@@ -65,23 +65,23 @@
     <param name="File" value="dht.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
-  </appender> 
-  
+  </appender>
+
   <appender name="FA-replicator" class="org.apache.log4j.FileAppender">
     <param name="File" value="replicator.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
-  </appender>  
-    
+  </appender>
+
   <appender name="FA-nm" class="org.apache.log4j.FileAppender">
     <param name="File" value="nm.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
   </appender>
 
@@ -89,10 +89,18 @@
     <param name="File" value="broker.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d [%t] %-5p %c %x - %m%n" />
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
   </appender>
-  
+
+  <appender name="FA-dispatcher" class="org.apache.log4j.FileAppender">
+    <param name="File" value="dispatcher.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
+    </layout>
+  </appender>
+
   <logger name="org.nebulostore.communication.bdbdht">
     <level value="DEBUG"/>
     <appender-ref ref="FA-dht"/>
@@ -101,91 +109,94 @@
   <logger name="org.nebulostore.communication.kademlia">
     <level value="INFO"/>
     <appender-ref ref="FA-dht"/>
-  </logger>  
-  
+  </logger>
+
   <logger name="org.nebulostore.communication">
     <level value="DEBUG"/>
     <appender-ref ref="FA-comm"/>
   </logger>
-  
+
   <logger name="org.nebulostore.communication.streambinding">
     <level value="INFO"/>
     <appender-ref ref="FA-stream"/>
   </logger>
-  
+
   <logger name="org.planx.xmlstore.routing">
     <level value="INFO"/>
     <appender-ref ref="FA-comm"/>
-  </logger> 
-  
+  </logger>
+
   <logger name="org.nebulostore.testing">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing"/>
-    <appender-ref ref="FA-testing"/>    
+    <appender-ref ref="FA-testing"/>
   </logger>
-  
+
   <logger name="org.nebulostore.appcore.RegisterInstanceInDHTModule">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing"/>
-    <appender-ref ref="FA-testing"/>    
+    <appender-ref ref="FA-testing"/>
   </logger>
-  
+
    <logger name="org.nebulostore.broker">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing"/>
-    <appender-ref ref="FA-broker"/>    
+    <appender-ref ref="FA-broker"/>
   </logger>
-  
+
+   <logger name="org.nebulostore.dispatcher">
+    <level value="DEBUG" />
+    <appender-ref ref="FA-dispatcher"/>
+  </logger>
+
   <logger name="org.nebulostore.appcore.TestingPeer">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing"/>
     <appender-ref ref="FA-testing"/>
   </logger>
-  
+
   <logger name="org.nebulostore.communication.dht">
     <level value="INFO" />
     <appender-ref ref="FA-testing"/>
   </logger>
-  
+
   <logger name="org.nebulostore.communication.messages">
     <level value="DEBUG" />
     <!-- <appender-ref ref="CA-testing"/> -->
     <appender-ref ref="FA-testing"/>
   </logger>
-  
+
   <logger name="org.nebulostore.query">
     <level value="DEBUG" />
     <appender-ref ref="FA-query"/>
   </logger>
-  
+
   <logger name="org.nebulostore.api.WriteNebuloObjectModule">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing" />
   </logger>
-  
- 
+
   <logger name="org.nebulostore.api.GetModule">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing" />
   </logger>
-  
-  
+
   <logger name="org.nebulostore.api.PutKeyModule">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing" />
   </logger>
-    
+
   <logger name="org.nebulostore.api.GetNebuloObjectModule">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing" />
   </logger>
-  
+
   <logger name="org.nebulostore.async">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing" />
     <appender-ref ref="FA" />
   </logger>
-  
+
   <logger name="org.nebulostore.replicator">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing" />
@@ -195,7 +206,7 @@
     <level value="OFF" />
     <appender-ref ref="FA" />
   </logger>
-  
+
   <root>
     <level value="ERROR" />
     <appender-ref ref="CA" />

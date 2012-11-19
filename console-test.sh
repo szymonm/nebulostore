@@ -67,7 +67,7 @@ do
     cp ./$JAR_DIR/*.jar ./$JAR_DIR/$i/
     cp -r ./$JAR_DIR/lib ./$JAR_DIR/$i/
     cp -r resources ./$JAR_DIR/$i/
-    cp ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml.local ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml
+    sed "s/9987/1100$i/g" ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml.local > ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml
 done
 
 cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR/1/resources/conf/communication/BdbPeer.xml
