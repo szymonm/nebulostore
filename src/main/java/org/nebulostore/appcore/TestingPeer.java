@@ -11,9 +11,9 @@ import org.nebulostore.communication.dht.BdbDHTTestServer;
 import org.nebulostore.communication.dht.KademliaDHTTestServer;
 import org.nebulostore.communication.messages.MessagesTestServer;
 import org.nebulostore.communication.messages.performance.PerformanceMessagesTestServer;
+import org.nebulostore.conductor.ConductorServer;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
-import org.nebulostore.testing.ServerTestingModule;
 import org.nebulostore.testing.pingpong.PingPongServer;
 
 /**
@@ -339,7 +339,7 @@ public final class TestingPeer extends Peer {
 
   }
 
-  private static boolean runTest(ServerTestingModule testModule, String testName) {
+  private static boolean runTest(ConductorServer testModule, String testName) {
     try {
       testModule.runThroughDispatcher(dispatcherInQueue_, testName + " server");
       testModule.getResult();

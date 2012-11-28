@@ -14,18 +14,18 @@ import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
-import org.nebulostore.testing.TestStatistics;
-import org.nebulostore.testing.TestingModule;
-import org.nebulostore.testing.messages.GatherStatsMessage;
-import org.nebulostore.testing.messages.NewPhaseMessage;
-import org.nebulostore.testing.messages.TestInitMessage;
-import org.nebulostore.testing.messages.TestStatsMessage;
+import org.nebulostore.conductor.CaseStatistics;
+import org.nebulostore.conductor.ConductorClient;
+import org.nebulostore.conductor.messages.GatherStatsMessage;
+import org.nebulostore.conductor.messages.InitMessage;
+import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.conductor.messages.StatsMessage;
 
 /**
  * @author grzegorzmilka
  *
  */
-public class DHTTestClient extends TestingModule implements Serializable {
+public class DHTTestClient extends ConductorClient implements Serializable {
 
   private static Logger logger_ = Logger.getLogger(DHTTestClient.class);
   private static final long serialVersionUID = 3479303908516884312L;
@@ -39,7 +39,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
 
   private final Map<KeyDHT, String> keysMapping_ = new HashMap<KeyDHT, String>();
 
-  private final TestStatistics stats_;
+  private final CaseStatistics stats_;
 
   public DHTTestClient(String serverJobId, int testPhases, String dhtProvider,
       int keysMultiplier, CommAddress[] allClients) {
@@ -48,7 +48,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
     dhtProvider_ = dhtProvider;
     keysMultiplier_ = keysMultiplier;
     outClients_ = allClients;
-    stats_ = new TestStatistics();
+    stats_ = new CaseStatistics();
     stats_.setDouble("errors", 0.0);
     stats_.setDouble("all", 0.0);
   }
@@ -95,7 +95,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
   final class InitializationVisitor extends EmptyInitializationVisitor {
 
     @Override
-    public Void visit(TestInitMessage message) {
+    public Void visit(InitMessage message) {
       logger_.info("Reconfiguring DHT to " + dhtProvider_);
       jobId_ = message.getId();
       networkQueue_.add(new ReconfigureDHTMessage(jobId_, dhtProvider_));
@@ -123,7 +123,7 @@ public class DHTTestClient extends TestingModule implements Serializable {
     @Override
     public Void visit(GatherStatsMessage message) {
       logger_.debug("Returning stats on request...");
-      networkQueue_.add(new TestStatsMessage(serverJobId_, CommunicationPeer
+      networkQueue_.add(new StatsMessage(serverJobId_, CommunicationPeer
           .getPeerAddress(), server_, stats_));
       return null;
     }

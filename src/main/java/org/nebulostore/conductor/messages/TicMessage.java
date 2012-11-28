@@ -1,4 +1,4 @@
-package org.nebulostore.testing.messages;
+package org.nebulostore.conductor.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -6,13 +6,20 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
 /**
+ * Tests server sends this message when phase begins.
  * @author szymonmatejczyk
  */
-public class TocAckMessage extends CommMessage {
-  private static final long serialVersionUID = -5694999477137661326L;
+public class TicMessage extends CommMessage {
+
+  private static final long serialVersionUID = 8482635420673217310L;
   private final int phase_;
 
-  public TocAckMessage(String jobId, CommAddress sourceAddress,
+  public TicMessage(CommAddress sourceAddress, CommAddress destAddress, int phase) {
+    super(sourceAddress, destAddress);
+    phase_ = phase;
+  }
+
+  public TicMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress, int phase) {
     super(jobId, sourceAddress, destAddress);
     phase_ = phase;

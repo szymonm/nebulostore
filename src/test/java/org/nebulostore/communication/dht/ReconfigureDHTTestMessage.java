@@ -5,12 +5,12 @@ import java.util.Set;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.testing.messages.ReconfigureTestMessage;
+import org.nebulostore.conductor.messages.ReconfigurationMessage;
 
 /**
  * @author grzegorzmilka
  */
-public class ReconfigureDHTTestMessage extends ReconfigureTestMessage {
+public class ReconfigureDHTTestMessage extends ReconfigurationMessage {
 
   private static final long serialVersionUID = -2396699754933460615L;
   private final Set<CommAddress> clientsIn_;

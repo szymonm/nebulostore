@@ -6,14 +6,14 @@ import org.apache.log4j.Logger;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
-import org.nebulostore.testing.TestingModule;
-import org.nebulostore.testing.messages.NewPhaseMessage;
+import org.nebulostore.conductor.ConductorClient;
+import org.nebulostore.conductor.messages.NewPhaseMessage;
 
 /**
  * Simple ping-pong test implementation.
  * @author szymonmatejczyk
  */
-public class PingClient extends TestingModule implements Serializable {
+public class PingClient extends ConductorClient implements Serializable {
   private static final long serialVersionUID = 8676871234510749533L;
 
   private static Logger logger_ = Logger.getLogger(PingClient.class);

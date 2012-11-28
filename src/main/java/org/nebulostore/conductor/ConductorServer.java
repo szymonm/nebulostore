@@ -1,4 +1,4 @@
-package org.nebulostore.testing;
+package org.nebulostore.conductor;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,16 +14,16 @@ import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.NetworkContextChangedMessage;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.conductor.messages.ErrorMessage;
+import org.nebulostore.conductor.messages.FinishMessage;
+import org.nebulostore.conductor.messages.GatherStatsMessage;
+import org.nebulostore.conductor.messages.StatsMessage;
+import org.nebulostore.conductor.messages.TicAckMessage;
+import org.nebulostore.conductor.messages.TicMessage;
+import org.nebulostore.conductor.messages.TocAckMessage;
+import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.testing.messages.ErrorTestMessage;
-import org.nebulostore.testing.messages.FinishTestMessage;
-import org.nebulostore.testing.messages.GatherStatsMessage;
-import org.nebulostore.testing.messages.TestStatsMessage;
-import org.nebulostore.testing.messages.TicAckMessage;
-import org.nebulostore.testing.messages.TicMessage;
-import org.nebulostore.testing.messages.TocAckMessage;
-import org.nebulostore.testing.messages.TocMessage;
 import org.nebulostore.timer.IMessageGenerator;
 
 /**
@@ -31,8 +31,8 @@ import org.nebulostore.timer.IMessageGenerator;
  * @author szymonmatejczyk Remember to set lastPhase_ and peersNeeded_ in
  *         subclass.
  */
-public abstract class ServerTestingModule extends ReturningJobModule<Void> {
-  private static Logger logger_ = Logger.getLogger(ServerTestingModule.class);
+public abstract class ConductorServer extends ReturningJobModule<Void> {
+  private static Logger logger_ = Logger.getLogger(ConductorServer.class);
 
   /**
    * Time(in secs) after which, if not successful, test is failed.
@@ -131,7 +131,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   private final  int lostDelay_ = 7;
   private long firstToc_ = -1;
 
-  protected ServerTestingModule(int lastPhase, int peersFound, int peersNeeded,
+  protected ConductorServer(int lastPhase, int peersFound, int peersNeeded,
       int timeout, int phaseTimeout, String clientsJobId, boolean gatherStats,
       String testDescription) {
     clientsJobId_ = clientsJobId;
@@ -151,7 +151,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
 
   }
 
-  protected ServerTestingModule(int lastPhase, int peersNeeded, int timeout,
+  protected ConductorServer(int lastPhase, int peersNeeded, int timeout,
       String clientsJobId, String testDescription) {
     this(lastPhase, peersNeeded, peersNeeded, timeout, timeout, clientsJobId,
         false, testDescription);
@@ -243,7 +243,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
   /**
    * Feeds concrete implementation with statistics gathered from test clients.
    */
-  public abstract void feedStats(TestStatistics stats);
+  public abstract void feedStats(CaseStatistics stats);
 
   /**
    * Returns additional statistics from the upper module.
@@ -374,7 +374,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
     }
 
     @Override
-    public Void visit(TestStatsMessage message) {
+    public Void visit(StatsMessage message) {
       if (!clients_.contains(message.getSourceAddress())) {
         return null;
       }
@@ -399,7 +399,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
 
 
     @Override
-    public Void visit(ErrorTestMessage message) {
+    public Void visit(ErrorMessage message) {
       logger_.warn("Received error, test failed: " + message.getMessage());
       successful_ = false;
       return null;
@@ -505,7 +505,7 @@ public abstract class ServerTestingModule extends ReturningJobModule<Void> {
     internalCheckTimer_.cancel();
     if (clients_ != null) {
       for (CommAddress address : clients_) {
-        networkQueue_.add(new FinishTestMessage(clientsJobId_, null, address));
+        networkQueue_.add(new FinishMessage(clientsJobId_, null, address));
       }
     }
     super.endModule();

@@ -5,11 +5,11 @@ import java.util.Set;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.testing.messages.ReconfigureTestMessage;
+import org.nebulostore.conductor.messages.ReconfigurationMessage;
 
 /**
  */
-public class ReconfigureMessagesTestMessage extends ReconfigureTestMessage {
+public class ReconfigureMessagesTestMessage extends ReconfigurationMessage {
 
   private static final long serialVersionUID = 2088768307390406436L;
 

@@ -39,6 +39,17 @@ import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
+import org.nebulostore.conductor.messages.ErrorMessage;
+import org.nebulostore.conductor.messages.FinishMessage;
+import org.nebulostore.conductor.messages.GatherStatsMessage;
+import org.nebulostore.conductor.messages.InitMessage;
+import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.conductor.messages.ReconfigurationMessage;
+import org.nebulostore.conductor.messages.StatsMessage;
+import org.nebulostore.conductor.messages.TicAckMessage;
+import org.nebulostore.conductor.messages.TicMessage;
+import org.nebulostore.conductor.messages.TocAckMessage;
+import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -55,17 +66,6 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.TransactionResultMessage;
 import org.nebulostore.replicator.messages.UpdateRejectMessage;
 import org.nebulostore.replicator.messages.UpdateWithholdMessage;
-import org.nebulostore.testing.messages.ErrorTestMessage;
-import org.nebulostore.testing.messages.FinishTestMessage;
-import org.nebulostore.testing.messages.GatherStatsMessage;
-import org.nebulostore.testing.messages.NewPhaseMessage;
-import org.nebulostore.testing.messages.ReconfigureTestMessage;
-import org.nebulostore.testing.messages.TestInitMessage;
-import org.nebulostore.testing.messages.TestStatsMessage;
-import org.nebulostore.testing.messages.TicAckMessage;
-import org.nebulostore.testing.messages.TicMessage;
-import org.nebulostore.testing.messages.TocAckMessage;
-import org.nebulostore.testing.messages.TocMessage;
 import org.nebulostore.timer.InitSimpleTimerTestMessage;
 import org.nebulostore.timer.TimerTestMessage;
 
@@ -241,7 +241,7 @@ public abstract class MessageVisitor<R> {
   }
 
   /* TestingModule. */
-  public R visit(FinishTestMessage message) throws NebuloException {
+  public R visit(FinishMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 
@@ -265,19 +265,19 @@ public abstract class MessageVisitor<R> {
     return visit((CommMessage) message);
   }
 
-  public R visit(TestInitMessage message) throws NebuloException {
+  public R visit(InitMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 
-  public R visit(ReconfigureTestMessage message) throws NebuloException {
+  public R visit(ReconfigurationMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 
-  public R visit(ErrorTestMessage message) throws NebuloException {
+  public R visit(ErrorMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 
-  public R visit(TestStatsMessage message) throws NebuloException {
+  public R visit(StatsMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 
@@ -339,11 +339,11 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(ReconfigureMessagesTestMessage message) throws NebuloException {
-    return visit((ReconfigureTestMessage) message);
+    return visit((ReconfigurationMessage) message);
   }
 
   public R visit(ReconfigureDHTTestMessage message) throws NebuloException {
-    return  visit((ReconfigureTestMessage) message);
+    return  visit((ReconfigurationMessage) message);
   }
 
   public R visit(RandomPeersSampleMessage message) throws NebuloException {

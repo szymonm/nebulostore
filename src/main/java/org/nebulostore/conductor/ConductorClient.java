@@ -1,4 +1,4 @@
-package org.nebulostore.testing;
+package org.nebulostore.conductor;
 
 import java.io.Serializable;
 import java.util.Timer;
@@ -11,15 +11,15 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.conductor.messages.ErrorMessage;
+import org.nebulostore.conductor.messages.FinishMessage;
+import org.nebulostore.conductor.messages.InitMessage;
+import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.conductor.messages.TicAckMessage;
+import org.nebulostore.conductor.messages.TicMessage;
+import org.nebulostore.conductor.messages.TocAckMessage;
+import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
-import org.nebulostore.testing.messages.ErrorTestMessage;
-import org.nebulostore.testing.messages.FinishTestMessage;
-import org.nebulostore.testing.messages.NewPhaseMessage;
-import org.nebulostore.testing.messages.TestInitMessage;
-import org.nebulostore.testing.messages.TicAckMessage;
-import org.nebulostore.testing.messages.TicMessage;
-import org.nebulostore.testing.messages.TocAckMessage;
-import org.nebulostore.testing.messages.TocMessage;
 
 /**
  * Base class for all TestingModules(test cases run on peers).
@@ -36,10 +36,10 @@ import org.nebulostore.testing.messages.TocMessage;
  *         normal peers. You need n-1 of them for n peers test, because server
  *         itself acts also as a client. See also: Ping, Pong, PingPongServer
  */
-public abstract class TestingModule extends JobModule implements Serializable {
+public abstract class ConductorClient extends JobModule implements Serializable {
   private static final long serialVersionUID = -1686614265302231592L;
 
-  private static Logger logger_ = Logger.getLogger(TestingModule.class);
+  private static Logger logger_ = Logger.getLogger(ConductorClient.class);
 
   protected int phase_;
 
@@ -50,7 +50,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
 
   private Timer checkPendingTocs_;
 
-  public TestingModule(String serverJobId) {
+  public ConductorClient(String serverJobId) {
     super();
     serverJobId_ = serverJobId;
     server_ = CommunicationPeer.getPeerAddress();
@@ -183,7 +183,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
     }
 
     @Override
-    public Void visit(FinishTestMessage message) {
+    public Void visit(FinishMessage message) {
       abortTest();
       return null;
     }
@@ -192,7 +192,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
   protected void assertTrue(Boolean b, String message) {
     if (!b) {
       logger_.warn("Assertion failed: " + message);
-      networkQueue_.add(new ErrorTestMessage(serverJobId_, null, server_,
+      networkQueue_.add(new ErrorMessage(serverJobId_, null, server_,
           message));
     }
   }
@@ -207,7 +207,7 @@ public abstract class TestingModule extends JobModule implements Serializable {
     }
 
     @Override
-    public Void visit(TestInitMessage message) {
+    public Void visit(InitMessage message) {
       jobId_ = message.getId();
       logger_.debug("Test client initialized: " +
           message.getHandler().getClass().toString());

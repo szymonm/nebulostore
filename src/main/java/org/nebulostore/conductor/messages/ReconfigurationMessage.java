@@ -1,4 +1,4 @@
-package org.nebulostore.testing.messages;
+package org.nebulostore.conductor.messages;
 
 import java.util.Set;
 
@@ -10,12 +10,12 @@ import org.nebulostore.communication.messages.CommMessage;
 /**
  * @author szymonmatejczyk
  */
-public class ReconfigureTestMessage extends CommMessage {
+public class ReconfigurationMessage extends CommMessage {
 
   private static final long serialVersionUID = -7407814653868855140L;
   private final Set<CommAddress> clients_;
 
-  public ReconfigureTestMessage(String jobId, CommAddress sourceAddress,
+  public ReconfigurationMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress, Set<CommAddress> clients) {
     super(jobId, sourceAddress, destAddress);
     clients_ = clients;

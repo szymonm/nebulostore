@@ -13,13 +13,13 @@ import org.apache.log4j.Logger;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.ReconfigureMessagesTestMessage;
-import org.nebulostore.testing.ServerTestingModule;
-import org.nebulostore.testing.TestStatistics;
-import org.nebulostore.testing.messages.TestInitMessage;
+import org.nebulostore.conductor.CaseStatistics;
+import org.nebulostore.conductor.ConductorServer;
+import org.nebulostore.conductor.messages.InitMessage;
 
 /**
  */
-public class PerformanceMessagesTestServer extends ServerTestingModule {
+public class PerformanceMessagesTestServer extends ConductorServer {
 
   private static Logger logger_ = Logger
       .getLogger(PerformanceMessagesTestServer.class);
@@ -67,7 +67,7 @@ public class PerformanceMessagesTestServer extends ServerTestingModule {
     logger_.info("Address copy done.");
     for (CommAddress client : clientsCopy) {
       logger_.info("Initializing peer at " + client.toString());
-      networkQueue_.add(new TestInitMessage(clientsJobId_, null, client,
+      networkQueue_.add(new InitMessage(clientsJobId_, null, client,
           new PerformanceMessagesTestClient(jobId_, messagesNumber_,
               shortPhases_, shortPhaseTimeout_)));
     }
@@ -109,7 +109,7 @@ public class PerformanceMessagesTestServer extends ServerTestingModule {
   }
 
   @Override
-  public void feedStats(TestStatistics stats) {
+  public void feedStats(CaseStatistics stats) {
     issued_ += stats.getDouble("issued");
     received_ += stats.getDouble("received");
     shouldReceive_ += stats.getDouble("shouldReceive");

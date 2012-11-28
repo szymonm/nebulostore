@@ -1,26 +1,26 @@
-package org.nebulostore.testing.messages;
+package org.nebulostore.conductor.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.testing.TestStatistics;
+import org.nebulostore.conductor.CaseStatistics;
 
 /**
  * @author szymonmatejczyk
  */
-public class TestStatsMessage extends CommMessage {
+public class StatsMessage extends CommMessage {
   private static final long serialVersionUID = 2946080833935513302L;
 
-  private final TestStatistics stats_;
+  private final CaseStatistics stats_;
 
-  public TestStatsMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress, TestStatistics stats) {
+  public StatsMessage(String jobId, CommAddress sourceAddress,
+      CommAddress destAddress, CaseStatistics stats) {
     super(jobId, sourceAddress, destAddress);
     stats_ = stats;
   }
 
-  public TestStatistics getStats() {
+  public CaseStatistics getStats() {
     return stats_;
   }
 

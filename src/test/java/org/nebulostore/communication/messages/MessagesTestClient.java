@@ -9,18 +9,18 @@ import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.testing.TestStatistics;
-import org.nebulostore.testing.TestingModule;
-import org.nebulostore.testing.messages.GatherStatsMessage;
-import org.nebulostore.testing.messages.NewPhaseMessage;
-import org.nebulostore.testing.messages.TestStatsMessage;
+import org.nebulostore.conductor.CaseStatistics;
+import org.nebulostore.conductor.ConductorClient;
+import org.nebulostore.conductor.messages.GatherStatsMessage;
+import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.conductor.messages.StatsMessage;
 
 /**
  * Testing client module of communication layer.
  *
  * @author Marcin Walas
  */
-public class MessagesTestClient extends TestingModule implements Serializable {
+public class MessagesTestClient extends ConductorClient implements Serializable {
 
   private static Logger logger_ = Logger.getLogger(MessagesTestClient.class);
 
@@ -29,7 +29,7 @@ public class MessagesTestClient extends TestingModule implements Serializable {
   private final int testPhases_;
   private final int messagesForPhase_;
   private CommAddress[] allClients_ = new CommAddress[0];
-  private final TestStatistics stats_ = new TestStatistics();
+  private final CaseStatistics stats_ = new CaseStatistics();
   private final String payload_;
   private int expectedInClients_;
 
@@ -93,7 +93,7 @@ public class MessagesTestClient extends TestingModule implements Serializable {
     @Override
     public Void visit(GatherStatsMessage message) {
       logger_.debug("Returning stats on request...");
-      networkQueue_.add(new TestStatsMessage(serverJobId_, CommunicationPeer
+      networkQueue_.add(new StatsMessage(serverJobId_, CommunicationPeer
           .getPeerAddress(), server_, stats_));
       return null;
     }

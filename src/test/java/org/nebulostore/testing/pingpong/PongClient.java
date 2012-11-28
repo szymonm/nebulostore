@@ -5,14 +5,14 @@ import java.io.Serializable;
 import org.apache.log4j.Logger;
 import org.nebulostore.communication.messages.pingpong.PingMessage;
 import org.nebulostore.communication.messages.pingpong.PongMessage;
-import org.nebulostore.testing.TestingModule;
-import org.nebulostore.testing.messages.NewPhaseMessage;
+import org.nebulostore.conductor.ConductorClient;
+import org.nebulostore.conductor.messages.NewPhaseMessage;
 
 /**
  * Pong.
  * @author szymonmatejczyk
  */
-public class PongClient extends TestingModule implements Serializable {
+public class PongClient extends ConductorClient implements Serializable {
   private static Logger logger_ = Logger.getLogger(PongClient.class);
 
   private static final long serialVersionUID = -7238750658102427676L;

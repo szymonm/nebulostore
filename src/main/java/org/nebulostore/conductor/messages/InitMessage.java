@@ -1,4 +1,4 @@
-package org.nebulostore.testing.messages;
+package org.nebulostore.conductor.messages;
 
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.MessageVisitor;
@@ -11,12 +11,12 @@ import org.nebulostore.communication.messages.CommMessage;
  * @author szymonmatejczyk
  *
  */
-public class TestInitMessage extends CommMessage {
+public class InitMessage extends CommMessage {
   private static final long serialVersionUID = 2556576233416223608L;
 
   private final JobModule handler_;
 
-  public TestInitMessage(String jobId, CommAddress sourceAddress,
+  public InitMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress, JobModule handler) {
     super(jobId, sourceAddress, destAddress);
     handler_ = handler;

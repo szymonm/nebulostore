@@ -1,4 +1,4 @@
-package org.nebulostore.testing.messages;
+package org.nebulostore.conductor.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -10,14 +10,14 @@ import org.nebulostore.communication.messages.CommMessage;
  * @author szymonmatejczyk
  *
  */
-public class FinishTestMessage extends CommMessage {
+public class FinishMessage extends CommMessage {
   private static final long serialVersionUID = -1391650791568026886L;
 
-  public FinishTestMessage(CommAddress sourceAddress, CommAddress destAddress) {
+  public FinishMessage(CommAddress sourceAddress, CommAddress destAddress) {
     super(sourceAddress, destAddress);
   }
 
-  public FinishTestMessage(String jobId, CommAddress sourceAddress,
+  public FinishMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress) {
     super(jobId, sourceAddress, destAddress);
   }

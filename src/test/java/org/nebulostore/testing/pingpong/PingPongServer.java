@@ -4,15 +4,15 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.testing.ServerTestingModule;
-import org.nebulostore.testing.TestStatistics;
-import org.nebulostore.testing.messages.TestInitMessage;
+import org.nebulostore.conductor.CaseStatistics;
+import org.nebulostore.conductor.ConductorServer;
+import org.nebulostore.conductor.messages.InitMessage;
 
 /**
  * Sets up PingPong test.
  * @author szymonmatejczyk
  */
-public class PingPongServer extends ServerTestingModule {
+public class PingPongServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(PingPongServer.class);
 
   public PingPongServer() {
@@ -30,9 +30,9 @@ public class PingPongServer extends ServerTestingModule {
     CommAddress pongAddress = i.next();
     logger_.debug("Initializing pong: " + pongAddress.toString());
 
-    networkQueue_.add(new TestInitMessage(clientsJobId_, null, pingAddress,
+    networkQueue_.add(new InitMessage(clientsJobId_, null, pingAddress,
         new PingClient(jobId_, pongAddress)));
-    networkQueue_.add(new TestInitMessage(clientsJobId_, null, pongAddress,
+    networkQueue_.add(new InitMessage(clientsJobId_, null, pongAddress,
         new PongClient(jobId_)));
   }
 
@@ -41,7 +41,7 @@ public class PingPongServer extends ServerTestingModule {
   }
 
   @Override
-  public void feedStats(TestStatistics stats) {
+  public void feedStats(CaseStatistics stats) {
   }
 
   @Override

@@ -1,21 +1,21 @@
-package org.nebulostore.testing;
+package org.nebulostore.conductor;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Test statistics.
+ * Test case statistics.
  * @author mwalas
  *
  */
-public class TestStatistics implements Serializable  {
+public class CaseStatistics implements Serializable  {
 
   private static final long serialVersionUID = -1401461889681405996L;
 
   private final Map<String, Double> doubleValues_;
 
-  public TestStatistics() {
+  public CaseStatistics() {
     doubleValues_ = new HashMap<String, Double>();
   }
 

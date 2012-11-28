@@ -8,15 +8,15 @@ import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.DataExchangeMessage;
 import org.nebulostore.communication.messages.ReconfigureMessagesTestMessage;
-import org.nebulostore.testing.TestStatistics;
-import org.nebulostore.testing.TestingModule;
-import org.nebulostore.testing.messages.GatherStatsMessage;
-import org.nebulostore.testing.messages.NewPhaseMessage;
-import org.nebulostore.testing.messages.TestStatsMessage;
+import org.nebulostore.conductor.CaseStatistics;
+import org.nebulostore.conductor.ConductorClient;
+import org.nebulostore.conductor.messages.GatherStatsMessage;
+import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.conductor.messages.StatsMessage;
 
 /**
  */
-public class PerformanceMessagesTestClient extends TestingModule {
+public class PerformanceMessagesTestClient extends ConductorClient {
 
   private static Logger logger_ = Logger
       .getLogger(PerformanceMessagesTestClient.class);
@@ -30,7 +30,7 @@ public class PerformanceMessagesTestClient extends TestingModule {
   private CommAddress[] allClients_;
   private int expectedInClients_;
 
-  private final TestStatistics stats_;
+  private final CaseStatistics stats_;
   private Timer sendTimer_;
 
   public PerformanceMessagesTestClient(String serverJobId, int messagesNumber,
@@ -40,7 +40,7 @@ public class PerformanceMessagesTestClient extends TestingModule {
     shortPhases_ = shortPhases;
     shortPhaseTimeout_ = shortPhaseTimeout;
 
-    stats_ = new TestStatistics();
+    stats_ = new CaseStatistics();
     stats_.setDouble("issued", 0.0);
     stats_.setDouble("received", 0.0);
     stats_.setDouble("shouldReceive", 0.0);
@@ -83,7 +83,7 @@ public class PerformanceMessagesTestClient extends TestingModule {
     @Override
     public Void visit(GatherStatsMessage message) {
       logger_.debug("Returning stats on request...");
-      networkQueue_.add(new TestStatsMessage(serverJobId_, CommunicationPeer
+      networkQueue_.add(new StatsMessage(serverJobId_, CommunicationPeer
           .getPeerAddress(), server_, stats_));
       return null;
     }

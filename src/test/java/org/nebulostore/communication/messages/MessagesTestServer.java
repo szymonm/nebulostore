@@ -12,16 +12,16 @@ import java.util.Vector;
 import org.apache.log4j.Logger;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.testing.ServerTestingModule;
-import org.nebulostore.testing.TestStatistics;
-import org.nebulostore.testing.messages.TestInitMessage;
+import org.nebulostore.conductor.CaseStatistics;
+import org.nebulostore.conductor.ConductorServer;
+import org.nebulostore.conductor.messages.InitMessage;
 
 /**
  * Testing server module of communication layer.
  *
  * @author Marcin Walas
  */
-public class MessagesTestServer extends ServerTestingModule {
+public class MessagesTestServer extends ConductorServer {
 
   private static Logger logger_ = Logger.getLogger(MessagesTestServer.class);
 
@@ -64,7 +64,7 @@ public class MessagesTestServer extends ServerTestingModule {
     logger_.info("Address copy done.");
     for (CommAddress client : clientsCopy) {
       logger_.info("Initializing peer at " + client.toString());
-      networkQueue_.add(new TestInitMessage(clientsJobId_, null, client,
+      networkQueue_.add(new InitMessage(clientsJobId_, null, client,
           new MessagesTestClient(jobId_, testPhases_, messagesForPhase_,
               clientsCopy.toArray(new CommAddress[0]), "Simple payload")));
     }
@@ -106,7 +106,7 @@ public class MessagesTestServer extends ServerTestingModule {
   }
 
   @Override
-  public void feedStats(TestStatistics stats) {
+  public void feedStats(CaseStatistics stats) {
     all_ += stats.getDouble("all");
     lost_ += stats.getDouble("lost");
     logger_.info("Stats gathered " + stats);
