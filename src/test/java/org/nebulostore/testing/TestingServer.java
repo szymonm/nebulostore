@@ -7,8 +7,11 @@ import java.rmi.registry.Registry;
 
 import org.apache.log4j.Logger;
 
+/**
+ * @author grzegorzmilka
+ */
 public abstract class TestingServer implements ITestingServer, Runnable {
-  private static final String PEER_REMOTE_NAME_ = "Peer";
+  private static final String PEER_REMOTE_NAME = "Peer";
   protected Logger logger_;
 
   public TestingServer() {
@@ -31,10 +34,10 @@ public abstract class TestingServer implements ITestingServer, Runnable {
     IAbstractPeer peer;
     try {
       Registry registry = LocateRegistry.getRegistry(clientAddress);
-      peer = (IAbstractPeer) registry.lookup(PEER_REMOTE_NAME_);
+      peer = (IAbstractPeer) registry.lookup(PEER_REMOTE_NAME);
     } catch (NotBoundException e) {
       throw new RemoteException(
-          "Client has not put up peer object named: " + PEER_REMOTE_NAME_, e);
+          "Client has not put up peer object named: " + PEER_REMOTE_NAME, e);
     } catch (RemoteException e) {
       throw new RemoteException(
           "RemoteException when trying to get peer.", e);

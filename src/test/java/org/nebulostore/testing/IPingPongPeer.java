@@ -3,6 +3,9 @@ package org.nebulostore.testing;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
+/**
+ * @author grzegorzmilka
+ */
 public interface IPingPongPeer extends IAbstractPeer {
   /**
    * Returns Collection of respondents to ping of given id.

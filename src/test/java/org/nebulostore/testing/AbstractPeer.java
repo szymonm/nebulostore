@@ -10,6 +10,9 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 
+/**
+ * @author grzegorzmilka
+ */
 public abstract class AbstractPeer implements IAbstractPeer {
   protected final Logger logger_;
   protected BlockingQueue<Message> inQueue_;
@@ -85,6 +88,9 @@ public abstract class AbstractPeer implements IAbstractPeer {
 
   protected abstract void processMessage(Message msg);
 
+  /**
+   * @author grzegorzmilka
+   */
   private class Listener implements Runnable {
     public void run() {
       while (true) {
@@ -95,12 +101,12 @@ public abstract class AbstractPeer implements IAbstractPeer {
           logger_.warn("Interrupt when trying to take message.");
           continue;
         }
-        try {
-          processMessage(msg);
-        } catch (java.lang.RuntimeException e) {
+        //try {
+        processMessage(msg);
+        /*} catch (RuntimeException e) {
           logger_.error("Caught exception: " + e + " when processing: " + msg);
           continue;
-        }
+        }*/
       }
     }
   }

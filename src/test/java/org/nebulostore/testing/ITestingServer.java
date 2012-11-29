@@ -3,6 +3,9 @@ package org.nebulostore.testing;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+/**
+ * @author grzegorzmilka
+ */
 public interface ITestingServer extends Remote {
   /**
    * Registers given remote peer.

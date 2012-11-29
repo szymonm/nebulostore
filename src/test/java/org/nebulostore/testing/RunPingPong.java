@@ -9,9 +9,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-import java.util.Map;
-import java.util.Random;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -25,13 +22,10 @@ public final class RunPingPong {
   /**
    * Allow testing server to start.
    */
-  private static final int RMI_SERVER_BOOTSTRAP_PERIOD_ = 20000;
+  private static final int RMI_SERVER_BOOTSTRAP_PERIOD = 20000;
 
-  private static final Random randGenerator = new Random();
-  private final Map<Integer, PingPongPeer> otherPeers_ = null;
-
-  private static final String PEER_REMOTE_NAME_ = "Peer";
-  private static final String SERVER_REMOTE_NAME_ = "Server";
+  private static final String PEER_REMOTE_NAME = "Peer";
+  private static final String SERVER_REMOTE_NAME = "Server";
   private static Logger logger_;
 
   private RunPingPong() {
@@ -67,7 +61,7 @@ public final class RunPingPong {
         logger_.info("Local registry created");
         ITestingServer stub =
           (ITestingServer) UnicastRemoteObject.exportObject((ITestingServer) server, 0);
-        localRegistry.rebind(SERVER_REMOTE_NAME_, stub);
+        localRegistry.rebind(SERVER_REMOTE_NAME, stub);
         logger_.info("Server: " + server + " has been put to remote.");
       } catch (RemoteException e) {
         logger_.error("Received exception: " + e + ", ending client.");
@@ -94,8 +88,8 @@ public final class RunPingPong {
       logger_.error("Caught NebuloException when creating peer");
       throw e;
     }
-    String peerName = PEER_REMOTE_NAME_;
-    String serverName = SERVER_REMOTE_NAME_;
+    String peerName = PEER_REMOTE_NAME;
+    String serverName = SERVER_REMOTE_NAME;
     assert serverName != null && peerName != null;
     Registry localRegistry;
     // Put my Peer to remote.
@@ -116,9 +110,9 @@ public final class RunPingPong {
     // Unbind peer in case of failure
     // Wait for server to start
     try {
-      Thread.sleep(RMI_SERVER_BOOTSTRAP_PERIOD_);
+      Thread.sleep(RMI_SERVER_BOOTSTRAP_PERIOD);
     } catch (InterruptedException e) {
-      //ignore
+      logger_.debug("Ignored InterruptedException: " + e);
     }
     try {
       Registry registry = LocateRegistry.getRegistry(serverAddress);

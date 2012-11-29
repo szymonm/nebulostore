@@ -6,6 +6,9 @@ import java.rmi.RemoteException;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 
+/**
+ * @author grzegorzmilka
+ */
 public interface IAbstractPeer extends Remote {
   int getId() throws RemoteException;
   void startCommPeer() throws NebuloException, RemoteException;

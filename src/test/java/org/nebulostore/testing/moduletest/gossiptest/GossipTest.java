@@ -1,20 +1,19 @@
 package org.nebulostore.testing.moduletest.gossiptest;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Deque;
-import java.util.Iterator;
 import java.util.Comparator;
-import java.util.Set;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.TreeMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -23,18 +22,20 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.communication.gossip.PeerDescriptor;
 import org.nebulostore.communication.gossip.PeerGossipService;
+import org.nebulostore.communication.messages.CommMessage;
+import org.nebulostore.communication.messages.ErrorCommMessage;
 
+/**
+ * @author grzegorzmilka
+ */
 class MessageMedium implements Runnable {
   private final Map<CommAddress, PeerGossipService> gossipModules_;
-  private final BlockingQueue<Message> inQueue_; 
-  private static final Logger logger_ = Logger.getLogger(MessageMedium.class);
+  private final BlockingQueue<Message> inQueue_;
+  private static Logger logger_ = Logger.getLogger(MessageMedium.class);
 
-  MessageMedium(Map<CommAddress, PeerGossipService> gossipModules, 
-      BlockingQueue inQueue) {
+  MessageMedium(Map<CommAddress, PeerGossipService> gossipModules, BlockingQueue<Message> inQueue) {
     gossipModules_ = gossipModules;
     inQueue_ = inQueue;
   }
@@ -66,10 +67,9 @@ class MessageMedium implements Runnable {
     }
 
     synchronized (gossipModules_) {
-      PeerGossipService gossiper = 
-        gossipModules_.get(destAddress);
+      PeerGossipService gossiper = gossipModules_.get(destAddress);
       if (gossiper == null && message instanceof CommMessage)  {
-        inQueue_.put(new ErrorCommMessage( (CommMessage) message, 
+        inQueue_.put(new ErrorCommMessage((CommMessage) message,
               new Exception("Testing Arbitrary Exception")));
       } else {
         gossiper.getInQueue().put(message);
@@ -97,7 +97,7 @@ final class ChurnFactory {
   private final Map<CommAddress, Thread> gossipThreads_;
   private final int nGossipers_;
   private final BlockingQueue<Message> mediumInQueue_;
-  private static final Logger logger_ = Logger.getLogger(ChurnFactory.class);
+  private static Logger logger_ = Logger.getLogger(ChurnFactory.class);
 
   public ChurnFactory(Map<CommAddress, PeerGossipService> gossipModules,
       int nGossipers, BlockingQueue<Message> mediumInQueue,
@@ -125,7 +125,7 @@ final class ChurnFactory {
 
   public void cleanUp() {
     synchronized (gossipModules_) {
-      while (! gossipModules_.isEmpty()) {
+      while (!gossipModules_.isEmpty()) {
         deleteGossiper(gossipModules_.keySet().iterator().next());
       }
     }
@@ -134,15 +134,15 @@ final class ChurnFactory {
   private void createGossiper(CommAddress commAddr) {
     synchronized (gossipModules_) {
       if (gossipModules_.containsKey(commAddr)) {
-        logger_.warn("Trying to add gossiper with address already present " + 
+        logger_.warn("Trying to add gossiper with address already present " +
             "in map. Something might be wrong.");
         return;
       }
     }
 
     BlockingQueue<Message> gossiperInQueue = new LinkedBlockingQueue<Message>();
-    PeerGossipService gossipService = new PeerGossipService(gossiperInQueue, 
-        mediumInQueue_, commAddr, bootstrapCommAddr_, gossipPeriod_, 
+    PeerGossipService gossipService = new PeerGossipService(gossiperInQueue,
+        mediumInQueue_, commAddr, bootstrapCommAddr_, gossipPeriod_,
         maxPeersSize_, healingFactor_, swappingFactor_);
 
     synchronized (gossipModules_) {
@@ -150,7 +150,7 @@ final class ChurnFactory {
     }
 
     Thread gossipThread =
-      new Thread(gossipService, "Nebulostore.Communication.GossipService(" + 
+      new Thread(gossipService, "Nebulostore.Communication.GossipService(" +
           commAddr + ")");
     gossipThread.setDaemon(true);
     gossipThread.start();
@@ -181,16 +181,19 @@ final class ChurnFactory {
   }
 }
 
-public class GossipTest {
-  private static final Map<CommAddress, PeerGossipService> gossipModules_ =
+/**
+ * @author grzegorzmilka
+ */
+public final class GossipTest {
+  private static final Map<CommAddress, PeerGossipService> GOSSIP_MODULES =
     new HashMap<CommAddress, PeerGossipService>();
 
-  private static final String USAGE_ = "GossipTest N_GOSSIPERS_ " +
-    "GOSSIP_PERIOD MAX_PEERS_SIZE HEALING_FACTOR SWAPPING_FACTOR " + 
+  private static final String USAGE = "GossipTest N_GOSSIPERS_ " +
+    "GOSSIP_PERIOD MAX_PEERS_SIZE HEALING_FACTOR SWAPPING_FACTOR " +
     "TESTING_INTERVALS...";
-  private static final int MIN_ARGS_ = 6;
+  private static final int MIN_ARGS = 6;
 
-  private static int N_GOSSIPERS_;
+  private static int nGossipers_;
   /**
    * BiggestComponentSize/NumberOfGossipers factor threshold at which cohesive
    * test passes.
@@ -199,109 +202,122 @@ public class GossipTest {
    * which are not visible from the network (temporarily). If such hosts
    * constitute only a small part of network we let this test pass.
    */
-  private static double COHESIVENESS_THRESHOLD_ = 0.80;
+  private static final double COHESIVENESS_THRESHOLD = 0.80;
 
   /**
    * If given a node is N_OUT_OF_MAIN_ times out of main component we regard
    * this as an error.
    */
-  private static double N_OUT_OF_MAIN_ = 3;
-  private static Map<CommAddress, Integer> outOfMainComponentMap = 
+  private static final double N_OUT_OF_MAIN = 3;
+  private static Map<CommAddress, Integer> outOfMainComponentMap_ =
     new HashMap<CommAddress, Integer>();
   private static Logger logger_;
+
+  private GossipTest() {
+  }
 
   public static void main(String[] args) {
     DOMConfigurator.configure("resources/conf/log4j.xml");
     logger_ = Logger.getLogger(GossipTest.class);
 
-    if (args.length < MIN_ARGS_) {
-      System.out.println(USAGE_);
+    if (args.length < MIN_ARGS) {
+      System.out.println(USAGE);
 
       System.exit(1);
     }
 
-    N_GOSSIPERS_ = Integer.parseInt(args[0]);
-
+    nGossipers_ = Integer.parseInt(args[0]);
     System.exit(runTest(args) ? 0 : 1);
   }
 
+  /**
+   * @author grzegorzmilka
+   */
   private static class GossiperNode {
-    public int index;
-    public boolean wasVisited = false;
-    public CommAddress commAddr;
-    public int age = 0;
-    public final Collection<Integer> neighbours = new TreeSet<Integer>();
+    public int index_;
+    public boolean wasVisited_;
+    public CommAddress commAddr_;
+    public int age_;
+    public final Collection<Integer> neighbours_ = new TreeSet<Integer>();
     public GossiperNode(int newIndex, CommAddress newCommAddr) {
-      index = newIndex;
-      commAddr = newCommAddr;
+      index_ = newIndex;
+      commAddr_ = newCommAddr;
     }
   }
 
+  /**
+   * @author grzegorzmilka
+   */
   private static class GraphCreationReport {
-    public ArrayList<GossiperNode> graph = new ArrayList<GossiperNode>();
-    public int nObsoleteEdges = 0;
+    public ArrayList<GossiperNode> graph_ = new ArrayList<GossiperNode>();
+    public int nObsoleteEdges_;
   }
 
+  /**
+   * @author grzegorzmilka
+   */
   private static class GraphCohesivenessReport {
-    public Collection<Collection<GossiperNode>> components;
-    public boolean isCohesive;
+    public Collection<Collection<GossiperNode>> components_;
+    public boolean isCohesive_;
   }
 
+  /**
+   * @author grzegorzmilka
+   */
   private static class CheckCohesivenessReport {
-    public Collection<Collection<GossiperNode>> components;
-    public int nObsoleteEdges;
-    public boolean isCohesive;
-    public int sizeOfLargestComponent;
+    public Collection<Collection<GossiperNode>> components_;
+    public int nObsoleteEdges_;
+    public boolean isCohesive_;
+    public int sizeOfLargestComponent_;
   }
 
   private static CheckCohesivenessReport checkCohesiveness() {
-    assert gossipModules_.size() == N_GOSSIPERS_;
+    assert GOSSIP_MODULES.size() == nGossipers_;
     logger_.info("Starting cohesiveness test.");
     GraphCreationReport result = createGossiperGraph();
-    GraphCohesivenessReport cohReport = isCohesive(result.graph);
+    GraphCohesivenessReport cohReport = isCohesive(result.graph_);
 
-    logger_.info("Number of components: " + cohReport.components.size());
+    logger_.info("Number of components: " + cohReport.components_.size());
     int i = 0;
     Set<GossiperNode> mainComponent = new HashSet<GossiperNode>();
-    for (Collection<GossiperNode> component: cohReport.components) {
+    for (Collection<GossiperNode> component : cohReport.components_) {
       logger_.info("Component nr " + i + ":");
-      if ((double) component.size()/N_GOSSIPERS_ > 0.5) {
+      if ((double) component.size() / nGossipers_ > 0.5) {
         mainComponent.addAll(component);
       }
       logger_.info(toStringGossiperGraph(component));
       ++i;
     }
 
-    if (N_GOSSIPERS_ > 0) {
-      cohReport.isCohesive = 
-        cohReport.isCohesive || 
-        ( ((double) mainComponent.size()/N_GOSSIPERS_) > 
-          COHESIVENESS_THRESHOLD_);
+    if (nGossipers_ > 0) {
+      cohReport.isCohesive_ =
+        cohReport.isCohesive_ ||
+        (((double) mainComponent.size() / nGossipers_) > COHESIVENESS_THRESHOLD);
     }
 
-    for (GossiperNode node: result.graph) {
+    for (GossiperNode node : result.graph_) {
       if (!mainComponent.contains(node)) {
-        Integer nTimesOutOfMain = outOfMainComponentMap.get(node.commAddr);
+        Integer nTimesOutOfMain = outOfMainComponentMap_.get(node.commAddr_);
         if (nTimesOutOfMain == null) {
-          outOfMainComponentMap.put(node.commAddr, 1);
+          outOfMainComponentMap_.put(node.commAddr_, 1);
         } else {
-          if (nTimesOutOfMain >= N_OUT_OF_MAIN_) {
-            cohReport.isCohesive = false;
+          if (nTimesOutOfMain >= N_OUT_OF_MAIN) {
+            cohReport.isCohesive_ = false;
           }
-          outOfMainComponentMap.put(node.commAddr, nTimesOutOfMain + 1);
-        } 
+          outOfMainComponentMap_.put(node.commAddr_, nTimesOutOfMain + 1);
+        }
       } else {
-          outOfMainComponentMap.remove(node.commAddr);
+        outOfMainComponentMap_.remove(node.commAddr_);
       }
     }
 
-    logger_.info("Graph cohesive test: " + cohReport.isCohesive + 
-        ", Number of obsolete nodes still present: " + result.nObsoleteEdges);
+    logger_.info("Graph cohesive test: " + cohReport.isCohesive_ +
+        ", Number of obsolete nodes still present: " + result.nObsoleteEdges_);
     CheckCohesivenessReport cCR = new CheckCohesivenessReport();
-    cCR.components = cohReport.components;
-    cCR.nObsoleteEdges = result.nObsoleteEdges;
-    cCR.isCohesive = cohReport.isCohesive;
-    cCR.sizeOfLargestComponent = mainComponent.size();
+    cCR.components_ = cohReport.components_;
+    cCR.nObsoleteEdges_ = result.nObsoleteEdges_;
+    cCR.isCohesive_ = cohReport.isCohesive_;
+    cCR.sizeOfLargestComponent_ = mainComponent.size();
 
 
     return cCR;
@@ -310,11 +326,11 @@ public class GossipTest {
   private static GraphCreationReport createGossiperGraph() {
     Map<CommAddress, Integer> indexMap = new HashMap<CommAddress, Integer>();
     GraphCreationReport result = new GraphCreationReport();
-    ArrayList<GossiperNode> gossiperGraph = result.graph;
+    ArrayList<GossiperNode> gossiperGraph = result.graph_;
 
     Method getPeersMethod;
 
-    synchronized (gossipModules_) {
+    synchronized (GOSSIP_MODULES) {
       try {
         getPeersMethod = PeerGossipService.class.getDeclaredMethod("getPeers");
       } catch (NoSuchMethodException e) {
@@ -325,19 +341,18 @@ public class GossipTest {
 
       ArrayList<PeerGossipService> gossiperServiceGraph = new ArrayList<PeerGossipService>();
 
-      for (CommAddress gossiperAddr: gossipModules_.keySet()) {
-        PeerGossipService gossiper = gossipModules_.get(gossiperAddr);
+      for (CommAddress gossiperAddr : GOSSIP_MODULES.keySet()) {
+        PeerGossipService gossiper = GOSSIP_MODULES.get(gossiperAddr);
         indexMap.put(gossiperAddr, gossiperGraph.size());
         gossiperGraph.add(new GossiperNode(gossiperGraph.size(), gossiperAddr));
         gossiperServiceGraph.add(gossiper);
       }
 
       Iterator<PeerGossipService> iterator = gossiperServiceGraph.iterator();
-      for (GossiperNode gossiperNode: gossiperGraph) {
+      for (GossiperNode gossiperNode : gossiperGraph) {
         Collection<PeerDescriptor> peers = new HashSet<PeerDescriptor>();
         try {
-          peers = (Collection<PeerDescriptor>) 
-            getPeersMethod.invoke(iterator.next());
+          peers = (Collection<PeerDescriptor>) getPeersMethod.invoke(iterator.next());
         } catch (IllegalAccessException e) {
           logger_.error("Exception: " + e + " when trying to invoke private " +
               "method getPeers.");
@@ -348,12 +363,12 @@ public class GossipTest {
           throw new RuntimeException(e.toString());
         }
 
-        for (PeerDescriptor peer: peers) {
+        for (PeerDescriptor peer : peers) {
           Integer index = indexMap.get(peer.getPeerAddress());
           if (index == null) {
-            result.nObsoleteEdges++;
+            result.nObsoleteEdges_++;
           } else {
-            gossiperNode.neighbours.add(index);
+            gossiperNode.neighbours_.add(index);
           }
         }
       }
@@ -363,21 +378,21 @@ public class GossipTest {
   }
 
   /**
-   * Make DFS on graph and return dfs trees. 
+   * Make DFS on graph and return dfs trees.
    */
   private static Collection<Collection<GossiperNode>> dfs(ArrayList<GossiperNode> graph) {
     Collection<Collection<GossiperNode>> components = new HashSet<Collection<GossiperNode>>();
     Deque<GossiperNode> dfsNodeStack = new LinkedList<GossiperNode>();
     Deque<Iterator<Integer>> dfsIteratorStack = new LinkedList<Iterator<Integer>>();
     int curAge = 0;
-    for (GossiperNode node: graph) {
-      if (node.wasVisited) {
+    for (GossiperNode node : graph) {
+      if (node.wasVisited_) {
         continue;
       }
       Collection<GossiperNode> component = new HashSet<GossiperNode>();
       component.add(node);
       dfsNodeStack.add(node);
-      dfsIteratorStack.add(node.neighbours.iterator());
+      dfsIteratorStack.add(node.neighbours_.iterator());
       while (!dfsNodeStack.isEmpty()) {
         assert !dfsNodeStack.isEmpty();
         GossiperNode gossiper = dfsNodeStack.pop();
@@ -385,18 +400,18 @@ public class GossipTest {
         while (iter.hasNext()) {
           int index = iter.next();
           GossiperNode neighbour = graph.get(index);
-          if (!neighbour.wasVisited) {
+          if (!neighbour.wasVisited_) {
             component.add(neighbour);
-            neighbour.wasVisited = true;
+            neighbour.wasVisited_ = true;
             dfsNodeStack.push(gossiper);
             dfsNodeStack.push(neighbour);
             dfsIteratorStack.push(iter);
-            dfsIteratorStack.push(neighbour.neighbours.iterator());
+            dfsIteratorStack.push(neighbour.neighbours_.iterator());
             break;
           }
 
         }
-        gossiper.age = curAge++;
+        gossiper.age_ = curAge++;
       }
 
       components.add(component);
@@ -413,117 +428,115 @@ public class GossipTest {
     Collection<Collection<GossiperNode>> components = dfs(graph);
 
     if (components.size() != 1 && graph.size() != 0) {
-      report.components = components;
-      report.isCohesive = false;
+      report.components_ = components;
+      report.isCohesive_ = false;
       return report;
     }
 
     ArrayList<GossiperNode> transGraph = new ArrayList<GossiperNode>();
-    for (GossiperNode gossiper: graph) {
-      GossiperNode transGossiper = new GossiperNode(gossiper.index, gossiper.commAddr);
-      transGossiper.age = gossiper.age;
+    for (GossiperNode gossiper : graph) {
+      GossiperNode transGossiper = new GossiperNode(gossiper.index_, gossiper.commAddr_);
+      transGossiper.age_ = gossiper.age_;
       transGraph.add(transGossiper);
     }
 
     for (int i = 0; i < graph.size(); ++i) {
-      for (int index: graph.get(i).neighbours) {
-        transGraph.get(index).neighbours.add(i);
+      for (int index : graph.get(i).neighbours_) {
+        transGraph.get(index).neighbours_.add(i);
       }
     }
 
     java.util.Collections.sort(transGraph, new Comparator<GossiperNode>() {
       @Override
       public int compare(GossiperNode g1, GossiperNode g2) {
-        return g2.age - g1.age;
+        return g2.age_ - g1.age_;
       }
     });
 
     components = dfs(transGraph);
 
     if (components.size() != 1 && transGraph.size() != 0) {
-      report.components = components;
-      report.isCohesive = false;
+      report.components_ = components;
+      report.isCohesive_ = false;
       return report;
     }
 
-    report.components = components;
-    report.isCohesive = true;
+    report.components_ = components;
+    report.isCohesive_ = true;
 
     return report;
   }
 
   /**
-   * Run test
+   * Run test.
    */
   private static boolean runTest(String[] args) {
     BlockingQueue<Message> mediumInQueue = new LinkedBlockingQueue<Message>();
 
-    MessageMedium medium = new MessageMedium(gossipModules_, mediumInQueue);
+    MessageMedium medium = new MessageMedium(GOSSIP_MODULES, mediumInQueue);
     Thread mediumThread = new Thread(medium, "Nebulostore.Testing.MediumThread");
     mediumThread.setDaemon(true);
     mediumThread.start();
 
-    ChurnFactory churn = new ChurnFactory(gossipModules_, N_GOSSIPERS_, 
+    ChurnFactory churn = new ChurnFactory(GOSSIP_MODULES, nGossipers_,
         mediumInQueue, Integer.parseInt(args[1]), Integer.parseInt(args[2]),
         Integer.parseInt(args[3]), Integer.parseInt(args[4]));
 
     churn.setUp();
     CheckCohesivenessReport result = new CheckCohesivenessReport();
-    result.isCohesive = true;
+    result.isCohesive_ = true;
     int secFromStart = 0;
     double avgNOfClusters = 0.0;
     int smallestLargestCluster = -1;
-    for (int i=5; i < args.length && result.isCohesive; ++i) {
+    for (int i = 5; i < args.length && result.isCohesive_; ++i) {
       int period = Integer.parseInt(args[i]);
       secFromStart += period;
       try {
         Thread.sleep(period);
       } catch (InterruptedException e) {
-        // Ignore
+        logger_.info("Interrupted exception.");
       }
       result = checkCohesiveness();
-      avgNOfClusters += result.components.size();
+      avgNOfClusters += result.components_.size();
       if (smallestLargestCluster == -1) {
-        smallestLargestCluster = result.sizeOfLargestComponent;
-      }
-      else {
-        smallestLargestCluster = 
-          java.lang.Math.min(smallestLargestCluster, 
-              result.sizeOfLargestComponent);
+        smallestLargestCluster = result.sizeOfLargestComponent_;
+      } else {
+        smallestLargestCluster =
+          java.lang.Math.min(smallestLargestCluster,
+              result.sizeOfLargestComponent_);
       }
       System.out.printf("(%d) isCohesive: %b, nOfComponents %n, " +
-          "size of largest component: %d.%n", secFromStart, result.isCohesive, 
-          result.components.size(), result.sizeOfLargestComponent);
-      logger_.info("Result of test nr. " + (i - 5)  + ": " + result.isCohesive);
+          "size of largest component: %d.%n", secFromStart, result.isCohesive_,
+          result.components_.size(), result.sizeOfLargestComponent_);
+      logger_.info("Result of test nr. " + (i - 5)  + ": " + result.isCohesive_);
     }
     avgNOfClusters /= args.length - 5.;
     System.out.printf("Test finished with result : %b. avgNOfClusters: %f, " +
-        "smallest largest cluster: %d", result.isCohesive, avgNOfClusters, 
+        "smallest largest cluster: %d", result.isCohesive_, avgNOfClusters,
         smallestLargestCluster);
     churn.cleanUp();
     mediumThread.interrupt();
     while (true) {
-      try{
+      try {
         mediumThread.join();
         break;
       } catch (InterruptedException e) {
-        logger_.warn("Caught InterruptedException when joining: " 
-            + mediumThread);
+        logger_.warn("Caught InterruptedException when joining: " + mediumThread);
       }
     }
 
-    return result.isCohesive;
+    return result.isCohesive_;
   }
 
   /**
-   * Returns nice string of given graph
+   * Returns nice string of given graph.
    */
   private static String toStringGossiperGraph(Collection<GossiperNode> graph) {
     StringBuilder builder = new StringBuilder();
     builder.append("Gossiper graph of size: " + graph.size() + "\n");
-    for (GossiperNode node: graph)
-      builder.append(String.format("Node: %3d with neighbours: %s%n", 
-          node.index, java.util.Arrays.toString(node.neighbours.toArray())));
+    for (GossiperNode node : graph)
+      builder.append(String.format("Node: %3d with neighbours: %s%n",
+          node.index_, java.util.Arrays.toString(node.neighbours_.toArray())));
     return builder.toString();
   }
 }
