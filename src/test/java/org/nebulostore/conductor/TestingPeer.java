@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.conductor;
 
 import java.math.BigInteger;
 
@@ -6,15 +6,15 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
+import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.dht.BdbDHTTestServer;
 import org.nebulostore.communication.dht.KademliaDHTTestServer;
 import org.nebulostore.communication.messages.MessagesTestServer;
 import org.nebulostore.communication.messages.performance.PerformanceMessagesTestServer;
-import org.nebulostore.conductor.ConductorServer;
+import org.nebulostore.conductor.pingpong.PingPongServer;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
-import org.nebulostore.testing.pingpong.PingPongServer;
 
 /**
  * Class to run test server.
@@ -340,12 +340,14 @@ public final class TestingPeer extends Peer {
   }
 
   private static boolean runTest(ConductorServer testModule, String testName) {
+    // TODO(bolek,szymon): This is not currently working because the commented methods
+    // are not visible from here.
     try {
-      testModule.runThroughDispatcher(dispatcherInQueue_, testName + " server");
+      //testModule.runThroughDispatcher(dispatcherInQueue_, testName + " server");
       testModule.getResult();
       return true;
     } catch (NebuloException exception) {
-      testModule.endJobModule();
+      //testModule.endJobModule();
       logger_.error("NebuloException at test " + testName + " : " +
           exception.getMessage());
       return false;

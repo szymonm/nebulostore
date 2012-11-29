@@ -1,4 +1,4 @@
-package org.nebulostore.testing.pingpong;
+package org.nebulostore.conductor.pingpong;
 
 import java.util.Iterator;
 
