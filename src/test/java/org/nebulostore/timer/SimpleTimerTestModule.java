@@ -1,7 +1,6 @@
 package org.nebulostore.timer;
 
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
@@ -13,17 +12,17 @@ class SimpleTimerTestModule extends ReturningJobModule<Void> {
   /* required precision of system time */
   static final Long PRECISION = 5L;
 
-  private MessageVisitor<Void> visitor_ = new STTVisitor();
+  private TimerTestVisitor<Void> visitor_ = new STTVisitor();
 
   @Override
   protected void processMessage(Message message) throws NebuloException {
-    message.accept(visitor_);
+    ((AbstractTimerTestMessage) message).accept(visitor_);
   }
 
   /**
    * Visitor.
    */
-  private class STTVisitor extends MessageVisitor<Void> {
+  private class STTVisitor extends TimerTestVisitor<Void> {
     private Long startTime_ = System.currentTimeMillis();
 
     @Override

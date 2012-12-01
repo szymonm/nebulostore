@@ -66,8 +66,6 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.TransactionResultMessage;
 import org.nebulostore.replicator.messages.UpdateRejectMessage;
 import org.nebulostore.replicator.messages.UpdateWithholdMessage;
-import org.nebulostore.timer.InitSimpleTimerTestMessage;
-import org.nebulostore.timer.TimerTestMessage;
 
 /**
  * Generic Message visitor class. All 'visit' methods should call handlers for base classes.
@@ -298,13 +296,6 @@ public abstract class MessageVisitor<R> {
   }
 
   // Timer module tests.
-  public R visit(TimerTestMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(InitSimpleTimerTestMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
   public R visit(ErrorCommMessage message) throws NebuloException {
     return visit((Message) message);
   }
