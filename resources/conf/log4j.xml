@@ -37,6 +37,14 @@
     </layout>
   </appender>
 
+  <appender name="FA-appcore" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/appcore.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
+    </layout>
+  </appender>
+
   <appender name="FA-comm" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/comm.log" />
     <param name="Threshold" value="DEBUG" />
@@ -126,16 +134,16 @@
     <appender-ref ref="FA-comm"/>
   </logger>
 
-  <logger name="org.nebulostore.testing">
+  <logger name="org.nebulostore.conductor">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing"/>
     <appender-ref ref="FA-testing"/>
   </logger>
 
-  <logger name="org.nebulostore.appcore.RegisterInstanceInDHTModule">
+  <logger name="org.nebulostore.appcore">
     <level value="DEBUG" />
     <appender-ref ref="CA-testing"/>
-    <appender-ref ref="FA-testing"/>
+    <appender-ref ref="FA-appcore"/>
   </logger>
 
    <logger name="org.nebulostore.broker">
@@ -147,12 +155,6 @@
    <logger name="org.nebulostore.dispatcher">
     <level value="DEBUG" />
     <appender-ref ref="FA-dispatcher"/>
-  </logger>
-
-  <logger name="org.nebulostore.appcore.TestingPeer">
-    <level value="DEBUG" />
-    <appender-ref ref="CA-testing"/>
-    <appender-ref ref="FA-testing"/>
   </logger>
 
   <logger name="org.nebulostore.communication.dht">

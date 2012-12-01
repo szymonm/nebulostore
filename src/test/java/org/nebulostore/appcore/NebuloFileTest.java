@@ -3,6 +3,8 @@ package org.nebulostore.appcore;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import org.apache.log4j.BasicConfigurator;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ObjectId;
@@ -16,7 +18,10 @@ import static org.junit.Assert.assertTrue;
 public final class NebuloFileTest {
 
   @Test
+  @Ignore
   public void testWriteMultipleChunks() {
+    // log4j
+    BasicConfigurator.configure();
     NebuloFile file = new NebuloFile(new AppKey(BigInteger.ONE), new ObjectId(BigInteger.ONE));
 
     // Do three writes.

@@ -10,7 +10,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 class SimpleTimerTestModule extends ReturningJobModule<Void> {
 
   /* required precision of system time */
-  static final Long PRECISION = 5L;
+  static final Long PRECISION = 20L;
 
   private TimerTestVisitor<Void> visitor_ = new STTVisitor();
 

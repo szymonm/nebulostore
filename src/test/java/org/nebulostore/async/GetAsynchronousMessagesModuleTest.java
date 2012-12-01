@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.Message;
@@ -33,6 +34,7 @@ public final class GetAsynchronousMessagesModuleTest {
   }
 
   @Test
+  @Ignore
   public void testSimple() {
     BlockingQueue<Message> networkQueue = new LinkedBlockingQueue<Message>();
     BlockingQueue<Message> inQueue = new LinkedBlockingQueue<Message>();
