@@ -1,13 +1,12 @@
 package org.nebulostore.communication.messages;
 
-import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.conductor.messages.UserCommMessage;
 
 /**
  * @author Marcin Walas
  */
-public class DataExchangeMessage extends CommMessage {
+public class DataExchangeMessage extends UserCommMessage {
 
   private static final long serialVersionUID = 8490874879805594887L;
   private final String payload_;
@@ -26,13 +25,11 @@ public class DataExchangeMessage extends CommMessage {
     return phase_;
   }
 
+  public String getPayload() {
+    return payload_;
+  }
+
   public int getCounterVal() {
     return counterVal_;
   }
-
-  @Override
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
-  }
-
 }

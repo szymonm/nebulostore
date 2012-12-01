@@ -18,16 +18,13 @@ import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
 import org.nebulostore.async.messages.UpdateSmallNebuloObjectMessage;
 import org.nebulostore.broker.messages.ContractOfferMessage;
 import org.nebulostore.broker.messages.OfferReplyMessage;
-import org.nebulostore.communication.dht.ReconfigureDHTTestMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.CommSendDataMessage;
-import org.nebulostore.communication.messages.DataExchangeMessage;
 import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
-import org.nebulostore.communication.messages.ReconfigureMessagesTestMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.DelDHTMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -296,10 +293,6 @@ public abstract class MessageVisitor<R> {
     return visit((Message) message);
   }
 
-  public R visit(DataExchangeMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
   // Timer module tests.
   public R visit(ErrorCommMessage message) throws NebuloException {
     return visit((Message) message);
@@ -332,14 +325,6 @@ public abstract class MessageVisitor<R> {
 
   public R visit(TicAckMessage message) throws NebuloException {
     return visit((CommMessage) message);
-  }
-
-  public R visit(ReconfigureMessagesTestMessage message) throws NebuloException {
-    return visit((ReconfigurationMessage) message);
-  }
-
-  public R visit(ReconfigureDHTTestMessage message) throws NebuloException {
-    return  visit((ReconfigurationMessage) message);
   }
 
   public R visit(RandomPeersSampleMessage message) throws NebuloException {

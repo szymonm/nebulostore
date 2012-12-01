@@ -7,13 +7,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.CaseStatistics;
 import org.nebulostore.conductor.ConductorClient;
 import org.nebulostore.conductor.messages.GatherStatsMessage;
 import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.conductor.messages.ReconfigurationMessage;
 import org.nebulostore.conductor.messages.StatsMessage;
+import org.nebulostore.conductor.messages.UserCommMessage;
 
 /**
  * Testing client module of communication layer.
@@ -70,11 +73,17 @@ public class MessagesTestClient extends ConductorClient implements Serializable 
   final class ConfigurationVisitor extends EmptyInitializationVisitor {
 
     @Override
-    public Void visit(ReconfigureMessagesTestMessage message) {
+    public Void visit(ReconfigurationMessage message) throws NebuloException {
+      ReconfigureMessagesTestMessage rmtMessage;
+      try {
+        rmtMessage = (ReconfigureMessagesTestMessage) message;
+      } catch (ClassCastException excpetion) {
+        throw new NebuloException("Received wrong ReconfigurationMessage subclass!");
+      }
       logger_.info("Got reconfiguration message with clients set: " +
-          message.getClients());
-      allClients_ = message.getClients().toArray(new CommAddress[0]);
-      expectedInClients_ = message.getExpectedInClients();
+          rmtMessage.getClients());
+      allClients_ = rmtMessage.getClients().toArray(new CommAddress[0]);
+      expectedInClients_ = rmtMessage.getExpectedInClients();
       phaseFinished();
       return null;
     }
@@ -186,18 +195,24 @@ public class MessagesTestClient extends ConductorClient implements Serializable 
     }
 
     @Override
-    public Void visit(DataExchangeMessage message) {
+    public Void visit(UserCommMessage message) throws NebuloException {
+      DataExchangeMessage dexMessage;
+      try {
+        dexMessage = (DataExchangeMessage) message;
+      } catch (ClassCastException excpetion) {
+        throw new NebuloException("Received wrong UserCommMessage subclass!");
+      }
 
       if (receivedMessages_.contains(message.getSourceAddress().toString() +
-          message.getCounterVal()) ||
-          message.getPhase() != phase_) {
+          dexMessage.getCounterVal()) ||
+          dexMessage.getPhase() != phase_) {
         logger_.debug("Received stalled or duplicated DataExchangeMessage");
         return null;
       }
       logger_.debug("Received new DataExchangeMessage");
 
       receivedMessages_.add(message.getSourceAddress().toString() +
-          message.getCounterVal());
+          dexMessage.getCounterVal());
 
       if (!phaseFinished_ &&
           receivedMessages_.size() >= expectedInClients_ * messagesForPhase_) {

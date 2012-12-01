@@ -4,6 +4,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.DataExchangeMessage;
@@ -12,7 +13,9 @@ import org.nebulostore.conductor.CaseStatistics;
 import org.nebulostore.conductor.ConductorClient;
 import org.nebulostore.conductor.messages.GatherStatsMessage;
 import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.conductor.messages.ReconfigurationMessage;
 import org.nebulostore.conductor.messages.StatsMessage;
+import org.nebulostore.conductor.messages.UserCommMessage;
 
 /**
  */
@@ -63,11 +66,17 @@ public class PerformanceMessagesTestClient extends ConductorClient {
   final class ConfigurationVisitor extends EmptyInitializationVisitor {
 
     @Override
-    public Void visit(ReconfigureMessagesTestMessage message) {
+    public Void visit(ReconfigurationMessage message) throws NebuloException {
+      ReconfigureMessagesTestMessage rmtMessage;
+      try {
+        rmtMessage = (ReconfigureMessagesTestMessage) message;
+      } catch (ClassCastException excpetion) {
+        throw new NebuloException("Received wrong ReconfigurationMessage subclass!");
+      }
       logger_.info("Got reconfiguration message with clients set: " +
-          message.getClients());
-      allClients_ = message.getClients().toArray(new CommAddress[0]);
-      expectedInClients_ = message.getExpectedInClients();
+          rmtMessage.getClients());
+      allClients_ = rmtMessage.getClients().toArray(new CommAddress[0]);
+      expectedInClients_ = rmtMessage.getExpectedInClients();
 
       stats_
       .setDouble("shouldReceive", 1.0 * expectedInClients_ * shortPhases_);
@@ -139,8 +148,12 @@ public class PerformanceMessagesTestClient extends ConductorClient {
     }
 
     @Override
-    public Void visit(DataExchangeMessage message) {
-      stats_.setDouble("received", stats_.getDouble("received") + 1.0);
+    public Void visit(UserCommMessage message) throws NebuloException {
+      if (message instanceof DataExchangeMessage) {
+        stats_.setDouble("received", stats_.getDouble("received") + 1.0);
+      } else {
+        throw new NebuloException("Received wrong UserCommMessage subclass!");
+      }
       return null;
     }
   }

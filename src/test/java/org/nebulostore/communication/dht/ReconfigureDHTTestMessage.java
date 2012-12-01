@@ -2,8 +2,6 @@ package org.nebulostore.communication.dht;
 
 import java.util.Set;
 
-import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.messages.ReconfigurationMessage;
 
@@ -24,10 +22,5 @@ public class ReconfigureDHTTestMessage extends ReconfigurationMessage {
 
   public Set<CommAddress> getClientsIn() {
     return clientsIn_;
-  }
-
-  @Override
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
   }
 }
