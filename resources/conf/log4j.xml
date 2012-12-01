@@ -21,7 +21,7 @@
   </appender>
 
   <appender name="FA-testing" class="org.apache.log4j.FileAppender">
-    <param name="File" value="testing.log" />
+    <param name="File" value="logs/testing.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -30,7 +30,7 @@
 
   <!--  TODO: How to set common pattern for all of these? -->
   <appender name="FA" class="org.apache.log4j.FileAppender">
-    <param name="File" value="all.log" />
+    <param name="File" value="logs/all.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -38,7 +38,7 @@
   </appender>
 
   <appender name="FA-comm" class="org.apache.log4j.FileAppender">
-    <param name="File" value="comm.log" />
+    <param name="File" value="logs/comm.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -46,7 +46,7 @@
   </appender>
 
   <appender name="FA-query" class="org.apache.log4j.FileAppender">
-    <param name="File" value="dql.log" />
+    <param name="File" value="logs/dql.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -54,7 +54,7 @@
   </appender>
 
   <appender name="FA-stream" class="org.apache.log4j.FileAppender">
-    <param name="File" value="stream.log" />
+    <param name="File" value="logs/stream.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -62,7 +62,7 @@
   </appender>
 
   <appender name="FA-dht" class="org.apache.log4j.FileAppender">
-    <param name="File" value="dht.log" />
+    <param name="File" value="logs/dht.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -70,7 +70,7 @@
   </appender>
 
   <appender name="FA-replicator" class="org.apache.log4j.FileAppender">
-    <param name="File" value="replicator.log" />
+    <param name="File" value="logs/replicator.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -78,7 +78,7 @@
   </appender>
 
   <appender name="FA-nm" class="org.apache.log4j.FileAppender">
-    <param name="File" value="nm.log" />
+    <param name="File" value="logs/nm.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -86,7 +86,7 @@
   </appender>
 
   <appender name="FA-broker" class="org.apache.log4j.FileAppender">
-    <param name="File" value="broker.log" />
+    <param name="File" value="logs/broker.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
@@ -94,7 +94,7 @@
   </appender>
 
   <appender name="FA-dispatcher" class="org.apache.log4j.FileAppender">
-    <param name="File" value="dispatcher.log" />
+    <param name="File" value="logs/dispatcher.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
