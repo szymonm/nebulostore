@@ -50,6 +50,7 @@ import org.nebulostore.conductor.messages.TicAckMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocAckMessage;
 import org.nebulostore.conductor.messages.TocMessage;
+import org.nebulostore.conductor.messages.UserCommMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -280,6 +281,10 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(GatherStatsMessage message) throws NebuloException {
+    return visit((CommMessage) message);
+  }
+
+  public R visit(UserCommMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 
