@@ -61,6 +61,6 @@ public abstract class Module implements Runnable {
     }
   }
 
-  protected void processMessage(Message message) throws NebuloException { }
+  protected abstract void processMessage(Message message) throws NebuloException;
 
 }
