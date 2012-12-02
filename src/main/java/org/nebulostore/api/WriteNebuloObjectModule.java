@@ -56,6 +56,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
   private final StateMachineVisitor visitor_;
 
   private String commitVersion_;
+  private int nRecipients_;
 
   private static Logger logger_ = Logger.getLogger(WriteNebuloObjectModule.class);
 
@@ -153,7 +154,9 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
           waitingForTransactionResult_.put(replicator, remoteJobId);
           networkQueue_.add(new QueryToStoreObjectMessage(remoteJobId , null, replicator,
               address_.getObjectId(), encryptedObject, previousVersionSHAs_, getJobId()));
+          logger_.debug("added recipient: " + replicator);
           recipientsSet_.add(replicator);
+          ++nRecipients_;
         }
       } else {
         logger_.warn("ValueDHTMessage received in state " + state_.name());
@@ -223,7 +226,8 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
 
     private void tryReturnSemiResult() {
       logger_.debug("trying to return semi result");
-      if (recipientsSet_.isEmpty() && confirmations_ < CONFIRMATIONS_REQUIRED) {
+      if (recipientsSet_.isEmpty() &&
+          confirmations_ < Math.min(CONFIRMATIONS_REQUIRED, nRecipients_)) {
         sendTransactionAnswer(TransactionAnswer.ABORT);
         endWithError(new NebuloException("Not enough replicas responding to update file."));
       } else {
