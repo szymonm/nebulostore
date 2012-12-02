@@ -3,7 +3,6 @@ package org.nebulostore.appcore;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
@@ -12,20 +11,12 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  *    return type.
  */
 public abstract class ReturningJobModule<R> extends JobModule {
-
-  protected R result_;
-  protected NebuloException error_;
-  protected Semaphore mutex_;
-
-  private static Logger logger_ = Logger.getLogger(ReturningJobModule.class);
+  private R result_;
+  private NebuloException error_;
+  private Semaphore resultReady_;
 
   protected ReturningJobModule() {
-    mutex_ = new Semaphore(1);
-    mutex_.tryAcquire();
-    if (mutex_.availablePermits() != 0) {
-      // This should not happen.
-      logger_.fatal("Could not initialize semaphore");
-    }
+    resultReady_ = new Semaphore(0);
   }
 
   /*
@@ -35,7 +26,7 @@ public abstract class ReturningJobModule<R> extends JobModule {
    */
   public R getResult(int timeoutSec) throws NebuloException {
     try {
-      if (!mutex_.tryAcquire(timeoutSec, TimeUnit.SECONDS)) {
+      if (!resultReady_.tryAcquire(timeoutSec, TimeUnit.SECONDS)) {
         throw new NebuloException("Timeout");
       }
     } catch (InterruptedException exception) {
@@ -51,7 +42,7 @@ public abstract class ReturningJobModule<R> extends JobModule {
   protected void returnSuccess(R result) {
     result_ = result;
     // Make result available.
-    mutex_.release();
+    resultReady_.release();
   }
 
   protected void endWithSuccess(R result) {
@@ -63,9 +54,8 @@ public abstract class ReturningJobModule<R> extends JobModule {
   protected void endWithError(NebuloException error) {
     error_ = error;
     // Make result available.
-    mutex_.release();
+    resultReady_.release();
     // End thread and remove from Dispatcher's queue.
     endJobModule();
   }
-
 }

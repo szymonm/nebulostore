@@ -3,13 +3,13 @@ package org.nebulostore.appcore;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
- * Returning job module with communication in the middle. Returns semi result and waits for
- * answer from parent module. When obtains answer, runs performSecondPhase(answer) implemented
+ * Returning job module with communication in the middle. Returns semi-result and waits for an
+ * answer from the user. When the answer is provided, runs performSecondPhase(answer) implemented
  * in subclass which should finish with either endWithSuccess or endWithError.
+ * In case of an error in the semi-result phase, the final result is also set to an error.
  *
  * @author szymonmatejczyk
  *
@@ -18,81 +18,76 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * @param <A> Anwer result type.
  */
 public abstract class TwoStepReturningJobModule<R, SR, A> extends ReturningJobModule<R> {
-
-  private static Logger logger_ = Logger.getLogger(TwoStepReturningJobModule.class);
-
-  protected SR semiResult_;
-  protected Semaphore answerMutex_;
-  protected Semaphore semiResultMutex_;
-  protected A answer_;
-  protected boolean afterFirstResult_;
+  private SR semiResult_;
+  private NebuloException semiError_;
+  private Semaphore semiResultReady_;
+  private boolean afterSemiResult_;
 
   public TwoStepReturningJobModule() {
-    super();
-    answerMutex_ = new Semaphore(0);
-    if (answerMutex_.availablePermits() != 0) {
-      logger_.error("Failed to initialize mutex.");
-    }
-    semiResultMutex_ = new Semaphore(0);
-    if (answerMutex_.availablePermits() != 0) {
-      logger_.error("Failed to initialize mutex.");
-    }
+    semiResultReady_ = new Semaphore(0);
   }
 
   /**
-   * Sets semiResult_. After that, module is waiting(on answerMutex_) for an answer
-   * from parent module(see answer(A) method).
+   * Sets semiResult_. After that, module should wait on getAnswer() for a user's answer.
    *
    * @param semiResult
    */
   protected void returnSemiResult(SR semiResult) {
     semiResult_ = semiResult;
-    semiResultMutex_.release();
-    try {
-      answerMutex_.acquire();
-      performSecondPhase(answer_);
-    } catch (InterruptedException exception) {
-      endWithError(new NebuloException("Interrupted", exception));
-    }
+    semiResultReady_.release();
   }
 
-  protected abstract void performSecondPhase(A answer);
+  protected void returnSemiError(NebuloException error) {
+    semiError_ = error;
+    semiResultReady_.release();
+  }
 
   /**
-   * Blocking - waits for SemiResult returned by module at most timeout seconds.
+   * Blocking - user waits for SemiResult returned by module for at most timeout seconds.
+   * Afterwards, user should provide an answer to semi-result via setAnswer().
    *
    * @param timeout
-   * @return
+   * @return semi result
    * @throws NebuloException
    */
   public SR getSemiResult(int timeout) throws NebuloException {
     try {
-      if (!semiResultMutex_.tryAcquire(timeout, TimeUnit.SECONDS))
-          throw new NebuloException("Timeout");
+      if (!semiResultReady_.tryAcquire(timeout, TimeUnit.SECONDS)) {
+        throw new NebuloException("Timeout");
+      }
     } catch (InterruptedException exception) {
       throw new NebuloException("Interrupted", exception);
     }
-    if (error_ != null) {
-      throw error_;
+    if (semiError_ != null) {
+      throw semiError_;
     } else {
-      SR result = semiResult_;
-      afterFirstResult_ = true;
-      return result;
+      afterSemiResult_ = true;
+      return semiResult_;
     }
   }
 
-  public void answer(A answer) {
-    answer_ = answer;
-    answerMutex_.release();
+  /**
+   * Provide an answer to semi-result and call performSecondPhase().
+   * @param answer
+   */
+  public void setAnswer(A answer) {
+    performSecondPhase(answer);
   }
+
+  protected abstract void performSecondPhase(A answer);
 
   @Override
   public R getResult(int timeoutSec) throws NebuloException {
-    if (!afterFirstResult_) {
+    if (!afterSemiResult_) {
       throw new UnsupportedOperationException("Waiting for second result before first.");
     }
     return super.getResult(timeoutSec);
   }
 
-
+  @Override
+  protected void endWithError(NebuloException error) {
+    // Unblock those waiting on getSemiResult().
+    returnSemiError(error);
+    super.endWithError(error);
+  }
 }

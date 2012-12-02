@@ -270,13 +270,13 @@ public class NebuloFile extends NebuloObject {
     if (caughtException != null) {
       // aborting the transaction
       for (WriteNebuloObjectModule update : updateModules) {
-        update.answer(TransactionAnswer.ABORT);
+        update.setAnswer(TransactionAnswer.ABORT);
       }
       throw caughtException;
     } else {
       logger_.debug("Commiting transaction");
       for (WriteNebuloObjectModule update : updateModules) {
-        update.answer(TransactionAnswer.COMMIT);
+        update.setAnswer(TransactionAnswer.COMMIT);
       }
       for (FileChunkWrapper chunk : chunks_) {
         chunk.setSynced();
