@@ -3,8 +3,10 @@ package org.nebulostore.dispatcher;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
@@ -25,6 +27,11 @@ public class DispatcherTest {
   private Thread thread_;
 
   public static int staticCounter_;
+
+  @BeforeClass
+  public static void init() {
+    DOMConfigurator.configure("resources/conf/log4j.xml");
+  }
 
   @Before
   public void setUp() throws Exception {

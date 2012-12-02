@@ -45,6 +45,14 @@
     </layout>
   </appender>
 
+  <appender name="FA-api" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/api.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
+    </layout>
+  </appender>
+
   <appender name="FA-comm" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/comm.log" />
     <param name="Threshold" value="DEBUG" />
@@ -129,26 +137,18 @@
     <appender-ref ref="FA-stream"/>
   </logger>
 
-  <logger name="org.planx.xmlstore.routing">
-    <level value="INFO"/>
-    <appender-ref ref="FA-comm"/>
-  </logger>
-
   <logger name="org.nebulostore.conductor">
     <level value="DEBUG" />
-    <appender-ref ref="CA-testing"/>
     <appender-ref ref="FA-testing"/>
   </logger>
 
   <logger name="org.nebulostore.appcore">
     <level value="DEBUG" />
-    <appender-ref ref="CA-testing"/>
     <appender-ref ref="FA-appcore"/>
   </logger>
 
    <logger name="org.nebulostore.broker">
     <level value="DEBUG" />
-    <appender-ref ref="CA-testing"/>
     <appender-ref ref="FA-broker"/>
   </logger>
 
@@ -164,44 +164,23 @@
 
   <logger name="org.nebulostore.communication.messages">
     <level value="DEBUG" />
-    <!-- <appender-ref ref="CA-testing"/> -->
     <appender-ref ref="FA-testing"/>
   </logger>
 
-  <logger name="org.nebulostore.query">
+  <logger name="org.nebulostore.api">
     <level value="DEBUG" />
-    <appender-ref ref="FA-query"/>
-  </logger>
-
-  <logger name="org.nebulostore.api.WriteNebuloObjectModule">
-    <level value="DEBUG" />
-    <appender-ref ref="CA-testing" />
-  </logger>
-
-  <logger name="org.nebulostore.api.GetModule">
-    <level value="DEBUG" />
-    <appender-ref ref="CA-testing" />
-  </logger>
-
-  <logger name="org.nebulostore.api.PutKeyModule">
-    <level value="DEBUG" />
-    <appender-ref ref="CA-testing" />
-  </logger>
-
-  <logger name="org.nebulostore.api.GetNebuloObjectModule">
-    <level value="DEBUG" />
-    <appender-ref ref="CA-testing" />
+    <appender-ref ref="FA-api" />
   </logger>
 
   <logger name="org.nebulostore.async">
     <level value="DEBUG" />
-    <appender-ref ref="CA-testing" />
+    <appender-ref ref="FA-testing" />
     <appender-ref ref="FA" />
   </logger>
 
   <logger name="org.nebulostore.replicator">
     <level value="DEBUG" />
-    <appender-ref ref="CA-testing" />
+    <appender-ref ref="FA-testing" />
   </logger>
 
   <logger name="net.tomp2p">
