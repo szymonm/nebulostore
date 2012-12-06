@@ -94,12 +94,6 @@ public class Peer {
 
     // Run everything.
     networkThread_.start();
-    // Give network module some time to initialize.
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
 
     //Register instance in DHT
     /*GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
