@@ -1,5 +1,7 @@
 package org.nebulostore.appcore;
 
+import org.nebulostore.addressing.NebuloAddress;
+
 /**
  * Represents file chunk.
  */
@@ -10,11 +12,8 @@ public class FileChunk extends NebuloObject {
   // Plain, unencrypted data.
   protected byte[] data_;
 
-  public FileChunk() {
-    data_ = new byte[0];
-  }
-
-  public FileChunk(int len) {
+  public FileChunk(NebuloAddress address, int len) {
+    super(address);
     data_ = new byte[len];
   }
 

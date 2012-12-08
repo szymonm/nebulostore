@@ -54,7 +54,9 @@ public abstract class NebuloObject implements Serializable {
     }
   }
 
-  protected NebuloObject() { }
+  protected NebuloObject(NebuloAddress address) {
+    address_ = address;
+  }
 
   public NebuloAddress getAddress() {
     return address_;

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ObjectId;
+import org.nebulostore.appcore.EncryptedObject;
 import org.nebulostore.appcore.NebuloFile;
 
 import static org.junit.Assert.assertTrue;
@@ -36,5 +37,13 @@ public class CryptoUtilsTest {
     NebuloFile file2 = (NebuloFile) object;
     assertTrue(file2.getAddress().getAppKey().getKey().equals(new BigInteger("2222")));
     assertTrue(file2.getAddress().getObjectId().getKey().equals(new BigInteger("123")));
+  }
+
+  @Test
+  public void testShaIsDeterministic() {
+    byte[] seq = {1, 2, 3};
+    String res1 = CryptoUtils.sha(new EncryptedObject(seq));
+    String res2 = CryptoUtils.sha(new EncryptedObject(seq));
+    assertTrue(res1.equals(res2));
   }
 }

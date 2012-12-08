@@ -166,6 +166,7 @@ public class Replicator extends JobModule {
 
     @Override
     public Void visit(GetObjectMessage message) {
+      logger_.debug("GetObjectMessage with objectID = " + message.getObjectId());
       jobId_ = message.getId();
       EncryptedObject enc;
       Set<String> versions;
@@ -327,10 +328,13 @@ public class Replicator extends JobModule {
     if (filesLocations_.get(objectId) == null) {
       previousVersions_.put(objectId, new HashSet<String>(previousVersions));
       previousVersions_.get(objectId).addAll(previousVersions);
+      previousVersions_.get(objectId).add(currentVersion);
+      logger_.debug("putting into freshness map : " + objectId);
       freshnessMap_.put(objectId, true);
       filesLocations_.put(objectId, location);
     } else {
       previousVersions_.get(objectId).addAll(previousVersions);
+      previousVersions_.get(objectId).add(currentVersion);
     }
 
 
@@ -367,7 +371,7 @@ public class Replicator extends JobModule {
         return false;
     if (!previousVersions.contains(current))
       return false;
-    return false;
+    return true;
   }
 
   /**
@@ -378,6 +382,7 @@ public class Replicator extends JobModule {
    * @throws OutOfDateFileException if object is stored but out of date.
    */
   public static EncryptedObject getObject(ObjectId objectId) throws OutOfDateFileException {
+    logger_.debug("getObject with objectID = " + objectId);
     String location = filesLocations_.get(objectId);
     if (location == null) {
       return null;

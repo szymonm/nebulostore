@@ -1,6 +1,11 @@
 package org.nebulostore.appcore;
 
+import java.math.BigInteger;
+
 import org.junit.Test;
+import org.nebulostore.addressing.AppKey;
+import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.ListMergeException;
 
 import static org.junit.Assert.assertTrue;
@@ -9,6 +14,8 @@ import static org.junit.Assert.assertTrue;
  * Simple unit test for NebuloList.
  */
 public final class NebuloListTest {
+  private NebuloAddress addr_ = new NebuloAddress(new AppKey(BigInteger.ONE),
+                                                  new ObjectId(BigInteger.ONE));
 
   @Test
   public void testMergeOk() {
@@ -18,13 +25,13 @@ public final class NebuloListTest {
     NebuloElement d = new NebuloElement(new EncryptedObject(new byte[2]));
 
     // A - B (C removed)
-    NebuloList one = new NebuloList();
+    NebuloList one = new NebuloList(addr_);
     one.elements_.add(a);
     one.elements_.add(b);
     one.removedIds_.add(c.elementId_);
 
     // D - A - C
-    NebuloList two = new NebuloList();
+    NebuloList two = new NebuloList(addr_);
     two.elements_.add(d);
     two.elements_.add(a);
     two.elements_.add(c);
@@ -48,13 +55,13 @@ public final class NebuloListTest {
     NebuloElement d = new NebuloElement(new EncryptedObject(new byte[2]));
 
     // A - B - C
-    NebuloList one = new NebuloList();
+    NebuloList one = new NebuloList(addr_);
     one.elements_.add(a);
     one.elements_.add(b);
     one.elements_.add(c);
 
     // D - C - A - B
-    NebuloList two = new NebuloList();
+    NebuloList two = new NebuloList(addr_);
     two.elements_.add(d);
     two.elements_.add(c);
     two.elements_.add(a);

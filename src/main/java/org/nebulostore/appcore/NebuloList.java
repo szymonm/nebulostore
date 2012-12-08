@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.ListMergeException;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -55,7 +56,8 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
     }
   }
 
-  public NebuloList() {
+  public NebuloList(NebuloAddress nebuloAddress) {
+    super(nebuloAddress);
     elements_ = new ArrayList<NebuloElement>();
     removedIds_ = new TreeSet<BigInteger>();
   }

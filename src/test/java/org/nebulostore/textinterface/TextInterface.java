@@ -107,7 +107,7 @@ public final class TextInterface {
         try {
           file = (NebuloFile) NebuloObject.fromAddress(
               new NebuloAddress(new AppKey(new BigInteger(tokens[1])),
-                  new ObjectId(new BigInteger(tokens[1]))));
+                  new ObjectId(new BigInteger(tokens[2]))));
           System.out.println("Successfully fetched existing file");
         } catch (NebuloException exception) {
           file = new NebuloFile(new AppKey(new BigInteger(tokens[1])),

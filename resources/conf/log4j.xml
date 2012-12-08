@@ -45,6 +45,22 @@
     </layout>
   </appender>
 
+  <appender name="FA-crypto" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/crypto.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
+    </layout>
+  </appender>
+
+  <appender name="FA-replicator" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/replicator.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
+    </layout>
+  </appender>
+
   <appender name="FA-api" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/api.log" />
     <param name="Threshold" value="DEBUG" />
@@ -142,6 +158,11 @@
     <appender-ref ref="FA-testing"/>
   </logger>
 
+  <logger name="org.nebulostore.crypto">
+    <level value="DEBUG" />
+    <appender-ref ref="FA-crypto"/>
+  </logger>
+
   <logger name="org.nebulostore.appcore">
     <level value="DEBUG" />
     <appender-ref ref="FA-appcore"/>
@@ -180,7 +201,7 @@
 
   <logger name="org.nebulostore.replicator">
     <level value="DEBUG" />
-    <appender-ref ref="FA-testing" />
+    <appender-ref ref="FA-replicator"/>
   </logger>
 
   <logger name="net.tomp2p">

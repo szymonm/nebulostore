@@ -1,5 +1,9 @@
 package org.nebulostore.appcore;
 
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.Vector;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
@@ -9,10 +13,6 @@ import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.replicator.TransactionAnswer;
-
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.util.Vector;
 
 /**
  * @author bolek
@@ -40,7 +40,7 @@ public class NebuloFile extends NebuloObject {
       startByte_ = startByte;
       endByte_ = endByte;
       address_ = address;
-      chunk_ = new FileChunk(endByte_ - startByte_);
+      chunk_ = new FileChunk(address, endByte_ - startByte_);
     }
 
     public byte[] getData() throws NebuloException {
@@ -96,13 +96,6 @@ public class NebuloFile extends NebuloObject {
   protected Vector<FileChunkWrapper> chunks_;
   protected int chunkSize_ = DEFAULT_CHUNK_SIZE_BYTES;
 
-
-  public NebuloFile(AppKey appKey, ObjectId objectId, int chunkSize) {
-    address_ = new NebuloAddress(appKey, objectId);
-    chunkSize_ = chunkSize;
-    initNewFile();
-  }
-
   /**
    * New, empty file.
    */
@@ -114,6 +107,12 @@ public class NebuloFile extends NebuloObject {
 
   public NebuloFile(AppKey appKey, ObjectId objectId) {
     this(appKey, objectId, DEFAULT_CHUNK_SIZE_BYTES);
+  }
+
+  public NebuloFile(AppKey appKey, ObjectId objectId, int chunkSize) {
+    super(new NebuloAddress(appKey, objectId));
+    chunkSize_ = chunkSize;
+    initNewFile();
   }
 
   public int getSize() {

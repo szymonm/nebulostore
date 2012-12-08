@@ -83,12 +83,12 @@ public final class CryptoUtils {
   public static String sha(EncryptedObject encryptedObject) {
     MessageDigest md = null;
     try {
-      md = MessageDigest.getInstance("SHA");
+      md = MessageDigest.getInstance("SHA-1");
     } catch (NoSuchAlgorithmException e) {
       logger_.error(e.toString());
     }
     md.update(encryptedObject.getEncryptedData());
-    return md.digest().toString();
+    return new String(md.digest());
   }
 
   private static final SecureRandom RANDOM = new SecureRandom();
