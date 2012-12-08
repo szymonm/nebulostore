@@ -371,7 +371,10 @@
         <dependency>
             <groupId>net.tomp2p</groupId>
             <artifactId>TomP2P</artifactId>
-            <version>4.2</version>
+            <version>4.3-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/TomP2P-4.3-SNAPSHOT.jar
+            </systemPath>
         </dependency>
 
         <dependency>
