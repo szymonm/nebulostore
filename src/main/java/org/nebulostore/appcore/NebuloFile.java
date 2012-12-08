@@ -1,9 +1,5 @@
 package org.nebulostore.appcore;
 
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.util.Vector;
-
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
@@ -13,6 +9,10 @@ import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.replicator.TransactionAnswer;
+
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.Vector;
 
 /**
  * @author bolek
@@ -96,25 +96,24 @@ public class NebuloFile extends NebuloObject {
   protected Vector<FileChunkWrapper> chunks_;
   protected int chunkSize_ = DEFAULT_CHUNK_SIZE_BYTES;
 
+
+  public NebuloFile(AppKey appKey, ObjectId objectId, int chunkSize) {
+    address_ = new NebuloAddress(appKey, objectId);
+    chunkSize_ = chunkSize;
+    initNewFile();
+  }
+
   /**
    * New, empty file.
    */
   public NebuloFile(AppKey appKey) {
     // TODO(bolek): Here should come more sophisticated ID generation method to account for
     //   (probably) fixed replication groups with ID intervals. (ask Broker? what size?)
-    address_ = new NebuloAddress(appKey, new ObjectId(CryptoUtils.getRandomId()));
-    initNewFile();
+    this(appKey, new ObjectId(CryptoUtils.getRandomId()), DEFAULT_CHUNK_SIZE_BYTES);
   }
 
   public NebuloFile(AppKey appKey, ObjectId objectId) {
-    address_ = new NebuloAddress(appKey, objectId);
-    initNewFile();
-  }
-
-  public NebuloFile(AppKey appKey, ObjectId objectId, int chunkSize) {
-    address_ = new NebuloAddress(appKey, objectId);
-    chunkSize_ = chunkSize;
-    initNewFile();
+    this(appKey, objectId, DEFAULT_CHUNK_SIZE_BYTES);
   }
 
   public int getSize() {
