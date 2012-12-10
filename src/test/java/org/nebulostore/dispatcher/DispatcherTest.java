@@ -74,6 +74,7 @@ public class DispatcherTest {
       @Override
       public void run() {
         try {
+          Thread.sleep(200);
           processMessage(inQueue_.take());
           processMessage(inQueue_.take());
         } catch (InterruptedException exception) {

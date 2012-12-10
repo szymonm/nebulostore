@@ -19,7 +19,6 @@ import org.nebulostore.conductor.messages.TicAckMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocAckMessage;
 import org.nebulostore.conductor.messages.TocMessage;
-import org.nebulostore.dispatcher.messages.JobEndedMessage;
 
 /**
  * Base class for all TestingModules(test cases run on peers).
@@ -96,7 +95,6 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   public void abortTest() {
     logger_.info("Test finished by server.");
     endJobModule();
-    outQueue_.add(new JobEndedMessage(jobId_));
   }
 
   protected void advancedToNextPhase() {

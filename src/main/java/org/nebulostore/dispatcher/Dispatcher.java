@@ -19,12 +19,12 @@ import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
  *     among existing job modules.
  */
 public class Dispatcher extends Module {
+  private static Logger logger_ = Logger.getLogger(Dispatcher.class);
+  private static final int JOIN_TIMEOUT_MILLIS = 3000;
 
   private final Map<String, BlockingQueue<Message>> workersQueues_;
   private final Map<String, Thread> workersThreads_;
   private final MessageVisitor<?> visitor_;
-
-  private static Logger logger_ = Logger.getLogger(Dispatcher.class);
 
   /**
    * Visitor class. Contains logic for handling messages depending
@@ -44,7 +44,12 @@ public class Dispatcher extends Module {
           workersQueues_.remove(jobId);
         }
         if (workersThreads_.containsKey(jobId)) {
-          // workersThreads_.get(jobId).interrupt();
+          try {
+            workersThreads_.get(jobId).join(JOIN_TIMEOUT_MILLIS);
+          } catch (InterruptedException e) {
+            logger_.warn("InterruptedException while waiting for a dying thread to join. JobID = " +
+                jobId);
+          }
           workersThreads_.remove(jobId);
         }
       } else {

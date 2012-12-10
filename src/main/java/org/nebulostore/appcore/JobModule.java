@@ -31,7 +31,7 @@ public abstract class JobModule extends Module {
     networkQueue_ = networkQueue;
   }
 
-  /*
+  /**
    * Run this module through a JobInitMessage (with new random ID) sent to Dispatcher.
    */
   public void runThroughDispatcher(BlockingQueue<Message> dispatcherQueue) {
@@ -45,14 +45,9 @@ public abstract class JobModule extends Module {
     dispatcherQueue.add(new JobInitMessage(jobId_, this));
   }
 
-  /*
-   * Usefull for testing purposes.
+  /**
+   * IMPORTANT: This should be the very LAST method to call for a dying thread.
    */
-  protected void runThroughDispatcher(BlockingQueue<Message> dispatcherQueue, String jobId) {
-    jobId_ = jobId;
-    dispatcherQueue.add(new JobInitMessage(jobId_, this));
-  }
-
   protected void endJobModule() {
     // Inform run() (in base class) that this thread is ready to die.
     endModule();
@@ -64,6 +59,4 @@ public abstract class JobModule extends Module {
   public String getJobId() {
     return jobId_;
   }
-
-
 }
