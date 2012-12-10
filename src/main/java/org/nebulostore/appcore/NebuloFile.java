@@ -11,6 +11,9 @@ import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.model.subscription.Subscribers;
+import org.nebulostore.communication.CommunicationPeer;
+import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.replicator.TransactionAnswer;
 
@@ -96,6 +99,8 @@ public class NebuloFile extends NebuloObject {
   protected Vector<FileChunkWrapper> chunks_;
   protected int chunkSize_ = DEFAULT_CHUNK_SIZE_BYTES;
 
+  private Subscribers subscribers_;
+
   /**
    * New, empty file.
    */
@@ -112,6 +117,7 @@ public class NebuloFile extends NebuloObject {
   public NebuloFile(AppKey appKey, ObjectId objectId, int chunkSize) {
     super(new NebuloAddress(appKey, objectId));
     chunkSize_ = chunkSize;
+    subscribers_ = new Subscribers();
     initNewFile();
   }
 
@@ -254,6 +260,7 @@ public class NebuloFile extends NebuloObject {
     // Run sync for NebuloFile (metadata).
     updateModules.add(new WriteNebuloObjectModule(address_, this, dispatcherQueue_,
         previousVersions_));
+
     // Wait for all results.
     NebuloException caughtException = null;
     for (int i = 0; i < updateModules.size(); ++i) {
@@ -282,6 +289,14 @@ public class NebuloFile extends NebuloObject {
     }
     for (WriteNebuloObjectModule update : updateModules) {
       update.getResult(TIMEOUT_SEC);
+    }
+  }
+
+  public void subscribe() throws NebuloException {
+    CommAddress myAddress = CommunicationPeer.getPeerAddress();
+    boolean subscribersExpands = subscribers_.addSubscriber(myAddress);
+    if (subscribersExpands) {
+      runSync();
     }
   }
 }
