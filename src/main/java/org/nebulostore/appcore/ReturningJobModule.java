@@ -39,14 +39,10 @@ public abstract class ReturningJobModule<R> extends JobModule {
     }
   }
 
-  protected void returnSuccess(R result) {
+  protected void endWithSuccess(R result) {
     result_ = result;
     // Make result available.
     resultReady_.release();
-  }
-
-  protected void endWithSuccess(R result) {
-    returnSuccess(result);
     // End thread and remove from Dispatcher's queue.
     endJobModule();
   }

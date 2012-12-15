@@ -58,10 +58,10 @@ public abstract class TwoStepReturningJobModule<R, SR, A> extends ReturningJobMo
     } catch (InterruptedException exception) {
       throw new NebuloException("Interrupted", exception);
     }
+    afterSemiResult_ = true;
     if (semiError_ != null) {
       throw semiError_;
     } else {
-      afterSemiResult_ = true;
       return semiResult_;
     }
   }
@@ -79,7 +79,7 @@ public abstract class TwoStepReturningJobModule<R, SR, A> extends ReturningJobMo
   @Override
   public R getResult(int timeoutSec) throws NebuloException {
     if (!afterSemiResult_) {
-      throw new UnsupportedOperationException("Waiting for second result before first.");
+      throw new NebuloException("Waiting for second result before first.");
     }
     return super.getResult(timeoutSec);
   }
