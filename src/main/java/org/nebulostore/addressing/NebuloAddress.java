@@ -22,4 +22,12 @@ public class NebuloAddress implements Serializable {
   public AppKey getAppKey() {
     return appKey_;
   }
+
+  @Override
+  public String toString() {
+    return "NebuloAddress{" +
+        "appKey_=" + appKey_ +
+        ", objectId_=" + objectId_ +
+        '}';
+  }
 }

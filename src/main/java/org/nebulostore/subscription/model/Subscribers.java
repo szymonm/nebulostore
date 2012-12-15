@@ -1,4 +1,4 @@
-package org.nebulostore.appcore.model.subscription;
+package org.nebulostore.subscription.model;
 
 import java.io.Serializable;
 import java.util.HashSet;

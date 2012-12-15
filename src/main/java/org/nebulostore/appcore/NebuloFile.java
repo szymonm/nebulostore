@@ -2,6 +2,7 @@ package org.nebulostore.appcore;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -11,11 +12,13 @@ import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.model.subscription.Subscribers;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.replicator.TransactionAnswer;
+import org.nebulostore.subscription.model.Subscribers;
+import org.nebulostore.subscription.model.SubscriptionNotification;
+import org.nebulostore.subscription.modules.NotifySubscribersModule;
 
 /**
  * @author bolek
@@ -261,6 +264,8 @@ public class NebuloFile extends NebuloObject {
     updateModules.add(new WriteNebuloObjectModule(address_, this, dispatcherQueue_,
         previousVersions_));
 
+    notifySubscribers();
+
     // Wait for all results.
     NebuloException caughtException = null;
     for (int i = 0; i < updateModules.size(); ++i) {
@@ -281,15 +286,36 @@ public class NebuloFile extends NebuloObject {
     } else {
       logger_.debug("Commiting transaction");
       for (WriteNebuloObjectModule update : updateModules) {
-        update.setAnswer(TransactionAnswer.COMMIT);
+        if (update != null) {
+          update.setAnswer(TransactionAnswer.COMMIT);
+        }
       }
       for (FileChunkWrapper chunk : chunks_) {
         chunk.setSynced();
       }
     }
     for (WriteNebuloObjectModule update : updateModules) {
-      update.getResult(TIMEOUT_SEC);
+      if (update != null) {
+        update.getResult(TIMEOUT_SEC);
+      }
     }
+  }
+
+  private void notifySubscribers() {
+    if (isNotificationNecessary()) {
+      CommAddress applicationAddress = CommunicationPeer.getPeerAddress();
+      SubscriptionNotification notification =
+          new SubscriptionNotification(address_,
+              SubscriptionNotification.NotificationReason.FILE_CHANGED);
+      new NotifySubscribersModule(applicationAddress, dispatcherQueue_,
+          notification, subscribers_.getSubscribersAddresses());
+      //We don't need to wait  for a ack. Async msgs will be send automatically
+    }
+  }
+
+  private boolean isNotificationNecessary() {
+    Set<CommAddress> addresses = subscribers_.getSubscribersAddresses();
+    return !addresses.isEmpty();
   }
 
   public void subscribe() throws NebuloException {

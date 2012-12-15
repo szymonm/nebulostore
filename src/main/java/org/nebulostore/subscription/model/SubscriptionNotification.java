@@ -1,4 +1,4 @@
-package org.nebulostore.appcore.model.subscription;
+package org.nebulostore.subscription.model;
 
 import java.io.Serializable;
 
@@ -22,11 +22,11 @@ public class SubscriptionNotification implements Serializable {
     this.notificationReason_ = checkNotNull(notificationReason);
   }
 
-  public NebuloAddress getSubscribedFileAddress_() {
+  public NebuloAddress getSubscribedFileAddress() {
     return subscribedFileAddress_;
   }
 
-  public NotificationReason getNotificationReason_() {
+  public NotificationReason getNotificationReason() {
     return notificationReason_;
   }
 
@@ -38,6 +38,9 @@ public class SubscriptionNotification implements Serializable {
         '}';
   }
 
+  /**
+   * Information about the reason of the notification.
+   */
   public static enum NotificationReason {
     FILE_CHANGED, FILE_DELETED;
   }

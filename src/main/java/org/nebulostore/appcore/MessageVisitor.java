@@ -64,6 +64,7 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.replicator.messages.TransactionResultMessage;
 import org.nebulostore.replicator.messages.UpdateRejectMessage;
 import org.nebulostore.replicator.messages.UpdateWithholdMessage;
+import org.nebulostore.subscription.messages.NotifySubscriberMessage;
 
 /**
  * Generic Message visitor class. All 'visit' methods should call handlers for base classes.
@@ -341,5 +342,10 @@ public abstract class MessageVisitor<R> {
 
   public R visit(TimeoutMessage message) throws NebuloException {
     return visit((Message) message);
+  }
+
+  //Subscriptions
+  public R visit(NotifySubscriberMessage message) throws NebuloException {
+    return visit((CommMessage) message);
   }
 }

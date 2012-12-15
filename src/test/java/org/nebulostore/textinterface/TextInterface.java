@@ -134,13 +134,8 @@ public final class TextInterface {
           tokens[2] = "123";
           tokens[3] = "pliczek";
         }
-        NebuloFile file;
-        try {
-          file = (NebuloFile) NebuloObject.fromAddress(
-              new NebuloAddress(new AppKey(new BigInteger(tokens[1])),
-                  new ObjectId(new BigInteger(tokens[2]))));
-        } catch (NebuloException exception) {
-          System.out.println("Got exception from 'fromAddress()': " + exception.getMessage());
+        NebuloFile file = getNebuloFile(tokens[1], tokens[2]);
+        if (file == null) {
           continue;
         }
 
@@ -163,6 +158,8 @@ public final class TextInterface {
         } catch (IOException exception) {
           System.out.println("Cannot write file!");
         }
+      } else if (tokens[0].equals("subscribe")) {
+        subscribe(tokens);
       } else if (tokens[0].equals("")) {
         continue;
       } else {
@@ -174,6 +171,36 @@ public final class TextInterface {
       nebuloThread.join();
     } catch (InterruptedException exception) {
       exception.printStackTrace();
+    }
+  }
+
+  private static void subscribe(String[] tokens) {
+    if (tokens.length != 3) {
+      System.out.println("Invalid parameters for subscribe operation.");
+      return;
+    }
+    NebuloFile file = getNebuloFile(tokens[1], tokens[2]);
+    if (file != null) {
+      subscribeWithExceptionHandling(file);
+    }
+  }
+
+  private static void subscribeWithExceptionHandling(NebuloFile file) {
+    try {
+      file.subscribe();
+    } catch (NebuloException e) {
+      System.out.println("Subscription failed.");
+    }
+  }
+
+  private static NebuloFile getNebuloFile(String appKeyString, String objectIdString) {
+    try {
+      AppKey appKey = new AppKey(new BigInteger(appKeyString));
+      ObjectId objectId = new ObjectId(new BigInteger(objectIdString));
+      return (NebuloFile) NebuloObject.fromAddress(new NebuloAddress(appKey, objectId));
+    } catch (NebuloException exception) {
+      System.out.println("Got exception from 'fromAddress()': " + exception.getMessage());
+      return null;
     }
   }
 }
