@@ -10,7 +10,11 @@ import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.api.DeleteNebuloObjectModule;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.subscription.model.Subscribers;
+import org.nebulostore.subscription.model.SubscriptionNotification;
+import org.nebulostore.subscription.modules.NotifySubscribersModule;
 
 /**
  * NebuloObject - object that is stored in replicas and identified by NebuloAddress
@@ -32,6 +36,8 @@ public abstract class NebuloObject implements Serializable {
 
   protected transient String lastCommittedVersion_;
   protected transient Set<String> previousVersions_ = new HashSet<String>();
+  protected Subscribers subscribers_;
+
 
   public static void initObjectApi(BlockingQueue<Message> queue) {
     dispatcherQueue_ = queue;
@@ -56,6 +62,7 @@ public abstract class NebuloObject implements Serializable {
 
   protected NebuloObject(NebuloAddress address) {
     address_ = address;
+    subscribers_ = new Subscribers();
   }
 
   public NebuloAddress getAddress() {
@@ -108,4 +115,30 @@ public abstract class NebuloObject implements Serializable {
     previousVersions_.add(lastCommittedVersion_);
     lastCommittedVersion_ = version;
   }
+
+  protected void notifySubscribers() {
+    if (isNotificationNecessary()) {
+      CommAddress applicationAddress = CommunicationPeer.getPeerAddress();
+      SubscriptionNotification notification =
+          new SubscriptionNotification(address_,
+              SubscriptionNotification.NotificationReason.FILE_CHANGED);
+      new NotifySubscribersModule(applicationAddress, dispatcherQueue_,
+          notification, subscribers_.getSubscribersAddresses());
+      //We don't need to wait  for a ack. Async msgs will be send automatically
+    }
+  }
+
+  private boolean isNotificationNecessary() {
+    Set<CommAddress> addresses = subscribers_.getSubscribersAddresses();
+    return !addresses.isEmpty();
+  }
+
+  public void subscribe() throws NebuloException {
+    CommAddress myAddress = CommunicationPeer.getPeerAddress();
+    boolean subscribersExpands = subscribers_.addSubscriber(myAddress);
+    if (subscribersExpands) {
+      runSync();
+    }
+  }
+
 }

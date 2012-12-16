@@ -152,6 +152,7 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
   protected void runSync() throws NebuloException {
     WriteNebuloObjectModule writer = new WriteNebuloObjectModule(address_, this, dispatcherQueue_,
         previousVersions_);
+    notifySubscribers();
     writer.getResult(TIMEOUT_SEC);
   }
 
