@@ -1,1 +1,0 @@
-/home/marcin/5ROK/praca/nebulostore/repo/nebulostore/trunk/build/jar/server

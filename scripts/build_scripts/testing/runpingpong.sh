@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Assuming we are in build_scripts/testing/ directory
+# Assuming we are in scripts/build_scripts/testing/ directory
 
 cd $(dirname $0)
-cd ../../
+cd ../../../
 
 BUILD_DIR="build"
 JAR_DIR="build/jar"

@@ -153,6 +153,11 @@
     <appender-ref ref="FA-stream"/>
   </logger>
 
+  <logger name="org.nebulostore.testing">
+    <level value="DEBUG" />
+    <appender-ref ref="FA-testing"/>    
+  </logger>
+
   <logger name="org.nebulostore.conductor">
     <level value="DEBUG" />
     <appender-ref ref="FA-testing"/>
