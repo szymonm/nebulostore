@@ -2,26 +2,20 @@
 
 # Instructions:
 #
-# 1. Run ./console-test.sh
-# 2. On first terminal:
-#       cd build/jar/1/
-#       java -jar Nebulostore.jar 11
-# 3. On second terminal:
-#       cd build/jar/2/
-#       java -jar Nebulostore.jar 22 9001
-# 4. On third terminal:
-#       cd build/jar/3/
-#       java -jar Nebulostore.jar 33 9002
-#       (press enter to see the command prompt)
-#       type "write 22 123 zawartosc" and press enter
-#       (expect messages "Successfully created new file." and "Successfully written x bytes.")
-# 5. On terminal 2:
-#       (press enter to see the command prompt)
-#       type "read 22 123 pliczek" and press enter
-#       (expect message "Successfully received file!")
-# 6. The file is saved into "pliczek" - check if it contains reasonable data.
-#
-# 7. Details about commands and file names can be found in
+# 1. Run scripts/console-test.sh from 'trunk' level.
+# 2. You can run up to 4 local instances.
+#    On terminal nr i (1,2,3 or 4) run:
+#       cd build/jar/i/
+#       java -jar Nebulostore.jar ii
+# 3. Wait 40 sec (!) for all peers to find each other.
+# 4. Play with it using write, read or delete.
+#    For example:
+#    On terminal 2:
+#       write 33 123 zawartosc
+#    On terminal 1:
+#       read 33 123 plik.txt
+#       (check if plik.txt contains "zawartosc")
+# 5. Details about commands and file names can be found in
 #    TextInterface.java - feel free to experiment!
 
 
@@ -36,7 +30,7 @@
 BUILD_DIR="build"
 JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
-PEERS_NUM=3
+PEERS_NUM=4
 
 platform='unknown'
 unamestr=`uname`

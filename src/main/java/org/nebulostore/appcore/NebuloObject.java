@@ -7,7 +7,6 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.api.DeleteNebuloObjectModule;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
@@ -22,7 +21,6 @@ import org.nebulostore.subscription.modules.NotifySubscribersModule;
  * @author bolek
  */
 public abstract class NebuloObject implements Serializable {
-
   private static final long serialVersionUID = 7791201890856369839L;
   private static Logger logger_ = Logger.getLogger(NebuloObject.class);
 
@@ -50,16 +48,6 @@ public abstract class NebuloObject implements Serializable {
     return module.getResult(TIMEOUT_SEC);
   }
 
-  public static void deleteFromAddress(NebuloAddress address) {
-    // Create a handler and run it through dispatcher.
-    DeleteNebuloObjectModule module = new DeleteNebuloObjectModule(address, dispatcherQueue_);
-    try {
-      module.getResult(TIMEOUT_SEC);
-    } catch (NebuloException e) {
-      logger_.error("Received exception from DeleteNebuloObjectModule");
-    }
-  }
-
   protected NebuloObject(NebuloAddress address) {
     address_ = address;
     subscribers_ = new Subscribers();
@@ -81,16 +69,6 @@ public abstract class NebuloObject implements Serializable {
     previousVersions_ = versions;
   }
 
-  public void delete() {
-    // Create a handler and run it through dispatcher.
-    DeleteNebuloObjectModule module = new DeleteNebuloObjectModule(address_, dispatcherQueue_);
-    try {
-      module.getResult(TIMEOUT_SEC);
-    } catch (NebuloException e) {
-      logger_.error("Received exception from DeleteNebuloObjectModule");
-    }
-  }
-
   /**
    * Commits all operations - invoked by user.
    * @throws NebuloException
@@ -102,6 +80,7 @@ public abstract class NebuloObject implements Serializable {
 
   protected abstract void runSync() throws NebuloException;
 
+  public abstract void delete() throws NebuloException;
 
   public String getLastCommittedVersion() {
     return lastCommittedVersion_;

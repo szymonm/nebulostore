@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
+import org.nebulostore.api.DeleteNebuloObjectModule;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -25,7 +26,6 @@ public class NebuloFile extends NebuloObject {
    * File chunk metadata.
    */
   protected class FileChunkWrapper implements Serializable {
-
     private static final long serialVersionUID = -6723808968821818811L;
 
     // FileChunk stores (endByte_ - startByte_) bytes from interval [startByte_, endByte_).
@@ -33,6 +33,7 @@ public class NebuloFile extends NebuloObject {
     public int endByte_;
     public NebuloAddress address_;
 
+    // These fields are set to null after deserializaton of NebuloFile.
     private transient FileChunk chunk_;
     private transient boolean isChanged_;
 
@@ -60,12 +61,8 @@ public class NebuloFile extends NebuloObject {
       isChanged_ = true;
     }
 
-    public void deleteChunk() {
-      if (chunk_ == null) {
-        NebuloObject.deleteFromAddress(address_);
-      } else {
-        chunk_.delete();
-      }
+    public DeleteNebuloObjectModule deleteChunk() throws NebuloException {
+      return new DeleteNebuloObjectModule(address_, dispatcherQueue_);
     }
 
     public WriteNebuloObjectModule sync() {
@@ -288,6 +285,26 @@ public class NebuloFile extends NebuloObject {
     for (WriteNebuloObjectModule update : updateModules) {
       if (update != null) {
         update.getResult(TIMEOUT_SEC);
+      }
+    }
+  }
+
+  @Override
+  public void delete() throws NebuloException {
+    logger_.info("Running delete on file ");
+    Vector<DeleteNebuloObjectModule> deleteModules = new Vector<DeleteNebuloObjectModule>();
+    // Run delete for all chunks in parallel.
+    for (int i = 0; i < chunks_.size(); ++i) {
+      logger_.debug("Creating delete module for chunk " + i);
+      deleteModules.add(chunks_.get(i).deleteChunk());
+    }
+    // Run delete for NebuloFile (metadata).
+    deleteModules.add(new DeleteNebuloObjectModule(address_, dispatcherQueue_));
+
+    // Wait for all results.
+    for (int i = 0; i < deleteModules.size(); ++i) {
+      if (deleteModules.get(i) != null) {
+        deleteModules.get(i).getResult(TIMEOUT_SEC);
       }
     }
   }

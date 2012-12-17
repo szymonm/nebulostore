@@ -1,12 +1,12 @@
 package org.nebulostore.appcore;
 
 import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
  * Represents file chunk.
  */
 public class FileChunk extends NebuloObject {
-
   private static final long serialVersionUID = -8992804393601229112L;
 
   // Plain, unencrypted data.
@@ -27,6 +27,11 @@ public class FileChunk extends NebuloObject {
 
   @Override
   protected void runSync() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void delete() throws NebuloException {
     throw new UnsupportedOperationException();
   }
 }

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.ListMergeException;
@@ -16,6 +17,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  */
 public class NebuloList extends NebuloObject implements Iterable<NebuloElement> {
   private static final long serialVersionUID = 8346982029337955123L;
+  private static Logger logger_ = Logger.getLogger(NebuloObject.class);
 
   protected ArrayList<NebuloElement> elements_;
   protected Set<BigInteger> removedIds_;
@@ -178,5 +180,11 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
     } else if (!elements_.equals(other.elements_))
       return false;
     return true;
+  }
+
+  @Override
+  public void delete() throws NebuloException {
+    // TODO(bolek): Missing implementation!
+    logger_.error("Delete is not implemented!");
   }
 }

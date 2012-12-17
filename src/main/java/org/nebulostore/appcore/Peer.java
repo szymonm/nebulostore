@@ -87,25 +87,17 @@ public class Peer {
     NetworkContext.getInstance().setAppKey(appKey);
     GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
 
-    // Create DQL Interpreter
-//    String dqlJobId = CryptoUtils.getRandomId().toString();
-//    dispatcherInQueue_.add(new JobInitMessage(dqlJobId, new DQLExecutor(
-//        dqlJobId, true)));
-
-    // Run everything.
-    networkThread_.start();
-
     //Register instance in DHT
     /*GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
     dispatcherInQueue_.add(new JobInitMessage(new RegisterInstanceInDHTModule()));*/
 
-//  Create Broker.
+    // Create Broker.
     String brokerJobId = CryptoUtils.getRandomId().toString();
-    dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(
-        brokerJobId, true)));
+    dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(brokerJobId, true)));
 
+    // Run everything.
+    networkThread_.start();
     dispatcherThread_.start();
-
     runInitialModules(dispatcherInQueue_);
   }
 
