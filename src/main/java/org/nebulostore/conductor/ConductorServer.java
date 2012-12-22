@@ -24,7 +24,7 @@ import org.nebulostore.conductor.messages.TocAckMessage;
 import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.timer.IMessageGenerator;
+import org.nebulostore.timer.MessageGenerator;
 
 /**
  * Testing module that acts as a Test Server.
@@ -261,7 +261,7 @@ public abstract class ConductorServer extends ReturningJobModule<Void> {
    * @author Marcin Walas
    */
   protected class ServerTestingModuleVisitor extends MessageVisitor<Void> {
-    private IMessageGenerator notificationGenerator_;
+    private MessageGenerator notificationGenerator_;
     private final NetworkContext context_ = NetworkContext.getInstance();
 
     @Override
@@ -280,7 +280,7 @@ public abstract class ConductorServer extends ReturningJobModule<Void> {
          * NetworkContext changes.
          */
         GlobalContext.getInstance().setDispatcherQueue(outQueue_);
-        notificationGenerator_ = new IMessageGenerator() {
+        notificationGenerator_ = new MessageGenerator() {
           @Override
           public Message generate() {
             return new NetworkContextChangedMessage(getJobId());

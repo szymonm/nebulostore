@@ -12,9 +12,9 @@ import org.nebulostore.communication.address.CommAddress;
 /**
  * @author grzegorzmilka
  */
-public final class PingPongServer extends TestingServer {
-  private Map<Integer, IPingPongPeer> peers_ =
-    new HashMap<Integer, IPingPongPeer>();
+public final class PingPongServer extends TestingServerImpl {
+  private Map<Integer, PingPongPeer> peers_ =
+    new HashMap<Integer, PingPongPeer>();
   private Boolean hasStarted_ = false;
   // 5 minutes
   private static final int WAIT_PERIOD = 600000;
@@ -24,7 +24,7 @@ public final class PingPongServer extends TestingServer {
   public PingPongServer() throws NebuloException {
     super();
     try {
-      peers_.put(0, new PingPongPeer(0));
+      peers_.put(0, new PingPongPeerImpl(0));
     } catch (NebuloException e) {
       logger_.error("NebuloException when creating server's peer: " + e);
       throw e;
@@ -47,9 +47,9 @@ public final class PingPongServer extends TestingServer {
     }
 
     int pingId = 0;
-    for (Map.Entry<Integer, IPingPongPeer> entry : peers_.entrySet()) {
+    for (Map.Entry<Integer, PingPongPeer> entry : peers_.entrySet()) {
       int peerId = entry.getKey();
-      IPingPongPeer peer = entry.getValue();
+      PingPongPeer peer = entry.getValue();
 
       Collection<Integer> expectedRespondents =
           new HashSet<Integer>(peers_.keySet());
@@ -85,9 +85,9 @@ public final class PingPongServer extends TestingServer {
       ++pingId;
     }
 
-    for (Map.Entry<Integer, IPingPongPeer> entry : peers_.entrySet()) {
+    for (Map.Entry<Integer, PingPongPeer> entry : peers_.entrySet()) {
       int peerId = entry.getKey();
-      IPingPongPeer peer = entry.getValue();
+      PingPongPeer peer = entry.getValue();
       logger_.info("Shutting down peer: " + peerId);
       try {
         peer.stopCommPeer();
@@ -103,9 +103,9 @@ public final class PingPongServer extends TestingServer {
   }
 
   @Override
-  protected boolean addPeer(IAbstractPeer peer)
+  protected boolean addPeer(AbstractPeer peer)
     throws RemoteException, IllegalArgumentException {
-    if (!(peer instanceof IPingPongPeer)) {
+    if (!(peer instanceof PingPongPeer)) {
       logger_.warn("Someone tried to add incorrent type of peer: " + peer);
       throw new IllegalArgumentException("Peer: " + peer + " is not PingPongPeer.");
     }
@@ -120,7 +120,7 @@ public final class PingPongServer extends TestingServer {
         throw new IllegalArgumentException("Peer: " + peerId + " already present");
       }
 
-      peers_.put(peer.getId(), (IPingPongPeer) peer);
+      peers_.put(peer.getId(), (PingPongPeer) peer);
       logger_.info(String.format("Peer: %2d with address: %s added to map.",
             peer.getId(), address));
       return true;

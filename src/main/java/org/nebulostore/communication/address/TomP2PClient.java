@@ -111,7 +111,7 @@ public final class TomP2PClient extends TomP2PPeer {
   }
 
   @Override
-  public ICommAddressResolver getResolver() {
+  public CommAddressResolver getResolver() {
     checkSetUp();
     return resolver_;
   }

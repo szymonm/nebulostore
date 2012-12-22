@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
  *
  * @author Grzegorz Milka
  */
-public interface IPersistentAddressingPeer {
+public interface PersistentAddressingPeer {
   void setBootstrapDHTPort(int port);
   void setDHTPort(int port);
   void setCommPort(int port);
@@ -18,7 +18,7 @@ public interface IPersistentAddressingPeer {
 
   void setUpAndRun() throws IOException;
   void destroy();
-  ICommAddressResolver getResolver();
+  CommAddressResolver getResolver();
   InetSocketAddress getCurrentInetSocketAddress() throws IOException;
   void uploadCurrentInetSocketAddress() throws IOException;
   void uploadCurrentInetSocketAddress(InetSocketAddress address)

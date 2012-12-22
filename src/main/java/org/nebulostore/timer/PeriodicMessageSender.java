@@ -13,12 +13,12 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
  * @author szymonmatejczyk
  */
 public class PeriodicMessageSender extends JobModule {
-  private final IMessageGenerator messageGenerator_;
+  private final MessageGenerator messageGenerator_;
   private final Long period_;
 
   private final PeriodicMessageSenderVisitor visitor_ = new PeriodicMessageSenderVisitor();
 
-  public PeriodicMessageSender(IMessageGenerator messageGenerator, Long period,
+  public PeriodicMessageSender(MessageGenerator messageGenerator, Long period,
       BlockingQueue<Message> dispatcherQueue) {
     messageGenerator_ = messageGenerator;
     period_ = period;

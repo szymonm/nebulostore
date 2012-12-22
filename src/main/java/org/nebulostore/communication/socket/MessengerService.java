@@ -15,7 +15,7 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.address.ICommAddressResolver;
+import org.nebulostore.communication.address.CommAddressResolver;
 import org.nebulostore.communication.exceptions.AddressNotPresentException;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
@@ -30,12 +30,12 @@ import org.nebulostore.communication.messages.ErrorCommMessage;
  */
 public class MessengerService extends Module {
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
-  private ICommAddressResolver resolver_;
+  private CommAddressResolver resolver_;
   private CachedOOSDispatcher oosDispatcher_;
   private Boolean isEnding_ = false;
 
   public MessengerService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue, ICommAddressResolver resolver) {
+      BlockingQueue<Message> outQueue, CommAddressResolver resolver) {
     super(inQueue, outQueue);
     resolver_ = resolver;
     oosDispatcher_ = new CachedOOSDispatcher();

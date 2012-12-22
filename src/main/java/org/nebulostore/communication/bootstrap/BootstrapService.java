@@ -3,7 +3,7 @@ package org.nebulostore.communication.bootstrap;
 import java.io.IOException;
 
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.address.ICommAddressResolver;
+import org.nebulostore.communication.address.CommAddressResolver;
 
 /**
  * @author Grzegorz Milka
@@ -36,7 +36,7 @@ public abstract class BootstrapService {
 
   public abstract CommAddress getBootstrapCommAddress();
 
-  public abstract ICommAddressResolver getResolver();
+  public abstract CommAddressResolver getResolver();
 
   public abstract void startUpService() throws IOException;
   public abstract void shutdownService();

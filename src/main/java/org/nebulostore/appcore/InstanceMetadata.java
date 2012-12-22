@@ -6,14 +6,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.IMergeable;
+import org.nebulostore.communication.dht.Mergeable;
 import org.nebulostore.networkmonitor.PeerConnectionSurvey;
 
 /**
  * Metadata stored in DHT for Nebulostore instance.
  * @author szymonmatejczyk
  */
-public class InstanceMetadata implements Serializable, IMergeable {
+public class InstanceMetadata implements Serializable, Mergeable {
   private static final long serialVersionUID = -2246471507395388278L;
 
   /* Id of user, that this metadata applies to.*/
@@ -47,7 +47,7 @@ public class InstanceMetadata implements Serializable, IMergeable {
   }
 
   @Override
-  public IMergeable merge(IMergeable other) {
+  public Mergeable merge(Mergeable other) {
     return this;
   }
 

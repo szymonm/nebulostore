@@ -21,10 +21,10 @@ public class StreamBindingService extends Module {
   private static Logger logger_ = Logger.getLogger(StreamBindingService.class);
 
   private static final long TIMEOUT = 3000;
-  private final IStreamBindingDriver bindingDriver_;
+  private final StreamBindingDriver bindingDriver_;
 
   public StreamBindingService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue, IStreamBindingDriver bindingDriver) {
+      BlockingQueue<Message> outQueue, StreamBindingDriver bindingDriver) {
     super(inQueue, outQueue);
     bindingDriver_ = bindingDriver;
   }

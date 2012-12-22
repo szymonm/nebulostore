@@ -49,7 +49,7 @@ public final class RunPingPong {
 
     if (isServer) {
       logger_.info("Creating server.");
-      TestingServer server;
+      TestingServerImpl server;
       try {
         server = new PingPongServer();
       } catch (NebuloException e) {
@@ -59,8 +59,8 @@ public final class RunPingPong {
       try {
         Registry localRegistry = LocateRegistry.createRegistry(1099);
         logger_.info("Local registry created");
-        ITestingServer stub =
-          (ITestingServer) UnicastRemoteObject.exportObject((ITestingServer) server, 0);
+        TestingServer stub =
+          (TestingServer) UnicastRemoteObject.exportObject((TestingServer) server, 0);
         localRegistry.rebind(SERVER_REMOTE_NAME, stub);
         logger_.info("Server: " + server + " has been put to remote.");
       } catch (RemoteException e) {
@@ -81,9 +81,9 @@ public final class RunPingPong {
   private static void initializeClient(int peerId, String myAddress,
       String serverAddress) throws NebuloException {
     assert myAddress != null && serverAddress != null;
-    PingPongPeer pingPongPeer;
+    PingPongPeerImpl pingPongPeer;
     try {
-      pingPongPeer = new PingPongPeer(peerId);
+      pingPongPeer = new PingPongPeerImpl(peerId);
     } catch (NebuloException e) {
       logger_.error("Caught NebuloException when creating peer");
       throw e;
@@ -94,8 +94,8 @@ public final class RunPingPong {
     Registry localRegistry;
     // Put my Peer to remote.
     try {
-      IPingPongPeer stub =
-        (IPingPongPeer) UnicastRemoteObject.exportObject(pingPongPeer, 0);
+      PingPongPeer stub =
+        (PingPongPeer) UnicastRemoteObject.exportObject(pingPongPeer, 0);
       //LocateRegistry.getRegistry();
       localRegistry = LocateRegistry.createRegistry(1099);
       logger_.info("Local registry created");
@@ -116,7 +116,7 @@ public final class RunPingPong {
     }
     try {
       Registry registry = LocateRegistry.getRegistry(serverAddress);
-      ITestingServer server = (ITestingServer) registry.lookup(serverName);
+      TestingServer server = (TestingServer) registry.lookup(serverName);
       server.registerClient(myAddress);
       logger_.info("Registered myself(" + myAddress + ") at server");
     } catch (NotBoundException e) {

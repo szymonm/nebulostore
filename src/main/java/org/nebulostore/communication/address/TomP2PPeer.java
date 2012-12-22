@@ -17,11 +17,11 @@ import org.apache.log4j.Logger;
  * @author Grzegorz Milka
  */
 //NOTE-GM Perhaps add TomP2PBuilder (Builder pattern)
-public abstract class TomP2PPeer implements IPersistentAddressingPeer {
+public abstract class TomP2PPeer implements PersistentAddressingPeer {
   protected static Logger logger_;
 
   protected Peer myPeer_;
-  protected ICommAddressResolver resolver_;
+  protected CommAddressResolver resolver_;
   protected int bootstrapTomP2PPort_ = -1;
   protected int tomP2PPort_ = -1;
   protected int commCliPort_ = -1;
@@ -71,7 +71,7 @@ public abstract class TomP2PPeer implements IPersistentAddressingPeer {
   }
 
   @Override
-  public ICommAddressResolver getResolver() {
+  public CommAddressResolver getResolver() {
     checkSetUp();
     return resolver_;
   }

@@ -11,7 +11,7 @@ import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.timer.IMessageGenerator;
+import org.nebulostore.timer.MessageGenerator;
 
 /**
  * Context that stores information about known peers and network state.
@@ -32,8 +32,8 @@ public final class NetworkContext {
   /**
    * Messages to be send to dispatcher when context changes.
    */
-  private final HashSet<IMessageGenerator> contextChangeMessageGenerators_ =
-      new HashSet<IMessageGenerator>();
+  private final HashSet<MessageGenerator> contextChangeMessageGenerators_ =
+      new HashSet<MessageGenerator>();
 
   public static NetworkContext getInstance() {
     if (instance_ == null)
@@ -49,7 +49,7 @@ public final class NetworkContext {
   }
 
   private void contextChanged() {
-    for (IMessageGenerator m : contextChangeMessageGenerators_) {
+    for (MessageGenerator m : contextChangeMessageGenerators_) {
       getDispatcherQueue().add(m.generate());
     }
   }
@@ -59,7 +59,7 @@ public final class NetworkContext {
    */
   @Deprecated
   public synchronized void addContextChangeMessage(final Message message) {
-    IMessageGenerator generator = new IMessageGenerator() {
+    MessageGenerator generator = new MessageGenerator() {
       @Override
       public Message generate() {
         return message;
@@ -72,11 +72,11 @@ public final class NetworkContext {
     contextChangeMessagesGenerators_.remove(message);
   }
 */
-  public synchronized void addContextChangeMessageGenerator(IMessageGenerator generator) {
+  public synchronized void addContextChangeMessageGenerator(MessageGenerator generator) {
     contextChangeMessageGenerators_.add(generator);
   }
 
-  public void removeContextChangeMessageGenerator(IMessageGenerator generator) {
+  public void removeContextChangeMessageGenerator(MessageGenerator generator) {
     contextChangeMessageGenerators_.remove(generator);
   }
 

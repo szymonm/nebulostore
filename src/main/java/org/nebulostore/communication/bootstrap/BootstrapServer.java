@@ -14,8 +14,8 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.address.ICommAddressResolver;
-import org.nebulostore.communication.address.IPersistentAddressingPeer;
+import org.nebulostore.communication.address.CommAddressResolver;
+import org.nebulostore.communication.address.PersistentAddressingPeer;
 import org.nebulostore.communication.address.TomP2PServer;
 
 /**
@@ -43,7 +43,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   private final BootstrapMessage myWelcomeMessage_;
   // TODO-GM make some ip address discovery here like in client
   private final InetSocketAddress myInetSocketAddress_;
-  private IPersistentAddressingPeer pAPeer_;
+  private PersistentAddressingPeer pAPeer_;
   private ExecutorService service_ = Executors.newCachedThreadPool();
   private Boolean isEnding_ = false;
 
@@ -101,7 +101,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   }
 
   @Override
-  public ICommAddressResolver getResolver() {
+  public CommAddressResolver getResolver() {
     return pAPeer_.getResolver();
   }
 

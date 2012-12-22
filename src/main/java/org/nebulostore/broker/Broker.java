@@ -20,7 +20,7 @@ import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.timer.IMessageGenerator;
+import org.nebulostore.timer.MessageGenerator;
 
 /**
  * @author bolek
@@ -40,7 +40,7 @@ public class Broker extends JobModule {
     // The instance that is always running (responsible for timers etc).
     if (permanentInstance) {
       NetworkContext.getInstance().addContextChangeMessageGenerator(
-          new IMessageGenerator() {
+          new MessageGenerator() {
             @Override
             public Message generate() {
               return new CommPeerFoundMessage(jobId_, null, null);

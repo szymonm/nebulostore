@@ -9,8 +9,8 @@ import java.net.Socket;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.address.ICommAddressResolver;
-import org.nebulostore.communication.address.IPersistentAddressingPeer;
+import org.nebulostore.communication.address.CommAddressResolver;
+import org.nebulostore.communication.address.PersistentAddressingPeer;
 import org.nebulostore.communication.address.TomP2PClient;
 import org.nebulostore.communication.exceptions.AddressNotPresentException;
 import org.teleal.cling.UpnpService;
@@ -36,7 +36,7 @@ public final class BootstrapClient extends BootstrapService {
   private CommAddress myCommAddress_;
   private CommAddress bootstrapServerCommAddress_;
   //NOTE-GM TomP2P communication
-  IPersistentAddressingPeer pAPeer_;
+  PersistentAddressingPeer pAPeer_;
 
   private Boolean isEnding_ = false;
 
@@ -111,7 +111,7 @@ public final class BootstrapClient extends BootstrapService {
   }
 
   @Override
-  public ICommAddressResolver getResolver() {
+  public CommAddressResolver getResolver() {
     return pAPeer_.getResolver();
   }
 

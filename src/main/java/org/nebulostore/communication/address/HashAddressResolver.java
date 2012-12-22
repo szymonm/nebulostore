@@ -16,7 +16,7 @@ import org.nebulostore.communication.exceptions.AddressNotPresentException;
  *
  * @author Grzegorz Milka
  */
-class HashAddressResolver implements ICommAddressResolver {
+class HashAddressResolver implements CommAddressResolver {
   private static Logger logger_ = Logger.getLogger(HashAddressResolver.class);
   private final Peer myPeer_;
   private final CommAddress myCommAddress_;

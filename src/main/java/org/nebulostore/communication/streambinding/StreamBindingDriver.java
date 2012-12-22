@@ -9,7 +9,7 @@ import org.nebulostore.communication.address.CommAddress;
  * @author Marcin Walas
  *
  */
-public interface IStreamBindingDriver {
+public interface StreamBindingDriver {
 
 
   /**

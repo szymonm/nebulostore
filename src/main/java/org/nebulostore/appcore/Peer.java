@@ -17,7 +17,7 @@ import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.timer.IMessageGenerator;
+import org.nebulostore.timer.MessageGenerator;
 
 /**
  * @author marcin This is the entry point for a regular peer with full
@@ -117,7 +117,7 @@ public class Peer {
 //    dispatcherQueue.add(new JobInitMessage(sender));
 
     /* Adds found peer to synchro peers */
-    IMessageGenerator addFoundSynchroPeer = new IMessageGenerator() {
+    MessageGenerator addFoundSynchroPeer = new MessageGenerator() {
       @Override
       public Message generate() {
         return new JobInitMessage(new AddSynchroPeerModule());

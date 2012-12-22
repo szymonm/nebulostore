@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @author Marcin Walas
  *
  */
-public interface IMergeable extends Serializable {
+public interface Mergeable extends Serializable {
 
   /**
    * This returns an object that will be stored in
@@ -25,5 +25,5 @@ public interface IMergeable extends Serializable {
    * @param other the other Mergeable object
    * @return
    */
-  IMergeable merge(IMergeable other);
+  Mergeable merge(Mergeable other);
 }

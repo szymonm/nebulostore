@@ -20,7 +20,7 @@
 
     <!-- RULE 3: Naming conventions for classes and interfaces. -->
     <module name="TypeName">
-        <property name="format" value="^I[a-zA-Z0-9]*$"/>
+        <property name="format" value="^[a-zA-Z0-9]*$"/>
         <property name="tokens" value="INTERFACE_DEF"/>
     </module>
     <module name="TypeName">

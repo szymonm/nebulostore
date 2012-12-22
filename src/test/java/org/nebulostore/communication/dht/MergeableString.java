@@ -3,7 +3,7 @@ package org.nebulostore.communication.dht;
 /**
  * @author bolek
  */
-public class MergeableString implements IMergeable {
+public class MergeableString implements Mergeable {
 
   private static final long serialVersionUID = -3772950029401952797L;
   private final String value_;
@@ -13,7 +13,7 @@ public class MergeableString implements IMergeable {
   }
 
   @Override
-  public IMergeable merge(IMergeable other) {
+  public Mergeable merge(Mergeable other) {
     return this;
   }
 

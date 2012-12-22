@@ -15,16 +15,16 @@ import org.nebulostore.communication.exceptions.AddressNotPresentException;
  * Decorator adding caching of addresses.
  * @author Grzegorz Milka
  */
-class CachedAddressResolver implements ICommAddressResolver {
+class CachedAddressResolver implements CommAddressResolver {
   // 60 seconds
   private static final long CACHE_TIMEOUT = 60000;
-  private static Logger logger_ = Logger.getLogger(ICommAddressResolver.class);
+  private static Logger logger_ = Logger.getLogger(CommAddressResolver.class);
   private Map<CommAddress, InetSocketAddress> cache_ =
     Collections.synchronizedMap(new HashMap<CommAddress, InetSocketAddress>());
   private Timer timer_ = new Timer(true);
-  private ICommAddressResolver resolver_;
+  private CommAddressResolver resolver_;
 
-  public CachedAddressResolver(ICommAddressResolver resolver) {
+  public CachedAddressResolver(CommAddressResolver resolver) {
     resolver_ = resolver;
   }
 
