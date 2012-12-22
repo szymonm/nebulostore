@@ -95,9 +95,25 @@ public abstract class NebuloObject implements Serializable {
     lastCommittedVersion_ = version;
   }
 
+  public void subscribe() throws NebuloException {
+    CommAddress myAddress = getInstanceCommAddress();
+    boolean subscribersExpanded= subscribers_.addSubscriber(myAddress);
+    if (subscribersExpanded) {
+      runSync();
+    }
+  }
+
+  public void removeSubscription() throws NebuloException {
+    CommAddress myAddress = getInstanceCommAddress();
+    boolean subscribersChanged = subscribers_.removesSubscriber(myAddress);
+    if (subscribersChanged) {
+      runSync();
+    }
+  }
+
   protected void notifySubscribers() {
     if (isNotificationNecessary()) {
-      CommAddress applicationAddress = CommunicationPeer.getPeerAddress();
+      CommAddress applicationAddress = getInstanceCommAddress();
       SubscriptionNotification notification =
           new SubscriptionNotification(address_,
               SubscriptionNotification.NotificationReason.FILE_CHANGED);
@@ -107,17 +123,13 @@ public abstract class NebuloObject implements Serializable {
     }
   }
 
+  private CommAddress getInstanceCommAddress() {
+    return CommunicationPeer.getPeerAddress();
+  }
+
   private boolean isNotificationNecessary() {
     Set<CommAddress> addresses = subscribers_.getSubscribersAddresses();
     return !addresses.isEmpty();
-  }
-
-  public void subscribe() throws NebuloException {
-    CommAddress myAddress = CommunicationPeer.getPeerAddress();
-    boolean subscribersExpands = subscribers_.addSubscriber(myAddress);
-    if (subscribersExpands) {
-      runSync();
-    }
   }
 
 }

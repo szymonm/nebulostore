@@ -77,16 +77,18 @@ public final class TextInterface {
       if (tokens[0].equals("end")) {
         Peer.quitNebuloStore();
         break;
-      } else if (tokens[0].equals("putkey")) {
+      } else if ("putkey".equals(tokens[0])) {
         putKey(tokens);
-      } else if (tokens[0].equals("write")) {
+      } else if ("write".equals(tokens[0])) {
         write(tokens);
-      } else if (tokens[0].equals("read")) {
+      } else if ("read".equals(tokens[0])) {
         read(tokens);
-      } else if (tokens[0].equals("delete")) {
+      } else if ("delete".equals(tokens[0])) {
         delete(tokens);
-      } else if (tokens[0].equals("subscribe")) {
+      } else if ("subscribe".equals(tokens[0])) {
         subscribe(tokens);
+      } else if ("rmsub".equals(tokens[0])) {
+        removeSubscription(tokens);
       } else if (tokens[0].equals("")) {
         continue;
       } else {
@@ -98,6 +100,18 @@ public final class TextInterface {
       nebuloThread.join();
     } catch (InterruptedException exception) {
       exception.printStackTrace();
+    }
+  }
+
+  private static void removeSubscription(String[] tokens) {
+    if (!validateParametersNumber(tokens, 3)) return;
+    NebuloFile file = getNebuloFile(tokens[1], tokens[2]);
+    if (file != null) {
+      try {
+        file.removeSubscription();
+      } catch (NebuloException e) {
+        System.out.println("Subscription removal failed.");
+      }
     }
   }
 
@@ -217,14 +231,20 @@ public final class TextInterface {
    * subscribe (appkey) (objectId).
    */
   private static void subscribe(String[] tokens) {
-    if (tokens.length != 3) {
-      System.out.println("Invalid parameters for subscribe operation.");
-      return;
-    }
+    if (!validateParametersNumber(tokens, 3)) return;
     NebuloFile file = getNebuloFile(tokens[1], tokens[2]);
     if (file != null) {
       subscribeWithExceptionHandling(file);
     }
+  }
+
+  private static boolean validateParametersNumber(String[] tokens, int paramsNumber) {
+    if (tokens.length != 3) {
+      System.out.println("Invalid parameters number. Required : " + paramsNumber + " params for "
+          + tokens[0] + "operation.");
+      return false;
+    }
+    return true;
   }
 
   private static void subscribeWithExceptionHandling(NebuloFile file) {
