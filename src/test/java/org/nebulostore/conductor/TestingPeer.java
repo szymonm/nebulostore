@@ -2,11 +2,14 @@ package org.nebulostore.conductor;
 
 import java.math.BigInteger;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.Peer;
+import org.nebulostore.appcore.context.NebuloContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.dht.BdbDHTTestServer;
 import org.nebulostore.communication.dht.KademliaDHTTestServer;
@@ -22,6 +25,7 @@ import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
  */
 public final class TestingPeer extends Peer {
   private static Logger logger_ = Logger.getLogger(TestingPeer.class);
+  private static Injector injector_ = Guice.createInjector(new NebuloContext());
 
   private TestingPeer() {
   }
@@ -37,7 +41,7 @@ public final class TestingPeer extends Peer {
       appKey = new BigInteger(args[0]);
     }
     logger_.info("Starting testing peer with appKey = " + appKey);
-    startPeer(new AppKey(appKey));
+    startPeer(new AppKey(appKey), injector_);
 
     try {
       ApiFacade.putKey(new AppKey(appKey));

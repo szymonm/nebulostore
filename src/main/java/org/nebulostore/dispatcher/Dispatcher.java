@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
@@ -13,6 +14,8 @@ import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Dispatcher - core module that assigns threads to tasks and distributes messages
@@ -25,6 +28,7 @@ public class Dispatcher extends Module {
   private final Map<String, BlockingQueue<Message>> workersQueues_;
   private final Map<String, Thread> workersThreads_;
   private final MessageVisitor<?> visitor_;
+  private final Injector injector_;
 
   /**
    * Visitor class. Contains logic for handling messages depending
@@ -94,6 +98,7 @@ public class Dispatcher extends Module {
             BlockingQueue<Message> newInQueue = new LinkedBlockingQueue<Message>();
             handler.setInQueue(newInQueue);
             handler.setOutQueue(inQueue_);
+            injector_.injectMembers(handler);
             // Network queue is dispatcher's out queue.
             handler.setNetworkQueue(outQueue_);
             workersQueues_.put(jobId, newInQueue);
@@ -126,11 +131,12 @@ public class Dispatcher extends Module {
    *                 created tasks (usually network's inQueue).
    */
   public Dispatcher(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue) {
+      BlockingQueue<Message> outQueue, Injector injector) {
     super(inQueue, outQueue);
     visitor_ = new MessageDispatchVisitor();
     workersQueues_ = new TreeMap<String, BlockingQueue<Message>>();
     workersThreads_ = new TreeMap<String, Thread>();
+    injector_ = checkNotNull(injector);
   }
 
   @Override

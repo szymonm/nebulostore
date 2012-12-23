@@ -48,6 +48,4 @@ public class NotifySubscriberMessage extends CommMessage {
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }
-
-
 }

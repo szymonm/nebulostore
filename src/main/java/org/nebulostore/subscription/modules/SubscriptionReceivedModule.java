@@ -1,23 +1,34 @@
 package org.nebulostore.subscription.modules;
 
+import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
 import org.nebulostore.subscription.messages.NotifySubscriberMessage;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Author: rafalhryciuk.
  */
 public class SubscriptionReceivedModule extends JobModule {
 
+  private SubscriptionNotificationHandler notificationHandler_;
+
   private final SubscriptionReceivedMessageVisitor visitor_ =
       new SubscriptionReceivedMessageVisitor();
 
 
   public SubscriptionReceivedModule() {
+  }
+
+  @Inject
+  public void setNotificationHandler(SubscriptionNotificationHandler notificationHandler) {
+    this.notificationHandler_ = checkNotNull(notificationHandler);
   }
 
   @Override
@@ -40,10 +51,7 @@ public class SubscriptionReceivedModule extends JobModule {
 
     @Override
     public Void visit(NotifySubscriberMessage message) throws NebuloException {
-      //here You should put Your subscription notification handling code.
-      logger_.info("==========================================================");
-      logger_.info(message.getSubscriptionNotification());
-      logger_.info("==========================================================");
+      notificationHandler_.handleSubscriptionNotification(message.getSubscriptionNotification());
       endJobModule();
       return null;
     }

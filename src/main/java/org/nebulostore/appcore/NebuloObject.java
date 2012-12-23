@@ -97,7 +97,7 @@ public abstract class NebuloObject implements Serializable {
 
   public void subscribe() throws NebuloException {
     CommAddress myAddress = getInstanceCommAddress();
-    boolean subscribersExpanded= subscribers_.addSubscriber(myAddress);
+    boolean subscribersExpanded = subscribers_.addSubscriber(myAddress);
     if (subscribersExpanded) {
       runSync();
     }

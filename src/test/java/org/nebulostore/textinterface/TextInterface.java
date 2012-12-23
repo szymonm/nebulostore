@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Scanner;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
@@ -15,6 +17,7 @@ import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.NebuloFile;
 import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.Peer;
+import org.nebulostore.appcore.context.NebuloContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
@@ -57,11 +60,12 @@ public final class TextInterface {
       System.out.println("Provide Peer AppKey (number)!");
       return;
     }
+    final Injector injector = Guice.createInjector(new NebuloContext());
     final AppKey appKey = new AppKey(new BigInteger(args[0]));
     // Run NebuloStore in a separate thread.
     Thread nebuloThread = new Thread(new Runnable() {
       public void run() {
-        Peer.runPeer(appKey);
+        Peer.runPeer(appKey, injector);
       }
     });
     DOMConfigurator.configure("resources/conf/log4j.xml");
@@ -240,8 +244,8 @@ public final class TextInterface {
 
   private static boolean validateParametersNumber(String[] tokens, int paramsNumber) {
     if (tokens.length != 3) {
-      System.out.println("Invalid parameters number. Required : " + paramsNumber + " params for "
-          + tokens[0] + "operation.");
+      System.out.println("Invalid parameters number. Required : " + paramsNumber + " params for " +
+          tokens[0] + "operation.");
       return false;
     }
     return true;

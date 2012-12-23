@@ -3,6 +3,8 @@ package org.nebulostore.dispatcher;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.After;
 import org.junit.Before;
@@ -11,6 +13,7 @@ import org.junit.Test;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.context.NebuloContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -25,6 +28,7 @@ public class DispatcherTest {
   private BlockingQueue<Message> outQueue_;
   private Dispatcher dispatcher_;
   private Thread thread_;
+  private Injector injector_ = Guice.createInjector(new NebuloContext());
 
   public static int staticCounter_;
 
@@ -38,7 +42,7 @@ public class DispatcherTest {
     inQueue_ = new LinkedBlockingQueue<Message>();
     outQueue_ = new LinkedBlockingQueue<Message>();
 
-    dispatcher_ = new Dispatcher(inQueue_, outQueue_);
+    dispatcher_ = new Dispatcher(inQueue_, outQueue_, injector_);
     thread_ = new Thread(dispatcher_);
     thread_.start();
   }

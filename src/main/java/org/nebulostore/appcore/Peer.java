@@ -4,10 +4,13 @@ import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
+import org.nebulostore.appcore.context.NebuloContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.AddSynchroPeerModule;
 import org.nebulostore.broker.Broker;
@@ -42,6 +45,7 @@ public class Peer {
   public static void main(String[] args) {
 
     DOMConfigurator.configure("resources/conf/log4j.xml");
+    Injector injector = Guice.createInjector(new NebuloContext());
 
     BigInteger appKey = BigInteger.ZERO;
     if (args.length < 1) {
@@ -50,11 +54,11 @@ public class Peer {
     } else {
       appKey = new BigInteger(args[0]);
     }
-    runPeer(new AppKey(appKey));
+    runPeer(new AppKey(appKey), injector);
   }
 
-  public static void runPeer(AppKey appKey) {
-    startPeer(appKey);
+  public static void runPeer(AppKey appKey, Injector injector) {
+    startPeer(appKey, injector);
 
     try {
       ApiFacade.putKey(appKey);
@@ -65,7 +69,7 @@ public class Peer {
     finishPeer();
   }
 
-  protected static void startPeer(AppKey appKey) {
+  protected static void startPeer(AppKey appKey, Injector injector) {
     networkInQueue_ = new LinkedBlockingQueue<Message>();
     dispatcherInQueue_ = new LinkedBlockingQueue<Message>();
     ApiFacade.initApi(dispatcherInQueue_);
@@ -73,7 +77,7 @@ public class Peer {
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
     dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_,
-        networkInQueue_), "Dispatcher");
+        networkInQueue_, injector), "Dispatcher");
     // Create network module.
     try {
       networkThread_ = new Thread(new CommunicationPeer(networkInQueue_,
