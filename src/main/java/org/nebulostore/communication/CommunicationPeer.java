@@ -34,7 +34,7 @@ import org.nebulostore.communication.socket.ListenerService;
 import org.nebulostore.communication.socket.MessengerService;
 
 //TODO(grzegorzmilka) add closing through message instead of interrupt
-//TODO(grzegorzmilka) apply Visitator pattern to message communication
+//TODO(grzegorzmilka) apply Visitor pattern to message communication
 /**
  * Main module for communication with outside world.
  *
@@ -42,7 +42,7 @@ import org.nebulostore.communication.socket.MessengerService;
  * @author Marcin Walas
  * @author Grzegorz Milka
  */
-public class CommunicationPeer extends Module {
+public final class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static final String CLING_CONFIGURATION_PATH =
     "resources/conf/communication/logging.properties";

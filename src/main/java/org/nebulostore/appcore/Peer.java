@@ -12,7 +12,6 @@ import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.context.NebuloContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.async.AddSynchroPeerModule;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.crypto.CryptoUtils;
@@ -20,7 +19,6 @@ import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.timer.MessageGenerator;
 
 /**
  * @author marcin This is the entry point for a regular peer with full
@@ -43,17 +41,17 @@ public class Peer {
    *          Command line arguments.
    */
   public static void main(String[] args) {
-
     DOMConfigurator.configure("resources/conf/log4j.xml");
     Injector injector = Guice.createInjector(new NebuloContext());
 
-    BigInteger appKey = BigInteger.ZERO;
+    BigInteger appKey;
     if (args.length < 1) {
       // Random AppKey if not provided.
       appKey = CryptoUtils.getRandomId();
     } else {
       appKey = new BigInteger(args[0]);
     }
+
     runPeer(new AppKey(appKey), injector);
   }
 
@@ -84,8 +82,7 @@ public class Peer {
           dispatcherInQueue_), "CommunicationPeer");
     } catch (NebuloException exception) {
       logger_.fatal("Error while creating CommunicationPeer");
-      exception.printStackTrace();
-      System.exit(-1);
+      System.exit(1);
     }
 
     NetworkContext.getInstance().setAppKey(appKey);
@@ -106,21 +103,19 @@ public class Peer {
   }
 
   protected static void runInitialModules(BlockingQueue<Message> dispatcherQueue) {
-    // TODO(szm) move it somewhere
+    // Periodically checking asynchronous messages.
+    /*IMessageGenerator retriveAMGenerator = new IMessageGenerator() {
+      @Override
+      public Message generate() {
+        return new JobInitMessage(new RetrieveAsynchronousMessagesModule());
+      }
+    };
+    PeriodicMessageSender sender = new PeriodicMessageSender(
+        retriveAMGenerator, RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL,
+        dispatcherQueue);
+    dispatcherQueue.add(new JobInitMessage(sender));
 
-    /* Periodically checking asynchronous messages. */
-//    IMessageGenerator retriveAMGenerator = new IMessageGenerator() {
-//      @Override
-//      public Message generate() {
-//        return new JobInitMessage(new RetrieveAsynchronousMessagesModule());
-//      }
-//    };
-//    PeriodicMessageSender sender = new PeriodicMessageSender(
-//        retriveAMGenerator, RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL,
-//        dispatcherQueue);
-//    dispatcherQueue.add(new JobInitMessage(sender));
-
-    /* Adds found peer to synchro peers */
+    // Add found peer to synchro peers.
     MessageGenerator addFoundSynchroPeer = new MessageGenerator() {
       @Override
       public Message generate() {
@@ -130,17 +125,17 @@ public class Peer {
     // TODO(bolek,szm): Temporarily disabled due to errors.
     //NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
 
-    /* Turning on statistics gossiping module */
-//    IMessageGenerator gossipingModuleGenerator = new IMessageGenerator() {
-//      @Override
-//      public Message generate() {
-//        return new JobInitMessage(new RandomPeersGossipingModule());
-//      }
-//    };
-//    PeriodicMessageSender gossiping = new PeriodicMessageSender(
-//        gossipingModuleGenerator, RandomPeersGossipingModule.INTERVAL,
-//        dispatcherQueue);
-//    dispatcherQueue.add(new JobInitMessage(gossiping));
+    // Turning on statistics gossiping module.
+    IMessageGenerator gossipingModuleGenerator = new IMessageGenerator() {
+      @Override
+      public Message generate() {
+        return new JobInitMessage(new RandomPeersGossipingModule());
+      }
+    };
+    PeriodicMessageSender gossiping = new PeriodicMessageSender(
+        gossipingModuleGenerator, RandomPeersGossipingModule.INTERVAL,
+        dispatcherQueue);
+    dispatcherQueue.add(new JobInitMessage(gossiping));*/
   }
 
   protected static void finishPeer() {

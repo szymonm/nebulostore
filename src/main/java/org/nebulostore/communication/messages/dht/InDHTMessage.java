@@ -5,9 +5,10 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
- * @author Marcin Walas
+ * @author marcin
  */
 public abstract class InDHTMessage extends DHTMessage {
+  private static final long serialVersionUID = -1471331171075924845L;
   private static Logger logger_ = Logger.getLogger(DHTMessage.class);
 
   public InDHTMessage(String id) {

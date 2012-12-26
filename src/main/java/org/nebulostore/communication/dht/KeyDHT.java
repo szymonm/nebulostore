@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  * @author marcin
  */
 public class KeyDHT implements Serializable {
-
+  private static final long serialVersionUID = 3261126809266422452L;
   private static Logger logger_ = Logger.getLogger(KeyDHT.class);
   private final BigInteger key_;
 

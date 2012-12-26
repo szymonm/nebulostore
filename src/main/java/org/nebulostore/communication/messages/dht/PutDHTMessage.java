@@ -6,14 +6,11 @@ import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
 
 /**
- * @author Marcin Walas
+ * @author marcin
  */
 public class PutDHTMessage extends InDHTMessage {
-  /**
-   */
+  private static final long serialVersionUID = -2291359452486626170L;
   private final KeyDHT key_;
-  /**
-   */
   private final ValueDHT value_;
 
   public PutDHTMessage(String jobId, KeyDHT key, ValueDHT value) {

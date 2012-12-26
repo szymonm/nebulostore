@@ -14,7 +14,7 @@ import org.bouncycastle.util.encoders.Base64;
  */
 
 public class ValueDHT implements Serializable {
-
+  private static final long serialVersionUID = 8747517245988476609L;
   private final Mergeable value_;
 
   public Mergeable getValue() {
@@ -26,7 +26,6 @@ public class ValueDHT implements Serializable {
   }
 
   public String serializeValue() {
-    String serialized = new String();
     // TODO: Move it to utils.
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ObjectOutputStream oos = null;
@@ -42,7 +41,7 @@ public class ValueDHT implements Serializable {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    serialized = new String(Base64.encode(baos.toByteArray()));
+    String serialized = new String(Base64.encode(baos.toByteArray()));
     return serialized;
   }
 

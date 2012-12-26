@@ -14,6 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Author: rafalhryciuk.
  */
 public class NotifySubscriberMessage extends CommMessage {
+  private static final long serialVersionUID = 7033610614241379578L;
 
   private SubscriptionNotification subscriptionNotification_;
 

@@ -1,7 +1,5 @@
 package org.nebulostore.async.messages;
 
-import java.io.Serializable;
-
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -11,7 +9,7 @@ import org.nebulostore.crypto.CryptoUtils;
  * Asynchrounous message send by peers when one of them is offline.
  * @author szymonmatejczyk
  */
-public abstract class AsynchronousMessage extends Message implements Serializable {
+public abstract class AsynchronousMessage extends Message {
   private static final long serialVersionUID = -8951534647349943846L;
 
   String id_;

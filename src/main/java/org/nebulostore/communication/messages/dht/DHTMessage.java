@@ -7,9 +7,10 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
- * @author Marcin Walas
+ * @author marcin
  */
 public abstract class DHTMessage extends Message implements Serializable {
+  private static final long serialVersionUID = 2403620888224729984L;
 
   public DHTMessage(String id) {
     super(id);

@@ -10,6 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Author: rh277703.
  */
 public class SubscriptionNotification implements Serializable {
+  private static final long serialVersionUID = -8189822593323832329L;
 
   private final NebuloAddress subscribedFileAddress_;
 

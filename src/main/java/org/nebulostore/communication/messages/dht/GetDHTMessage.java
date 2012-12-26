@@ -8,9 +8,7 @@ import org.nebulostore.communication.dht.KeyDHT;
  * @author marcin
  */
 public class GetDHTMessage extends InDHTMessage {
-
-  /**
-   */
+  private static final long serialVersionUID = -6134658511663501107L;
   private final KeyDHT key_;
 
   public GetDHTMessage(String jobId, KeyDHT key) {
@@ -31,5 +29,4 @@ public class GetDHTMessage extends InDHTMessage {
   public String toString() {
     return "GetDHTMessage for key: " + getKey();
   }
-
 }

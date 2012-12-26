@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Author: rafalhryciuk.
  */
 public class Subscribers implements Serializable {
-
+  private static final long serialVersionUID = 1155986060086428652L;
   private final Set<CommAddress> subscribers_;
 
 

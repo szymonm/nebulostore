@@ -10,8 +10,8 @@ import org.nebulostore.communication.address.CommAddress;
  * Sends CommAddress of host sending it.
  * @author Grzegorz Milka
  */
-//TODO(grzegorzmilka) serialUID
 public class BootstrapMessage implements Serializable {
+  private static final long serialVersionUID = -5717956362203085042L;
   private CommAddress peerAddress_;
 
   /**
