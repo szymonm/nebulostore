@@ -15,6 +15,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.replicator.TransactionAnswer;
 
+import static org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
+
 /**
  * @author bolek
  * File (only metadata).
@@ -252,8 +254,6 @@ public class NebuloFile extends NebuloObject {
     updateModules.add(new WriteNebuloObjectModule(address_, this, dispatcherQueue_,
         previousVersions_));
 
-    notifySubscribers();
-
     // Wait for all results.
     NebuloException caughtException = null;
     for (int i = 0; i < updateModules.size(); ++i) {
@@ -281,6 +281,7 @@ public class NebuloFile extends NebuloObject {
       for (FileChunkWrapper chunk : chunks_) {
         chunk.setSynced();
       }
+      notifySubscribers(NotificationReason.FILE_CHANGED);
     }
     for (WriteNebuloObjectModule update : updateModules) {
       if (update != null) {
@@ -300,7 +301,7 @@ public class NebuloFile extends NebuloObject {
     }
     // Run delete for NebuloFile (metadata).
     deleteModules.add(new DeleteNebuloObjectModule(address_, dispatcherQueue_));
-
+    notifySubscribers(NotificationReason.FILE_DELETED);
     // Wait for all results.
     for (int i = 0; i < deleteModules.size(); ++i) {
       if (deleteModules.get(i) != null) {

@@ -12,6 +12,8 @@ import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.ListMergeException;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
+import static org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
+
 /**
  * List of NebuloObjects.
  */
@@ -154,7 +156,7 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
   protected void runSync() throws NebuloException {
     WriteNebuloObjectModule writer = new WriteNebuloObjectModule(address_, this, dispatcherQueue_,
         previousVersions_);
-    notifySubscribers();
+    notifySubscribers(NotificationReason.FILE_CHANGED);
     writer.getResult(TIMEOUT_SEC);
   }
 

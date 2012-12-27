@@ -15,6 +15,8 @@ import org.nebulostore.subscription.model.Subscribers;
 import org.nebulostore.subscription.model.SubscriptionNotification;
 import org.nebulostore.subscription.modules.NotifySubscribersModule;
 
+import static org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
+
 /**
  * NebuloObject - object that is stored in replicas and identified by NebuloAddress
  * (currently NebuloFile, NebuloList or FileChunk).
@@ -111,12 +113,11 @@ public abstract class NebuloObject implements Serializable {
     }
   }
 
-  protected void notifySubscribers() {
+  protected void notifySubscribers(NotificationReason notificationReason) {
     if (isNotificationNecessary()) {
       CommAddress applicationAddress = getInstanceCommAddress();
       SubscriptionNotification notification =
-          new SubscriptionNotification(address_,
-              SubscriptionNotification.NotificationReason.FILE_CHANGED);
+          new SubscriptionNotification(address_, notificationReason);
       new NotifySubscribersModule(applicationAddress, dispatcherQueue_,
           notification, subscribers_.getSubscribersAddresses());
       //We don't need to wait  for a ack. Async msgs will be send automatically
