@@ -33,6 +33,7 @@ import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.OkDHTMessage;
+import org.nebulostore.communication.messages.dht.OutDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
@@ -57,7 +58,6 @@ public class BdbPeer extends Module {
   private final CommAddress bdbHolderCommAddress_ = null;
 
   private final BlockingQueue<Message> senderInQueue_;
-  private CommAddress peerAddress_;
   private final ReconfigureDHTMessage reconfigureRequest_;
   private Timer advertisementsTimer_;
 
@@ -101,8 +101,6 @@ public class BdbPeer extends Module {
       dbConfig.setAllowCreate(true);
 
       database_ = env_.openDatabase(null, storeName_, dbConfig);
-
-      peerAddress_ = peerAddress;
 
       advertisementsTimer_ = new Timer();
       advertisementsTimer_.schedule(new SendAdvertisement(), 4000, 2000);
@@ -197,33 +195,27 @@ public class BdbPeer extends Module {
     logger_.info("PutDHTMessage processing finished");
   }
 
-  private void get(GetDHTMessage message, boolean fromNetwork,
-      CommAddress sourceAddress) {
+  private void get(GetDHTMessage getMsg, boolean fromNetwork, CommAddress sourceAddress) {
     logger_.debug("GetDHTMessage in holder");
-    GetDHTMessage getMsg = message;
-
     KeyDHT key = getMsg.getKey();
     DatabaseEntry data = new DatabaseEntry();
-
     OperationStatus operationStatus = database_.get(null,
         new DatabaseEntry(key.toString().getBytes()), data, LockMode.DEFAULT);
 
+    OutDHTMessage outMessage;
     if (operationStatus == OperationStatus.SUCCESS) {
       ValueDHT value = ValueDHT.build(new String(data.getData()));
-
-      if (fromNetwork) {
-        senderInQueue_.add(new BdbMessageWrapper(null, sourceAddress,
-            new ValueDHTMessage(getMsg, key, value)));
-      } else {
-        outQueue_.add(new ValueDHTMessage(getMsg, key, value));
-      }
-
+      outMessage = new ValueDHTMessage(getMsg, key, value);
     } else {
-      // TODO: Error handling
-      logger_.error("Unable to read from database." +
-          " Should send an ErrorDHTMessage back");
-      outQueue_.add(new ErrorDHTMessage(getMsg, new NebuloException(
-          "Unable to read from bdb database. Operation status: " + operationStatus)));
+      logger_.debug("Unable to read from database. Sending ErrorDHTMessage.");
+      outMessage = new ErrorDHTMessage(getMsg, new NebuloException(
+          "Unable to read from bdb database. Operation status: " + operationStatus));
+    }
+
+    if (fromNetwork) {
+      senderInQueue_.add(new BdbMessageWrapper(null, sourceAddress, outMessage));
+    } else {
+      outQueue_.add(outMessage);
     }
     logger_.debug("GetDHTMessage processing finished");
   }

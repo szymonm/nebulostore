@@ -24,6 +24,7 @@ import org.nebulostore.async.messages.UpdateSmallNebuloObjectMessage;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.ErrorCommMessage;
+import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.crypto.CryptoException;
@@ -113,7 +114,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
             jobId_ + ").");
         networkQueue_.add(new GetDHTMessage(jobId_, new KeyDHT(address_.getAppKey().getKey())));
       } else {
-        logger_.warn("JobInitMessage received in state " + state_.name());
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -159,7 +160,19 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
           ++nRecipients_;
         }
       } else {
-        logger_.warn("ValueDHTMessage received in state " + state_.name());
+        incorrectState(state_.name(), message);
+      }
+      return null;
+    }
+
+    @Override
+    public Void visit(ErrorDHTMessage message) {
+      if (state_ == STATE.DHT_QUERY) {
+        logger_.debug("Received ErrorDHTMessage");
+        endWithError(new NebuloException("Could not fetch metadata from DHT.",
+            message.getException()));
+      } else {
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -172,7 +185,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         recipientsSet_.remove(message.getSourceAddress());
         tryReturnSemiResult();
       } else {
-        logger_.warn("ConfirmationMessage received in state " + state_);
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -193,7 +206,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
           logger_.warn("Inconsitent state among replicas.");
           break;
         default:
-          logger_.warn("UpdateRejectMessage received in state " + state_);
+          incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -207,7 +220,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         rejectingOrWithholdingReplicators_.add(message.getSourceAddress());
         tryReturnSemiResult();
       } else {
-        logger_.warn("UpdateWithholdMessage received in state " + state_);
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -219,7 +232,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         waitingForTransactionResult_.remove(message.getMessage().getDestinationAddress());
         tryReturnSemiResult();
       } else {
-        logger_.warn("ErrorCommMessage received in state " + state_);
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -284,6 +297,11 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         networkQueue_.add(new TransactionResultMessage(entry.getValue(), null, entry.getKey(),
             answer));
       }
+    }
+
+    // TODO(bolek): Maybe move it to a new superclass StateMachine?
+    private void incorrectState(String stateName, Message message) {
+      logger_.warn(message.getClass().getName() + " received in state " + stateName);
     }
   }
 

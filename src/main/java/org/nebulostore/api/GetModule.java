@@ -4,12 +4,14 @@ import org.apache.log4j.Logger;
 import org.nebulostore.addressing.ContractList;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ReplicationGroup;
+import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
+import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.crypto.CryptoUtils;
@@ -74,7 +76,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
         state_ = STATE.REPLICA_FETCH;
         queryReplica(queryAddress_);
       } else {
-        logger_.warn("JobInitMessage received in state " + state_.name());
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -82,7 +84,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
     @Override
     public Void visit(ValueDHTMessage message) {
       if (state_ == STATE.DHT_QUERY) {
-        logger_.debug("Received DHT message");
+        logger_.debug("Received ValueDHTMessage");
 
         // State 2 - Receive reply from DHT and iterate over logical path segments asking
         // for consecutive parts.
@@ -98,7 +100,19 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
         logger_.debug("Querying replica");
         queryReplica(group.getReplicator(0));
       } else {
-        logger_.warn("ValueDHTMessage received in state " + state_.name());
+        incorrectState(state_.name(), message);
+      }
+      return null;
+    }
+
+    @Override
+    public Void visit(ErrorDHTMessage message) {
+      if (state_ == STATE.DHT_QUERY) {
+        logger_.debug("Received ErrorDHTMessage");
+        endWithError(new NebuloException("Could not fetch metadata from DHT.",
+            message.getException()));
+      } else {
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -118,11 +132,14 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
         // TODO(bolek): ReplicatorErrorMessage should contain exception instead of string.
         endWithError(new NebuloException(message.getMessage()));
       } else {
-        logger_.warn("SendObjectMessage received in state " + state_);
+        incorrectState(state_.name(), message);
       }
       return null;
     }
 
+    protected void incorrectState(String stateName, Message message) {
+      logger_.warn(message.getClass().getName() + " received in state " + stateName);
+    }
   }
 
 }

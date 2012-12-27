@@ -19,6 +19,7 @@ import org.nebulostore.async.messages.DeleteNebuloObjectMessage;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.ErrorCommMessage;
+import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.crypto.CryptoUtils;
@@ -81,7 +82,7 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
             jobId_ + ").");
         networkQueue_.add(new GetDHTMessage(jobId_, new KeyDHT(address_.getAppKey().getKey())));
       } else {
-        logger_.warn("JobInitMessage received in state " + state_.name());
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -113,7 +114,19 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
         TimerContext.getInstance().addDelayedMessage(System.currentTimeMillis() + TIMEOUT_MILLIS,
             new DeleteTimeoutMessage(jobId_));
       } else {
-        logger_.warn("ValueDHTMessage received in state " + state_.name());
+        incorrectState(state_.name(), message);
+      }
+      return null;
+    }
+
+    @Override
+    public Void visit(ErrorDHTMessage message) {
+      if (state_ == STATE.DHT_QUERY) {
+        logger_.debug("Received ErrorDHTMessage");
+        endWithError(new NebuloException("Could not fetch metadata from DHT.",
+            message.getException()));
+      } else {
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -129,7 +142,7 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
           finishModule();
         }
       } else {
-        logger_.warn("ConfirmationMessage received in state " + state_);
+        incorrectState(state_.name(), message);
       }
       return null;
     }
@@ -141,14 +154,14 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
         //   Does failing in case of delete() make sense?
         finishModule();
       } else {
-        logger_.warn("ConfirmationMessage received in state " + state_);
+        incorrectState(state_.name(), message);
       }
       return null;
     }
 
     @Override
     public Void visit(ErrorCommMessage message) {
-      logger_.warn("ErrorCommMessage received in state " + state_);
+      incorrectState(state_.name(), message);
       // TODO(bolek): Can we safely ignore it here and just wait for timeout and async messages?
       return null;
     }
@@ -162,6 +175,10 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
       endWithSuccess(null);
     }
 
+    // TODO(bolek): Maybe move it to a new superclass StateMachine?
+    private void incorrectState(String stateName, Message message) {
+      logger_.warn(message.getClass().getName() + " received in state " + stateName);
+    }
   }
 
   @Override
