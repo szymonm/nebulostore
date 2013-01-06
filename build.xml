@@ -99,11 +99,11 @@
 
   <target name="test-server">
     <antcall target="jar">
-      <param name="main-class" value="org.nebulostore.appcore.TestingPeer" />
+      <param name="main-class" value="org.nebulostore.conductor.TestingPeer" />
     </antcall>
   </target>
 
-  <target name="test-client">
+  <target name="peer">
     <antcall target="jar">
       <param name="main-class" value="org.nebulostore.appcore.Peer" />
     </antcall>

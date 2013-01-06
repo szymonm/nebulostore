@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
@@ -26,6 +27,7 @@ import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 public final class TestingPeer extends Peer {
   private static Logger logger_ = Logger.getLogger(TestingPeer.class);
   private static Injector injector_ = Guice.createInjector(new NebuloContext());
+  private static final int INITIAL_DELAY_SEC = 30;
 
   private TestingPeer() {
   }
@@ -33,6 +35,7 @@ public final class TestingPeer extends Peer {
   public static void main(String[] args) {
     DOMConfigurator.configure("resources/conf/log4j.xml");
     BigInteger appKey = BigInteger.ZERO;
+    boolean success = true;
     if (args.length < 1) {
       // Random AppKey if not provided.
       appKey = CryptoUtils.getRandomId();
@@ -49,17 +52,15 @@ public final class TestingPeer extends Peer {
       logger_.error(e);
     }
 
-    try {
-      // Waiting for network initialization
-      Thread.sleep(2 * 60 * 1000);
-      Thread.sleep(30 * 1000);
-    } catch (InterruptedException e1) {
-      e1.printStackTrace();
-      System.exit(-1);
-    }
-
     // Insert test modules you want to be ran below.
-    runTest(new PingPongServer(), "PingPong");
+    logger_.info("Starting ping-pong test.");
+    if (runTest(new PingPongServer(), "PingPong")) {
+      success = true;
+      logger_.info("Test succeeded!");
+    } else {
+      success = false;
+      logger_.info("Test failed!");
+    }
     // logger_.info("Finished PingPong test, performing DHT tests...");
 
     // dhtTests();
@@ -68,7 +69,7 @@ public final class TestingPeer extends Peer {
 
     // messagesTests();
 
-    messagesPerfTests();
+    // messagesPerfTests();
 
     // runTest(new TrivialQueryTestServer(), "Query test");
 
@@ -76,6 +77,7 @@ public final class TestingPeer extends Peer {
 
     dispatcherInQueue_.add(new KillDispatcherMessage());
     finishPeer();
+    System.exit(success ? 0 : 1);
   }
 
   private static void messagesPerfTests() {
@@ -344,14 +346,11 @@ public final class TestingPeer extends Peer {
   }
 
   private static boolean runTest(ConductorServer testModule, String testName) {
-    // TODO(bolek,szymon): This is not currently working because the commented methods
-    // are not visible from here.
     try {
-      //testModule.runThroughDispatcher(dispatcherInQueue_, testName + " server");
+      testModule.runThroughDispatcher(dispatcherInQueue_);
       testModule.getResult();
       return true;
     } catch (NebuloException exception) {
-      //testModule.endJobModule();
       logger_.error("NebuloException at test " + testName + " : " +
           exception.getMessage());
       return false;

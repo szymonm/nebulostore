@@ -17,9 +17,9 @@ public class PingPongServer extends ConductorServer {
 
   public PingPongServer() {
     // Test consist of 2 phases and needs 2 peers.
-    // We give it 5 seconds.
+    // We give it 60 seconds.
     // We set "PingPong client" as clients job id.
-    super(2, 2, 20, "PingPong client", "PingPong server");
+    super(2, 2, 60, "PingPong client", "PingPong server");
   }
 
   @Override

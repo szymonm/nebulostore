@@ -31,6 +31,15 @@ BUILD_DIR="build"
 JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
 PEERS_NUM=4
+TARGET=text-interface
+
+if [ $1 ]; then
+  PEERS_NUM=$1
+fi
+
+if [ $2 ]; then
+  TARGET=$2
+fi
 
 platform='unknown'
 unamestr=`uname`
@@ -48,8 +57,7 @@ else
 fi
 
 rm -rf $BUILD_DIR
-ant text-interface
-
+ant $TARGET
 
 echo "Building done. Copying..."
 

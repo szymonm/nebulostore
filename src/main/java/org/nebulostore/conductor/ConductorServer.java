@@ -31,7 +31,7 @@ import org.nebulostore.timer.MessageGenerator;
  * @author szymonmatejczyk Remember to set lastPhase_ and peersNeeded_ in
  *         subclass.
  */
-public abstract class ConductorServer extends ReturningJobModule<Void> {
+public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   private static Logger logger_ = Logger.getLogger(ConductorServer.class);
 
   /**
@@ -124,7 +124,7 @@ public abstract class ConductorServer extends ReturningJobModule<Void> {
   public Map<CommAddress, Long> pendingTicsAck_ = new HashMap<CommAddress, Long>();
 
   private long postponeStart_ = -1;
-  private final long postponeDelay_ = 20;
+  private final long postponeDelay_ = 3;
   private final boolean postponeTics_ = true;
 
   private final  int maximumLost_ = 1;
@@ -328,23 +328,22 @@ public abstract class ConductorServer extends ReturningJobModule<Void> {
         firstToc_ = System.currentTimeMillis();
       }
 
-
-
       synchronized (tocsAddresses_) {
         tocs_++;
         tocsAddresses_.add(message.getSourceAddress());
-        HashSet<CommAddress> tmp = new HashSet<CommAddress>(clients_);
-        tmp.removeAll(tocsAddresses_);
-        logger_.debug("TocMessage received. Tocs incremented to: " + tocs_);
-        logger_.debug("Still waiting for: " + tmp.toString());
+        logger_.debug("Tocs incremented to: " + tocs_);
 
         if (tocs_ >= peersNeeded_) {
           firstToc_ = -1;
+        } else {
+          HashSet<CommAddress> tmp = new HashSet<CommAddress>(clients_);
+          tmp.removeAll(tocsAddresses_);
+          logger_.debug("Still waiting for " + (peersNeeded_ - tocs_) + " peers from: " +
+              tmp.toString());
         }
 
         processTocsChange();
       }
-
 
       return null;
     }
@@ -423,10 +422,9 @@ public abstract class ConductorServer extends ReturningJobModule<Void> {
       if (tocs_ >= peersNeeded_) {
         clients_ = tocsAddresses_;
         logger_.debug("clients set modified to: " + clients_);
+
+        ++phase_;
         logger_.info("Advancing to phase: " + phase_);
-
-        phase_++;
-
         advancePhase();
 
         testingState_ = TestingState.Configuring;
@@ -495,7 +493,7 @@ public abstract class ConductorServer extends ReturningJobModule<Void> {
     message.accept(visitor_);
   }
 
-  public Void getResult() throws NebuloException {
+  public Boolean getResult() throws NebuloException {
     return getResult(timeout_);
   }
 

@@ -72,7 +72,7 @@ public class Dispatcher extends Module {
           " job threads.");
       for (int i = 0; i < threads.length; ++i) {
         try {
-          threads[i].join();
+          threads[i].join(JOIN_TIMEOUT_MILLIS);
         } catch (InterruptedException exception) {
           continue;
         }
