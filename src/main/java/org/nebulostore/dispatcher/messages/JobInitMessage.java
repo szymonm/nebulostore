@@ -10,6 +10,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  */
 public class JobInitMessage extends Message {
   private static final long serialVersionUID = 2482967055598180345L;
+  private final transient JobModule jobModule_;
 
   public JobInitMessage(JobModule jobModule) {
     jobModule_ = jobModule;
@@ -30,6 +31,4 @@ public class JobInitMessage extends Message {
   public JobModule getHandler() {
     return jobModule_;
   }
-
-  private final JobModule jobModule_;
 }

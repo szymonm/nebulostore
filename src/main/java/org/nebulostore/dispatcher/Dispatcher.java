@@ -67,7 +67,8 @@ public class Dispatcher extends Module {
      */
     @Override
     public Void visit(KillDispatcherMessage message) throws NebuloException {
-      Thread[] threads = workersThreads_.values().toArray(new Thread[0]);
+      Thread[] threads =
+          workersThreads_.values().toArray(new Thread[workersThreads_.values().size()]);
       logger_.debug("Quitting dispatcher, waiting for " + String.valueOf(threads.length) +
           " job threads.");
       for (int i = 0; i < threads.length; ++i) {

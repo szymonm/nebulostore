@@ -103,13 +103,13 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
         logger_.debug("Replication group: " + group);
         if (group == null) {
           endWithError(new NebuloException("No peers replicating this object."));
-        }
-
-        for (CommAddress replicator : group) {
-          String remoteJobId = CryptoUtils.getRandomId().toString();
-          networkQueue_.add(new DeleteObjectMessage(remoteJobId , null, replicator,
+        } else {
+          for (CommAddress replicator : group) {
+            String remoteJobId = CryptoUtils.getRandomId().toString();
+            networkQueue_.add(new DeleteObjectMessage(remoteJobId , null, replicator,
                 address_.getObjectId(), getJobId()));
-          recipientsSet_.add(replicator);
+            recipientsSet_.add(replicator);
+          }
         }
         TimerContext.getInstance().addDelayedMessage(System.currentTimeMillis() + TIMEOUT_MILLIS,
             new DeleteTimeoutMessage(jobId_));
@@ -191,7 +191,7 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
    * Message used for timeout in delete() API call.
    * @author bolek
    */
-  public class DeleteTimeoutMessage extends Message {
+  public static class DeleteTimeoutMessage extends Message {
     private static final long serialVersionUID = -1273528925587802574L;
 
     public DeleteTimeoutMessage(String jobID) {

@@ -138,26 +138,25 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         logger_.debug("Group: " + group);
         if (group == null) {
           endWithError(new NebuloException("No peers replicating this object."));
-        }
+        } else {
+          EncryptedObject encryptedObject = null;
+          try {
+            encryptedObject = CryptoUtils.encryptObject(object_);
+            commitVersion_ = CryptoUtils.sha(encryptedObject);
+            isSmallFile_ = encryptedObject.size() < SMALL_FILE_THRESHOLD;
 
-        EncryptedObject encryptedObject = null;
-        try {
-          encryptedObject = CryptoUtils.encryptObject(object_);
-        } catch (CryptoException exception) {
-          endWithError(new NebuloException("Unable to encrypt object.", exception));
-        }
-
-        commitVersion_ = CryptoUtils.sha(encryptedObject);
-        isSmallFile_ = encryptedObject.size() < SMALL_FILE_THRESHOLD;
-
-        for (CommAddress replicator : group) {
-          String remoteJobId = CryptoUtils.getRandomId().toString();
-          waitingForTransactionResult_.put(replicator, remoteJobId);
-          networkQueue_.add(new QueryToStoreObjectMessage(remoteJobId , null, replicator,
-              address_.getObjectId(), encryptedObject, previousVersionSHAs_, getJobId()));
-          logger_.debug("added recipient: " + replicator);
-          recipientsSet_.add(replicator);
-          ++nRecipients_;
+            for (CommAddress replicator : group) {
+              String remoteJobId = CryptoUtils.getRandomId().toString();
+              waitingForTransactionResult_.put(replicator, remoteJobId);
+              networkQueue_.add(new QueryToStoreObjectMessage(remoteJobId , null, replicator,
+                  address_.getObjectId(), encryptedObject, previousVersionSHAs_, getJobId()));
+              logger_.debug("added recipient: " + replicator);
+              recipientsSet_.add(replicator);
+              ++nRecipients_;
+            }
+          } catch (CryptoException exception) {
+            endWithError(new NebuloException("Unable to encrypt object.", exception));
+          }
         }
       } else {
         incorrectState(state_.name(), message);
@@ -315,7 +314,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
    * Just for readability - inner and private message in WriteNebuloObject.
    * @author szymonmatejczyk
    */
-  public class TransactionAnswerInMessage extends Message {
+  public static class TransactionAnswerInMessage extends Message {
     private static final long serialVersionUID = 3862738899180300188L;
 
     TransactionAnswer answer_;

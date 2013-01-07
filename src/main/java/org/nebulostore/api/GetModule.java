@@ -95,10 +95,11 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
         ReplicationGroup group = contractList.getGroup(address_.getObjectId());
         if (group == null) {
           endWithError(new NebuloException("No peers replicating this object."));
+        } else {
+          // TODO(bolek): Ask other replicas if first query is unsuccessful.
+          logger_.debug("Querying replica");
+          queryReplica(group.getReplicator(0));
         }
-        // TODO(bolek): Ask other replicas if first query is unsuccessful.
-        logger_.debug("Querying replica");
-        queryReplica(group.getReplicator(0));
       } else {
         incorrectState(state_.name(), message);
       }
