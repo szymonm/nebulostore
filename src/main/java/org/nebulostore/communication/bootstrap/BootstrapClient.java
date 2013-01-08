@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import org.apache.log4j.Logger;
@@ -13,11 +14,7 @@ import org.nebulostore.communication.address.CommAddressResolver;
 import org.nebulostore.communication.address.PersistentAddressingPeer;
 import org.nebulostore.communication.address.TomP2PClient;
 import org.nebulostore.communication.exceptions.AddressNotPresentException;
-import org.teleal.cling.UpnpService;
-import org.teleal.cling.UpnpServiceImpl;
-import org.teleal.cling.model.types.UnsignedIntegerTwoBytes;
-import org.teleal.cling.support.igd.PortMappingListener;
-import org.teleal.cling.support.model.PortMapping;
+import org.nebulostore.communication.nat.NATUtils;
 
 /**
  * Bootstrap Client.
@@ -35,6 +32,8 @@ public final class BootstrapClient extends BootstrapService {
   //NOTE-GM Addresses for normal communication
   private CommAddress myCommAddress_;
   private CommAddress bootstrapServerCommAddress_;
+  //Address of local NIC used for outside communication
+  private InetAddress localInetAddress_;
   //NOTE-GM TomP2P communication
   PersistentAddressingPeer pAPeer_;
 
@@ -47,7 +46,7 @@ public final class BootstrapClient extends BootstrapService {
     super(commCliPort, bootstrapPort, tomP2PPort, bootstrapTomP2PPort);
     bootstrapServerAddress_ = bootstrapServerAddress;
 
-    // Find my address
+    // Find my address both CommAddress and a real IP one
     logger_.info("Finding out my address.");
     myCommAddress_ = CommAddress.newRandomCommAddress();
 
@@ -65,12 +64,40 @@ public final class BootstrapClient extends BootstrapService {
       throw new NebuloException(errMsg, e);
     }
 
-    //Set up Upnp port mapping
     try {
-      setUpUpnpPortMapping();
+      sendAndReceiveHelloMsg();
+    } catch (IOException e) {
+      logger_.error("Error when sending hello message " + e);
+    }
+
+    /* Now that we know our local address setup UPNP */
+    boolean upnpResult = false;
+    try {
+      upnpResult = setUpUpnpPortMapping();
       logger_.info("Upnp port mapping set up.");
     } catch (IOException e) {
-      logger_.error("Couldn't set up Upnp port mapping: " + e);
+      logger_.error("Error when setting UPNP port mapping: " + e);
+    }
+
+    try {
+      boolean foundAddress = false;
+      if (!upnpResult) {
+        for (String localAddress : NATUtils.getLocalAddresses()) {
+          /* TODO remove  */
+          logger_.debug("Checking: " + pAPeer_.getCurrentInetSocketAddress().
+                getAddress().getHostAddress() + " " + localAddress);
+          if (pAPeer_.getCurrentInetSocketAddress().getAddress().
+              getHostAddress().equals(localAddress)) {
+            foundAddress = true;
+            break;
+          }
+        }
+        if (!foundAddress)
+          throw new NebuloException("Discovered being behind NAT but port " +
+              "forwarding has failed");
+      }
+    } catch (IOException e) {
+      throw new NebuloException(e);
     }
 
     try {
@@ -81,16 +108,6 @@ public final class BootstrapClient extends BootstrapService {
     } catch (AddressNotPresentException e) {
       //Something is really bad if this has happened
       throw new NebuloException(e);
-    }
-
-    // Send hello keep alive
-    while (true) {
-      try {
-        sendAndReceiveHelloMsg();
-        break;
-      } catch (IOException e) {
-        logger_.error("Error when sending hello message " + e);
-      }
     }
   }
 
@@ -125,20 +142,16 @@ public final class BootstrapClient extends BootstrapService {
       pAPeer_;
   }
 
-  private void setUpUpnpPortMapping() throws IOException {
-    InetAddress myLocalAddr = InetAddress.getLocalHost();
-    PortMapping desiredMapping = new PortMapping(commCliPort_,
-        myLocalAddr.toString(),
-        PortMapping.Protocol.TCP);
-    desiredMapping.setExternalPort(new UnsignedIntegerTwoBytes(commCliPort_));
-    desiredMapping.setInternalPort(new UnsignedIntegerTwoBytes(commCliPort_));
-
-    UpnpService upnpService =
-      new UpnpServiceImpl(new PortMappingListener(desiredMapping));
-
-    upnpService.getControlPoint().search();
+  /* Returns true if setting up UPNP was successful */
+  private boolean setUpUpnpPortMapping() throws IOException {
+    logger_.debug("Setting up upnp at address: " +
+        localInetAddress_.getHostAddress());
+    return NATUtils.mapUPNP(localInetAddress_.getHostAddress(), commCliPort_,
+        commCliPort_);
   }
 
+  /* Gets address of bootstrap gossiping server and get local InetAddress used
+   * for accessing */
   private void sendAndReceiveHelloMsg() throws IOException {
     logger_.info("Sending Hello message to server.");
     Socket socket = new Socket(bootstrapServerAddress_, bootstrapPort_);
@@ -151,6 +164,8 @@ public final class BootstrapClient extends BootstrapService {
       bootstrapServerCommAddress_ = message.getPeerAddress();
       logger_.info("Received Hello message from server. His address: " +
           bootstrapServerCommAddress_);
+      localInetAddress_ =
+        ((InetSocketAddress) socket.getLocalSocketAddress()).getAddress();
     } catch (IOException e) {
       throw e;
     } catch (ClassNotFoundException e) {

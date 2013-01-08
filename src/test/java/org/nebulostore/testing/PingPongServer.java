@@ -17,7 +17,7 @@ public final class PingPongServer extends TestingServerImpl {
     new HashMap<Integer, PingPongPeer>();
   private Boolean hasStarted_ = false;
   // 5 minutes
-  private static final int WAIT_PERIOD = 600000;
+  private static final int WAIT_PERIOD = 60000;
   // 60 seconds
   private static final int PING_DELAY = 60000;
 
