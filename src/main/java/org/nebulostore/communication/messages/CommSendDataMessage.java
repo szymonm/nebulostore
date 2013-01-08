@@ -7,7 +7,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * @author Marcin Walas
  */
 public class CommSendDataMessage extends CommMessage {
-
+  private static final long serialVersionUID = -1826257303182602743L;
   public String address_;
   public String data_;
 

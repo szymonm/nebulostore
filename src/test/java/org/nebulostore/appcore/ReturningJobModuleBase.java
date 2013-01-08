@@ -17,6 +17,7 @@ public abstract class ReturningJobModuleBase {
    * Helper message class.
    */
   protected class TestMessage extends Message {
+    private static final long serialVersionUID = 6355287939938856475L;
     @Override
     public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
       return visitor.visit(this);

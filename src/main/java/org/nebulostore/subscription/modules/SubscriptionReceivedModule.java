@@ -1,7 +1,6 @@
 package org.nebulostore.subscription.modules;
 
 import com.google.inject.Inject;
-import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
@@ -40,10 +39,6 @@ public class SubscriptionReceivedModule extends JobModule {
    * Message handler for received subscription notification.
    */
   private class SubscriptionReceivedMessageVisitor extends MessageVisitor<Void> {
-
-    private final Logger logger_ =
-        Logger.getLogger(SubscriptionReceivedMessageVisitor.class);
-
     @Override
     public Void visit(JobInitMessage message) throws NebuloException {
       return null;

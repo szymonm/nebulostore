@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
-import org.apache.log4j.Logger;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -24,7 +23,6 @@ import static org.nebulostore.subscription.model.SubscriptionNotification.Notifi
  */
 public abstract class NebuloObject implements Serializable {
   private static final long serialVersionUID = 7791201890856369839L;
-  private static Logger logger_ = Logger.getLogger(NebuloObject.class);
 
   // TODO(bolek): Is this constant more global?
   protected static final int TIMEOUT_SEC = 60;

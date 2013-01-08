@@ -9,6 +9,7 @@ import org.nebulostore.communication.messages.CommMessage;
  * @author Grzegorz Milka
  */
 public final class PingMessage extends CommMessage {
+  private static final long serialVersionUID = -5128289273270012552L;
   /**
    * Peer who sent the ping.
    */

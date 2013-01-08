@@ -9,6 +9,8 @@ import java.io.Serializable;
  * @author Grzegorz Milka
  */
 public class AddressNotPresentException extends Exception implements Serializable {
+  private static final long serialVersionUID = 8868169624650242139L;
+
   public AddressNotPresentException() {
   }
 

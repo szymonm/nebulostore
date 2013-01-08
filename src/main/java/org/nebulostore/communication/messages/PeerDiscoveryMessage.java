@@ -7,6 +7,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * @author Grzegorz Milka
  */
 public class PeerDiscoveryMessage extends CommMessage {
+  private static final long serialVersionUID = -6176289043880809208L;
+
   public PeerDiscoveryMessage() {
     super(null, null);
   }

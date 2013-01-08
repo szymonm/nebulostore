@@ -210,11 +210,11 @@ public final class PeerGossipService extends Module {
    *
    * Creates new list to avoid Concurrent modification exceptions.
    */
-  private Collection<PeerDescriptor> getPeers() {
+  /*private Collection<PeerDescriptor> getPeers() {
     synchronized (peers_) {
       return new LinkedList(peers_);
     }
-  }
+  }*/
 
   private void increaseAge() {
     synchronized (peers_) {
@@ -324,10 +324,10 @@ public final class PeerGossipService extends Module {
     }
   }
 
-  private void restartGossipSender() {
+  /*private void restartGossipSender() {
     stopGossipSender();
     startGossipSender();
-  }
+  }*/
 
   private void startGossipSender() {
     gossipSender_.schedule(new GossipSender(), gossipPeriod_, gossipPeriod_);

@@ -90,6 +90,8 @@ public class DispatcherTest {
      * Dummy message.
      */
     class DummyMessage extends Message {
+      private static final long serialVersionUID = -8949747106617938488L;
+
       public DummyMessage() {
         super("1");
       }

@@ -9,7 +9,7 @@ import org.nebulostore.communication.address.CommAddress;
  * @author Marcin Walas
  */
 public class StreamBindingMessage extends Message {
-
+  private static final long serialVersionUID = -8407828390830975543L;
   private final CommAddress destAddress_;
   private final String streamId_;
 

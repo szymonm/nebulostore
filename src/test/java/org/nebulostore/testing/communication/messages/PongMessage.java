@@ -9,6 +9,7 @@ import org.nebulostore.communication.messages.CommMessage;
  * @author Grzegorz Milka
  */
 public final class PongMessage extends CommMessage {
+  private static final long serialVersionUID = 3661148334857628467L;
   /**
    * Peer who sent the pong.
    */

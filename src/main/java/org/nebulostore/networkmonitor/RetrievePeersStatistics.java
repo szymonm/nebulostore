@@ -2,7 +2,6 @@ package org.nebulostore.networkmonitor;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.apache.log4j.Logger;
 import org.nebulostore.appcore.InstanceMetadata;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
@@ -20,8 +19,6 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
  */
 public class RetrievePeersStatistics extends ReturningJobModule<ConcurrentLinkedQueue
     <PeerConnectionSurvey>> {
-  private static Logger logger_ = Logger.getLogger(RetrievePeersStatistics.class);
-
   private final CommAddress peer_;
 
   public RetrievePeersStatistics(CommAddress peer) {

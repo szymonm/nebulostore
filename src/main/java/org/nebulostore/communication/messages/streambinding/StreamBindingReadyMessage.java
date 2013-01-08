@@ -11,6 +11,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * @author Marcin Walas
  */
 public class StreamBindingReadyMessage extends Message {
+  private static final long serialVersionUID = -5569257766518434925L;
 
   private final String streamId_;
 

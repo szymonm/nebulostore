@@ -38,8 +38,6 @@ public final class BootstrapClient extends BootstrapService {
   //NOTE-GM TomP2P communication
   PersistentAddressingPeer pAPeer_;
 
-  private Boolean isEnding_ = false;
-
   //TODO(grzegorzmilka) Collision handling
   public BootstrapClient(String bootstrapServerAddress,
       int commCliPort,

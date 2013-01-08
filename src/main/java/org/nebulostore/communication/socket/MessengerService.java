@@ -183,9 +183,6 @@ public class MessengerService extends Module {
             logger_.error("Socket to: " + commAddress +
                 " could not be created. " + e);
             activeSOOSPair_ = null;
-            if (socket != null) {
-              socket.close();
-            }
             throw new IOException("Socket to: " + commAddress +
                 " could not be created.", e);
           }

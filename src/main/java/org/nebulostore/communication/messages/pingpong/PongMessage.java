@@ -9,6 +9,7 @@ import org.nebulostore.communication.messages.CommMessage;
  * @author Marcin Walas
  */
 public class PongMessage extends CommMessage {
+  private static final long serialVersionUID = 8745769753633926172L;
   private final int number_;
 
   public PongMessage(String jobId, CommAddress destAddress, int number) {

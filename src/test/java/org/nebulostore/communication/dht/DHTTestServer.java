@@ -26,7 +26,6 @@ import org.nebulostore.conductor.messages.InitMessage;
 public class DHTTestServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(DHTTestServer.class);
 
-  private final int peersInTest_;
   private final int testPhases_;
   private final String dhtProvider_;
 
@@ -44,7 +43,6 @@ public class DHTTestServer extends ConductorServer {
         clientsJobId, true, testDescription);
     keysMultiplier_ = keysMultiplier;
     dhtProvider_ = dhtProvider;
-    peersInTest_ = peersFound;
     testPhases_ = testPhases;
     visitor_ = new DHTTestServerVisitor();
   }
