@@ -18,7 +18,7 @@ public abstract class Message implements Serializable {
     jobId_ = CryptoUtils.getRandomString();
   }
 
-  public Message(String jobID) {
+  protected Message(String jobID) {
     jobId_ = jobID;
   }
 

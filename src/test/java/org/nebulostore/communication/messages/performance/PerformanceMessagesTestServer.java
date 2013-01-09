@@ -30,7 +30,6 @@ public class PerformanceMessagesTestServer extends ConductorServer {
 
   private static final double ERROR_THRESHOLD = 0.5;
 
-  private double issued_;
   private double received_;
 
   private Double shouldReceive_;
@@ -110,7 +109,6 @@ public class PerformanceMessagesTestServer extends ConductorServer {
 
   @Override
   public void feedStats(CaseStatistics stats) {
-    issued_ += stats.getDouble("issued");
     received_ += stats.getDouble("received");
     shouldReceive_ += stats.getDouble("shouldReceive");
     logger_.info("Stats gathered " + stats);

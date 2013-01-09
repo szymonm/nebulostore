@@ -266,7 +266,6 @@ public final class GossipTest {
    */
   private static class CheckCohesivenessReport {
     public Collection<Collection<GossiperNode>> components_;
-    public int nObsoleteEdges_;
     public boolean isCohesive_;
     public int sizeOfLargestComponent_;
   }
@@ -315,7 +314,6 @@ public final class GossipTest {
         ", Number of obsolete nodes still present: " + result.nObsoleteEdges_);
     CheckCohesivenessReport cCR = new CheckCohesivenessReport();
     cCR.components_ = cohReport.components_;
-    cCR.nObsoleteEdges_ = result.nObsoleteEdges_;
     cCR.isCohesive_ = cohReport.isCohesive_;
     cCR.sizeOfLargestComponent_ = mainComponent.size();
 

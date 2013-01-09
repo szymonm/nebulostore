@@ -1,20 +1,11 @@
 package org.nebulostore.api;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.nebulostore.appcore.Message;
-
-
-
 /**
  * getNebuloFile() API call test class.
  */
 public class GetNebuloFileModuleTest {
 
-  private BlockingQueue<Message> inQueue_;
+  /*private BlockingQueue<Message> inQueue_;
   private BlockingQueue<Message> outQueue_;
   private BlockingQueue<Message> networkQueue_;
   private Thread thread_;
@@ -28,7 +19,7 @@ public class GetNebuloFileModuleTest {
 
   @Test
   public void testSuccessfulCall() {
-    /*String[] dirIds   = {"dir_id_1"};
+    String[] dirIds   = {"dir_id_1"};
     String[] entryIds = {"entry_1"};
     NebuloKey nebuloKey = TestUtils.createNebuloKey("app_key", dirIds, entryIds, "objectID");
     assertTrue(nebuloKey.appKey_.appKey_.equals("app_key"));
@@ -142,6 +133,6 @@ public class GetNebuloFileModuleTest {
       thread_.join();
     } catch (InterruptedException exception) {
       assertTrue(false);
-    }*/
-  }
+    }
+  }*/
 }
