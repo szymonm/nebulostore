@@ -87,12 +87,11 @@ public class BdbPeer extends Module {
     if (config.getString("type", "proxy").equals("storage-holder")) {
       logger_.info("Configuring as bdb database holder");
 
-      storagePath_ = config.getString("sleepycat.storage-path",
-          "/tmp/nebulostore-bdb");
-
-      storeName_ = config.getString("sleepycat.store-name", "nebulostore-bdb");
+      storagePath_ = config.getString("sleepycat.storage-path", "/tmp/nebulostore/");
+      storeName_ = config.getString("sleepycat.storage-name", "bdb-dht");
 
       logger_.debug("storagePath: " + storagePath_);
+      logger_.debug("storeName: " + storeName_);
 
       env_ = createEnvironment(new File(storagePath_));
 
