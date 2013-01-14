@@ -63,20 +63,16 @@ public class KeyDHT implements Serializable {
     return true;
   }
 
-  public static KeyDHT fromSerializableObject(Serializable object)  {
+  public static KeyDHT fromSerializableObject(Serializable object) {
     // TODO: This - getBytes() is platform dependent, change this
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ObjectOutputStream oos = null;
     try {
       oos = new ObjectOutputStream(baos);
+      oos.writeObject(object);
     } catch (IOException e1) {
       e1.printStackTrace();
-    }
-    try {
-      oos.writeObject(object);
-    } catch (IOException e) {
-      e.printStackTrace();
     }
 
     byte[] val = baos.toByteArray();
@@ -87,7 +83,6 @@ public class KeyDHT implements Serializable {
       return new KeyDHT(new BigInteger(1, md.digest(val)));
     } catch (NoSuchAlgorithmException e) {
       logger_.fatal(e);
-      System.exit(-1);
       return null;
     }
   }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 
 import org.bouncycastle.util.encoders.Base64;
 
@@ -31,17 +32,14 @@ public class ValueDHT implements Serializable {
     ObjectOutputStream oos = null;
     try {
       oos = new ObjectOutputStream(baos);
+      oos.writeObject(value_);
     } catch (IOException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
     }
-    try {
-      oos.writeObject(value_);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    String serialized = new String(Base64.encode(baos.toByteArray()));
+
+    String serialized = new String(Base64.encode(baos.toByteArray()),
+            Charset.forName("UTF-8"));
     return serialized;
   }
 
@@ -58,16 +56,11 @@ public class ValueDHT implements Serializable {
     ObjectInputStream ois = null;
     try {
       ois = new ObjectInputStream(baos);
+      return new ValueDHT((Mergeable) ois.readObject());
     } catch (IOException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
-    }
-
-    try {
-      return new ValueDHT((Mergeable) ois.readObject());
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
       e.printStackTrace();
     }
 

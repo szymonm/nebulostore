@@ -97,12 +97,14 @@ public final class TomP2PClient extends TomP2PPeer {
   @Override
   public void destroy() {
     checkSetUp();
-    synchronized (isTearingDown_) {
-      isTearingDown_ = true;
-    }
+    isTearingDown_.set(true);
     logger_.info("Starting tearDown procedure.");
-    currentAddressDiscoverer_.cancel();
-    logger_.info("CurrentAddressDiscoverer canceled.");
+    if (currentAddressDiscoverer_ != null) {
+      currentAddressDiscoverer_.cancel();
+      logger_.info("CurrentAddressDiscoverer canceled.");
+    } else {
+      logger_.info("CurrentAddressDiscoverer was not initialized.");
+    }
 
     myPeer_.shutdown();
     resolver_ = null;
@@ -149,32 +151,30 @@ public final class TomP2PClient extends TomP2PPeer {
   private class CurrentAddressDiscoverer extends TimerTask {
     @Override
     public void run() {
-      synchronized (isTearingDown_) {
-        if (isTearingDown_) {
-          return;
-        }
-        logger_.trace("Running periodical address discovery.");
-        InetSocketAddress myInetSocketAddress;
-        try {
-          myInetSocketAddress = getCurrentInetSocketAddress();
-        } catch (IOException e) {
-          logger_.warn("Couldn't discover current external address.");
-          return;
-        }
+      if (isTearingDown_.get()) {
+        return;
+      }
+      logger_.trace("Running periodical address discovery.");
+      InetSocketAddress myInetSocketAddress;
+      try {
+        myInetSocketAddress = getCurrentInetSocketAddress();
+      } catch (IOException e) {
+        logger_.warn("Couldn't discover current external address.");
+        return;
+      }
 
-        if (!myInetSocketAddress_.equals(myInetSocketAddress)) {
-          logger_.info("Discovered change in network address from: " +
-              myInetSocketAddress_ + " to: " + myInetSocketAddress + ".");
-          try {
-            uploadCurrentInetSocketAddress(myInetSocketAddress);
-          } catch (IOException e) {
-            String errMsg = "Error when trying to update address to kademlia";
-            logger_.error(errMsg + " " + e);
-            return;
-          }
-          logger_.info("Info about my address has been put to kademlia.");
-          myInetSocketAddress_ = myInetSocketAddress;
+      if (!myInetSocketAddress_.equals(myInetSocketAddress)) {
+        logger_.info("Discovered change in network address from: " +
+            myInetSocketAddress_ + " to: " + myInetSocketAddress + ".");
+        try {
+          uploadCurrentInetSocketAddress(myInetSocketAddress);
+        } catch (IOException e) {
+          String errMsg = "Error when trying to update address to kademlia";
+          logger_.error(errMsg + " " + e);
+          return;
         }
+        logger_.info("Info about my address has been put to kademlia.");
+        myInetSocketAddress_ = myInetSocketAddress;
       }
     }
   }

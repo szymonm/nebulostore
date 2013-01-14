@@ -52,9 +52,7 @@ public final class TomP2PServer extends TomP2PPeer {
   @Override
   public void destroy() {
     checkSetUp();
-    synchronized (isTearingDown_) {
-      isTearingDown_ = true;
-    }
+    isTearingDown_.set(true);
     logger_.info("Starting tearDown procedure.");
     myPeer_.shutdown();
     resolver_ = null;

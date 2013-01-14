@@ -1,6 +1,7 @@
 package org.nebulostore.communication.bdbdht;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
@@ -170,19 +171,20 @@ public class BdbPeer extends Module {
 
     DatabaseEntry data = new DatabaseEntry();
     OperationStatus operationStatus = database_.get(t,
-            new DatabaseEntry(key.toString().getBytes()),
+            new DatabaseEntry(key.toString().getBytes(Charset.forName("UTF-8"))),
             data,
             LockMode.DEFAULT);
 
     if (operationStatus == OperationStatus.SUCCESS) {
       logger_.info("Performing merge on object from DHT");
-      ValueDHT oldValue = ValueDHT.build(new String(data.getData()));
+      ValueDHT oldValue = ValueDHT.build(new String(data.getData(),
+            Charset.forName("UTF-8")));
       valueDHT = new ValueDHT(valueDHT.getValue().merge(oldValue.getValue()));
     }
 
     String value = valueDHT.serializeValue();
-    database_.put(t, new DatabaseEntry(key.toString().getBytes()),
-        new DatabaseEntry(value.getBytes()));
+    database_.put(t, new DatabaseEntry(key.toString().getBytes(Charset.forName("UTF-8"))),
+        new DatabaseEntry(value.getBytes(Charset.forName("UTF-8"))));
 
     t.commit();
     if (fromNetwork) {
@@ -199,11 +201,13 @@ public class BdbPeer extends Module {
     KeyDHT key = getMsg.getKey();
     DatabaseEntry data = new DatabaseEntry();
     OperationStatus operationStatus = database_.get(null,
-        new DatabaseEntry(key.toString().getBytes()), data, LockMode.DEFAULT);
+        new DatabaseEntry(key.toString().getBytes(Charset.forName("UTF-8"))),
+        data, LockMode.DEFAULT);
 
     OutDHTMessage outMessage;
     if (operationStatus == OperationStatus.SUCCESS) {
-      ValueDHT value = ValueDHT.build(new String(data.getData()));
+      ValueDHT value = ValueDHT.build(new String(data.getData(),
+            Charset.forName("UTF-8")));
       outMessage = new ValueDHTMessage(getMsg, key, value);
     } else {
       logger_.debug("Unable to read from database. Sending ErrorDHTMessage.");

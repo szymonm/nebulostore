@@ -2,6 +2,7 @@ package org.nebulostore.communication.address;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.p2p.Peer;
@@ -18,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 //NOTE-GM Perhaps add TomP2PBuilder (Builder pattern)
 public abstract class TomP2PPeer implements PersistentAddressingPeer {
-  protected static Logger logger_;
+  protected Logger logger_;
 
   protected Peer myPeer_;
   protected CommAddressResolver resolver_;
@@ -33,12 +34,10 @@ public abstract class TomP2PPeer implements PersistentAddressingPeer {
 
   protected CommAddress myCommAddress_;
 
-  protected Boolean isTearingDown_ = false;
+  protected AtomicBoolean isTearingDown_ = new AtomicBoolean(false);
 
   public TomP2PPeer() {
-    if (logger_ == null) {
-      logger_ = Logger.getLogger(this.getClass());
-    }
+    logger_ = Logger.getLogger(this.getClass());
   }
 
   @Override

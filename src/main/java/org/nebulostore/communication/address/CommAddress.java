@@ -28,7 +28,7 @@ public class CommAddress implements Serializable {
   /**
    * Return CommAddress symbolizing any or none address depending on context.
    */
-  public static CommAddress getZero() {
+  public static synchronized CommAddress getZero() {
     if (zeroCommAddress_ == null) {
       zeroCommAddress_ = new CommAddress(0L, 0L);
     }

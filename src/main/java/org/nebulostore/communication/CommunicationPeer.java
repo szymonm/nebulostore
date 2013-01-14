@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.LogManager;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -93,9 +94,9 @@ public final class CommunicationPeer extends Module {
 
   private boolean isServer_;
   // Is the server shutting down.
-  private Boolean isEnding_ = false;
+  private AtomicBoolean isEnding_ = new AtomicBoolean(false);
 
-  private static int commCliPort_;
+  private int commCliPort_;
 
   public CommunicationPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue) throws NebuloException {
@@ -103,14 +104,24 @@ public final class CommunicationPeer extends Module {
     logger_.debug("Starting CommunicationPeer");
 
     /* Turn off cling's logging by turning off JUL - java.util.logging*/
+    FileInputStream fileIS = null;
     try {
       LogManager logManager = LogManager.getLogManager();
-      FileInputStream fileIS = new FileInputStream(CLING_CONFIGURATION_PATH);
+      fileIS = new FileInputStream(CLING_CONFIGURATION_PATH);
       logManager.readConfiguration(fileIS);
-      fileIS.close();
     } catch (IOException e) {
       logger_.warn("IOException: " + e + " was thrown when trying to read " +
           "cling configuration");
+    } finally {
+      if (fileIS != null)
+        try {
+          fileIS.close();
+        } catch (IOException e) {
+          logger_.warn("IOException: " + e +
+              " was thrown when trying to close fileIS");
+        } finally {
+          fileIS = null;
+        }
     }
 
     XMLConfiguration config = null;
@@ -238,9 +249,7 @@ public final class CommunicationPeer extends Module {
   @Override
   public void endModule() {
     logger_.info("Starting endModule procedure of CommunicationPeer.");
-    synchronized (isEnding_) {
-      isEnding_ = true;
-    }
+    isEnding_.set(true);
     messengerService_.endModule();
     messengerThread_.interrupt();
     while (true) {
@@ -281,8 +290,8 @@ public final class CommunicationPeer extends Module {
 
   @Override
   protected void processMessage(Message msg) {
-    synchronized (isEnding_) {
-      if (isEnding_) {
+    synchronized (this) {
+      if (isEnding_.get()) {
         logger_.warn("Can not process message, because commPeer is " +
             "shutting down.");
         return;

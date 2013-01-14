@@ -1,7 +1,5 @@
 package org.nebulostore.communication.messages;
 
-import java.io.Serializable;
-
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -11,7 +9,7 @@ import org.nebulostore.communication.address.CommAddress;
  * Created as a base class for all messages that are being sent over communication layer.
  * @author  Marcin Walas
  */
-public abstract class CommMessage extends Message implements Serializable {
+public abstract class CommMessage extends Message {
   private static final long serialVersionUID = -8777470468391282076L;
 
   private CommAddress commSourceAddress_;

@@ -1,5 +1,7 @@
 package org.nebulostore.communication.messages.kademlia;
 
+import java.util.Arrays;
+
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
@@ -18,11 +20,11 @@ public class KademliaMessage extends CommMessage {
   public KademliaMessage(CommAddress sourceAddress, CommAddress destAddress,
       byte[] data) {
     super(sourceAddress, destAddress);
-    data_ = data;
+    data_ = Arrays.copyOf(data, data.length);
   }
 
   public byte[] getData() {
-    return data_;
+    return Arrays.copyOf(data_, data_.length);
   }
 
   @Override

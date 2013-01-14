@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
@@ -32,7 +33,7 @@ public class MessengerService extends Module {
   private static Logger logger_ = Logger.getLogger(MessengerService.class);
   private CommAddressResolver resolver_;
   private CachedOOSDispatcher oosDispatcher_;
-  private Boolean isEnding_ = false;
+  private AtomicBoolean isEnding_ = new AtomicBoolean(false);
 
   public MessengerService(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue, CommAddressResolver resolver) {
@@ -43,9 +44,7 @@ public class MessengerService extends Module {
 
   @Override
   public void endModule() {
-    synchronized (isEnding_) {
-      isEnding_ = true;
-    }
+    isEnding_.set(true);
     // Nothing to do here, because socket cache cleans up automatically after 1
     // second.
     super.endModule();
@@ -53,12 +52,10 @@ public class MessengerService extends Module {
 
   @Override
   public void processMessage(Message msg) {
-    synchronized (isEnding_) {
-      if (isEnding_) {
-        logger_.warn("Can not process message, because commPeer is " +
-            "shutting down.");
-        return;
-      }
+    if (isEnding_.get()) {
+      logger_.warn("Can not process message, because commPeer is " +
+          "shutting down.");
+      return;
     }
     if (!(msg instanceof CommMessage)) {
       logger_.error("Don't know what to do with message: " + msg);

@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
@@ -28,7 +29,7 @@ public class ListenerService extends Module {
   private int commCliPort_;
   private static Logger logger_ = Logger.getLogger(ListenerService.class);
   private ExecutorService service_ = Executors.newCachedThreadPool();
-  private Boolean isEnding_ = false;
+  private AtomicBoolean isEnding_ = new AtomicBoolean(false);
 
   /**
    * Handler for incoming connection.
@@ -94,21 +95,13 @@ public class ListenerService extends Module {
 
   @Override
   public void run() {
-    boolean isEnding;
-    synchronized (isEnding_) {
-      isEnding = isEnding_;
-    }
-    while (!isEnding) {
+    while (!isEnding_.get()) {
       Socket clientSocket = null;
       try {
         clientSocket = serverSocket_.accept();
       } catch (IOException e) {
         logger_.error("IOException when accepting connection " + e);
         continue;
-      } finally {
-        synchronized (isEnding_) {
-          isEnding = isEnding_;
-        }
       }
       logger_.debug("Accepted connection from: " +
           clientSocket.getRemoteSocketAddress());
@@ -118,9 +111,7 @@ public class ListenerService extends Module {
 
   @Override
   public void endModule() {
-    synchronized (isEnding_) {
-      isEnding_ = true;
-    }
+    isEnding_.set(true);
     try {
       serverSocket_.close();
     } catch (IOException e) {

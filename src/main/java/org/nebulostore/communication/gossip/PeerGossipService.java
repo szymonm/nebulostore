@@ -1,5 +1,6 @@
 package org.nebulostore.communication.gossip;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -178,7 +179,9 @@ public final class PeerGossipService extends Module {
   /**
    * @author Grzegorz Milka
    */
-  private class AgeComparator implements Comparator<PeerDescriptor> {
+  private static class AgeComparator implements Comparator<PeerDescriptor>,
+          Serializable {
+    static final long serialVersionUID = 5749268724700386472L;
     public int compare(PeerDescriptor a, PeerDescriptor b) {
       int diff = a.getAge() - b.getAge();
       if (diff == 0) {

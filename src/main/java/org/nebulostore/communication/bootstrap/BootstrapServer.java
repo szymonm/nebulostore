@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -45,7 +46,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   private final InetSocketAddress myInetSocketAddress_;
   private PersistentAddressingPeer pAPeer_;
   private ExecutorService service_ = Executors.newCachedThreadPool();
-  private Boolean isEnding_ = false;
+  private AtomicBoolean isEnding_ = new AtomicBoolean(false);
 
   public BootstrapServer(String bootstrapServerAddress,
       int commCliPort, int bootstrapPort, int tomP2PPort)
@@ -76,12 +77,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
 
   @Override
   public void run() {
-    boolean isEnding;
-    synchronized (isEnding_) {
-      isEnding = isEnding_;
-    }
-
-    while (!isEnding) {
+    while (!isEnding_.get()) {
       Socket clientSocket;
       try {
         clientSocket = serverSocket_.accept();
@@ -107,9 +103,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
 
   @Override
   public void shutdownService() {
-    synchronized (isEnding_) {
-      isEnding_ = true;
-    }
+    isEnding_.set(true);
     pAPeer_.destroy();
     try {
       serverSocket_.close();
