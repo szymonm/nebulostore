@@ -1,5 +1,8 @@
 package org.nebulostore.appcore;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +36,7 @@ public abstract class NebuloObject implements Serializable {
   protected transient CommAddress sender_;
 
   protected transient String lastCommittedVersion_;
-  protected transient Set<String> previousVersions_ = new HashSet<String>();
+  protected transient Set<String> previousVersions_;
   protected Subscribers subscribers_;
 
 
@@ -51,6 +54,7 @@ public abstract class NebuloObject implements Serializable {
   protected NebuloObject(NebuloAddress address) {
     address_ = address;
     subscribers_ = new Subscribers();
+    previousVersions_ = new HashSet<String>();
   }
 
   public NebuloAddress getAddress() {
@@ -131,4 +135,12 @@ public abstract class NebuloObject implements Serializable {
     return !addresses.isEmpty();
   }
 
+  private void writeObject(ObjectOutputStream out) throws IOException {
+    out.defaultWriteObject();
+  }
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    in.defaultReadObject();
+    previousVersions_ = new HashSet<String>();
+  }
 }

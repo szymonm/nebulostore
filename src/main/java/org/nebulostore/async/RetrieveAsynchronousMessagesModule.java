@@ -94,7 +94,7 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
             logger_.debug("Received update file asynchronous message " +
                 ((UpdateNebuloObjectMessage) m).getMessageId());
           } else if (m instanceof DeleteNebuloObjectMessage) {
-            NebuloAddress address = ((UpdateNebuloObjectMessage) m).getObjectId();
+            NebuloAddress address = ((DeleteNebuloObjectMessage) m).getObjectId();
             logger_.debug("Received delete asynchronous message " + address);
             try {
               Replicator.deleteObject(address.getObjectId());

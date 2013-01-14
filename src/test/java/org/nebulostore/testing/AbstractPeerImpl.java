@@ -79,7 +79,7 @@ public abstract class AbstractPeerImpl implements AbstractPeer {
     if (communicationPeer_ == null) {
       throw new IllegalStateException("Can not get address from non existent commPeer.");
     }
-    return communicationPeer_.getPeerAddress();
+    return CommunicationPeer.getPeerAddress();
   }
 
   public boolean isActive() throws RemoteException {

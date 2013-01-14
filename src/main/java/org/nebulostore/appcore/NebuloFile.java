@@ -1,5 +1,8 @@
 package org.nebulostore.appcore;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Vector;
@@ -28,7 +31,7 @@ public class NebuloFile extends NebuloObject {
   /**
    * File chunk metadata.
    */
-  protected static class FileChunkWrapper implements Serializable {
+  protected class FileChunkWrapper implements Serializable {
     private static final long serialVersionUID = -6723808968821818811L;
 
     // FileChunk stores (endByte_ - startByte_) bytes from interval [startByte_, endByte_).
@@ -84,6 +87,17 @@ public class NebuloFile extends NebuloObject {
     public void setSynced() {
       isChanged_ = false;
     }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+      out.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+      in.defaultReadObject();
+      chunk_ = null;
+      isChanged_ = false;
+      fileSender_ = sender_;
+    }
   }
 
 
@@ -110,6 +124,10 @@ public class NebuloFile extends NebuloObject {
 
   public NebuloFile(AppKey appKey, ObjectId objectId) {
     this(appKey, objectId, DEFAULT_CHUNK_SIZE_BYTES);
+  }
+
+  public NebuloFile(NebuloAddress address) {
+    this(address.getAppKey(), address.getObjectId());
   }
 
   public NebuloFile(AppKey appKey, ObjectId objectId, int chunkSize) {
@@ -313,6 +331,15 @@ public class NebuloFile extends NebuloObject {
         deleteModules.get(i).getResult(TIMEOUT_SEC);
       }
     }
+  }
+
+  private void writeObject(ObjectOutputStream out) throws IOException {
+    out.defaultWriteObject();
+  }
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    in.defaultReadObject();
+    isNew_ = false;
   }
 }
 
