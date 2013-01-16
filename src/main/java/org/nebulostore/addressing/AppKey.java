@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
- * Application Key.
+ * Application Key, identifies the user.
+ * (immutable)
  */
-public class AppKey implements Serializable {
+public final class AppKey implements Serializable {
   private static final long serialVersionUID = -5977296486784377545L;
-  private BigInteger key_;
+  private final BigInteger key_;
 
   public AppKey(BigInteger key) {
     key_ = key;
@@ -16,10 +17,6 @@ public class AppKey implements Serializable {
 
   public BigInteger getKey() {
     return key_;
-  }
-
-  public void setKey(BigInteger key) {
-    key_ = key;
   }
 
   @Override
@@ -37,6 +34,6 @@ public class AppKey implements Serializable {
 
   @Override
   public String toString() {
-    return "AppKey [" + key_.toString() + "]";
+    return "AppKey[" + key_.toString() + "]";
   }
 }

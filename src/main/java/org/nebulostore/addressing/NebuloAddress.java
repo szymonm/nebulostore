@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 /**
  * (AppKey, ObjectId) pair uniquely identifying object.
+ * (immutable)
  */
-public class NebuloAddress implements Serializable {
+public final class NebuloAddress implements Serializable {
   private static final long serialVersionUID = 673007553164628096L;
   private final AppKey appKey_;
   private final ObjectId objectId_;
@@ -25,9 +26,6 @@ public class NebuloAddress implements Serializable {
 
   @Override
   public String toString() {
-    return "NebuloAddress{" +
-        "appKey_=" + appKey_ +
-        ", objectId_=" + objectId_ +
-        '}';
+    return "NebuloAddress{" + appKey_ + "," + objectId_ + "}";
   }
 }

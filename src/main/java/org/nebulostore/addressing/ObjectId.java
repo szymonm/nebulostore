@@ -5,12 +5,11 @@ import java.math.BigInteger;
 
 /**
  * Unique integer ID that identifies object stored in NebuloStore.
+ * (immutable)
  */
-public class ObjectId implements Serializable {
-
+public final class ObjectId implements Serializable {
   private static final long serialVersionUID = 1687973599624381804L;
-
-  private BigInteger key_;
+  private final BigInteger key_;
 
   public ObjectId(BigInteger key) {
     key_ = key;
@@ -18,10 +17,6 @@ public class ObjectId implements Serializable {
 
   public BigInteger getKey() {
     return key_;
-  }
-
-  public void setKey(BigInteger key) {
-    key_ = key;
   }
 
   @Override
@@ -51,6 +46,6 @@ public class ObjectId implements Serializable {
 
   @Override
   public String toString() {
-    return "NebuloObjectId-" + key_.toString();
+    return "ObjectId[" + key_.toString() + "]";
   }
 }
