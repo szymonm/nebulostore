@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<peer>
+  <app-key>
+    __APP_KEY
+  </app-key>
+  <class-name>
+    __CLASS_NAME
+  </class-name>
+  <conductor-server-class-list>
+    __TESTS_LIST
+  </conductor-server-class-list>
+</peer>

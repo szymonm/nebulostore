@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Scanner;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
@@ -17,11 +13,9 @@ import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.NebuloFile;
 import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.Peer;
-import org.nebulostore.appcore.context.NebuloContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
- * @author bolek
  * This is a very simple text interface to interact with NebuloStore.
  *
  * Commands:
@@ -44,34 +38,24 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  *          objectId = 123   (first chunk id = 124)
  *          content = "poprawna_zawartosc_pliku"
  *          destination_path = "pliczek"
+ *
+ * @author bolek
  */
-public final class TextInterface {
-  private static Logger logger_ = Logger.getLogger(TextInterface.class);
+public final class TextInterface extends Peer {
   private static final String DEFAULT_APPKEY = "22";
   private static final String DEFAULT_OBJECT_ID = "123";
   private static final String DEFAULT_CONTENT = "poprawna zawartosc pliku\n";
   private static final String DEFAULT_FILE_NAME = "plik.txt";
 
-  private TextInterface() {
+  protected void runPeer() {
+    System.out.print("Starting NebuloStore ...\n");
+    startPeer();
+    putKey();
+    inputLoop();
+    finishPeer();
   }
 
-  public static void main(String[] args) {
-    if (args.length != 1) {
-      System.out.println("Provide Peer AppKey (number)!");
-      return;
-    }
-    final Injector injector = Guice.createInjector(new NebuloContext());
-    final AppKey appKey = new AppKey(new BigInteger(args[0]));
-    // Run NebuloStore in a separate thread.
-    Thread nebuloThread = new Thread(new Runnable() {
-      public void run() {
-        Peer.runPeer(appKey, injector);
-      }
-    });
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-    System.out.print("Starting NebuloStore ...\n");
-    nebuloThread.start();
-
+  protected void inputLoop() {
     Scanner in = new Scanner(System.in);
     while (true) {
       System.out.print("$ ");
@@ -79,7 +63,7 @@ public final class TextInterface {
       String[] tokens = line.split(" ");
 
       if (tokens[0].equals("end")) {
-        Peer.quitNebuloStore();
+        quitNebuloStore();
         break;
       } else if ("putkey".equals(tokens[0])) {
         putKey(tokens);
@@ -99,15 +83,9 @@ public final class TextInterface {
         System.out.println("Unknown command (type \"end\" to exit)");
       }
     }
-
-    try {
-      nebuloThread.join();
-    } catch (InterruptedException exception) {
-      exception.printStackTrace();
-    }
   }
 
-  private static void removeSubscription(String[] tokens) {
+  private void removeSubscription(String[] tokens) {
     if (!validateParametersNumber(tokens, 3)) return;
     NebuloFile file = getNebuloFile(tokens[1], tokens[2]);
     if (file != null) {
@@ -122,7 +100,7 @@ public final class TextInterface {
   /**
    * putkey (appKey).
    */
-  private static void putKey(String[] input) {
+  private void putKey(String[] input) {
     String[] tokens = input;
     if (tokens.length == 1) {
       tokens = new String[2];
@@ -140,7 +118,7 @@ public final class TextInterface {
   /**
    * read (appkey) (objectId) (destination_path).
    */
-  private static void read(String[] input) {
+  private void read(String[] input) {
     String[] tokens = input;
     if (tokens.length == 1) {
       tokens = new String[4];
@@ -158,7 +136,6 @@ public final class TextInterface {
       data = file.read(0, 100);
     } catch (NebuloException exception) {
       System.out.println("Got exception from 'read()': " + exception.getMessage());
-      exception.printStackTrace();
       return;
     }
 
@@ -177,7 +154,7 @@ public final class TextInterface {
   /**
    * write (appkey) (objectId) (content).
    */
-  private static void write(String[] input) {
+  private void write(String[] input) {
     String[] tokens = input;
     if (tokens.length == 1) {
       tokens = new String[4];
@@ -201,7 +178,6 @@ public final class TextInterface {
       System.out.println("Successfully written " + String.valueOf(bytesWritten) + " bytes.");
     } catch (NebuloException exception) {
       System.out.println("Got exception from 'write()': " + exception.getMessage());
-      exception.printStackTrace();
       return;
     }
     //file.sync(); // This is currently done automatically in write().
@@ -210,7 +186,7 @@ public final class TextInterface {
   /**
    * delete (appkey) (objectId).
    */
-  private static void delete(String[] input) {
+  private void delete(String[] input) {
     String[] tokens = input;
     if (tokens.length == 1) {
       tokens = new String[3];
@@ -234,7 +210,7 @@ public final class TextInterface {
   /**
    * subscribe (appkey) (objectId).
    */
-  private static void subscribe(String[] tokens) {
+  private void subscribe(String[] tokens) {
     if (!validateParametersNumber(tokens, 3)) return;
     NebuloFile file = getNebuloFile(tokens[1], tokens[2]);
     if (file != null) {
@@ -242,7 +218,7 @@ public final class TextInterface {
     }
   }
 
-  private static boolean validateParametersNumber(String[] tokens, int paramsNumber) {
+  private boolean validateParametersNumber(String[] tokens, int paramsNumber) {
     if (tokens.length != 3) {
       System.out.println("Invalid parameters number. Required : " + paramsNumber + " params for " +
           tokens[0] + "operation.");
@@ -251,7 +227,7 @@ public final class TextInterface {
     return true;
   }
 
-  private static void subscribeWithExceptionHandling(NebuloFile file) {
+  private void subscribeWithExceptionHandling(NebuloFile file) {
     try {
       file.subscribe();
     } catch (NebuloException e) {
@@ -259,7 +235,7 @@ public final class TextInterface {
     }
   }
 
-  private static NebuloFile getNebuloFile(String appKeyString, String objectIdString) {
+  private NebuloFile getNebuloFile(String appKeyString, String objectIdString) {
     try {
       AppKey appKey = new AppKey(new BigInteger(appKeyString));
       ObjectId objectId = new ObjectId(new BigInteger(objectIdString));

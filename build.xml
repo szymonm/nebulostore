@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project name="Nebulostore" default="text-interface" basedir=".">
+<project name="Nebulostore" default="peer" basedir=".">
 
   <property name="src.dir" value="src" />
 
@@ -11,12 +11,11 @@
   <property name="lib.dir" value="lib" />
   <property name="resources.dir" value="resources" />
 
+  <property name="main-class" value="org.nebulostore.appcore.EntryPoint" />
 
   <path id="classpath">
     <fileset dir="${lib.dir}" includes="**/*.jar" />
   </path>
-
-  <property name="main-class" value="org.nebulostore.communication.tests.RunPingPong" />
 
   <target name="clean">
     <delete dir="${build.dir}" />
@@ -65,12 +64,18 @@
     </copy>
   </target>
 
+  <target name="peer">
+    <antcall target="jar">
+      <param name="main-class" value="${main-class}" />
+    </antcall>
+  </target>
+
   <target name="jar-bdbtest">
     <antcall target="jar">
       <param name="main-class" value="org.nebulostore.communication.bdbdht.tests.BdbPeerTest" />
     </antcall>
   </target>
-	
+
   <target name="jar-kademliatest">
 	<antcall target="jar">
 	  <param name="main-class" value="org.nebulostore.communication.kademlia.KademliaPeerTest" />
@@ -81,40 +86,6 @@
 	<antcall target="jar">
 	  <param name="main-class" value="org.nebulostore.communication.kademlia.KademliaPerfTest" />
 	</antcall>
-  </target>
-
-  <target name="text-interface">
-    <antcall target="jar">
-      <param name="main-class" value="org.nebulostore.textinterface.TextInterface" />
-    </antcall>
-  </target>
-	
-  <target name="jar-streambindingtest">
-    <antcall target="jar">
-      <param name="main-class" value="org.nebulostore.communication.streambinding.StreamBindingTest" />
-    </antcall>
-  </target>
-
-  <target name="main" depends="clean" />
-
-  <target name="test-server">
-    <antcall target="jar">
-      <param name="main-class" value="org.nebulostore.conductor.TestingPeer" />
-    </antcall>
-  </target>
-
-  <target name="peer">
-    <antcall target="jar">
-      <param name="main-class" value="org.nebulostore.appcore.Peer" />
-    </antcall>
-  </target>
-
-  <!-- Test builds -->
-
-  <target name="runpingpong">
-    <antcall target="jar">
-      <param name="main-class" value="org.nebulostore.testing.RunPingPong" />
-    </antcall>
   </target>
 
   <target name="gossiptest">

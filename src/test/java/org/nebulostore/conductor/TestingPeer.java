@@ -1,87 +1,68 @@
 package org.nebulostore.conductor;
 
-import java.math.BigInteger;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.Peer;
-import org.nebulostore.appcore.context.NebuloContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.dht.BdbDHTTestServer;
-import org.nebulostore.communication.dht.KademliaDHTTestServer;
-import org.nebulostore.communication.messages.MessagesTestServer;
-import org.nebulostore.communication.messages.performance.PerformanceMessagesTestServer;
-import org.nebulostore.conductor.pingpong.PingPongServer;
-import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
 /**
  * Class to run test server.
+ * @author bolek
  * @author szymonmatejczyk
  */
-public final class TestingPeer extends Peer {
+public class TestingPeer extends Peer {
   private static Logger logger_ = Logger.getLogger(TestingPeer.class);
-  private static Injector injector_ = Guice.createInjector(new NebuloContext());
-  private static final int INITIAL_DELAY_SEC = 30;
 
-  private TestingPeer() {
-  }
+  @Override
+  protected void runPeer() {
+    logger_.info("Starting testing peer with appKey = " + appKey_);
+    startPeer();
+    putKey();
 
-  public static void main(String[] args) {
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-    BigInteger appKey = BigInteger.ZERO;
-    boolean success = true;
-    if (args.length < 1) {
-      // Random AppKey if not provided.
-      appKey = CryptoUtils.getRandomId();
-      logger_.debug("Random appKey generateds = " + appKey);
-    } else {
-      appKey = new BigInteger(args[0]);
+    String[] testClasses = config_.getStringArray("conductor-server-class-list");
+    logger_.info("Running " + testClasses.length + " tests.");
+    for (String className : testClasses) {
+      ConductorServer testServer = null;
+      try {
+        testServer = (ConductorServer) Class.forName(className).newInstance();
+        logger_.info("Starting " + className + " test.");
+        if (runTest(testServer, className)) {
+          logger_.info("Test " + className + " succeeded!");
+        } else {
+          fatal("Test " + className + " failed!");
+        }
+      } catch (InstantiationException e) {
+        fatal("Could not instantiate class " + className + ".");
+      } catch (IllegalAccessException e) {
+        fatal("Constructor for class " + className + " is not accessible.");
+      } catch (ClassNotFoundException e) {
+        fatal("Class " + className + " not found.");
+      }
     }
-    logger_.info("Starting testing peer with appKey = " + appKey);
-    startPeer(new AppKey(appKey), injector_);
-
-    try {
-      ApiFacade.putKey(new AppKey(appKey));
-    } catch (NebuloException e) {
-      logger_.error(e);
-    }
-
-    // Insert test modules you want to be ran below.
-    logger_.info("Starting ping-pong test.");
-    if (runTest(new PingPongServer(), "PingPong")) {
-      success = true;
-      logger_.info("Test succeeded!");
-    } else {
-      success = false;
-      logger_.info("Test failed!");
-    }
-    // logger_.info("Finished PingPong test, performing DHT tests...");
-
-    // dhtTests();
-
-    // logger_.info("Finished DHT tests, performing messages tests...");
-
-    // messagesTests();
-
-    // messagesPerfTests();
-
-    // runTest(new TrivialQueryTestServer(), "Query test");
-
-    logger_.info("All tests finished");
-
+    logger_.info("All tests finished successfully.");
     dispatcherInQueue_.add(new KillDispatcherMessage());
     finishPeer();
-    System.exit(success ? 0 : 1);
+    System.exit(0);
   }
 
-  private static void messagesPerfTests() {
+  private void fatal(String message) {
+    logger_.fatal(message);
+    System.exit(1);
+  }
 
+  private boolean runTest(ConductorServer testModule, String testName) {
+    try {
+      testModule.runThroughDispatcher(dispatcherInQueue_);
+      testModule.getResult();
+      return true;
+    } catch (NebuloException exception) {
+      logger_.error("NebuloException at test " + testName + " : " + exception.getMessage());
+      return false;
+    }
+  }
+
+  // TODO(bolek,szymonmatejczyk): Move these to a separate ConductorServer class.
+  /*private void messagesPerfTests() {
     int count = 5;
     int maxPeers = 91;
     int minPeers = 5;
@@ -136,8 +117,7 @@ public final class TestingPeer extends Peer {
     }
   }
 
-  private static void messagesTests() {
-
+  private void messagesTests() {
     int count = 5;
     int maxPeers = 91;
     int minPeers = 35;
@@ -238,7 +218,7 @@ public final class TestingPeer extends Peer {
 
   }
 
-  private static void dhtTests() {
+  private void dhtTests() {
     int count = 5;
 
     int maxPeers = 81;
@@ -340,21 +320,6 @@ public final class TestingPeer extends Peer {
           }
         }
       }
-
     }
-
-  }
-
-  private static boolean runTest(ConductorServer testModule, String testName) {
-    try {
-      testModule.runThroughDispatcher(dispatcherInQueue_);
-      testModule.getResult();
-      return true;
-    } catch (NebuloException exception) {
-      logger_.error("NebuloException at test " + testName + " : " +
-          exception.getMessage());
-      return false;
-    }
-  }
-
+  }*/
 }

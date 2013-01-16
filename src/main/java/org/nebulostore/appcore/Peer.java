@@ -6,8 +6,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.context.NebuloContext;
@@ -20,54 +21,60 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * @author marcin This is the entry point for a regular peer with full
- *         functionality.
+ * This is a regular peer with full functionality.
+ * To create a different peer, subclass Peer and set its class name in configuration.
+ * @author bolek
  */
-public class Peer {
-  static final Long RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL = 2000L;
-
+public class Peer implements Runnable {
   private static Logger logger_ = Logger.getLogger(Peer.class);
-  protected static BlockingQueue<Message> networkInQueue_;
-  protected static BlockingQueue<Message> dispatcherInQueue_;
-  private static Thread dispatcherThread_;
-  private static Thread networkThread_;
+  protected static final Long RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL = 2000L;
 
-  protected Peer() {
+  protected BlockingQueue<Message> networkInQueue_;
+  protected BlockingQueue<Message> dispatcherInQueue_;
+  protected Thread dispatcherThread_;
+  protected Thread networkThread_;
+  protected AppKey appKey_;
+  protected XMLConfiguration config_;
+  protected Injector injector_;
+
+  public void setConfiguration(XMLConfiguration config) {
+    config_ = config;
   }
 
-  /**
-   * @param args
-   *          Command line arguments.
-   */
-  public static void main(String[] args) {
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-    Injector injector = Guice.createInjector(new NebuloContext());
-
-    BigInteger appKey;
-    if (args.length < 1) {
-      // Random AppKey if not provided.
-      appKey = CryptoUtils.getRandomId();
+  @Override
+  public void run() {
+    checkNotNull(config_);
+    String appKey = config_.getString("app-key", "");
+    if (appKey.isEmpty()) {
+      appKey_ = new AppKey(CryptoUtils.getRandomId());
     } else {
-      appKey = new BigInteger(args[0]);
+      appKey_ = new AppKey(new BigInteger(appKey));
     }
-
-    runPeer(new AppKey(appKey), injector);
+    injector_ = Guice.createInjector(new NebuloContext(appKey_, config_));
+    runPeer();
   }
 
-  public static void runPeer(AppKey appKey, Injector injector) {
-    startPeer(appKey, injector);
-
-    try {
-      ApiFacade.putKey(appKey);
-    } catch (NebuloException e) {
-      logger_.error(e);
-    }
-
+  protected void runPeer() {
+    startPeer();
+    putKey();
     finishPeer();
   }
 
-  protected static void startPeer(AppKey appKey, Injector injector) {
+  protected void putKey() {
+    try {
+      ApiFacade.putKey(appKey_);
+    } catch (NebuloException e) {
+      logger_.error(e);
+    }
+  }
+
+  /**
+   * Method that creates, connects and runs core application modules.
+   */
+  protected void startPeer() {
     networkInQueue_ = new LinkedBlockingQueue<Message>();
     dispatcherInQueue_ = new LinkedBlockingQueue<Message>();
     ApiFacade.initApi(dispatcherInQueue_);
@@ -75,7 +82,7 @@ public class Peer {
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
     dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_,
-        networkInQueue_, injector), "Dispatcher");
+        networkInQueue_, injector_), "Dispatcher");
     // Create network module.
     try {
       networkThread_ = new Thread(new CommunicationPeer(networkInQueue_,
@@ -85,7 +92,7 @@ public class Peer {
       System.exit(1);
     }
 
-    NetworkContext.getInstance().setAppKey(appKey);
+    NetworkContext.getInstance().setAppKey(appKey_);
     GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
 
     //Register instance in DHT
@@ -102,7 +109,7 @@ public class Peer {
     runInitialModules(dispatcherInQueue_);
   }
 
-  protected static void runInitialModules(BlockingQueue<Message> dispatcherQueue) {
+  protected void runInitialModules(BlockingQueue<Message> dispatcherQueue) {
     // Periodically checking asynchronous messages.
     /*IMessageGenerator retriveAMGenerator = new IMessageGenerator() {
       @Override
@@ -138,7 +145,7 @@ public class Peer {
     dispatcherQueue.add(new JobInitMessage(gossiping));*/
   }
 
-  protected static void finishPeer() {
+  protected void finishPeer() {
     // Wait for threads to finish execution.
     try {
       // TODO: Make CommunicationPeer exit cleanly.
@@ -150,7 +157,7 @@ public class Peer {
     }
   }
 
-  public static void quitNebuloStore() {
+  public void quitNebuloStore() {
     dispatcherInQueue_.add(new KillDispatcherMessage());
   }
 }

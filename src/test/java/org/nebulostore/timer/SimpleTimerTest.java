@@ -11,7 +11,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.context.NebuloContext;
+import org.nebulostore.appcore.context.DefaultTestContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -33,7 +33,7 @@ public class SimpleTimerTest {
   @Test
   public void testWithDispatcher() {
     BlockingQueue<Message> dispatcherQueue = new LinkedBlockingQueue<Message>();
-    Injector injector = Guice.createInjector(new NebuloContext());
+    Injector injector = Guice.createInjector(new DefaultTestContext());
     Dispatcher dispatcher = new Dispatcher(dispatcherQueue, null, injector);
     GlobalContext.getInstance().setDispatcherQueue(dispatcherQueue);
 

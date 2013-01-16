@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.context.NebuloContext;
+import org.nebulostore.appcore.context.DefaultTestContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -28,7 +28,7 @@ public class DispatcherTest {
   private BlockingQueue<Message> outQueue_;
   private Dispatcher dispatcher_;
   private Thread thread_;
-  private Injector injector_ = Guice.createInjector(new NebuloContext());
+  private Injector injector_ = Guice.createInjector(new DefaultTestContext());
 
   public static int staticCounter_;
 

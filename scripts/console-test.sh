@@ -4,9 +4,9 @@
 #
 # 1. Run scripts/console-test.sh from 'trunk' level.
 # 2. You can run up to 4 local instances.
-#    On terminal nr i (1,2,3 or 4) run:
+#    On terminal nr i (1,2,3 or 4) run: (the app key will be 11, 22, etc.)
 #       cd build/jar/i/
-#       java -jar Nebulostore.jar ii
+#       java -jar Nebulostore.jar
 # 3. Wait 40 sec (!) for all peers to find each other.
 # 4. Play with it using write, read or delete.
 #    For example:
@@ -31,7 +31,7 @@ BUILD_DIR="build"
 JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
 PEERS_NUM=4
-TARGET=text-interface
+TARGET=peer
 
 if [ $1 ]; then
   PEERS_NUM=$1
@@ -71,10 +71,12 @@ do
     cp -r resources ./$JAR_DIR/$i/
     sed "s/9987/1100$i/g" ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml.local > ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml.temp
     sed "s/10087/1200$i/g" ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml.temp > ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml
+    sed "s/11/$i$i/g" ./$JAR_DIR/$i/resources/conf/Peer.xml > ./$JAR_DIR/$i/resources/conf/Peer.xml.temp
+    sed "s/appcore\.Peer/textinterface\.TextInterface/g" ./$JAR_DIR/$i/resources/conf/Peer.xml.temp > ./$JAR_DIR/$i/resources/conf/Peer.xml
 done
 
 cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR/1/resources/conf/communication/BdbPeer.xml
 cp ./$JAR_DIR/1/resources/conf/communication/CommunicationPeerServer.xml.local ./$JAR_DIR/1/resources/conf/communication/CommunicationPeer.xml
-rm -rf /tmp/nebulostore/nebulo_baza
+rm -rf /tmp/nebulostore
 mkdir -p /tmp/nebulostore/nebulo_baza
 
