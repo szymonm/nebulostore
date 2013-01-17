@@ -7,6 +7,7 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.CaseStatistics;
 import org.nebulostore.conductor.ConductorServer;
 import org.nebulostore.conductor.messages.InitMessage;
+import org.nebulostore.crypto.CryptoUtils;
 
 /**
  * Sets up PingPong test.
@@ -14,12 +15,14 @@ import org.nebulostore.conductor.messages.InitMessage;
  */
 public class PingPongServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(PingPongServer.class);
+  private static final int NUM_PHASES = 2;
+  private static final int NUM_CLIENTS = 2;
+  private static final int TIMEOUT_SEC = 60;
 
   public PingPongServer() {
-    // Test consist of 2 phases and needs 2 peers.
-    // We give it 60 seconds.
-    // We set "PingPong client" as clients job id.
-    super(2, 2, 60, "PingPong client", "PingPong server");
+    super(NUM_PHASES, NUM_CLIENTS, TIMEOUT_SEC, "PingPongClient_" + CryptoUtils.getRandomString(),
+        "PingPong server");
+    useServerAsClient_ = false;
   }
 
   @Override
@@ -32,8 +35,7 @@ public class PingPongServer extends ConductorServer {
 
     networkQueue_.add(new InitMessage(clientsJobId_, null, pingAddress,
         new PingClient(jobId_, pongAddress)));
-    networkQueue_.add(new InitMessage(clientsJobId_, null, pongAddress,
-        new PongClient(jobId_)));
+    networkQueue_.add(new InitMessage(clientsJobId_, null, pongAddress, new PongClient(jobId_)));
   }
 
   @Override
@@ -48,5 +50,4 @@ public class PingPongServer extends ConductorServer {
   protected String getAdditionalStats() {
     return "";
   }
-
 }

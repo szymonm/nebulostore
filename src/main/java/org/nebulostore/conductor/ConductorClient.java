@@ -15,42 +15,34 @@ import org.nebulostore.conductor.messages.ErrorMessage;
 import org.nebulostore.conductor.messages.FinishMessage;
 import org.nebulostore.conductor.messages.InitMessage;
 import org.nebulostore.conductor.messages.NewPhaseMessage;
-import org.nebulostore.conductor.messages.TicAckMessage;
 import org.nebulostore.conductor.messages.TicMessage;
-import org.nebulostore.conductor.messages.TocAckMessage;
 import org.nebulostore.conductor.messages.TocMessage;
 
 /**
  * Base class for all TestingModules(test cases run on peers).
  * @author szymonmatejczyk
  *
- * Writting tests: 1. Remember to set visitors for each
- *         phase. 2. Don't forget to put phaseFinished in every visitor. 3. By
- *         default you should define visitor for each phase. However, you can
- *         override getVisitor() method to use visitors differently(ex. more
- *         than once). 4. Don't forget to write server(ServerTestingModule) that
- *         will initialize TestingModules on peers side and will be gathering
- *         results. Running tests: 1. Server: Set tests you want to run in
- *         TestingPeer.main(). Run TestingPeer as main function. 2. Run peers as
- *         normal peers. You need n-1 of them for n peers test, because server
- *         itself acts also as a client. See also: Ping, Pong, PingPongServer
+ * Writing tests:
+ *     1. Remember to set visitors for each phase.
+ *     2. Don't forget to put phaseFinished in every visitor.
+ *     3. By default you should define visitor for each phase. However, you can
+ *        override getVisitor() method to use visitors differently(ex. more
+ *        than once).
+ *     4. Don't forget to write server(ServerTestingModule) that will initialize
+ *        TestingModules on peers side and will be gathering results.
  */
 public abstract class ConductorClient extends JobModule implements Serializable {
   private static final long serialVersionUID = -1686614265302231592L;
-
   private static Logger logger_ = Logger.getLogger(ConductorClient.class);
 
   protected int phase_;
-
   protected final CommAddress server_;
   protected final String serverJobId_;
 
   private long tocSentTime_;
-
   private Timer checkPendingTocs_;
 
   public ConductorClient(String serverJobId) {
-    super();
     serverJobId_ = serverJobId;
     server_ = CommunicationPeer.getPeerAddress();
     tocSentTime_ = -1;
@@ -97,6 +89,9 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     endJobModule();
   }
 
+  /**
+   * Called after receiving Tic Message, which means that all peer have finished previos phase.
+   */
   protected void advancedToNextPhase() {
     logger_.debug("Got NewPhaseMessage");
     inQueue_.add(new NewPhaseMessage());
@@ -107,6 +102,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     tocSentTime_  = System.currentTimeMillis();
     networkQueue_.add(new TocMessage(serverJobId_, CommunicationPeer
         .getPeerAddress(), server_, phase_));
+    ++phase_;
   }
 
   @Override
@@ -118,17 +114,30 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     super.endModule();
   }
 
-  /*
+  protected void endWithError(String message) {
+    logger_.error(message);
+    networkQueue_.add(new ErrorMessage(serverJobId_, null, server_, message));
+    super.endModule();
+  }
+
+  /**
    * Visitors for phases. They are never send but initialized on clients side.
    */
   protected transient TestingModuleVisitor[] visitors_;
 
+  /**
+   * Get visitor for current phase. Null if bad phase (including one after the last, meaning
+   * the test has ended for that peer).
+   */
   private TestingModuleVisitor getVisitor() {
     if (visitors_ == null) {
       initVisitors();
     }
     logger_.debug("get Visitor in phase: " + phase_);
-    return visitors_[phase_];
+    if (visitors_ != null && phase_ < visitors_.length)
+      return visitors_[phase_];
+    else
+      return null;
   }
 
   protected abstract void initVisitors();
@@ -136,7 +145,11 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   @Override
   protected void processMessage(Message message) throws NebuloException {
     logger_.debug("processMessage on: " + message.toString());
-    message.accept(getVisitor());
+    TestingModuleVisitor visitor = getVisitor();
+    if (visitor != null)
+      message.accept(visitor);
+    else
+      logger_.debug("ignoring " + message.getClass().getName() + " in last phase.");
   }
 
   /**
@@ -149,16 +162,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     public abstract Void visit(NewPhaseMessage message);
 
     @Override
-    public Void visit(TocAckMessage message) {
-      if (message.getPhase() == phase_) {
-        tocSentTime_ = -1;
-      }
-      return null;
-    }
-
-    @Override
     public Void visit(TicMessage message) {
-
       logger_.debug("TicMessage received. Curr phase: " + phase_ +
           " server phase: " + message.getPhase());
       if (!(message.getPhase() - phase_ <= 1)) {
@@ -167,13 +171,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       logger_.debug("TicMessage  - moving on with processing.");
 
       tocSentTime_ = -1;
-      // Sending TicAck
-      networkQueue_.add(new TicAckMessage(serverJobId_, CommunicationPeer
-          .getPeerAddress(), server_, message.getPhase()));
-
-      int oldPhase = phase_;
-      phase_ = message.getPhase();
-      if (oldPhase != phase_) {
+      if (message.getPhase() == phase_) {
         logger_.debug("Advancing to the next phase");
         advancedToNextPhase();
       }
@@ -210,8 +208,8 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       logger_.debug("Test client initialized: " +
           message.getHandler().getClass().toString());
 
-      checkPendingTocs_ = new Timer();
-      checkPendingTocs_.schedule(new CheckPendingTocs(), 2000, 2000);
+      //checkPendingTocs_ = new Timer();
+      //checkPendingTocs_.schedule(new CheckPendingTocs(), 2000, 2000);
       phaseFinished();
       return null;
     }

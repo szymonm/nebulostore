@@ -13,14 +13,12 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.NetworkContextChangedMessage;
+import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.messages.ErrorMessage;
 import org.nebulostore.conductor.messages.FinishMessage;
-import org.nebulostore.conductor.messages.GatherStatsMessage;
 import org.nebulostore.conductor.messages.StatsMessage;
-import org.nebulostore.conductor.messages.TicAckMessage;
 import org.nebulostore.conductor.messages.TicMessage;
-import org.nebulostore.conductor.messages.TocAckMessage;
 import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
@@ -84,15 +82,18 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   protected int peersNeeded_;
 
   /**
+   * Is server used also as one of test clients.
+   */
+  protected boolean useServerAsClient_ = true;
+
+  /**
    * Visitor state - either initializing peers or running the tests on constant
    * set of peers.
    */
   enum TestingState {
     Initializing, Configuring, Running, GatheringStats
   };
-
   private TestingState testingState_;
-
   private final ServerTestingModuleVisitor visitor_;
 
   /**
@@ -124,12 +125,18 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   public Map<CommAddress, Long> pendingTicsAck_ = new HashMap<CommAddress, Long>();
 
   private long postponeStart_ = -1;
-  private final long postponeDelay_ = 3;
+  private final long postponeDelay_ = 1;
   private final boolean postponeTics_ = true;
 
-  private final  int maximumLost_ = 1;
-  private final  int lostDelay_ = 7;
+  private final int maximumLost_ = 1;
+  private final int lostDelay_ = 7;
   private long firstToc_ = -1;
+
+  protected ConductorServer(int lastPhase, int peersNeeded, int timeout,
+      String clientsJobId, String testDescription) {
+    this(lastPhase, peersNeeded, peersNeeded, timeout, timeout, clientsJobId,
+        false, testDescription);
+  }
 
   protected ConductorServer(int lastPhase, int peersFound, int peersNeeded,
       int timeout, int phaseTimeout, String clientsJobId, boolean gatherStats,
@@ -148,13 +155,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     internalCheckTimer_.schedule(new PhaseTimeoutTimer(),
         3 * phaseTimeout * 1000, phaseTimeout * 1000);
     internalCheckTimer_.schedule(new PeriodicCheck(), 1000, 1000);
-
-  }
-
-  protected ConductorServer(int lastPhase, int peersNeeded, int timeout,
-      String clientsJobId, String testDescription) {
-    this(lastPhase, peersNeeded, peersNeeded, timeout, timeout, clientsJobId,
-        false, testDescription);
   }
 
   /**
@@ -255,6 +255,20 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     return true;
   }
 
+  private boolean trySetClients() {
+    int needed = peersNeeded_ + (useServerAsClient_ ? 0 : 1);
+    if (NetworkContext.getInstance().getKnownPeers().size() >= needed) {
+      logger_.debug("Enough peers in NetworkContext. Initializing clients...");
+      clients_ = new HashSet<CommAddress>(NetworkContext.getInstance().getKnownPeers());
+      if (!useServerAsClient_) {
+        clients_.remove(CommunicationPeer.getPeerAddress());
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Visitor.
    * @author szymonmatejczyk
@@ -267,11 +281,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
-      if (NetworkContext.getInstance().getKnownPeers().size() >= peersFound_) {
-        logger_
-        .debug("Enough peers in NetworkContext. Initializing clients...");
-        clients_ = new HashSet<CommAddress>(NetworkContext.getInstance()
-            .getKnownPeers());
+      if (trySetClients()) {
         testingState_ = TestingState.Initializing;
         initClients();
       } else {
@@ -294,12 +304,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
     @Override
     public Void visit(NetworkContextChangedMessage message) {
-      if (NetworkContext.getInstance().getKnownPeers().size() >= peersFound_) {
-        logger_.debug("Enough peers found, initializing test.");
-        /* stop listening for notifications */
-        NetworkContext.getInstance().removeContextChangeMessageGenerator(notificationGenerator_);
-        clients_ = new HashSet<CommAddress>(NetworkContext.getInstance()
-            .getKnownPeers());
+      if (testingState_ != TestingState.Initializing && trySetClients()) {
         testingState_ = TestingState.Initializing;
         initClients();
       }
@@ -314,10 +319,8 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       }
 
       // Send ack
-      networkQueue_.add(new TocAckMessage(clientsJobId_, null, message
-          .getSourceAddress(), message.getPhase()));
       logger_.debug("TocMessage received. Tocs: " + tocs_ + "(from: " +
-          message.getSourceAddress() + ") sending back Ack Message.");
+          message.getSourceAddress() + ")");
 
       if (tocsAddresses_.contains(message.getSourceAddress())) {
         logger_.debug("Already received toc from this address");
@@ -348,30 +351,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       return null;
     }
 
-    @Override
-    public Void visit(TicAckMessage message) {
-
-      synchronized (pendingTicsAck_) {
-        pendingTicsAck_.remove(message.getSourceAddress());
-
-        logger_.debug("Got Tic ack from " + message.getSourceAddress() +
-            " still waiting for: " + pendingTicsAck_.size());
-
-        if (pendingTicsAck_.size() == 0) {
-          if (testingState_ == TestingState.Configuring) {
-            configureClients();
-          }
-          if (testingState_ == TestingState.GatheringStats) {
-            for (CommAddress address : clients_) {
-              networkQueue_.add(new GatherStatsMessage(clientsJobId_, null,
-                  address));
-            }
-          }
-        }
-      }
-      return null;
-    }
-
+    //TODO(bolek): Send GatherStatsMessage.
     @Override
     public Void visit(StatsMessage message) {
       if (!clients_.contains(message.getSourceAddress())) {
@@ -414,7 +394,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       sendTics();
     }
   }
-
 
   private void processTocsChange() {
     if (testingState_ == TestingState.Initializing) {
@@ -482,8 +461,8 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       pendingTicsAck_ = new HashMap<CommAddress, Long>();
       for (CommAddress address : clients_) {
         networkQueue_.add(new TicMessage(clientsJobId_, null, address, phase_));
-        long time = System.currentTimeMillis();
-        pendingTicsAck_.put(address, time);
+        //long time = System.currentTimeMillis();
+        //pendingTicsAck_.put(address, time);
       }
     }
   }

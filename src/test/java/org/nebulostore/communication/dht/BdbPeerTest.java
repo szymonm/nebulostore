@@ -19,8 +19,6 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
-import org.nebulostore.communication.messages.pingpong.PingMessage;
-import org.nebulostore.communication.messages.pingpong.PongMessage;
 
 /**
  * @author marcin
@@ -43,7 +41,7 @@ public final class BdbPeerTest {
 
     CommunicationPeer communicationPeer = null;
     try {
-      communicationPeer = new CommunicationPeer(inQueue, outQueue);
+      communicationPeer = new CommunicationPeer(inQueue, outQueue, null);
     } catch (NebuloException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();

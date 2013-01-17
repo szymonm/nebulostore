@@ -34,8 +34,6 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
-import org.nebulostore.communication.messages.pingpong.PingMessage;
-import org.nebulostore.communication.messages.pingpong.PongMessage;
 import org.nebulostore.conductor.messages.ErrorMessage;
 import org.nebulostore.conductor.messages.FinishMessage;
 import org.nebulostore.conductor.messages.GatherStatsMessage;
@@ -43,9 +41,7 @@ import org.nebulostore.conductor.messages.InitMessage;
 import org.nebulostore.conductor.messages.NewPhaseMessage;
 import org.nebulostore.conductor.messages.ReconfigurationMessage;
 import org.nebulostore.conductor.messages.StatsMessage;
-import org.nebulostore.conductor.messages.TicAckMessage;
 import org.nebulostore.conductor.messages.TicMessage;
-import org.nebulostore.conductor.messages.TocAckMessage;
 import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.conductor.messages.UserCommMessage;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
@@ -254,14 +250,6 @@ public abstract class MessageVisitor<R> {
     return visit((CommMessage) message);
   }
 
-  public R visit(PongMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(PingMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
   public R visit(InitMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
@@ -317,14 +305,6 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(ObjectOutdatedMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(TocAckMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(TicAckMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 
