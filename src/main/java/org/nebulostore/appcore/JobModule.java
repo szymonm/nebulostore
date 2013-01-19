@@ -3,7 +3,6 @@ package org.nebulostore.appcore;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
@@ -41,8 +40,7 @@ public abstract class JobModule extends Module {
     }
 
     isStarted_ = true;
-    jobId_ = CryptoUtils.getRandomId().toString();
-    dispatcherQueue.add(new JobInitMessage(jobId_, this));
+    dispatcherQueue.add(new JobInitMessage(this));
   }
 
   /**

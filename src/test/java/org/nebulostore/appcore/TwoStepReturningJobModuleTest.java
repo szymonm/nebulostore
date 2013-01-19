@@ -36,7 +36,7 @@ public final class TwoStepReturningJobModuleTest extends ReturningJobModuleBase 
       module.getResult(SHORT_TIMEOUT_SEC);
       fail();
     } catch (NebuloException e) {
-      assertEquals(e.getMessage(), "Timeout");
+      assertEquals(e.getMessage(), "Timeout in getResult().");
     }
 
     // Provide answer to semi-result.

@@ -27,7 +27,7 @@ public abstract class ReturningJobModule<R> extends JobModule {
   public R getResult(int timeoutSec) throws NebuloException {
     try {
       if (!resultReady_.tryAcquire(timeoutSec, TimeUnit.SECONDS)) {
-        throw new NebuloException("Timeout");
+        throw new NebuloException("Timeout in getResult().");
       }
     } catch (InterruptedException exception) {
       throw new NebuloException("Interrupted while waiting for result", exception);
