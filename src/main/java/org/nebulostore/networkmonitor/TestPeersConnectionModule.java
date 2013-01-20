@@ -64,7 +64,7 @@ public class TestPeersConnectionModule extends JobModule {
           System.currentTimeMillis(), ConnectionAttribute.AVAILABILITY, 1.0));
       stats_.add(new PeerConnectionSurvey(CommunicationPeer.getPeerAddress(),
           System.currentTimeMillis(), ConnectionAttribute.LATENCY,
-          (sendTime_ - System.currentTimeMillis()) / 2));
+          (sendTime_ - System.currentTimeMillis()) / 2.0));
 
       if (valueDHTMessage_ != null) {
         appendStatisticsAndFinish(stats_, valueDHTMessage_);

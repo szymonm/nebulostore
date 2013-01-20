@@ -1,8 +1,6 @@
 package org.nebulostore.conductor;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,8 +24,9 @@ import org.nebulostore.timer.MessageGenerator;
 
 /**
  * Testing module that acts as a Test Server.
- * @author szymonmatejczyk Remember to set lastPhase_ and peersNeeded_ in
- *         subclass.
+ * Remember to set lastPhase_ and peersNeeded_ in subclass.
+ *
+ * @author szymonmatejczyk
  */
 public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   private static Logger logger_ = Logger.getLogger(ConductorServer.class);
@@ -112,7 +111,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   /**
    * If set to true, then before test completion statistics will be gathered
    * from TestClients. Each of the TestClients should have an additional visitor
-   * for puropse of stats gathering
+   * for stats gathering
    */
   private final boolean gatherStats_;
 
@@ -120,9 +119,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    * Timer for watching maximum stage time.
    */
   private final Timer internalCheckTimer_;
-
-  // TODO: Docs - move to ctor
-  public Map<CommAddress, Long> pendingTicsAck_ = new HashMap<CommAddress, Long>();
 
   private long postponeStart_ = -1;
   private final long postponeDelay_ = 1;
@@ -153,7 +149,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
     internalCheckTimer_ = new Timer();
     internalCheckTimer_.schedule(new PhaseTimeoutTimer(),
-        3 * phaseTimeout * 1000, phaseTimeout * 1000);
+        3L * 1000L * phaseTimeout, 1000L * phaseTimeout);
     internalCheckTimer_.schedule(new PeriodicCheck(), 1000, 1000);
   }
 
@@ -161,22 +157,9 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    * @author szymonmatejczyk
    */
   class PeriodicCheck extends TimerTask {
-    private static final long MAX_DELAY = 5000;
-
     @Override
     public void run() {
       long time = System.currentTimeMillis();
-
-      synchronized (pendingTicsAck_) {
-        for (CommAddress address : pendingTicsAck_.keySet()) {
-          if ((time - pendingTicsAck_.get(address)) > MAX_DELAY) {
-            logger_.debug("Sending again Tic to " + address);
-            networkQueue_.add(new TicMessage(clientsJobId_, null, address,
-                phase_));
-            pendingTicsAck_.put(address, time);
-          }
-        }
-      }
 
       if (firstToc_ != -1) {
         if (((time - firstToc_) > lostDelay_ * 1000) && (peersNeeded_ - tocs_) < maximumLost_) {
@@ -207,14 +190,12 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
         }
       }
     }
-
   }
 
   /**
    * Timer.
    */
   class PhaseTimeoutTimer extends TimerTask {
-
     private int lastSeenPhase_ = -1;
 
     @Override
@@ -225,7 +206,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       }
       lastSeenPhase_ = phase_;
     }
-
   }
 
   /**
@@ -457,14 +437,8 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
   private void sendTics() {
     logger_.debug("Sending Tic messages...");
-    synchronized (pendingTicsAck_) {
-      pendingTicsAck_ = new HashMap<CommAddress, Long>();
-      for (CommAddress address : clients_) {
-        networkQueue_.add(new TicMessage(clientsJobId_, null, address, phase_));
-        //long time = System.currentTimeMillis();
-        //pendingTicsAck_.put(address, time);
-      }
-    }
+    for (CommAddress address : clients_)
+      networkQueue_.add(new TicMessage(clientsJobId_, null, address, phase_));
   }
 
   @Override

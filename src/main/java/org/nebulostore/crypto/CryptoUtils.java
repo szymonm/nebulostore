@@ -9,6 +9,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -85,10 +86,10 @@ public final class CryptoUtils {
     try {
       md = MessageDigest.getInstance("SHA-1");
     } catch (NoSuchAlgorithmException e) {
-      logger_.error(e.toString());
+      logger_.error(e.getMessage());
     }
     md.update(encryptedObject.getEncryptedData());
-    return new String(md.digest());
+    return new String(md.digest(), Charset.forName("US-ASCII"));
   }
 
   private static final SecureRandom RANDOM = new SecureRandom();

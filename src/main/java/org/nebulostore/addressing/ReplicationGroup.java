@@ -57,7 +57,9 @@ public class ReplicationGroup implements Serializable, Comparable<ObjectId>, Ite
   /**
    * Interval comparator. Return 0 for overlapping intervals.
    */
-  static class IntervalComparator implements Comparator<ReplicationGroup> {
+  static class IntervalComparator implements Comparator<ReplicationGroup>, Serializable {
+    private static final long serialVersionUID = -5114789759938376551L;
+
     @Override
     public int compare(ReplicationGroup g1, ReplicationGroup g2) {
       if (g1.upperBound_.compareTo(g2.lowerBound_) <= 0) {

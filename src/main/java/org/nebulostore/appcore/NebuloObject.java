@@ -29,7 +29,7 @@ public abstract class NebuloObject implements Serializable {
 
   // TODO(bolek): Is this constant more global?
   protected static final int TIMEOUT_SEC = 60;
-  protected static BlockingQueue<Message> dispatcherQueue_;
+  static BlockingQueue<Message> dispatcherQueue_;
 
   // TODO(bolek): final?
   protected NebuloAddress address_;

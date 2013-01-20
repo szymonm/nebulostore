@@ -41,7 +41,7 @@ public final class BdbPeerTest {
 
     CommunicationPeer communicationPeer = null;
     try {
-      communicationPeer = new CommunicationPeer(inQueue, outQueue);
+      communicationPeer = new CommunicationPeer(inQueue, outQueue, null);
     } catch (NebuloException e1) {
       // TODO Auto-generated catch block
       e1.printStackTrace();
