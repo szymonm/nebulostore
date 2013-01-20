@@ -79,7 +79,7 @@ public class Broker extends JobModule {
 
         ReplicationGroup currGroup = new ReplicationGroup(BrokerContext.getInstance().getReplicas(),
             new BigInteger("0"), new BigInteger("1000000"));
-        PutKeyModule module = new PutKeyModule(NetworkContext.getAppKey(), currGroup, outQueue_);
+        PutKeyModule module = new PutKeyModule(currGroup, outQueue_);
 
         try {
           module.getResult(TIMEOUT_SEC);

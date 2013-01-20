@@ -38,7 +38,7 @@ public final class StreamBindingTest {
 
     CommunicationPeer communicationPeer = null;
     try {
-      communicationPeer = new CommunicationPeer(inQueue, outQueue);
+      communicationPeer = new CommunicationPeer(inQueue, outQueue, null);
     } catch (NebuloException e) {
       e.printStackTrace();
       System.exit(-1);

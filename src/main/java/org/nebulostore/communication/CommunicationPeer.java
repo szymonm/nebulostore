@@ -7,7 +7,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.LogManager;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
@@ -34,6 +33,8 @@ import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
 import org.nebulostore.communication.socket.ListenerService;
 import org.nebulostore.communication.socket.MessengerService;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 //TODO(grzegorzmilka) add closing through message instead of interrupt
 //TODO(grzegorzmilka) apply Visitor pattern to message communication
 /**
@@ -45,10 +46,8 @@ import org.nebulostore.communication.socket.MessengerService;
  */
 public final class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
-  private static final String CLING_CONFIGURATION_PATH =
-    "resources/conf/communication/logging.properties";
-  private static final String CONFIGURATION_PATH =
-    "resources/conf/communication/CommunicationPeer.xml";
+  private static final String CONFIG_PREFIX = "communication.";
+  private XMLConfiguration config_;
 
   /**
    * Module for handling bootstraping peer to network.
@@ -64,7 +63,7 @@ public final class CommunicationPeer extends Module {
    * as is. Only BDB works.
    */
   private Module dhtPeer_;
-  private final BlockingQueue<Message> dhtPeerInQueue_;
+  private BlockingQueue<Message> dhtPeerInQueue_;
   private Thread dhtPeerThread_;
 
   /**
@@ -98,41 +97,20 @@ public final class CommunicationPeer extends Module {
 
   private int commCliPort_;
 
-  public CommunicationPeer(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue) throws NebuloException {
+  public CommunicationPeer(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue,
+      XMLConfiguration config) throws NebuloException {
     super(inQueue, outQueue);
+    config_ = config;
+    initPeer();
+  }
+
+  private void initPeer() throws NebuloException {
     logger_.debug("Starting CommunicationPeer");
+    checkNotNull(config_);
 
-    /* Turn off cling's logging by turning off JUL - java.util.logging*/
-    FileInputStream fileIS = null;
-    try {
-      LogManager logManager = LogManager.getLogManager();
-      fileIS = new FileInputStream(CLING_CONFIGURATION_PATH);
-      logManager.readConfiguration(fileIS);
-    } catch (IOException e) {
-      logger_.warn("IOException: " + e + " was thrown when trying to read " +
-          "cling configuration");
-    } finally {
-      if (fileIS != null)
-        try {
-          fileIS.close();
-        } catch (IOException e) {
-          logger_.warn("IOException: " + e +
-              " was thrown when trying to close fileIS");
-        } finally {
-          fileIS = null;
-        }
-    }
-
-    XMLConfiguration config = null;
-
-    try {
-      config = new XMLConfiguration(CONFIGURATION_PATH);
-    } catch (ConfigurationException cex) {
-      logger_.error("Configuration read error in: " + CONFIGURATION_PATH);
-      throw new NebuloException("Couldn't read configuration file at: " +
-          CONFIGURATION_PATH, cex);
-    }
+    String clingConfPath = config_.getString(CONFIG_PREFIX + "cling-config");
+    if (clingConfPath != null)
+      readClingConfig(clingConfPath);
 
     /* Load port numbers from config file */
     int bootstrapPort;
@@ -145,10 +123,10 @@ public final class CommunicationPeer extends Module {
       String bServTP2PPortConf = "ports.bootstrap-server-tomp2p-port";
       String tP2PPortConf = "ports.tomp2p-port";
 
-      commCliPort_ = config.getInt(commCliPortConf, -1);
-      bootstrapPort = config.getInt(bPortConf, -1);
-      bootstrapTP2PPort = config.getInt(bServTP2PPortConf, -1);
-      tP2PPort = config.getInt(tP2PPortConf, -1);
+      commCliPort_ = config_.getInt(CONFIG_PREFIX + commCliPortConf, -1);
+      bootstrapPort = config_.getInt(CONFIG_PREFIX + bPortConf, -1);
+      bootstrapTP2PPort = config_.getInt(CONFIG_PREFIX + bServTP2PPortConf, -1);
+      tP2PPort = config_.getInt(CONFIG_PREFIX + tP2PPortConf, -1);
 
       if (commCliPort_ == -1 || bootstrapPort == -1 ||
           bootstrapTP2PPort == -1 || tP2PPort == -1) {
@@ -174,9 +152,9 @@ public final class CommunicationPeer extends Module {
       throw new NebuloException("Couldn't initialize listener.", e);
     }
 
-    isServer_ = config.getString("bootstrap.mode", "client").equals("server");
+    isServer_ = config_.getString(CONFIG_PREFIX + "bootstrap.mode", "client").equals("server");
 
-    String bootstrapServerAddress = config.getString("bootstrap.address", "none");
+    String bootstrapServerAddress = config_.getString(CONFIG_PREFIX + "bootstrap.address", "none");
     if (bootstrapServerAddress.equals("none")) {
       throw new IllegalArgumentException("Bootstrap client address is not set.");
     }
@@ -225,10 +203,34 @@ public final class CommunicationPeer extends Module {
 
     logger_.info("Created and started auxiliary services.");
 
-    if (!config.getString("dht.provider", "bdb").equals("none")) {
-      reconfigureDHT(config.getString("dht.provider", "bdb"), null);
+    String dhtProvider = config_.getString(CONFIG_PREFIX + "dht.provider", "bdb");
+    if (!dhtProvider.equals("none")) {
+      reconfigureDHT(dhtProvider, null);
     } else {
       dhtPeer_ = null;
+    }
+  }
+
+  private void readClingConfig(String clingConfPath) {
+    /* Turn off cling's logging by turning off JUL - java.util.logging*/
+    FileInputStream fileIS = null;
+    try {
+      LogManager logManager = LogManager.getLogManager();
+      fileIS = new FileInputStream(clingConfPath);
+      logManager.readConfiguration(fileIS);
+    } catch (IOException e) {
+      logger_.warn("IOException: " + e + " was thrown when trying to read " +
+          "cling configuration");
+    } finally {
+      if (fileIS != null)
+        try {
+          fileIS.close();
+        } catch (IOException e) {
+          logger_.warn("IOException: " + e +
+              " was thrown when trying to close fileIS");
+        } finally {
+          fileIS = null;
+        }
     }
   }
 
@@ -289,78 +291,75 @@ public final class CommunicationPeer extends Module {
   }
 
   @Override
-  protected void processMessage(Message msg) {
-    synchronized (this) {
-      if (isEnding_.get()) {
-        logger_.warn("Can not process message, because commPeer is " +
-            "shutting down.");
-        return;
-      }
-      logger_.debug("Processing message: " + msg);
+  protected void processMessage(Message msg) throws NebuloException {
+    if (isEnding_.get()) {
+      logger_.warn("Can not process message, because commPeer is shutting down.");
+      return;
+    }
+    logger_.debug("Processing message: " + msg);
 
-      if (msg instanceof ErrorCommMessage) {
-        logger_.info("Error comm message. Returning it to Dispatcher");
-        gossipServiceInQueue_.add(msg);
-        outQueue_.add(msg);
-      } else if (msg instanceof ReconfigureDHTMessage) {
-        try {
-          logger_.info("Got reconfigure request with jobId: " + msg.getId());
-          reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
-              (ReconfigureDHTMessage) msg);
-        } catch (NebuloException e) {
-          logger_.error(e);
-        }
-      } else if (msg instanceof HolderAdvertisementMessage) {
+    if (msg instanceof ErrorCommMessage) {
+      logger_.info("Error comm message. Returning it to Dispatcher");
+      gossipServiceInQueue_.add(msg);
+      outQueue_.add(msg);
+    } else if (msg instanceof ReconfigureDHTMessage) {
+      try {
+        logger_.info("Got reconfigure request with jobId: " + msg.getId());
+        reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
+            (ReconfigureDHTMessage) msg);
+      } catch (NebuloException e) {
+        logger_.error(e);
+      }
+    } else if (msg instanceof HolderAdvertisementMessage) {
+      dhtPeerInQueue_.add(msg);
+    } else if (msg instanceof CommPeerFoundMessage) {
+      logger_.debug("CommPeerFound message forwarded to Dispatcher");
+      outQueue_.add(msg);
+    } else if (msg instanceof DHTMessage) {
+      if (msg instanceof InDHTMessage) {
+        logger_.debug("InDHTMessage forwarded to DHT" + msg.getClass().toString());
         dhtPeerInQueue_.add(msg);
-      } else if (msg instanceof CommPeerFoundMessage) {
-        logger_.debug("CommPeerFound message forwarded to Dispatcher");
+      } else if (msg instanceof OutDHTMessage) {
+        logger_.debug("OutDHTMessage forwarded to Dispatcher" + msg.getClass().toString());
         outQueue_.add(msg);
-      } else if (msg instanceof DHTMessage) {
-        if (msg instanceof InDHTMessage) {
-          logger_.debug("InDHTMessage forwarded to DHT" + msg.getClass().toString());
-          dhtPeerInQueue_.add(msg);
-        } else if (msg instanceof OutDHTMessage) {
-          logger_.debug("OutDHTMessage forwarded to Dispatcher" + msg.getClass().toString());
-          outQueue_.add(msg);
-        } else {
-          logger_.error("Unrecognized DHTMessage: " + msg);
-        }
-      } else if (msg instanceof BdbMessageWrapper) {
-        logger_.debug("BDB DHT message received");
-        BdbMessageWrapper casted = (BdbMessageWrapper) msg;
-        if (casted.getWrapped() instanceof InDHTMessage) {
-          logger_.debug("BDB DHT message forwarded to DHT");
-          dhtPeerInQueue_.add(casted);
-        } else if (casted.getWrapped() instanceof OutDHTMessage) {
-          logger_.debug("BDB DHT message forwarded to Dispatcher");
-          outQueue_.add(casted.getWrapped());
-        } else {
-          logger_.error("Unrecognized BdbMessageWrapper: " + msg);
-        }
-      } else if (msg instanceof PeerGossipMessage) {
-        if (((CommMessage) msg).getDestinationAddress().equals(
-              bootstrapService_.getResolver().getMyCommAddress()))
-          gossipServiceInQueue_.add(msg);
-        else
-          messengerServiceInQueue_.add(msg);
-      } else if (msg instanceof CommMessage) {
-        if (((CommMessage) msg).getSourceAddress() == null) {
-          ((CommMessage) msg).setSourceAddress(getPeerAddress());
-        }
-
-        if (((CommMessage) msg).getDestinationAddress() == null) {
-          logger_.error("Null destination address set for " + msg + ". Dropping the message.");
-        } else if (((CommMessage) msg).getDestinationAddress().equals(
-              bootstrapService_.getResolver().getMyCommAddress())) {
-          logger_.debug("message forwarded to Dispatcher");
-          outQueue_.add(msg);
-        } else {
-          logger_.debug("message forwarded to MessengerService");
-          messengerServiceInQueue_.add(msg);
-        }
       } else {
-        logger_.warn("Unrecognized message of type " + msg);
+        logger_.error("Unrecognized DHTMessage: " + msg);
       }
+    } else if (msg instanceof BdbMessageWrapper) {
+      logger_.debug("BDB DHT message received");
+      BdbMessageWrapper casted = (BdbMessageWrapper) msg;
+      if (casted.getWrapped() instanceof InDHTMessage) {
+        logger_.debug("BDB DHT message forwarded to DHT");
+        dhtPeerInQueue_.add(casted);
+      } else if (casted.getWrapped() instanceof OutDHTMessage) {
+        logger_.debug("BDB DHT message forwarded to Dispatcher");
+        outQueue_.add(casted.getWrapped());
+      } else {
+        logger_.error("Unrecognized BdbMessageWrapper: " + msg);
+      }
+    } else if (msg instanceof PeerGossipMessage) {
+      if (((CommMessage) msg).getDestinationAddress().equals(
+            bootstrapService_.getResolver().getMyCommAddress()))
+        gossipServiceInQueue_.add(msg);
+      else
+        messengerServiceInQueue_.add(msg);
+    } else if (msg instanceof CommMessage) {
+      if (((CommMessage) msg).getSourceAddress() == null) {
+        ((CommMessage) msg).setSourceAddress(getPeerAddress());
+      }
+
+      if (((CommMessage) msg).getDestinationAddress() == null) {
+        logger_.error("Null destination address set for " + msg + ". Dropping the message.");
+      } else if (((CommMessage) msg).getDestinationAddress().equals(
+            bootstrapService_.getResolver().getMyCommAddress())) {
+        logger_.debug("message forwarded to Dispatcher");
+        outQueue_.add(msg);
+      } else {
+        logger_.debug("message forwarded to MessengerService");
+        messengerServiceInQueue_.add(msg);
+      }
+    } else {
+      logger_.warn("Unrecognized message of type " + msg);
     }
   }
 
@@ -383,8 +382,10 @@ public final class CommunicationPeer extends Module {
       }
 
       if (dhtProvider.equals("bdb")) {
-        dhtPeer_ = new BdbPeer(dhtPeerInQueue_, outQueue_, getPeerAddress(),
+        BdbPeer bdbPeer = new BdbPeer(dhtPeerInQueue_, outQueue_,
             messengerServiceInQueue_, reconfigureRequest);
+        bdbPeer.setConfig(config_);
+        dhtPeer_ = bdbPeer;
       } else {
         throw new NebuloException("Unsupported DHT Provider in configuration");
       }

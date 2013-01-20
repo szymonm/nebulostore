@@ -19,7 +19,7 @@ import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
+import org.nebulostore.replicator.Replicator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -83,16 +83,18 @@ public class Peer implements Runnable {
     // Create dispatcher - outQueue will be passed to newly created tasks.
     dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_,
         networkInQueue_, injector_), "Dispatcher");
+
     // Create network module.
     try {
-      networkThread_ = new Thread(new CommunicationPeer(networkInQueue_,
-          dispatcherInQueue_), "CommunicationPeer");
+      CommunicationPeer peer = new CommunicationPeer(networkInQueue_, dispatcherInQueue_, config_);
+      networkThread_ = new Thread(peer, "CommunicationPeer");
     } catch (NebuloException exception) {
       logger_.fatal("Error while creating CommunicationPeer");
       System.exit(1);
     }
 
-    NetworkContext.getInstance().setAppKey(appKey_);
+    //TODO(bolek): Remove NetworkContext.
+    //NetworkContext.getInstance().setAppKey(appKey_);
     GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
 
     //Register instance in DHT
@@ -102,6 +104,9 @@ public class Peer implements Runnable {
     // Create Broker.
     String brokerJobId = CryptoUtils.getRandomId().toString();
     dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(brokerJobId, true)));
+
+    // Initialize Replicator.
+    Replicator.setConfig(config_);
 
     // Run everything.
     networkThread_.start();

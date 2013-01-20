@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.EncryptedObject;
@@ -41,6 +42,7 @@ public class ReplicatorTest {
   @BeforeClass
   public static void init() {
     DOMConfigurator.configure("resources/conf/log4j.xml");
+    // TODO(bolek): Set mock configuration.
   }
 
   @Before
@@ -48,11 +50,13 @@ public class ReplicatorTest {
     GlobalContext.getInstance().setDispatcherQueue(deadDispatcherQueue_);
   }
 
+  // TODO(bolek): Refactor this test with fake disk writes.
   /**
    * Saving file. Retrieving it using id.
    * @throws InterruptedException
    * @throws NebuloException
    */
+  @Ignore
   @Test
   public void testStoreGetMessages() throws InterruptedException, NebuloException {
     ObjectId objectId1 = new ObjectId(new BigInteger("3"));

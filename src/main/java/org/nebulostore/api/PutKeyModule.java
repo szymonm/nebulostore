@@ -2,6 +2,8 @@ package org.nebulostore.api;
 
 import java.util.concurrent.BlockingQueue;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ContractList;
@@ -19,29 +21,29 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * @author bolek
  * Job module that realizes putKey() API function.
+ * @author bolek
  */
 public class PutKeyModule extends ReturningJobModule<Void> {
-
-  private final AppKey appKey_;
+  private AppKey appKey_;
   private final StateMachineVisitor visitor_;
   private ReplicationGroup replicationGroup_;
 
   private static Logger logger_ = Logger.getLogger(PutKeyModule.class);
 
-  public PutKeyModule(AppKey appKey) {
+  @Inject
+  public void setAppKey(AppKey appKey) {
     appKey_ = appKey;
-    visitor_ = new StateMachineVisitor();
   }
 
   /*
    * Constructor that runs newly created module.
    */
-  public PutKeyModule(AppKey appKey, ReplicationGroup replicationGroup,
-      BlockingQueue<Message> dispatcherQueue) {
-    appKey_ = appKey;
+  public PutKeyModule(ReplicationGroup replicationGroup, BlockingQueue<Message> dispatcherQueue) {
+    checkNotNull(dispatcherQueue);
     visitor_ = new StateMachineVisitor();
     replicationGroup_ = replicationGroup;
     runThroughDispatcher(dispatcherQueue);
@@ -65,6 +67,7 @@ public class PutKeyModule extends ReturningJobModule<Void> {
 
     @Override
     public Void visit(JobInitMessage message) {
+      checkNotNull(appKey_);
       if (state_ == STATE.INIT) {
         // State 1 - Send appKey to DHT and wait for reply.
         state_ = STATE.DHT_INSERT;
@@ -79,8 +82,9 @@ public class PutKeyModule extends ReturningJobModule<Void> {
           endWithError(new NebuloException("Error while creating replication group", exception));
         }
         logger_.debug("Updating top dir in DHT, contracts list: " + contractList.toString());
-        networkQueue_.add(new PutDHTMessage(jobId_, new KeyDHT(appKey_.getKey()),
-            new ValueDHT(new Metadata(appKey_, contractList))));
+        ValueDHT value = new ValueDHT(new Metadata(appKey_, contractList));
+        KeyDHT key = new KeyDHT(appKey_.getKey());
+        networkQueue_.add(new PutDHTMessage(jobId_, key, value));
       } else {
         logger_.warn("JobInitMessage received in state " + state_);
       }

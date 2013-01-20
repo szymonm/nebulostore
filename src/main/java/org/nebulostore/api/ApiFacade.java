@@ -30,7 +30,7 @@ public final class ApiFacade {
   public static void putKey(AppKey appKey) throws NebuloException {
     appKey_ = appKey;
     // Create a handler and run it through dispatcher.
-    PutKeyModule module = new PutKeyModule(appKey,
+    PutKeyModule module = new PutKeyModule(
         new ReplicationGroup(new CommAddress[]{CommunicationPeer.getPeerAddress()},
             new BigInteger("0"), new BigInteger("1000000")), dispatcherQueue_);
     // Exception from getResult() is simply passed to the user.

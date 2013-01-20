@@ -6,6 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
+import com.google.inject.Inject;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
@@ -16,7 +17,6 @@ import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.Transaction;
 
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
@@ -39,14 +39,15 @@ import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Implementation of berkely db based engine for...
  * @author marcin
  */
 public class BdbPeer extends Module {
-
-  private static String configurationPath_ = "resources/conf/communication/BdbPeer.xml";
   private static Logger logger_ = Logger.getLogger(BdbPeer.class);
+  private static final String CONFIG_PREFIX = "communication.dht.bdb-peer.";
 
   private String storagePath_;
   private String storeName_;
@@ -61,6 +62,12 @@ public class BdbPeer extends Module {
   private final BlockingQueue<Message> senderInQueue_;
   private final ReconfigureDHTMessage reconfigureRequest_;
   private Timer advertisementsTimer_;
+  private XMLConfiguration config_;
+
+  @Inject
+  public void setConfig(XMLConfiguration config) {
+    config_ = config;
+  }
 
   /**
    * @param inQueue
@@ -70,27 +77,28 @@ public class BdbPeer extends Module {
    */
   public BdbPeer(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue,
-      CommAddress peerAddress,
       BlockingQueue<Message> senderInQueue,
       ReconfigureDHTMessage reconfigureRequest) {
     super(inQueue, outQueue);
-
     senderInQueue_ = senderInQueue;
     reconfigureRequest_ = reconfigureRequest;
+  }
 
-    // TODO: move to factory in appcore
-    XMLConfiguration config = null;
-    try {
-      config = new XMLConfiguration(configurationPath_);
-    } catch (ConfigurationException cex) {
-      logger_.error("Configuration read error in: " + configurationPath_);
-    }
-    if (config.getString("type", "proxy").equals("storage-holder")) {
+  @Override
+  public void run() {
+    initPeer();
+    super.run();
+  }
+
+  private void initPeer() {
+    checkNotNull(config_);
+    if (config_.getString(CONFIG_PREFIX + "type", "proxy").equals("storage-holder")) {
       logger_.info("Configuring as bdb database holder");
 
-      storagePath_ = config.getString("sleepycat.storage-path", "/tmp/nebulostore/");
-      storeName_ = config.getString("sleepycat.storage-name", "bdb-dht");
-
+      storagePath_ = config_.getString(CONFIG_PREFIX + "sleepycat.storage-path");
+      storeName_ = config_.getString(CONFIG_PREFIX + "sleepycat.storage-name");
+      checkNotNull(storagePath_);
+      checkNotNull(storeName_);
       logger_.debug("storagePath: " + storagePath_);
       logger_.debug("storeName: " + storeName_);
 

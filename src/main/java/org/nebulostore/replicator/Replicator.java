@@ -12,6 +12,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import com.google.inject.Inject;
+
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.api.ApiFacade;
@@ -36,39 +39,46 @@ import org.nebulostore.replicator.messages.UpdateWithholdMessage;
 import org.nebulostore.replicator.messages.UpdateWithholdMessage.Reason;
 import org.nebulostore.utils.Pair;
 
-/*
- * TODO: cloning object before send. java cloning library?
- */
+import static com.google.common.base.Preconditions.checkNotNull;
+
+// TODO(szm): cloning object before send. java cloning library?
+// TODO(bolek, szm): Refactor static methods into non-static?
 
 /**
+ * Replicator - disk interface.
  * @author szymonmatejczyk
  */
 public class Replicator extends JobModule {
-
-  private final MessageVisitor<Void> visitor_;
+  private static Logger logger_ = Logger.getLogger(Replicator.class);
+  private static final String CONFIG_PREFIX = "replicator.";
 
   private static final int UPDATE_TIMEOUT_SEC = 10;
-
   private static final int LOCK_TIMEOUT_SEC = 5;
-
   private static final int GET_OBJECT_TIMEOUT_SEC = 10;
 
-  // Hashtable is synchronized.
+  private static XMLConfiguration config_;
+  private static String pathPrefix_;
 
+  // Hashtable is synchronized.
   //TODO(szm): filesLocations and previousVersions should be stored on disk!!
   private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
   private static Hashtable<ObjectId, Set<String>> previousVersions_ = new Hashtable<ObjectId,
       Set<String>>();
-
-  private static Hashtable<ObjectId, Boolean> freshnessMap_ =
-      new Hashtable<ObjectId, Boolean>(256);
-
+  private static Hashtable<ObjectId, Boolean> freshnessMap_ = new Hashtable<ObjectId, Boolean>(256);
   private static Hashtable<ObjectId, Semaphore> locksMap_ = new Hashtable<ObjectId, Semaphore>();
 
-  private static Logger logger_ = Logger.getLogger(Replicator.class);
+  private final MessageVisitor<Void> visitor_;
+
+  @Inject
+  public static void setConfig(XMLConfiguration config) {
+    config_ = config;
+    pathPrefix_ = config_.getString(CONFIG_PREFIX + "storage-path");
+  }
 
   public Replicator(String jobId, BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
     super(jobId);
+    checkNotNull(config_);
+    checkNotNull(pathPrefix_);
     logger_.debug("Replicator ctor");
     setInQueue(inQueue);
     setOutQueue(outQueue);
@@ -111,7 +121,8 @@ public class Replicator extends JobModule {
             }
           } catch (InterruptedException exception) {
             abortUpdateObject(message.getObjectId());
-            throw new NebuloException("Timeout", exception);
+            throw new NebuloException("Timeout while handling QueryToStoreObjectMessage",
+                exception);
           } catch (ClassCastException exception) {
             abortUpdateObject(message.getObjectId());
             throw new NebuloException("Wrong message type received.", exception);
@@ -284,24 +295,39 @@ public class Replicator extends JobModule {
     }
 
     try {
-      locksMap_.get(objectId).tryAcquire(UPDATE_TIMEOUT_SEC, TimeUnit.SECONDS);
+      if (!locksMap_.get(objectId).tryAcquire(UPDATE_TIMEOUT_SEC, TimeUnit.SECONDS)) {
+        logger_.warn("Object " + objectId.toString() + " lock timeout in queryToUpdateObject().");
+        return QueryToStoreResult.TIMEOUT;
+      }
     } catch (InterruptedException exception) {
-      logger_.warn("Object " + objectId.toString() + " lock timeout.");
+      logger_.warn("Interrupted while waiting for object lock in queryToUpdateObject()");
       return QueryToStoreResult.TIMEOUT;
     }
 
     String tmpLocation = location + ".tmp";
-    FileOutputStream fos = null;
+    File f = new File(tmpLocation);
+    f.getParentFile().mkdirs();
+    FileOutputStream fos;
     try {
-      File f = new File(tmpLocation);
-      f.getParentFile().mkdirs();
       fos = new FileOutputStream(f);
+    } catch (FileNotFoundException e1) {
+      logger_.error("Could not open stream in queryToUpdateObject().");
+      return QueryToStoreResult.SAVE_FAILED;
+    }
+
+    try {
       fos.write(encryptedObject.getEncryptedData());
-      fos.close();
       logger_.debug("File written to tmp location");
     } catch (IOException exception) {
       logger_.error(exception.getMessage());
       return QueryToStoreResult.SAVE_FAILED;
+    } finally {
+      try {
+        fos.close();
+      } catch (IOException e) {
+        logger_.error("Could not close stream in queryToUpdateObject().");
+        return QueryToStoreResult.SAVE_FAILED;
+      }
     }
 
     return QueryToStoreResult.OK;
@@ -336,7 +362,6 @@ public class Replicator extends JobModule {
       previousVersions_.get(objectId).addAll(previousVersions);
       previousVersions_.get(objectId).add(currentVersion);
     }
-
 
     locksMap_.get(objectId).release();
     logger_.debug("Commit successful");
@@ -395,17 +420,25 @@ public class Replicator extends JobModule {
     FileInputStream fis = null;
     try {
       fis = new FileInputStream(file);
-      byte[] content = new byte[(int) (file.length())];
-
-      fis.read(content);
-
-      return new EncryptedObject(content);
     } catch (FileNotFoundException exception) {
       logger_.warn("Object file not found.");
       return null;
+    }
+
+    try {
+      byte[] content = new byte[(int) (file.length())];
+      fis.read(content);
+      return new EncryptedObject(content);
     } catch (IOException exception) {
       logger_.warn(exception.toString());
       return null;
+    } finally {
+      try {
+        fis.close();
+      } catch (IOException e) {
+        logger_.warn("Could not close stream in getObject().");
+        return null;
+      }
     }
   }
 
@@ -415,9 +448,13 @@ public class Replicator extends JobModule {
       return;
     Semaphore mutex = locksMap_.get(objectId);
     try {
-      mutex.tryAcquire(UPDATE_TIMEOUT_SEC, TimeUnit.SECONDS);
+      if (!mutex.tryAcquire(UPDATE_TIMEOUT_SEC, TimeUnit.SECONDS)) {
+        logger_.warn("Object " + objectId.toString() + " lock timeout in deleteObject().");
+        throw new DeleteObjectException("Timeout while waiting for object lock.");
+      }
     } catch (InterruptedException e) {
-      throw new DeleteObjectException("Timeout.");
+      logger_.warn("Interrupted while waiting for object lock in deleteObject()");
+      throw new DeleteObjectException("Interrupted while waiting for object lock.");
     }
 
     filesLocations_.remove(objectId);
@@ -435,7 +472,7 @@ public class Replicator extends JobModule {
   }
 
   private static String getLocationPrefix() {
-    // TODO: Read this from config file!
-    return "/tmp/nebulostore/store/" + ApiFacade.getAppKey().getKey().intValue() + "/";
+    checkNotNull(pathPrefix_);
+    return pathPrefix_ + ApiFacade.getAppKey().getKey().intValue() + "/";
   }
 }

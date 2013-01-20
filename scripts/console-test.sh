@@ -18,28 +18,11 @@
 # 5. Details about commands and file names can be found in
 #    TextInterface.java - feel free to experiment!
 
-
-# Instructions to run on BDB DHT:
-#
-# 1. Change provider to "bdb" in resources/conf/communication/CommunicationPeer.xml
-# 2. Set a valid path in 'resources/conf/communication/BdbPeer_holder.xml'
-#    to a dir with rw permissions (or leave '/tmp/' if it is ok).
-# 3. Continue with previous instructions.
-
-
-BUILD_DIR="build"
 JAR_DIR="build/jar"
-JAR="Nebulostore.jar"
 PEERS_NUM=4
-TARGET=peer
+COMMON_ARGS="--CLASS_NAME=org.nebulostore.textinterface.TextInterface --BOOTSTRAP_ADDRESS=localhost --BOOTSTRAP_TOMP2P_PORT=10301"
 
-if [ $1 ]; then
-  PEERS_NUM=$1
-fi
-
-if [ $2 ]; then
-  TARGET=$2
-fi
+./scripts/build-and-deploy.sh $PEERS_NUM
 
 platform='unknown'
 unamestr=`uname`
@@ -56,27 +39,17 @@ else
   sequence=`seq 1 $PEERS_NUM`
 fi
 
-rm -rf $BUILD_DIR
-ant $TARGET
-
-echo "Building done. Copying..."
-
+cd $JAR_DIR
 for i in $sequence
 do
-    echo $i
-    path="./$JAR_DIR/$i"
-    mkdir $path
-    cp ./$JAR_DIR/*.jar ./$JAR_DIR/$i/
-    cp -r ./$JAR_DIR/lib ./$JAR_DIR/$i/
-    cp -r resources ./$JAR_DIR/$i/
-    sed "s/9987/1100$i/g" ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml.local > ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml.temp
-    sed "s/10087/1200$i/g" ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml.temp > ./$JAR_DIR/$i/resources/conf/communication/CommunicationPeer.xml
-    sed "s/11/$i$i/g" ./$JAR_DIR/$i/resources/conf/Peer.xml > ./$JAR_DIR/$i/resources/conf/Peer.xml.temp
-    sed "s/appcore\.Peer/textinterface\.TextInterface/g" ./$JAR_DIR/$i/resources/conf/Peer.xml.temp > ./$JAR_DIR/$i/resources/conf/Peer.xml
+    cd $i/resources/conf
+    ./generate_config.py $COMMON_ARGS --APP_KEY=$i$i --BOOTSTRAP_MODE=client --CLI_PORT=1010$i --BOOTSTRAP_PORT=1020$i --TOMP2P_PORT=1030$i --BDB_TYPE=proxy < Peer.xml.template > Peer.xml
+    cd ../../../
 done
 
-cp ./resources/conf/communication/BdbPeer_holder.xml ./$JAR_DIR/1/resources/conf/communication/BdbPeer.xml
-cp ./$JAR_DIR/1/resources/conf/communication/CommunicationPeerServer.xml.local ./$JAR_DIR/1/resources/conf/communication/CommunicationPeer.xml
+cd 1/resources/conf
+./generate_config.py $COMMON_ARGS --APP_KEY=11 --BOOTSTRAP_MODE=server --CLI_PORT=10101 --BOOTSTRAP_PORT=10201 --TOMP2P_PORT=10301 --BDB_TYPE=storage-holder < Peer.xml.template > Peer.xml
+
 rm -rf /tmp/nebulostore
 mkdir -p /tmp/nebulostore/nebulo_baza
 

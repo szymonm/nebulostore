@@ -1,12 +1,74 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <peer>
-  <app-key>
-    __APP_KEY
-  </app-key>
-  <class-name>
-    __CLASS_NAME
-  </class-name>
-  <conductor-server-class-list>
-    __TESTS_LIST
-  </conductor-server-class-list>
+    <!-- Application Key, a unique user identifier. -->
+    <app-key>
+        @APP_KEY=11@
+    </app-key>
+    <!-- Main class that is created and executed when Nebulostore starts,
+         'org.nebulostore.appcore.Peer' is the full, standard instance,
+         'org.nebulostore.conductor.TestingPeer' is the test execution environment. -->
+    <class-name>
+        @CLASS_NAME=org.nebulostore.appcore.Peer@
+    </class-name>
+    <!-- When 'TestingPeer' is used above, it reads the following list of test cases and executes them. -->
+    <conductor-server-class-list>
+        @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer,org.nebulostore.conductor.readwrite.ReadWriteServer@
+    </conductor-server-class-list>
+    <replicator>
+        <storage-path>
+            @REPLICATOR_PATH=/tmp/nebulostore/store/@
+        </storage-path>
+    </replicator>
+    <communication>
+        <ports>
+            <!-- Main port used by local instance for communication. -->
+            <comm-cli-port>
+                @CLI_PORT=10101@
+            </comm-cli-port>
+            <!-- Port used by bootstrap server for listening to welcome messages. -->
+            <bootstrap-port>
+                @BOOTSTRAP_PORT=10201@
+            </bootstrap-port>
+            <!--Port used by local instance for listening to tomP2P communication. -->
+            <tomp2p-port>
+                @TOMP2P_PORT=10301@
+            </tomp2p-port>
+            <!--Information which port is used by bootstrap server for tomP22 communication.
+                Should be equal to tomp2p-port for bootstrap server. -->
+            <bootstrap-server-tomp2p-port>
+                @BOOTSTRAP_TOMP2P_PORT=10301@
+            </bootstrap-server-tomp2p-port>
+        </ports>
+        <dht>
+            <provider>
+                @DHT_PROVIDER=bdb@
+            </provider>
+            <bdb-peer>
+                <!-- 'storage-holder' or 'proxy' -->
+                <type>
+                    @BDB_TYPE=storage-holder@
+                </type>
+                <sleepycat>
+                    <storage-path>
+                        @SLEEPYCAT_PATH=/tmp/nebulostore/@
+                    </storage-path>
+                    <storage-name>
+                        @SLEEPYCAT_STORAGE_NAME=bdb-dht@
+                    </storage-name>
+                </sleepycat>
+            </bdb-peer>
+        </dht>
+        <bootstrap>
+            <!-- 'client' or 'server' -->
+            <mode>
+                @BOOTSTRAP_MODE=client@
+            </mode>
+            <address>
+                @BOOTSTRAP_ADDRESS=localhost@
+            </address>
+        </bootstrap>
+        <cling-config>
+            @CLING_CONFIG=resources/conf/cling.logging@
+        </cling-config>
+    </communication>
 </peer>

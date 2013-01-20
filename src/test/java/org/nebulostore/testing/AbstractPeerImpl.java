@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -14,6 +16,7 @@ import org.nebulostore.communication.address.CommAddress;
  * @author grzegorzmilka
  */
 public abstract class AbstractPeerImpl implements AbstractPeer {
+  private static final String CONFIGURATION_PATH = "resources/conf/Peer.xml";
   protected final Logger logger_;
   protected BlockingQueue<Message> inQueue_;
   protected BlockingQueue<Message> outQueue_;
@@ -44,10 +47,18 @@ public abstract class AbstractPeerImpl implements AbstractPeer {
 
   public void startCommPeer() throws NebuloException, RemoteException {
     if (communicationPeer_ == null) {
+      XMLConfiguration config = null;
+
+      try {
+        config = new XMLConfiguration(CONFIGURATION_PATH);
+      } catch (ConfigurationException cex) {
+        throw new NebuloException("Configuration read error in: " + CONFIGURATION_PATH);
+      }
+
       inQueue_ = new LinkedBlockingQueue<Message>();
       outQueue_ = new LinkedBlockingQueue<Message>();
       communicationPeer_ =
-        new CommunicationPeer(inQueue_, outQueue_);
+        new CommunicationPeer(inQueue_, outQueue_, config);
       communicationPeerThread_ = new Thread(communicationPeer_,
           "Nebulostore.Communication.CommunicationPeer");
       communicationPeerThread_.setDaemon(true);
