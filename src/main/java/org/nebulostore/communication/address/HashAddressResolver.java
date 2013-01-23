@@ -18,6 +18,7 @@ import org.nebulostore.communication.exceptions.AddressNotPresentException;
  */
 class HashAddressResolver implements CommAddressResolver {
   private static Logger logger_ = Logger.getLogger(HashAddressResolver.class);
+  private static final int MAX_RETRIES = 50;
   private final Peer myPeer_;
   private final CommAddress myCommAddress_;
 
@@ -32,14 +33,28 @@ class HashAddressResolver implements CommAddressResolver {
     FutureDHT futureDHT = null;
     try {
       logger_.trace("About to resolve: " + commAddress + ".");
-      futureDHT = myPeer_.get(new Number160(commAddress.hashCode())).start();
-      logger_.trace("Returned FutureDHT: " + futureDHT);
-      futureDHT.awaitUninterruptibly();
-      Data data = futureDHT.getData();
-      logger_.trace("Returned Data: " + data + " " + futureDHT.isCompleted() +
-          " " + futureDHT.isSuccess());
+      Data data = null;
+      // TODO(grzegorzmilka): Fix this workaround.
+      for (int i = 1; i <= MAX_RETRIES; ++i) {
+        futureDHT = myPeer_.get(new Number160(commAddress.hashCode())).start();
+        logger_.trace("Returned FutureDHT: " + futureDHT);
+        futureDHT.awaitUninterruptibly();
+        data = futureDHT.getData();
+        if (data == null) {
+          logger_.debug("NULL in HashAddressResolver in iteration " + i);
+          try {
+            Thread.sleep(300);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        } else {
+          break;
+        }
+      }
       if (data == null)
         throw new AddressNotPresentException("Address not available in DHT.");
+      logger_.trace("Returned Data: " + data + " " + futureDHT.isCompleted() +
+          " " + futureDHT.isSuccess());
       InetSocketAddress inetSocketAddress = (InetSocketAddress) data.getObject();
       logger_.trace("Resolved " + commAddress + " to: " + inetSocketAddress + ".");
       return inetSocketAddress;

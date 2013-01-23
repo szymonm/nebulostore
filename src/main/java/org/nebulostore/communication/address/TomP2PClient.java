@@ -20,6 +20,7 @@ import net.tomp2p.peers.PeerAddress;
 public final class TomP2PClient extends TomP2PPeer {
   // 4 seconds
   private static final int ADDRESS_DISCOVERY_PERIOD = 4000;
+  private static final int MAX_RETRIES = 10;
 
   private Timer currentAddressDiscoverer_;
 
@@ -29,49 +30,94 @@ public final class TomP2PClient extends TomP2PPeer {
 
   @Override
   public void setUpAndRun() throws IOException {
-    if (bootstrapServerAddress_ == null) {
-      throw new IllegalStateException("Bootstrap address has to be set.");
+    // TODO(grzegorzmilka): Fix this workaround.
+    boolean success = false;
+    for (int i = 1; i <= MAX_RETRIES; ++i) {
+      if (bootstrapServerAddress_ == null) {
+        throw new IllegalStateException("Bootstrap address has to be set.");
+      }
+      if (myCommAddress_ == null) {
+        throw new IllegalStateException("CommAddress has to be set.");
+      }
+
+      try {
+        if (myPeer_ != null) {
+          myPeer_.shutdown();
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+        myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).
+            setPorts(tomP2PPort_).makeAndListen();
+      } catch (IOException e) {
+        String errMsg = "Error when making peer";
+        logger_.error(errMsg + " " + e);
+        throw e;
+      }
+
+      bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO,
+          new InetSocketAddress(bootstrapServerAddress_, bootstrapTomP2PPort_));
+
+      try {
+        /* HOT-FIX(grzegorzmilka) quick fix to find NPE source */
+        myPeer_.getConfiguration().setBehindFirewall(true);
+      } catch (NullPointerException e) {
+        logger_.error("NullPointerException when setting peer to be behind firewall");
+        throw e;
+      }
+
+      FutureDiscover discovery;
+      try {
+        /* HOT-FIX(grzegorzmilka) quick fix to find NPE source */
+        discovery = myPeer_.discover().setPeerAddress(bootstrapServerPeerAddress_).start();
+        discovery.awaitUninterruptibly();
+      } catch (NullPointerException e) {
+        logger_.error("NullPointerException when starting discovery");
+        throw e;
+      }
+      if (!discovery.isSuccess()) {
+        String errMsg = "Couldn't perform tomp2p discovery: " +
+            discovery.getFailedReason();
+        logger_.error(errMsg);
+        myPeer_ = null;
+        throw new IOException(errMsg);
+      }
+
+      logger_.debug("Peer: " + discovery.getReporter() +
+          " told us about our address.");
+      myInetSocketAddress_ = new InetSocketAddress(
+          myPeer_.getPeerAddress().getInetAddress(), commCliPort_);
+
+      bootstrapServerPeerAddress_ = discovery.getReporter();
+
+      FutureBootstrap bootstrap;
+
+      try {
+        /* HOT-FIX(grzegorzmilka) quick fix to find NPE source */
+        bootstrap = myPeer_.bootstrap().setPeerAddress(bootstrapServerPeerAddress_).start();
+        bootstrap.awaitUninterruptibly();
+      } catch (NullPointerException e) {
+        logger_.error("NullPointerException when bootstrapping peer");
+        throw e;
+      }
+      if (!bootstrap.isSuccess()) {
+        logger_.debug("Couldn't perform tomp2p bootstrap in iteration " + i + ": " +
+            bootstrap.getFailedReason());
+        try {
+          Thread.sleep(300);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      } else {
+        success = true;
+        break;
+      }
     }
-    if (myCommAddress_ == null) {
-      throw new IllegalStateException("CommAddress has to be set.");
-    }
-
-    try {
-      myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).
-        setPorts(tomP2PPort_).makeAndListen();
-    } catch (IOException e) {
-      String errMsg = "Error when making peer";
-      logger_.error(errMsg + " " + e);
-      throw e;
-    }
-
-    bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO,
-        new InetSocketAddress(bootstrapServerAddress_, bootstrapTomP2PPort_));
-
-    myPeer_.getConfiguration().setBehindFirewall(true);
-
-    FutureDiscover discovery = myPeer_.discover().
-      setPeerAddress(bootstrapServerPeerAddress_).start();
-    discovery.awaitUninterruptibly();
-    if (!discovery.isSuccess()) {
-      String errMsg = "Couldn't perform tomp2p discovery: " +
-        discovery.getFailedReason();
-      logger_.error(errMsg);
-      myPeer_ = null;
-      throw new IOException(errMsg);
-    }
-    logger_.debug("Peer: " + discovery.getReporter() +
-        " told us about our address.");
-    myInetSocketAddress_ = new InetSocketAddress(
-        myPeer_.getPeerAddress().getInetAddress(), commCliPort_);
-
-    bootstrapServerPeerAddress_ = discovery.getReporter();
-    FutureBootstrap bootstrap = myPeer_.bootstrap().
-      setPeerAddress(bootstrapServerPeerAddress_).start();
-    bootstrap.awaitUninterruptibly();
-    if (!bootstrap.isSuccess()) {
-      String errMsg = "Couldn't perform tomp2p bootstrap: " +
-        bootstrap.getFailedReason();
+    if (!success) {
+      String errMsg = "Couldn't perform tomp2p bootstrap!";
       logger_.error(errMsg);
       myPeer_ = null;
       throw new IOException(errMsg);
