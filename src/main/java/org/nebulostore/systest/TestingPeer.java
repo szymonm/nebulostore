@@ -1,8 +1,9 @@
-package org.nebulostore.conductor;
+package org.nebulostore.systest;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.conductor.ConductorServer;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
 /**

@@ -10,8 +10,8 @@ BOOTSTRAP_DELAY=2
 TEST_ITER=3
 
 PEERNAME="org.nebulostore.appcore.Peer"
-TESTPEERNAME="org.nebulostore.conductor.TestingPeer"
-TESTNAME="org.nebulostore.conductor.pingpong.PingPongServer"
+TESTPEERNAME="org.nebulostore.systest.TestingPeer"
+TESTNAME="org.nebulostore.systest.pingpong.PingPongServer"
 
 COMMON_ARGS="--BOOTSTRAP_ADDRESS=localhost --BOOTSTRAP_TOMP2P_PORT=10301"
 

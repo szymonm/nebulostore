@@ -20,7 +20,7 @@
 
 JAR_DIR="build/jar"
 PEERS_NUM=4
-COMMON_ARGS="--CLASS_NAME=org.nebulostore.textinterface.TextInterface --BOOTSTRAP_ADDRESS=localhost --BOOTSTRAP_TOMP2P_PORT=10301"
+COMMON_ARGS="--CLASS_NAME=org.nebulostore.systest.textinterface.TextInterface --BOOTSTRAP_ADDRESS=localhost --BOOTSTRAP_TOMP2P_PORT=10301 --BOOTSTRAP_PORT=10201"
 
 ./scripts/build-and-deploy.sh $PEERS_NUM
 
@@ -43,12 +43,12 @@ cd $JAR_DIR
 for i in $sequence
 do
     cd $i/resources/conf
-    ./generate_config.py $COMMON_ARGS --APP_KEY=$i$i --BOOTSTRAP_MODE=client --CLI_PORT=1010$i --BOOTSTRAP_PORT=1020$i --TOMP2P_PORT=1030$i --BDB_TYPE=proxy < Peer.xml.template > Peer.xml
+    ./generate_config.py $COMMON_ARGS --APP_KEY=$i$i --BOOTSTRAP_MODE=client --CLI_PORT=1010$i --TOMP2P_PORT=1030$i --BDB_TYPE=proxy < Peer.xml.template > Peer.xml
     cd ../../../
 done
 
 cd 1/resources/conf
-./generate_config.py $COMMON_ARGS --APP_KEY=11 --BOOTSTRAP_MODE=server --CLI_PORT=10101 --BOOTSTRAP_PORT=10201 --TOMP2P_PORT=10301 --BDB_TYPE=storage-holder < Peer.xml.template > Peer.xml
+./generate_config.py $COMMON_ARGS --APP_KEY=11 --BOOTSTRAP_MODE=server --CLI_PORT=10101 --TOMP2P_PORT=10301 --BDB_TYPE=storage-holder < Peer.xml.template > Peer.xml
 
 rm -rf /tmp/nebulostore
 mkdir -p /tmp/nebulostore/nebulo_baza
