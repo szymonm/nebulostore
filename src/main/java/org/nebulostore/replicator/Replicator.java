@@ -53,7 +53,7 @@ public class Replicator extends JobModule {
   private static final String CONFIG_PREFIX = "replicator.";
 
   private static final int UPDATE_TIMEOUT_SEC = 10;
-  private static final int LOCK_TIMEOUT_SEC = 5;
+  private static final int LOCK_TIMEOUT_SEC = 10;
   private static final int GET_OBJECT_TIMEOUT_SEC = 10;
 
   private static XMLConfiguration config_;

@@ -24,6 +24,7 @@ public final class EntryPoint {
       config = new XMLConfiguration(CONFIGURATION_PATH);
     } catch (ConfigurationException cex) {
       fatal("Configuration read error in: " + CONFIGURATION_PATH);
+      return;
     }
 
     String className = config.getString("class-name", DEFAULT_PEER_CLASS);
@@ -32,10 +33,13 @@ public final class EntryPoint {
       peer = (Peer) Class.forName(className).newInstance();
     } catch (InstantiationException e) {
       fatal("Could not instantiate class " + className + ".");
+      return;
     } catch (IllegalAccessException e) {
       fatal("Constructor for class " + className + " is not accessible.");
+      return;
     } catch (ClassNotFoundException e) {
       fatal("Class " + className + " not found.");
+      return;
     }
 
     peer.setConfiguration(config);
@@ -45,12 +49,12 @@ public final class EntryPoint {
       peerThread.join();
     } catch (InterruptedException e) {
       fatal("InterruptedException while waiting for peer thread.");
+      return;
     }
   }
 
-  private static void fatal(String message) throws NebuloException {
+  private static void fatal(String message) {
     logger_.fatal(message);
-    throw new NebuloException(message);
   }
 
   private EntryPoint() { }

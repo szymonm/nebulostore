@@ -97,7 +97,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
           endWithError(new NebuloException("No peers replicating this object."));
         } else {
           // TODO(bolek): Ask other replicas if first query is unsuccessful.
-          logger_.debug("Querying replica");
+          logger_.debug("Querying replica (" + group.getReplicator(0) + ")");
           queryReplica(group.getReplicator(0));
         }
       } else {

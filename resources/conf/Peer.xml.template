@@ -16,7 +16,7 @@
     </conductor-server-class-list>
     <replicator>
         <storage-path>
-            @REPLICATOR_PATH=/tmp/nebulostore/store/@
+            @REPLICATOR_PATH=storage@
         </storage-path>
     </replicator>
     <communication>
@@ -50,7 +50,7 @@
                 </type>
                 <sleepycat>
                     <storage-path>
-                        @SLEEPYCAT_PATH=/tmp/nebulostore/@
+                        @SLEEPYCAT_PATH=storage/bdb@
                     </storage-path>
                     <storage-name>
                         @SLEEPYCAT_STORAGE_NAME=bdb-dht@
