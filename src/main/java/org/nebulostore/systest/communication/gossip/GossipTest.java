@@ -1,4 +1,4 @@
-package org.nebulostore.testing.moduletest.gossiptest;
+package org.nebulostore.systest.communication.gossip;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

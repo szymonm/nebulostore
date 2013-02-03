@@ -1,4 +1,4 @@
-package org.nebulostore.testing.communication.messages;
+package org.nebulostore.systest.communication.pingpong;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -8,29 +8,23 @@ import org.nebulostore.communication.messages.CommMessage;
 /**
  * @author Grzegorz Milka
  */
-public final class PingMessage extends CommMessage {
-  private static final long serialVersionUID = -5128289273270012552L;
+public final class PongMessage extends CommMessage {
+  private static final long serialVersionUID = 3661148334857628467L;
   /**
-   * Peer who sent the ping.
+   * Peer who sent the pong.
    */
   private final int peerId_;
   /**
    * Message's id number.
-   * Used to distinguish old or pong messages.
+   * Id of the pong message it's responding to.
    */
   private final int id_;
-  private CommAddress rootSourceAddress_;
 
-  public PingMessage(CommAddress rootSource, CommAddress destAddress,
-          int peerId, int id) {
+  public PongMessage(CommAddress destAddress, int peerId,
+      PingMessage ping) {
     super(null, null, destAddress);
-    rootSourceAddress_ = rootSource;
     peerId_ = peerId;
-    id_ = id;
-  }
-
-  public CommAddress getRootSourceAddress() {
-    return rootSourceAddress_;
+    id_ = ping.getPingId();
   }
 
   public int getPeerId() {
@@ -43,8 +37,9 @@ public final class PingMessage extends CommMessage {
 
   @Override
   public String toString() {
-    return String.format("PingMessage of id: %d, from: %d, to: %s",
-            id_, peerId_, getDestinationAddress());
+    return String.format("PongMessage of id: %d, from (peerID): %d ," +
+        "(sourceAddress): %s, to: %s.", id_, peerId_, getSourceAddress(),
+        getDestinationAddress().toString());
   }
 
   @Override

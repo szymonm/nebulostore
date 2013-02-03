@@ -1,4 +1,4 @@
-package org.nebulostore.testing;
+package org.nebulostore.systest.communication.pingpong;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;

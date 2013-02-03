@@ -1,4 +1,4 @@
-package org.nebulostore.testing;
+package org.nebulostore.systest.communication.pingpong;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -14,8 +14,6 @@ import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
-import org.nebulostore.testing.communication.messages.PingMessage;
-import org.nebulostore.testing.communication.messages.PongMessage;
 
 
 /**
