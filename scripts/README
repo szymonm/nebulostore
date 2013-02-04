@@ -1,4 +1,19 @@
-How to run ping-pong test:
+Please run all scripts from trunk level (./scripts/script-name.sh).
+
+Tests available:
+    1. Ping-pong test, 3 peers (2 clients + server)
+        ./scripts/local-ping-pong-test.sh
+        ./scripts/planet-lab-ping-pong-test.sh
+
+    2. Read-write-delete test, 6 peers (5 clients + server)
+        ./scripts/local-read-write-test.sh
+        ./scripts/planet-lab-read-write-test.sh
+
+    3. Interactive terminal
+        ./scripts/console-test.sh
+
+
+How to run Network ping-pong test (this will change soon)
 
 1. Go to build_scripts/testing and run 'runpingpong.sh' to build the test.
 2. Go to src/test/scripts/communicationtest.

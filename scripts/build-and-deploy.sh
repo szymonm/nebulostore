@@ -1,37 +1,38 @@
 #!/bin/bash
 
-# Build and copy PEERS_NUM peers with resources to JAR_DIR.
-# Optional parameters: number_of_peers ant_target_name
+# Build and copy PEERS_NUM peers with resources to JAR_DIR/i/.
+# Optional parameters: number_of_peers maven_profile_name
 
 PEERS_NUM=4
+MAVEN_JAR="target/nebulostore-0.4.jar"
+MAVEN_LIB="target/lib"
+MAVEN_TARGET="peer"
 BUILD_DIR="build"
 JAR_DIR="build/jar"
 JAR="Nebulostore.jar"
-TARGET=peer
 
 if [ $1 ]; then
   PEERS_NUM=$1
 fi
 
 if [ $2 ]; then
-  TARGET=$2
+  MAVEN_TARGET=$2
 fi
 
 rm -rf $BUILD_DIR
-ant $TARGET
+mvn clean install -P $MAVEN_TARGET
 
 echo "Building done. Copying..."
 
 for i in `seq 1 $PEERS_NUM`
 do
     echo $i
-    path="./$JAR_DIR/$i"
-    mkdir $path
-    cp ./$JAR_DIR/*.jar ./$JAR_DIR/$i/
-    cp -r ./$JAR_DIR/lib ./$JAR_DIR/$i/
-    cp -r resources ./$JAR_DIR/$i/
+    CURR_PATH="./$JAR_DIR/$i"
+    mkdir -p $CURR_PATH
+    mkdir -p $CURR_PATH/logs
+    mkdir -p $CURR_PATH/storage/bdb
+    cp $MAVEN_JAR $CURR_PATH/$JAR
+    rsync -r $MAVEN_LIB $CURR_PATH/
+    rsync -r --exclude=.svn resources $CURR_PATH
 done
-
-rm -rf /tmp/nebulostore
-mkdir -p /tmp/nebulostore/nebulo_baza
 

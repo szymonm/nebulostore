@@ -7,6 +7,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.teleal.cling.version>1.0.5</org.teleal.cling.version>
+        <java.version>1.6</java.version>
     </properties>
 
     <repositories>
@@ -29,7 +30,6 @@
         </repository>
     </repositories>
 
-
     <profiles>
         <profile>
             <id>peer</id>
@@ -41,6 +41,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
+                        <version>2.4</version>
                         <configuration>
                             <archive>
                                 <manifest>
@@ -181,12 +182,6 @@
         </dependency>
 
         <dependency>
-            <groupId>net.jxta</groupId>
-            <artifactId>jxta-jxse</artifactId>
-            <version>2.5</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.sleepycat</groupId>
             <artifactId>je</artifactId>
             <version>4.0.71</version>
@@ -243,20 +238,8 @@
 
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jdk14</artifactId>
-            <version>1.6.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-nop</artifactId>
-            <version>1.6.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.6.6</version>
         </dependency>
 
         <dependency>
@@ -266,7 +249,6 @@
         </dependency>
 
     </dependencies>
-
 
     <build>
         <plugins>
@@ -297,8 +279,4 @@
         </plugins>
     </build>
 
-
 </project>
-
-
-
