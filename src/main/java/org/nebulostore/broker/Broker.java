@@ -32,6 +32,7 @@ public class Broker extends JobModule {
   private static Logger logger_ = Logger.getLogger(Broker.class);
 
   private static final int TIMEOUT_SEC = 10;
+  private static final int MAX_CONTRACTS = 3;
   private final BrokerVisitor visitor_;
 
   public Broker(String jobId, boolean permanentInstance) {
@@ -95,16 +96,20 @@ public class Broker extends JobModule {
 
     @Override
     public Void visit(CommPeerFoundMessage message) {
-      logger_.debug("Found new peer - sending offers.");
-      Vector<CommAddress> knownPeers = NetworkContext.getInstance().getKnownPeers();
-      Iterator<CommAddress> iterator = knownPeers.iterator();
-      while (iterator.hasNext()) {
-        CommAddress address = iterator.next();
-        if (BrokerContext.getInstance().getUserContracts(new InstanceID(address)) == null &&
-            !address.equals(CommunicationPeer.getPeerAddress())) {
-          // Send offer to new peer (10MB by default).
-          networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), null, address,
-              new Contract("contract", new InstanceID(address), 10 * 1024)));
+      logger_.debug("Found new peer.");
+      if (BrokerContext.getInstance().getReplicas().length < MAX_CONTRACTS) {
+        Vector<CommAddress> knownPeers = NetworkContext.getInstance().getKnownPeers();
+        Iterator<CommAddress> iterator = knownPeers.iterator();
+        while (iterator.hasNext()) {
+          CommAddress address = iterator.next();
+          if (BrokerContext.getInstance().getUserContracts(new InstanceID(address)) == null &&
+              !address.equals(CommunicationPeer.getPeerAddress())) {
+            // Send offer to new peer (10MB by default).
+            logger_.debug("Sending offer to " + address);
+            networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), null, address,
+                new Contract("contract", new InstanceID(address), 10 * 1024)));
+            break;
+          }
         }
       }
       return null;

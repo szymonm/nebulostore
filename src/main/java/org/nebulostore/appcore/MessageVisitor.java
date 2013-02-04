@@ -1,6 +1,5 @@
 package org.nebulostore.appcore;
 
-import org.nebulostore.api.DeleteNebuloObjectModule.DeleteTimeoutMessage;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
@@ -168,11 +167,6 @@ public abstract class MessageVisitor<R> {
 
   public R visit(ValueDHTMessage message) throws NebuloException {
     return visit((OutDHTMessage) message);
-  }
-
-  /* API messages. */
-  public R visit(DeleteTimeoutMessage message) throws NebuloException {
-    return visit((Message) message);
   }
 
   /* Broker messages. */

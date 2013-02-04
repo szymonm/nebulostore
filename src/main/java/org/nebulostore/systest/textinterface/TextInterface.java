@@ -3,6 +3,7 @@ package org.nebulostore.systest.textinterface;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Scanner;
 
@@ -56,7 +57,7 @@ public final class TextInterface extends Peer {
   }
 
   protected void inputLoop() {
-    Scanner in = new Scanner(System.in);
+    Scanner in = new Scanner(System.in, "UTF-8");
     while (true) {
       System.out.print("$ ");
       String line = in.nextLine();
@@ -174,10 +175,14 @@ public final class TextInterface extends Peer {
       System.out.println("Successfully created new file.");
     }
     try {
-      int bytesWritten = file.write(tokens[3].getBytes(), 0);
+      int bytesWritten = file.write(tokens[3].getBytes("UTF-8"), 0);
       System.out.println("Successfully written " + String.valueOf(bytesWritten) + " bytes.");
     } catch (NebuloException exception) {
       System.out.println("Got exception from 'write()': " + exception.getMessage());
+      return;
+    } catch (UnsupportedEncodingException exception) {
+      System.out.println("Got UnsupportedEncodingException from 'write()': " +
+          exception.getMessage());
       return;
     }
     //file.sync(); // This is currently done automatically in write().

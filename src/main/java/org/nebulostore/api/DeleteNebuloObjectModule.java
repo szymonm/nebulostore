@@ -13,9 +13,6 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.async.SendAsynchronousMessagesForPeerModule;
-import org.nebulostore.async.messages.AsynchronousMessage;
-import org.nebulostore.async.messages.DeleteNebuloObjectMessage;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.ErrorCommMessage;
@@ -26,18 +23,12 @@ import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.DeleteObjectMessage;
-import org.nebulostore.timer.TimerContext;
 
 /**
  * @author bolek
  */
 public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
-
   private static Logger logger_ = Logger.getLogger(DeleteNebuloObjectModule.class);
-
-  /* number of confirmation messages required from replicas to return success */
-  // private static final int CONFIRMATIONS_REQUIRED = 2;
-  private static final Long TIMEOUT_MILLIS = 5000L;
 
   private final NebuloAddress address_;
   private final StateMachineVisitor visitor_;
@@ -111,8 +102,6 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
             recipientsSet_.add(replicator);
           }
         }
-        TimerContext.getInstance().addDelayedMessage(System.currentTimeMillis() + TIMEOUT_MILLIS,
-            new DeleteTimeoutMessage(jobId_));
       } else {
         incorrectState(state_.name(), message);
       }
@@ -134,25 +123,15 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
     @Override
     public Void visit(ConfirmationMessage message) {
       if (state_ == STATE.REPLICA_UPDATE) {
+        logger_.debug("Confirmation message, removing: " + message.getSourceAddress());
         recipientsSet_.remove(message.getSourceAddress());
         if (recipientsSet_.isEmpty()) {
+          logger_.debug("All recipients have replied. Finishing.");
           // All recipients replied. From now we can ignore DeleteTimeoutMessage and finish module.
           // TODO(bolek): delete timer message?
           state_ = STATE.DONE;
-          finishModule();
+          endWithSuccess(null);
         }
-      } else {
-        incorrectState(state_.name(), message);
-      }
-      return null;
-    }
-
-    @Override
-    public Void visit(DeleteTimeoutMessage message) {
-      if (state_ == STATE.REPLICA_UPDATE) {
-        // TODO(bolek): should we count confirmations and fail if received too few?
-        //   Does failing in case of delete() make sense?
-        finishModule();
       } else {
         incorrectState(state_.name(), message);
       }
@@ -166,15 +145,6 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
       return null;
     }
 
-    private void finishModule() {
-      // Send AMs to modules that did not respond and return.
-      for (CommAddress deadReplicator : recipientsSet_) {
-        AsynchronousMessage asynchronousMessage = new DeleteNebuloObjectMessage(address_);
-        new SendAsynchronousMessagesForPeerModule(deadReplicator, asynchronousMessage, outQueue_);
-      }
-      endWithSuccess(null);
-    }
-
     // TODO(bolek): Maybe move it to a new superclass StateMachine?
     private void incorrectState(String stateName, Message message) {
       logger_.warn(message.getClass().getName() + " received in state " + stateName);
@@ -186,21 +156,4 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
     // Handling logic lies inside our visitor class.
     message.accept(visitor_);
   }
-
-  /**
-   * Message used for timeout in delete() API call.
-   * @author bolek
-   */
-  public static class DeleteTimeoutMessage extends Message {
-    private static final long serialVersionUID = -1273528925587802574L;
-
-    public DeleteTimeoutMessage(String jobID) {
-      super(jobID);
-    }
-
-    public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-      return visitor.visit(this);
-    }
-  }
-
 }
