@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.model;
 
 import java.io.Serializable;
 /**

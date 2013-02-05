@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.model;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,6 +10,7 @@ import java.util.concurrent.BlockingQueue;
 
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.api.GetNebuloObjectModule;
+import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;

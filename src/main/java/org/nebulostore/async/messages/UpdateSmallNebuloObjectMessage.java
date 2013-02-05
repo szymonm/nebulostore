@@ -2,8 +2,8 @@ package org.nebulostore.async.messages;
 
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.model.NebuloObject;
 
 /**
  * Message indicating that file with objectId_ should be updated. New object carried in the message.

@@ -4,9 +4,9 @@ import java.util.Set;
 
 import com.rits.cloning.Cloner;
 
-import org.nebulostore.appcore.EncryptedObject;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 

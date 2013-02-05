@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import org.junit.Test;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.appcore.EncryptedObject;
-import org.nebulostore.appcore.NebuloFile;
+import org.nebulostore.appcore.model.EncryptedObject;
+import org.nebulostore.appcore.model.NebuloFile;
 
 import static org.junit.Assert.assertTrue;
 

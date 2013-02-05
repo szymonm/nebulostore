@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.EncryptedObject;
+import org.nebulostore.appcore.model.EncryptedObject;
 
 /**
  * @author bolek

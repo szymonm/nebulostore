@@ -3,7 +3,7 @@ package org.nebulostore.replicator;
 import java.math.BigInteger;
 
 import org.nebulostore.addressing.AppKey;
-import org.nebulostore.appcore.NebuloFile;
+import org.nebulostore.appcore.model.NebuloFile;
 
 /**
  * @author szymonmatejczyk

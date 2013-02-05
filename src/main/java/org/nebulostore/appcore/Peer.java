@@ -13,6 +13,7 @@ import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.context.NebuloContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.model.NebuloObject;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.crypto.CryptoUtils;

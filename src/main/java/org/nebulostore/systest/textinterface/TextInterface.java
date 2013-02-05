@@ -11,10 +11,10 @@ import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.api.ApiFacade;
-import org.nebulostore.appcore.NebuloFile;
-import org.nebulostore.appcore.NebuloObject;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.model.NebuloFile;
+import org.nebulostore.appcore.model.NebuloObject;
 
 /**
  * This is a very simple text interface to interact with NebuloStore.
