@@ -95,7 +95,7 @@ public abstract class TomP2PPeer implements PersistentAddressingPeer {
     }
   }
 
-  protected void checkSetUp() throws IllegalStateException {
+  protected void checkSetUp() {
     if (myPeer_ == null) {
       throw new IllegalStateException("Peer has not been set up.");
     }

@@ -56,6 +56,5 @@ public abstract class TestingServerImpl implements TestingServer, Runnable {
   /**
    * Returns true if peer has been added successfully.
    */
-  protected abstract boolean addPeer(AbstractPeer peer)
-    throws RemoteException, IllegalArgumentException;
+  protected abstract boolean addPeer(AbstractPeer peer) throws RemoteException;
 }

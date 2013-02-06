@@ -32,8 +32,7 @@ public class PeerGossipMessage extends CommMessage {
   public PeerGossipMessage(CommAddress sourceAddress,
                            CommAddress destAddress,
                            Set<MessageType> msgType,
-                           Collection<PeerDescriptor> buffer
-                           ) throws IllegalArgumentException {
+                           Collection<PeerDescriptor> buffer) {
     super(sourceAddress, destAddress);
     if (msgType.size() == 0) {
       throw new IllegalArgumentException("Message type shouldn't be empty");

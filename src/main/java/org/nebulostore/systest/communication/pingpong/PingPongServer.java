@@ -22,7 +22,6 @@ public final class PingPongServer extends TestingServerImpl {
   private static final int PING_DELAY = 60000;
 
   public PingPongServer() throws NebuloException {
-    super();
     try {
       peers_.put(0, new PingPongPeerImpl(0));
     } catch (NebuloException e) {
@@ -103,8 +102,7 @@ public final class PingPongServer extends TestingServerImpl {
   }
 
   @Override
-  protected boolean addPeer(AbstractPeer peer)
-    throws RemoteException, IllegalArgumentException {
+  protected boolean addPeer(AbstractPeer peer) throws RemoteException {
     if (!(peer instanceof PingPongPeer)) {
       logger_.warn("Someone tried to add incorrent type of peer: " + peer);
       throw new IllegalArgumentException("Peer: " + peer + " is not PingPongPeer.");
