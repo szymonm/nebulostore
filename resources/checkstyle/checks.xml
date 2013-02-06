@@ -5,13 +5,13 @@
 
 <module name="Checker">
 
-    <!-- Checks whether files end with a new line. -->
-    <module name="NewlineAtEndOfFile"/>
+  <!-- Checks whether files end with a new line. -->
+  <module name="NewlineAtEndOfFile"/>
 
-    <!-- RULE 35: No tabs. -->
-    <module name="FileTabCharacter"/>
+  <!-- RULE 35: No tabs. -->
+  <module name="FileTabCharacter"/>
 
-    <module name="TreeWalker">
+  <module name="TreeWalker">
 
     <!-- RULE 2: Naming conventions for packages. -->
     <module name="PackageName">
@@ -28,14 +28,14 @@
         <property name="tokens" value="CLASS_DEF"/>
     </module>
 
-    <!-- RULE 4: Naming conventions local variables. -->
+    <!-- RULE 4: Naming conventions for local variables. -->
     <module name="LocalVariableName"/>
     <module name="LocalFinalVariableName"/>
 
     <!-- RULE 5: Naming conventions for final variables. -->
     <module name="ConstantName"/>
 
-    <!-- RULE 6: Naming conventions local methods. -->
+    <!-- RULE 6: Naming conventions for local methods. -->
     <module name="MethodName"/>
 
     <!-- RULE 8: Naming conventions for class variables. -->
@@ -54,14 +54,14 @@
     <!-- RULE 37: Require all classes to be in a package -->
     <module name="PackageDeclaration"/>
 
-    <!-- RULE 38: Ensure certian import order -->
+    <!-- RULE 38: Ensure certain import order -->
     <module name="ImportOrder">
         <property name="groups" value="java,javax"/>
         <property name="ordered" value="true"/>
         <property name="separated" value="true"/>
     </module>
 
-    <!-- RULE 39: Avoid start imports -->
+    <!-- RULE 39: Avoid star imports -->
     <module name="AvoidStarImport"/>
 
     <!-- Avoid imports of the sun.* packages -->
@@ -82,7 +82,6 @@
     <!-- RULE 86: Javadoc must be well-formed. -->
     <module name="JavadocStyle"/>
 
-
     <module name="StaticVariableName">
         <property name="format" value="^[a-z][a-zA-Z0-9]*_$"/>
     </module>
@@ -94,7 +93,7 @@
 
     <module name="NoWhitespaceBefore"/>
 
-    <!-- Trailing whitespace at the end of line. -->
+    <!-- No trailing whitespace at the end of line. -->
     <module name="Regexp">
         <property name="format" value="[ \t]+$"/>
         <property name="illegalPattern" value="true"/>
@@ -280,14 +279,10 @@
     <module name="ModifiedControlVariable"/>
 
     <!-- Avoid redundant throws -->
-    <module name="RedundantThrows">
-        <property name="allowUnchecked" value="true"/>
-    </module>
+    <module name="RedundantThrows"/>
 
     <!-- Require simple boolean expressions -->
     <module name="SimplifyBooleanExpression"/>
-
-    <!-- Require simple boolean expressions -->
     <module name="SimplifyBooleanReturn"/>
 
     <!-- Capture string compare using == -->
@@ -304,7 +299,10 @@
     <module name="IllegalCatch"/>
 
     <!-- Disallow throwing exception base classes -->
-    <module name="IllegalThrows"/>
+    <module name="IllegalThrows">
+        <!-- NOTE: Throwable is required by AspectJ. -->
+        <property name="illegalClassNames" value="java.lang.Error, java.lang.RuntimeException"/>
+    </module>
 
     <!-- Ensures correct layout of JUnit test cases -->
     <module name="JUnitTestCase"/>
@@ -335,7 +333,10 @@
     <module name="UnnecessaryParentheses"/>
 
     <!-- Make sure only static finals are public -->
-    <!-- <module name="VisibilityModifier"/> -->
+    <!-- TODO: Fix code and uncomment this rule. -->
+    <!-- <module name="VisibilityModifier">
+        <property name="protectedAllowed" value="true"/>
+    </module> -->
 
     <!-- Class with private constructor must be final -->
     <module name="FinalClass"/>
@@ -350,16 +351,15 @@
     <module name="MutableException"/>
 
     <!-- Flag overly complex constructions -->
-    <!--<module name="ClassFanOutComplexity">
-        <property name="max" value="40"/>
-    </module>
-    <module name="CyclomaticComplexity">
-        <property name="max" value="40"/>
-    </module>-->
-    <!-- <module name="NPathComplexity"/> -->
+    <!-- TODO: Fix code and uncomment this rule.
+    <module name="CyclomaticComplexity"/>
+    <module name="NPathComplexity"/> -->
 
-    <!-- Flag uncommented main() methods (debugging left-overs) -->
-    <!-- <module name="UncommentedMain"/> -->
+    <!-- Flag uncommented main() methods. -->
+    <!-- TODO: Add it when all tests are clean.
+    <module name="UncommentedMain">
+        <property name="excludedClasses" value="org.nebulostore.appcore.EntryPoint"/>
+    </module> -->
 
     <!-- Require long constants to be defined by uppercase L -->
     <module name="UpperEll"/>
@@ -377,6 +377,5 @@
     <!-- Avoid trailing comments -->
     <module name="TrailingComment"/>
 
-    </module>
-
+  </module>
 </module>
