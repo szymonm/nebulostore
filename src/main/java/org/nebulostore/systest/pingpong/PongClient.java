@@ -12,23 +12,24 @@ import org.nebulostore.conductor.messages.UserCommMessage;
  * Pong.
  * @author szymonmatejczyk
  */
-public class PongClient extends ConductorClient {
+public final class PongClient extends ConductorClient {
   private static Logger logger_ = Logger.getLogger(PongClient.class);
   private static final long serialVersionUID = -7238750658102427676L;
 
   BigInteger magicNumber_;
   CommAddress sender_;
 
-  public PongClient(String serverJobId) {
-    super(serverJobId);
+  public PongClient(String serverJobId, int numPhases) {
+    super(serverJobId, numPhases);
   }
 
   @Override
   protected void initVisitors() {
-    visitors_ =  new TestingModuleVisitor[3];
+    visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
     visitors_[1] = new Visitor1();
     visitors_[2] = new Visitor2();
+    visitors_[3] = new IgnoreNewPhaseVisitor();
   }
 
   /**

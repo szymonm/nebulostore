@@ -13,25 +13,26 @@ import org.nebulostore.crypto.CryptoUtils;
  * Simple ping-pong test implementation.
  * @author szymonmatejczyk
  */
-public class PingClient extends ConductorClient {
+public final class PingClient extends ConductorClient {
   private static final long serialVersionUID = 8676871234510749533L;
   private static Logger logger_ = Logger.getLogger(PingClient.class);
 
   private final CommAddress pongAddress_;
   private final BigInteger magicNumber_;
 
-  public PingClient(String serverJobId, CommAddress pongAddress) {
-    super(serverJobId);
+  public PingClient(String serverJobId, int numPhases, CommAddress pongAddress) {
+    super(serverJobId, numPhases);
     magicNumber_ = CryptoUtils.getRandomId();
     pongAddress_ = pongAddress;
   }
 
   @Override
   protected void initVisitors() {
-    visitors_ =  new TestingModuleVisitor[3];
+    visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
     visitors_[1] = new Visitor1();
     visitors_[2] = new Visitor2();
+    visitors_[3] = new IgnoreNewPhaseVisitor();
   }
 
   /**

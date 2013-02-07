@@ -13,7 +13,7 @@ import org.nebulostore.crypto.CryptoUtils;
  * Sets up PingPong test.
  * @author szymonmatejczyk
  */
-public class PingPongServer extends ConductorServer {
+public final class PingPongServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(PingPongServer.class);
   private static final int NUM_PHASES = 2;
   private static final int NUM_CLIENTS = 2;
@@ -34,16 +34,13 @@ public class PingPongServer extends ConductorServer {
     logger_.debug("Initializing pong: " + pongAddress.toString());
 
     networkQueue_.add(new InitMessage(clientsJobId_, null, pingAddress,
-        new PingClient(jobId_, pongAddress)));
-    networkQueue_.add(new InitMessage(clientsJobId_, null, pongAddress, new PongClient(jobId_)));
+        new PingClient(jobId_, NUM_PHASES, pongAddress)));
+    networkQueue_.add(new InitMessage(clientsJobId_, null, pongAddress,
+        new PongClient(jobId_, NUM_PHASES)));
   }
 
   @Override
-  public void configureClients() {
-  }
-
-  @Override
-  public void feedStats(CaseStatistics stats) {
+  public void feedStats(CommAddress sender, CaseStatistics stats) {
   }
 
   @Override

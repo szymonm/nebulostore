@@ -9,6 +9,7 @@ TESTNAME="org.nebulostore.systest.pingpong.PingPongServer"
 PEER_NUM=3
 TEST_ITER=3
 BOOTSTRAP_DELAY=2
+LOG_DIR=logs
 
 if [ $1 ]; then
   TESTNAME=$1
@@ -41,13 +42,25 @@ done
 cd $PEER_NUM
 EXIT_CODE=0
 java -jar Nebulostore.jar
-if [ $? -eq 0 ]; then
-  echo "SUCCESS"
-else
-  echo "FAILURE"
+if [ $? -ne 0 ]; then
   EXIT_CODE=1
 fi
+cd ../../..
+
+rm -rf $LOG_DIR
+mkdir $LOG_DIR
+echo "COPYING LOGS ..."
+for i in `seq 1 $PEER_NUM`
+do
+    cp -r build/jar/$i/logs $LOG_DIR/logs_$i
+done
 
 # Kill remaining peers.
 kill `jobs -p`
+if [ $EXIT_CODE -eq 0 ]
+then
+    echo "SUCCESS"
+else
+    echo "FAILURE"
+fi
 exit $EXIT_CODE

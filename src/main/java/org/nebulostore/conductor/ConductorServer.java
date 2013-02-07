@@ -15,6 +15,7 @@ import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.messages.ErrorMessage;
 import org.nebulostore.conductor.messages.FinishMessage;
+import org.nebulostore.conductor.messages.GatherStatsMessage;
 import org.nebulostore.conductor.messages.StatsMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocMessage;
@@ -86,11 +87,16 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   protected boolean useServerAsClient_ = true;
 
   /**
+   * Are statistics gathered at the end of test (false by default).
+   */
+  protected boolean gatherStats_;
+
+  /**
    * Visitor state - either initializing peers or running the tests on constant
    * set of peers.
    */
   enum TestingState {
-    Initializing, Configuring, Running, GatheringStats
+    CollectingPeers, Initializing, Configuring, Running, GatheringStats
   };
   private TestingState testingState_;
   private final ServerTestingModuleVisitor visitor_;
@@ -102,94 +108,33 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   private final String testDescription_;
 
   /**
-   * keeps starting time of the test.
+   * keeps start/stop time of the test.
    */
   private long startTime_ = -1;
-
   private long stopTime_ = -1;
-
-  /**
-   * If set to true, then before test completion statistics will be gathered
-   * from TestClients. Each of the TestClients should have an additional visitor
-   * for stats gathering
-   */
-  private final boolean gatherStats_;
 
   /**
    * Timer for watching maximum stage time.
    */
   private final Timer internalCheckTimer_;
 
-  private long postponeStart_ = -1;
-  private final long postponeDelay_ = 1;
-  private final boolean postponeTics_ = true;
-
-  private final int maximumLost_ = 1;
-  private final int lostDelay_ = 7;
-  private long firstToc_ = -1;
-
   protected ConductorServer(int lastPhase, int peersNeeded, int timeout,
       String clientsJobId, String testDescription) {
-    this(lastPhase, peersNeeded, peersNeeded, timeout, timeout, clientsJobId,
-        false, testDescription);
+    this(lastPhase, peersNeeded, peersNeeded, timeout, timeout, clientsJobId, testDescription);
   }
 
   protected ConductorServer(int lastPhase, int peersFound, int peersNeeded,
-      int timeout, int phaseTimeout, String clientsJobId, boolean gatherStats,
-      String testDescription) {
+      int timeout, int phaseTimeout, String clientsJobId, String testDescription) {
     clientsJobId_ = clientsJobId;
     lastPhase_ = lastPhase;
     timeout_ = timeout;
     peersFound_ = peersFound;
     peersNeeded_ = peersNeeded;
-    gatherStats_ = gatherStats;
     testDescription_ = testDescription;
     visitor_ = new ServerTestingModuleVisitor();
-    startTime_ = System.currentTimeMillis();
-
     internalCheckTimer_ = new Timer();
     internalCheckTimer_.schedule(new PhaseTimeoutTimer(),
         3L * 1000L * phaseTimeout, 1000L * phaseTimeout);
-    internalCheckTimer_.schedule(new PeriodicCheck(), 1000, 1000);
-  }
-
-  /**
-   * @author szymonmatejczyk
-   */
-  class PeriodicCheck extends TimerTask {
-    @Override
-    public void run() {
-      long time = System.currentTimeMillis();
-
-      if (firstToc_ != -1) {
-        if (((time - firstToc_) > lostDelay_ * 1000) && (peersNeeded_ - tocs_) < maximumLost_) {
-          synchronized (tocsAddresses_) {
-            clients_ = tocsAddresses_;
-            logger_.info("Lost clients: " + (peersNeeded_ - tocs_));
-            peersNeeded_ = tocs_;
-            firstToc_ = -1;
-            processTocsChange();
-          }
-        }
-      }
-
-      // logger_.debug("Checking for postponeTics_: " + postponeTics_ +
-      // " postponeStart_: " + postponeStart_);
-      if (postponeTics_ && postponeStart_ > 0) {
-        logger_.debug("Postpone Tics checking whether to send time: " + time +
-            " postponeStart_: " + postponeStart_ + " postponeDelay_: " +
-            postponeDelay_);
-        if (time - postponeStart_ > postponeDelay_ * 1000L) {
-          sendTics();
-          if (startTime_ > 0 && stopTime_ < 0) {
-            logger_.debug("Elapsed milis: " + (time - startTime_));
-            startTime_ += time - postponeStart_;
-            logger_.debug("After reduction: " + (time - startTime_));
-          }
-          postponeStart_ = -1;
-        }
-      }
-    }
   }
 
   /**
@@ -202,7 +147,8 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     public void run() {
       if (lastSeenPhase_ == phase_) {
         logger_.warn("Phase stalled too long. Finishing test server.");
-        endWithError(new NebuloException("Phase " + phase_ + " stalled to long"));
+        successful_ = false;
+        finishTest();
       }
       lastSeenPhase_ = phase_;
     }
@@ -215,24 +161,17 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   public abstract void initClients();
 
   /**
-   * Sends messages with configuration to initialized clients that respond with
-   * Toc messages.
-   */
-  public abstract void configureClients();
-
-  /**
    * Feeds concrete implementation with statistics gathered from test clients.
    */
-  public abstract void feedStats(CaseStatistics stats);
+  public abstract void feedStats(CommAddress sender, CaseStatistics stats);
 
   /**
    * Returns additional statistics from the upper module.
    */
   protected abstract String getAdditionalStats();
 
-
   protected boolean isSuccessful() {
-    return true;
+    return successful_;
   }
 
   private boolean trySetClients() {
@@ -249,6 +188,27 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     }
   }
 
+  // Send FinishMessage to everyone and die.
+  private void finishTest() {
+    logger_.info("Sending finish test messages.");
+    internalCheckTimer_.cancel();
+    if (clients_ != null) {
+      for (CommAddress address : clients_) {
+        networkQueue_.add(new FinishMessage(clientsJobId_, null, address));
+      }
+    }
+    stopTime_ = System.currentTimeMillis();
+    if (isSuccessful()) {
+      logger_.info("Test " + testDescription_ + " successfull after: " +
+          (stopTime_ - startTime_) + " ms " + getAdditionalStats());
+      endWithSuccess(null);
+    } else {
+      logger_.info("Test " + testDescription_ + " failed. After: " +
+          (stopTime_ - startTime_) + " ms " + getAdditionalStats());
+      endWithError(new NebuloException("Unsuccessful test"));
+    }
+  }
+
   /**
    * Visitor.
    * @author szymonmatejczyk
@@ -260,7 +220,9 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
     @Override
     public Void visit(JobInitMessage message) {
+      logger_.debug("Received JobInitMessage.");
       jobId_ = message.getId();
+      testingState_ = TestingState.CollectingPeers;
       if (trySetClients()) {
         testingState_ = TestingState.Initializing;
         initClients();
@@ -284,7 +246,8 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
     @Override
     public Void visit(NetworkContextChangedMessage message) {
-      if (testingState_ != TestingState.Initializing && trySetClients()) {
+      logger_.debug("Received NetworkContextChangedMessage.");
+      if (testingState_ == TestingState.CollectingPeers && trySetClients()) {
         testingState_ = TestingState.Initializing;
         initClients();
       }
@@ -293,12 +256,11 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
     @Override
     public Void visit(TocMessage message) {
-      if (!clients_.contains(message.getSourceAddress()) ||
-          message.getPhase() != phase_) {
+      logger_.debug("Received TocMessage.");
+      if (!clients_.contains(message.getSourceAddress()) || message.getPhase() != phase_) {
         return null;
       }
 
-      // Send ack
       logger_.debug("TocMessage received. Tocs: " + tocs_ + "(from: " +
           message.getSourceAddress() + ")");
 
@@ -307,72 +269,52 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
         return null;
       }
 
-      if (tocs_ == 0) {
-        firstToc_ = System.currentTimeMillis();
-      }
-
       synchronized (tocsAddresses_) {
         tocs_++;
         tocsAddresses_.add(message.getSourceAddress());
         logger_.debug("Tocs incremented to: " + tocs_);
 
-        if (tocs_ >= peersNeeded_) {
-          firstToc_ = -1;
-        } else {
+        if (tocs_ < peersNeeded_) {
           HashSet<CommAddress> tmp = new HashSet<CommAddress>(clients_);
           tmp.removeAll(tocsAddresses_);
           logger_.debug("Still waiting for " + (peersNeeded_ - tocs_) + " peers from: " +
               tmp.toString());
         }
-
         processTocsChange();
       }
-
       return null;
     }
 
-    //TODO(bolek): Send GatherStatsMessage.
     @Override
     public Void visit(StatsMessage message) {
+      logger_.debug("Received StatsMessage.");
       if (!clients_.contains(message.getSourceAddress())) {
         return null;
       }
       tocs_++;
-      logger_.debug("Got stats message. (" + tocs_ + "/" + peersNeeded_ +
-          ") from " + message.getSourceAddress());
+      logger_.debug("Got stats message. (" + tocs_ + "/" + peersNeeded_ + ") from " +
+          message.getSourceAddress());
 
-      feedStats(message.getStats());
+      feedStats(message.getSourceAddress(), message.getStats());
       if (tocs_ >= peersNeeded_) {
-        if (isSuccessful()) {
-          logger_.info("Test " + testDescription_ + " successfull. After: \t" +
-              (stopTime_ - startTime_) + getAdditionalStats());
-          endWithSuccess(null);
-        } else {
-          logger_.info("Test " + testDescription_ + " failed. After: \t" +
-              (stopTime_ - startTime_) + getAdditionalStats());
-          endWithError(new NebuloException("Not successful test"));
-        }
+        finishTest();
       }
       return null;
     }
 
-
     @Override
     public Void visit(ErrorMessage message) {
-      logger_.warn("Received error, test failed: " + message.getMessage());
+      logger_.warn("Received ErrorMessage, test failed: " + message.getMessage());
       successful_ = false;
       return null;
     }
   }
 
   private void advancePhase() {
+    ++phase_;
     tocs_ = 0;
     tocsAddresses_ = new HashSet<CommAddress>();
-    if (postponeTics_) {
-      postponeStart_ = System.currentTimeMillis();
-    } else {
-      sendTics();
-    }
+    sendTics();
   }
 
   private void processTocsChange() {
@@ -381,55 +323,27 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       if (tocs_ >= peersNeeded_) {
         clients_ = tocsAddresses_;
         logger_.debug("clients set modified to: " + clients_);
-
-        ++phase_;
-        logger_.info("Advancing to phase: " + phase_);
-        advancePhase();
-
-        testingState_ = TestingState.Configuring;
-      }
-    } else if (testingState_ == TestingState.Configuring) {
-      logger_.debug("In state configuring phase: " + phase_);
-      if (tocs_ >= peersNeeded_) {
-        phase_++;
-
-        logger_.debug("Advanced to phase: " + phase_);
-        testingState_ = TestingState.Running;
+        logger_.info("Advancing to phase: " + (phase_ + 1));
         startTime_ = System.currentTimeMillis();
         advancePhase();
+        testingState_ = TestingState.Running;
       }
     } else if (testingState_ == TestingState.Running) {
       logger_.debug("In state running phase: " + phase_);
-
       if (tocs_ >= peersNeeded_) {
-        phase_++;
-
-        if (phase_ <= lastPhase_) {
-          logger_.debug("Advanced to phase: " + phase_);
+        if ((phase_ + 1) <= lastPhase_) {
+          logger_.info("Advancing to phase: " + (phase_ + 1));
           advancePhase();
         } else {
-          if (successful_) {
-
-            if (gatherStats_) {
-              logger_.debug("Getting stats from test clients...");
-              stopTime_ = System.currentTimeMillis();
-              testingState_ = TestingState.GatheringStats;
-              advancePhase();
-
-            } else {
-              logger_.info("Test " + testDescription_ +
-                  " successfull. After: \t" +
-                  (System.currentTimeMillis() - startTime_) +
-                  getAdditionalStats());
-              endWithSuccess(null);
-            }
+          ++phase_;
+          if (gatherStats_) {
+            logger_.info("Advancing to phase: " + phase_ + " (gathering stats)");
+            testingState_ = TestingState.GatheringStats;
+            tocs_ = 0;
+            sendGatherStats();
           } else {
-            logger_.info("Test " + testDescription_ + " failed. After: \t" +
-                (System.currentTimeMillis() - startTime_) +
-                getAdditionalStats());
-            endWithSuccess(null);
+            finishTest();
           }
-
         }
       }
     }
@@ -441,6 +355,12 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       networkQueue_.add(new TicMessage(clientsJobId_, null, address, phase_));
   }
 
+  private void sendGatherStats() {
+    logger_.debug("Getting stats from test clients...");
+    for (CommAddress address : clients_)
+      networkQueue_.add(new GatherStatsMessage(clientsJobId_, null, address));
+  }
+
   @Override
   protected void processMessage(Message message) throws NebuloException {
     message.accept(visitor_);
@@ -448,17 +368,5 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
   public Boolean getResult() throws NebuloException {
     return getResult(timeout_);
-  }
-
-  @Override
-  public void endModule() {
-    logger_.info("Test terminating. Sending finish test messages.");
-    internalCheckTimer_.cancel();
-    if (clients_ != null) {
-      for (CommAddress address : clients_) {
-        networkQueue_.add(new FinishMessage(clientsJobId_, null, address));
-      }
-    }
-    super.endModule();
   }
 }

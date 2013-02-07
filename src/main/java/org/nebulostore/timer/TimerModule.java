@@ -30,13 +30,6 @@ public class TimerModule extends JobModule {
     message.accept(visitor_);
   }
 
-  @Override
-  protected void endJobModule() {
-    TimerContext context = TimerContext.getInstance();
-    context.timerModule_ = null;
-    super.endJobModule();
-  }
-
   /**
    * Visitor.
    */
@@ -63,6 +56,7 @@ public class TimerModule extends JobModule {
       } finally {
         context_.lock_.unlock();
       }
+      context_.timerModule_ = null;
       endJobModule();
       return null;
     }

@@ -23,11 +23,11 @@ import org.nebulostore.conductor.messages.UserCommMessage;
  * ReadWrite client.
  * @author bolek
  */
-public class ReadWriteClient extends ConductorClient {
+public final class ReadWriteClient extends ConductorClient {
   private static final long serialVersionUID = -7238750658102427676L;
   private static Logger logger_ = Logger.getLogger(ReadWriteClient.class);
   private static final int MAX_ITER = 10;
-  private static final int INITIAL_SLEEP = 10000;
+  private static final int INITIAL_SLEEP = 5000;
   private static final int ITER_SLEEP = 500;
 
   private CommAddress[] clients_;
@@ -35,12 +35,14 @@ public class ReadWriteClient extends ConductorClient {
   private AppKey myAppKey_;
   private int clientId_;
   private NebuloFile myFile_;
+  private final ReadWriteStats stats_;
 
-  public ReadWriteClient(String serverJobId, CommAddress[] clients, int clientId) {
-    super(serverJobId);
+  public ReadWriteClient(String serverJobId, int numPhases, CommAddress[] clients, int clientId) {
+    super(serverJobId, numPhases);
     clients_ = clients;
     clientId_ = clientId;
     files_ = new Vector<NebuloAddress>();
+    stats_ = new ReadWriteStats();
   }
 
   @Inject
@@ -50,11 +52,12 @@ public class ReadWriteClient extends ConductorClient {
 
   @Override
   protected void initVisitors() {
-    visitors_ =  new TestingModuleVisitor[4];
+    visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
     visitors_[1] = new Visitor1();
     visitors_[2] = new Visitor2();
     visitors_[3] = new Visitor3();
+    visitors_[4] = new LastPhaseVisitor(stats_);
   }
 
   private void sleep(int millis) {
@@ -130,13 +133,12 @@ public class ReadWriteClient extends ConductorClient {
           } catch (NebuloException e) {
             logger_.debug("Unable to fetch file with address " + address + " in iteration " + iter);
           } catch (UnsupportedEncodingException e) {
-            endWithError("Unable to decode received string in UTF-8.");
+            logger_.debug("Unable to decode received string in UTF-8.");
           }
           sleep(ITER_SLEEP);
         }
         if (!fetched) {
-          endWithError("Unable to fetch file with address " + address);
-          break;
+          stats_.addAddress(address);
         }
       }
       phaseFinished();

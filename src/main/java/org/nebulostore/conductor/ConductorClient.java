@@ -1,8 +1,6 @@
 package org.nebulostore.conductor;
 
 import java.io.Serializable;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
@@ -13,8 +11,10 @@ import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.messages.ErrorMessage;
 import org.nebulostore.conductor.messages.FinishMessage;
+import org.nebulostore.conductor.messages.GatherStatsMessage;
 import org.nebulostore.conductor.messages.InitMessage;
 import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.conductor.messages.StatsMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocMessage;
 
@@ -35,83 +35,30 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   private static final long serialVersionUID = -1686614265302231592L;
   private static Logger logger_ = Logger.getLogger(ConductorClient.class);
 
-  protected int phase_;
   protected final CommAddress server_;
   protected final String serverJobId_;
+  protected final int numPhases_;
 
-  private long tocSentTime_;
-  private Timer checkPendingTocs_;
+  protected int phase_;
 
-  public ConductorClient(String serverJobId) {
+  public ConductorClient(String serverJobId, int numPhases) {
     serverJobId_ = serverJobId;
+    numPhases_ = numPhases;
     server_ = CommunicationPeer.getPeerAddress();
-    tocSentTime_ = -1;
   }
 
   /**
-   * @author szymonmatejczyk
-   */
-  class CheckPendingTocs extends TimerTask {
-    private static final int MAX_RETRIES = 5;
-    long lastSeen_;
-    private int retries_;
-
-
-    public CheckPendingTocs() {
-      lastSeen_ = -2;
-      retries_ = 0;
-    }
-
-    @Override
-    public void run() {
-      if (tocSentTime_ != -1) {
-        if (tocSentTime_ == lastSeen_) {
-          if (retries_ < MAX_RETRIES) {
-            logger_.info("Retrying to send TocMessage.");
-            phaseFinished();
-            retries_++;
-          } else {
-            logger_.info("Module sepuku!");
-            abortTest();
-          }
-
-        } else {
-          lastSeen_ = tocSentTime_;
-        }
-      } else {
-        retries_ = 0;
-      }
-    }
-  }
-
-  public void abortTest() {
-    logger_.info("Test finished by server.");
-    endJobModule();
-  }
-
-  /**
-   * Called after receiving Tic Message, which means that all peer have finished previos phase.
+   * Called after receiving Tic Message, which means that all peer have finished previous phase.
    */
   protected void advancedToNextPhase() {
-    logger_.debug("Got NewPhaseMessage");
     inQueue_.add(new NewPhaseMessage());
   }
 
   protected void phaseFinished() {
     logger_.debug("Phase finished. Sending TocMessage");
-    tocSentTime_  = System.currentTimeMillis();
-    networkQueue_.add(new TocMessage(serverJobId_, CommunicationPeer
-        .getPeerAddress(), server_, phase_));
+    networkQueue_.add(new TocMessage(serverJobId_, CommunicationPeer.getPeerAddress(), server_,
+        phase_));
     ++phase_;
-  }
-
-  @Override
-  public void endModule() {
-    if (checkPendingTocs_ != null) {
-      tocSentTime_ = -1;
-      checkPendingTocs_.cancel();
-    }
-    super.endModule();
   }
 
   protected void endWithError(String message) {
@@ -152,9 +99,15 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       logger_.debug("ignoring " + message.getClass().getName() + " in last phase.");
   }
 
+  protected void assertTrue(Boolean b, String message) {
+    if (!b) {
+      logger_.warn("Assertion failed: " + message);
+      networkQueue_.add(new ErrorMessage(serverJobId_, null, server_, message));
+    }
+  }
+
   /**
    * Visitor handling Tic and FinishTest messages.
-   *
    * @author szymonmatejczyk
    */
   protected abstract class TestingModuleVisitor extends MessageVisitor<Void> {
@@ -163,16 +116,10 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
     @Override
     public Void visit(TicMessage message) {
-      logger_.debug("TicMessage received. Curr phase: " + phase_ +
-          " server phase: " + message.getPhase());
-      if (!(message.getPhase() - phase_ <= 1)) {
-        return null;
-      }
-      logger_.debug("TicMessage  - moving on with processing.");
-
-      tocSentTime_ = -1;
+      logger_.debug("TicMessage received. Current phase: " + phase_ + "; Server phase: " +
+          message.getPhase());
       if (message.getPhase() == phase_) {
-        logger_.debug("Advancing to the next phase");
+        logger_.debug("TicMessage - executing phase " + phase_);
         advancedToNextPhase();
       }
       return null;
@@ -180,36 +127,23 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
     @Override
     public Void visit(FinishMessage message) {
-      abortTest();
+      logger_.info("Test finished by server.");
+      endJobModule();
       return null;
-    }
-  }
-
-  protected void assertTrue(Boolean b, String message) {
-    if (!b) {
-      logger_.warn("Assertion failed: " + message);
-      networkQueue_.add(new ErrorMessage(serverJobId_, null, server_,
-          message));
     }
   }
 
   /**
    * Empty visitor for phase 0.
-   *
    * @author szymonmatejczyk
    */
   protected class EmptyInitializationVisitor extends TestingModuleVisitor {
-    public EmptyInitializationVisitor() {
-    }
+    public EmptyInitializationVisitor() { }
 
     @Override
     public Void visit(InitMessage message) {
       jobId_ = message.getId();
-      logger_.debug("Test client initialized: " +
-          message.getHandler().getClass().toString());
-
-      //checkPendingTocs_ = new Timer();
-      //checkPendingTocs_.schedule(new CheckPendingTocs(), 2000, 2000);
+      logger_.debug("Test client initialized: " + message.getHandler().getClass().toString());
       phaseFinished();
       return null;
     }
@@ -222,12 +156,38 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
   /**
    * Visitor that ignores NewPhaseMessage.
-   *
    * @author szymonmatejczyk
    */
   protected class IgnoreNewPhaseVisitor extends TestingModuleVisitor {
+    public IgnoreNewPhaseVisitor() { }
+
     @Override
     public Void visit(NewPhaseMessage message) {
+      return null;
+    }
+  }
+
+  /**
+   * Default visitor for last phase. Handles GatherStatsMessage (and FinishMessage).
+   * @author bolek
+   */
+  protected class LastPhaseVisitor extends TestingModuleVisitor {
+    protected CaseStatistics stats_;
+
+    public LastPhaseVisitor(CaseStatistics stats) {
+      stats_ = stats;
+    }
+
+    @Override
+    public Void visit(GatherStatsMessage message) {
+      logger_.debug("Sending statistics to server.");
+      networkQueue_.add(new StatsMessage(serverJobId_, null, server_, stats_));
+      return null;
+    }
+
+    @Override
+    public Void visit(NewPhaseMessage message) {
+      logger_.debug("Received NewPhaseMessage in GatherStats state.");
       return null;
     }
   }

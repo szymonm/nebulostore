@@ -46,7 +46,7 @@ public abstract class JobModule extends Module {
   /**
    * IMPORTANT: This should be the very LAST method to call for a dying thread.
    */
-  protected void endJobModule() {
+  protected final void endJobModule() {
     // Inform run() (in base class) that this thread is ready to die.
     endModule();
 
