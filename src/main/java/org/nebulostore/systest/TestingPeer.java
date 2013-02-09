@@ -13,6 +13,7 @@ import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
  */
 public class TestingPeer extends Peer {
   private static Logger logger_ = Logger.getLogger(TestingPeer.class);
+  private static final String CLASS_LIST_CONFIG = "systest.testing-peer-class-list";
 
   @Override
   protected void runPeer() {
@@ -20,7 +21,7 @@ public class TestingPeer extends Peer {
     startPeer();
     putKey();
 
-    String[] testClasses = config_.getStringArray("conductor-server-class-list");
+    String[] testClasses = config_.getStringArray(CLASS_LIST_CONFIG);
     logger_.info("Running " + testClasses.length + " tests.");
     for (String className : testClasses) {
       ConductorServer testServer = null;

@@ -1,15 +1,9 @@
 roti.mimuw.edu.pl
-host3-plb.loria.fr
-planetlab2.informatik.uni-wuerzburg.de
-planet1.inf.tu-dresden.de
-planet2.inf.tu-dresden.de
-mars.planetlab.haw-hamburg.de
-merkur.planetlab.haw-hamburg.de
 planetlab2.ci.pwr.wroc.pl
+planetlab2.informatik.uni-wuerzburg.de
 planetlab1.unineuchatel.ch
 ple1.dmcs.p.lodz.pl
 planetlab3.cs.st-andrews.ac.uk
-planetlab2.wiwi.hu-berlin.de
 ple2.tu.koszalin.pl
 plab2.ple.silweb.pl
 planetlab1.cesnet.cz
@@ -18,3 +12,7 @@ planetlab1.informatik.uni-goettingen.de
 pl1.bell-labs.fr
 prata.mimuw.edu.pl
 planetlab-1.imperial.ac.uk
+mars.planetlab.haw-hamburg.de
+merkur.planetlab.haw-hamburg.de
+host3-plb.loria.fr
+planetlab2.wiwi.hu-berlin.de

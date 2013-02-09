@@ -10,10 +10,6 @@
     <class-name>
         @CLASS_NAME=org.nebulostore.appcore.Peer@
     </class-name>
-    <!-- When 'TestingPeer' is used above, it reads the following list of test cases and executes them. -->
-    <conductor-server-class-list>
-        @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer,org.nebulostore.conductor.readwrite.ReadWriteServer@
-    </conductor-server-class-list>
     <replicator>
         <storage-path>
             @REPLICATOR_PATH=storage@
@@ -83,6 +79,10 @@
         </cling-config>
     </communication>
     <systest>
+        <!-- TestingPeer executes the following list of test cases. -->
+        <testing-peer-class-list>
+            @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer,org.nebulostore.conductor.readwrite.ReadWriteServer@
+        </testing-peer-class-list>
         <communication>
             <pingpong>
                 <!-- The server/client function in RunPingPong test. Only one
