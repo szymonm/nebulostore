@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,9 +19,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.Peer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.gossip.PeerDescriptor;
 import org.nebulostore.communication.gossip.PeerGossipService;
@@ -31,9 +32,9 @@ import org.nebulostore.communication.messages.ErrorCommMessage;
  * @author grzegorzmilka
  */
 class MessageMedium implements Runnable {
+  private static Logger logger_ = Logger.getLogger(MessageMedium.class);
   private final Map<CommAddress, PeerGossipService> gossipModules_;
   private final BlockingQueue<Message> inQueue_;
-  private static Logger logger_ = Logger.getLogger(MessageMedium.class);
 
   MessageMedium(Map<CommAddress, PeerGossipService> gossipModules, BlockingQueue<Message> inQueue) {
     gossipModules_ = gossipModules;
@@ -182,18 +183,30 @@ final class ChurnFactory {
 }
 
 /**
+ * Test whether cohesiveness is maintained during gossiping.
+ * This test requires configuration file containg (in testing.gossiptest
+ * namespace):
+ *   num-gossipers - number of gossipers to test
+ *   gossip-period - time between each gossiper sends its gossip in ms
+ *   max-peers-size - number of peers a gossiper has in its view
+ *   healing-factor
+ *   swapping-factor
+ *   cohesiveness-test-intervals - array of integers (in ms) specyfying at which
+ *     points in time to test for cohesiveness
+ *
  * @author grzegorzmilka
  */
-public final class GossipTest {
-  private static final Map<CommAddress, PeerGossipService> GOSSIP_MODULES =
+public final class GossipTest extends Peer {
+  private static Logger logger_ = Logger.getLogger(GossipTest.class);
+  private final Map<CommAddress, PeerGossipService> gossipModules_ =
     new HashMap<CommAddress, PeerGossipService>();
 
-  private static final String USAGE = "GossipTest N_GOSSIPERS_ " +
-    "GOSSIP_PERIOD MAX_PEERS_SIZE HEALING_FACTOR SWAPPING_FACTOR " +
-    "TESTING_INTERVALS...";
-  private static final int MIN_ARGS = 6;
+  /**
+   * Prefix of test related parameters used in Peer.xml configuration file.
+   */
+  private static final String CONFIG_PREFIX = "systest.communication.gossip.";
 
-  private static int nGossipers_;
+  private int nGossipers_;
   /**
    * BiggestComponentSize/NumberOfGossipers factor threshold at which cohesive
    * test passes.
@@ -209,25 +222,16 @@ public final class GossipTest {
    * this as an error.
    */
   private static final double N_OUT_OF_MAIN = 3;
-  private static Map<CommAddress, Integer> outOfMainComponentMap_ =
+  private Map<CommAddress, Integer> outOfMainComponentMap_ =
     new HashMap<CommAddress, Integer>();
-  private static Logger logger_;
 
-  private GossipTest() {
-  }
-
-  public static void main(String[] args) {
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-    logger_ = Logger.getLogger(GossipTest.class);
-
-    if (args.length < MIN_ARGS) {
-      System.out.println(USAGE);
-
-      System.exit(1);
-    }
-
-    nGossipers_ = Integer.parseInt(args[0]);
-    System.exit(runTest(args) ? 0 : 1);
+  /**
+   * Runs the gossip test.
+   */
+  @Override
+  protected void runPeer() {
+    nGossipers_ = Integer.parseInt(config_.getString(CONFIG_PREFIX + "num-gossipers"));
+    System.exit(runTest() ? 0 : 1);
   }
 
   /**
@@ -270,17 +274,24 @@ public final class GossipTest {
     public int sizeOfLargestComponent_;
   }
 
-  private static CheckCohesivenessReport checkCohesiveness() {
-    assert GOSSIP_MODULES.size() == nGossipers_;
+  /**
+   * Runs cohesiveness test on graph and logs results.
+   * */
+  private CheckCohesivenessReport checkCohesiveness() {
+    assert gossipModules_.size() == nGossipers_;
     logger_.info("Starting cohesiveness test.");
+
+    /* Run the main test */
     GraphCreationReport result = createGossiperGraph();
     GraphCohesivenessReport cohReport = isCohesive(result.graph_);
 
     logger_.info("Number of components: " + cohReport.components_.size());
     int i = 0;
     Set<GossiperNode> mainComponent = new HashSet<GossiperNode>();
+
     for (Collection<GossiperNode> component : cohReport.components_) {
       logger_.info("Component nr " + i + ":");
+      /* Find component that forms at least half of all gossipers */
       if ((double) component.size() / nGossipers_ > 0.5) {
         mainComponent.addAll(component);
       }
@@ -288,12 +299,17 @@ public final class GossipTest {
       ++i;
     }
 
+    /* Check if everything is ok */
+
+    /* First of check if cohesive enough */
     if (nGossipers_ > 0) {
       cohReport.isCohesive_ =
         cohReport.isCohesive_ ||
         (((double) mainComponent.size() / nGossipers_) > COHESIVENESS_THRESHOLD);
     }
 
+    /* Check if there is a node that has been outside the main group of nodes
+     * longer than N_OUT_MAIN times */
     for (GossiperNode node : result.graph_) {
       if (!mainComponent.contains(node)) {
         Integer nTimesOutOfMain = outOfMainComponentMap_.get(node.commAddr_);
@@ -321,14 +337,14 @@ public final class GossipTest {
     return cCR;
   }
 
-  private static GraphCreationReport createGossiperGraph() {
+  private GraphCreationReport createGossiperGraph() {
     Map<CommAddress, Integer> indexMap = new HashMap<CommAddress, Integer>();
     GraphCreationReport result = new GraphCreationReport();
     ArrayList<GossiperNode> gossiperGraph = result.graph_;
 
     Method getPeersMethod;
 
-    synchronized (GOSSIP_MODULES) {
+    synchronized (gossipModules_) {
       try {
         getPeersMethod = PeerGossipService.class.getDeclaredMethod("getPeers");
       } catch (NoSuchMethodException e) {
@@ -339,8 +355,8 @@ public final class GossipTest {
 
       ArrayList<PeerGossipService> gossiperServiceGraph = new ArrayList<PeerGossipService>();
 
-      for (CommAddress gossiperAddr : GOSSIP_MODULES.keySet()) {
-        PeerGossipService gossiper = GOSSIP_MODULES.get(gossiperAddr);
+      for (CommAddress gossiperAddr : gossipModules_.keySet()) {
+        PeerGossipService gossiper = gossipModules_.get(gossiperAddr);
         indexMap.put(gossiperAddr, gossiperGraph.size());
         gossiperGraph.add(new GossiperNode(gossiperGraph.size(), gossiperAddr));
         gossiperServiceGraph.add(gossiper);
@@ -421,7 +437,7 @@ public final class GossipTest {
   /**
    * Check if given graph is strongly cohesive.
    */
-  private static GraphCohesivenessReport isCohesive(ArrayList<GossiperNode> graph) {
+  private GraphCohesivenessReport isCohesive(ArrayList<GossiperNode> graph) {
     GraphCohesivenessReport report = new GraphCohesivenessReport();
     Collection<Collection<GossiperNode>> components = dfs(graph);
 
@@ -466,19 +482,26 @@ public final class GossipTest {
   }
 
   /**
-   * Run test.
+   * Runs the gossiping tests.
+   * Initializes gossip modules and runs them with given configuration.
+   * At specified intervals it tests for cohesiveness of gossipers.
    */
-  private static boolean runTest(String[] args) {
+  private boolean runTest() {
     BlockingQueue<Message> mediumInQueue = new LinkedBlockingQueue<Message>();
 
-    MessageMedium medium = new MessageMedium(GOSSIP_MODULES, mediumInQueue);
+    MessageMedium medium = new MessageMedium(gossipModules_, mediumInQueue);
     Thread mediumThread = new Thread(medium, "Nebulostore.Testing.MediumThread");
     mediumThread.setDaemon(true);
     mediumThread.start();
 
-    ChurnFactory churn = new ChurnFactory(GOSSIP_MODULES, nGossipers_,
-        mediumInQueue, Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-        Integer.parseInt(args[3]), Integer.parseInt(args[4]));
+    int gossipPeriod = Integer.parseInt(config_.getString(CONFIG_PREFIX + "gossip-period"));
+    int maxPeersSize = Integer.parseInt(config_.getString(CONFIG_PREFIX + "max-peers-size"));
+    int healingFactor = Integer.parseInt(config_.getString(CONFIG_PREFIX + "healing-factor"));
+    int swappingFactor = Integer.parseInt(config_.getString(CONFIG_PREFIX + "swapping-factor"));
+
+    ChurnFactory churn = new ChurnFactory(gossipModules_, nGossipers_,
+        mediumInQueue, gossipPeriod, maxPeersSize,
+        healingFactor, swappingFactor);
 
     churn.setUp();
     CheckCohesivenessReport result = new CheckCohesivenessReport();
@@ -486,8 +509,18 @@ public final class GossipTest {
     int secFromStart = 0;
     double avgNOfClusters = 0.0;
     int smallestLargestCluster = -1;
-    for (int i = 5; i < args.length && result.isCohesive_; ++i) {
-      int period = Integer.parseInt(args[i]);
+
+    /* Set testing intervals */
+    String[] intervalsStr = config_.getStringArray(
+        CONFIG_PREFIX + "cohesiveness-test-intervals");
+    List<Integer> intervals = new LinkedList<Integer>();
+    for (String interval : intervalsStr) {
+      intervals.add(Integer.parseInt(interval));
+    }
+
+    /* Run tests */
+    int i = 1;
+    for (Integer period : intervals) {
       secFromStart += period;
       try {
         Thread.sleep(period);
@@ -506,9 +539,12 @@ public final class GossipTest {
       System.out.printf("(%d) isCohesive: %b, nOfComponents %n, " +
           "size of largest component: %d.%n", secFromStart, result.isCohesive_,
           result.components_.size(), result.sizeOfLargestComponent_);
-      logger_.info("Result of test nr. " + (i - 5)  + ": " + result.isCohesive_);
+      logger_.info("Result of test nr. " + i + ": " + result.isCohesive_);
+      ++i;
     }
-    avgNOfClusters /= args.length - 5.;
+
+    /* Summarize results */
+    avgNOfClusters /= intervals.size() == 0 ? 1 : intervals.size();
     System.out.printf("Test finished with result : %b. avgNOfClusters: %f, " +
         "smallest largest cluster: %d", result.isCohesive_, avgNOfClusters,
         smallestLargestCluster);
@@ -522,7 +558,6 @@ public final class GossipTest {
         logger_.warn("Caught InterruptedException when joining: " + mediumThread);
       }
     }
-
     return result.isCohesive_;
   }
 

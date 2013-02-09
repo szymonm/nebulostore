@@ -24,7 +24,7 @@ export USER=$(cat ssh-user.txt)
 
 BUILD_LOCATION_FILE=build-location.txt
 BUILD_DIR=$(grep "^$LOCAL_USER" $BUILD_LOCATION_FILE | cut -f2 -d:)
-BUILD_DIR=$BUILD_DIR/$TEST_NAME
+BUILD_DIR=$BUILD_DIR
 
 # return all hosts participating in test
 function get_all_hosts() {

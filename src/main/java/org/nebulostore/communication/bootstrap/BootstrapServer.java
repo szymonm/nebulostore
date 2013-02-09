@@ -48,14 +48,21 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   private ExecutorService service_ = Executors.newCachedThreadPool();
   private AtomicBoolean isEnding_ = new AtomicBoolean(false);
 
+  /**
+   * commAddress - iff not equal to null then myCommAddress is set to it.
+   * Otherwise it is random
+   */
   public BootstrapServer(String bootstrapServerAddress,
-      int commCliPort, int bootstrapPort, int tomP2PPort)
+      int commCliPort, int bootstrapPort, int tomP2PPort, String commAddress)
     throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, tomP2PPort);
     myInetSocketAddress_ = new InetSocketAddress(bootstrapServerAddress, commCliPort_);
     bootstrapPort_ = bootstrapPort;
     tomP2PPort_ = tomP2PPort;
-    myCommAddress_ = CommAddress.newRandomCommAddress();
+    if (commAddress != null)
+        myCommAddress_ = new CommAddress(commAddress);
+    else
+        myCommAddress_ = CommAddress.newRandomCommAddress();
     myWelcomeMessage_ = new BootstrapMessage(myCommAddress_);
     pAPeer_ = null;
     serverSocket_ = null;

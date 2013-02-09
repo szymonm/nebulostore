@@ -117,16 +117,23 @@ public final class CommunicationPeer extends Module {
     int bootstrapTP2PPort;
     int tP2PPort;
 
+    /* CommAddress configuration */
+    String commAddress = null;
+
     try {
       String commCliPortConf = "ports.comm-cli-port";
       String bPortConf = "ports.bootstrap-port";
       String bServTP2PPortConf = "ports.bootstrap-server-tomp2p-port";
       String tP2PPortConf = "ports.tomp2p-port";
+      String commAddressConf = "comm-address";
 
       commCliPort_ = config_.getInt(CONFIG_PREFIX + commCliPortConf, -1);
       bootstrapPort = config_.getInt(CONFIG_PREFIX + bPortConf, -1);
       bootstrapTP2PPort = config_.getInt(CONFIG_PREFIX + bServTP2PPortConf, -1);
       tP2PPort = config_.getInt(CONFIG_PREFIX + tP2PPortConf, -1);
+      commAddress = config_.getString(CONFIG_PREFIX + commAddressConf, "");
+      if (commAddress.isEmpty())
+        commAddress = null;
 
       if (commCliPort_ == -1 || bootstrapPort == -1 ||
           bootstrapTP2PPort == -1 || tP2PPort == -1) {
@@ -136,10 +143,10 @@ public final class CommunicationPeer extends Module {
             "One of port numbers is not specified in configuration file.");
       }
     } catch (ConversionException e) {
-      logger_.error("One of port numbers is not correctly " +
+      logger_.error("One of port numbers or comm-address is not correctly " +
           "specified in configuration file: " + e);
-      throw new NebuloException("One of port numbers is not correctly " +
-          "specified in configuration file.", e);
+      throw new NebuloException("One of port numbers or comm-address is not " +
+          "correctly specified in configuration file.", e);
     }
 
     messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
@@ -160,13 +167,13 @@ public final class CommunicationPeer extends Module {
     }
     if (!isServer_) {
       bootstrapService_ = new BootstrapClient(bootstrapServerAddress,
-          commCliPort_, bootstrapPort, tP2PPort, bootstrapTP2PPort);
+          commCliPort_, bootstrapPort, tP2PPort, bootstrapTP2PPort, commAddress);
       logger_.info("Created BootstrapClient.");
       inQueue_.add(new CommPeerFoundMessage(bootstrapService_.getBootstrapCommAddress(),
             bootstrapService_.getResolver().getMyCommAddress()));
     } else {
       bootstrapService_ = new BootstrapServer(bootstrapServerAddress,
-              commCliPort_, bootstrapPort, bootstrapTP2PPort);
+              commCliPort_, bootstrapPort, bootstrapTP2PPort, commAddress);
       try {
         bootstrapService_.startUpService();
       } catch (IOException e) {

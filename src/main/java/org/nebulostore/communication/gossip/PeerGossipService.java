@@ -38,7 +38,7 @@ public final class PeerGossipService extends Module {
 
   private static final Random RANDOMIZER = new Random();
   /**
-   * Period at which GossipSender sends its advertisments.
+   * Period at which GossipSender sends its advertisments. In milliseconds.
    */
   // Default: 40 seconds
   private final int gossipPeriod_;
@@ -213,11 +213,11 @@ public final class PeerGossipService extends Module {
    *
    * Creates new list to avoid Concurrent modification exceptions.
    */
-  /*private Collection<PeerDescriptor> getPeers() {
+  private Collection<PeerDescriptor> getPeers() {
     synchronized (peers_) {
       return new LinkedList(peers_);
     }
-  }*/
+  }
 
   private void increaseAge() {
     synchronized (peers_) {

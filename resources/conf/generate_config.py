@@ -13,10 +13,23 @@
             --TOMP2P_PORT=(tp2p_port)\
             --BOOTSTRAP_TOMP2P_PORT=(port)\
             --BDB_TYPE=(storage-holder|proxy)\
-            --BOOTSTRAP_MODE=(client|server)\
-            --BOOTSTRAP_ADDRESS=(address)
+            --COMM_ADDRESS=(|\d+|UUID)
 
     If some flags are missing, default values from Peer.xml.template are used.
+
+    Other flags:
+        communication.pingpong test variables:
+            --PINGPONG_TEST_FUNCTION=(server|client)\
+            --PEER_NET_ADDRESS=(address)\
+            --SERVER_NET_ADDRESS=(address)\
+            --PEER_ID=(\d+)
+        communication.gossip test variables:
+            --NUM_GOSSIPERS=(\d+)\
+            --GOSSIP_PERIOD=(\d+)\
+            --MAX_PEERS_SIZE=(\d+)\
+            --HEALING_FACTOR=(\d+)\
+            --SWAPPING_FACTOR=(\d+)\
+            --COHESIVENESS_TEST_INTERVAL=(\d+[(,(\d+))]*)
 """
 
 import sys

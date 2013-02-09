@@ -20,6 +20,17 @@
         </storage-path>
     </replicator>
     <communication>
+        <!-- Sets CommAddress to comm-address iff not empty, otherwise
+             CommAddress is a random UUID. comm-address can be an integer or an
+             UUID formatted string, where UUID syntax is defined as 
+             (from java's doc):
+                 UUID                   = 4*<hexOctet> "-" 2*hexOctet "-"
+                                          2*<hexOctet> "-" 2*<hexOctet> "-"
+                                          6*<hexOctet>
+                 hexOctet               = <hexDigit><hexDigit> -->
+        <comm-address>
+            @COMM_ADDRESS=@
+        </comm-address>
         <ports>
             <!-- Main port used by local instance for communication. -->
             <comm-cli-port>
@@ -71,4 +82,48 @@
             @CLING_CONFIG=resources/conf/cling.logging@
         </cling-config>
     </communication>
+    <systest>
+        <communication>
+            <pingpong>
+                <!-- The server/client function in RunPingPong test. Only one
+                     host can be a server -->
+                <pingpong-test-function>
+                    @PINGPONG_TEST_FUNCTION=server@
+                </pingpong-test-function>
+                <!-- Network visible address of the host running on the computer
+                     with this file -->
+                <peer-net-address>
+                    @PEER_NET_ADDRESS=localhost@
+                </peer-net-address>
+                <!-- Network visible address of RunPingPong's server -->
+                <server-net-address>
+                    @SERVER_NET_ADDRESS=localhost@
+                </server-net-address>
+                <!-- PeerID used for identifying hosts in the set -->
+                <peer-id>
+                    @PEER_ID=1@
+                </peer-id>
+            </pingpong>
+            <gossip>
+                <num-gossipers>
+                    @NUM_GOSSIPERS=10@
+                </num-gossipers>
+                <gossip-period>
+                    @GOSSIP_PERIOD=2000@
+                </gossip-period>
+                <max-peers-size>
+                    @MAX_PEERS_SIZE=20@
+                </max-peers-size>
+                <healing-factor>
+                    @HEALING_FACTOR=1@
+                </healing-factor>
+                <swapping-factor>
+                    @SWAPPING_FACTOR=1@
+                </swapping-factor>
+                <cohesiveness-test-intervals>
+                    @COHESIVENESS_TEST_INTERVALS=8000,16000,24000@
+                </cohesiveness-test-intervals>
+            </gossip>
+        </communication>
+    </systest>
 </peer>

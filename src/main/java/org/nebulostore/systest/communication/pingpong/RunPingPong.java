@@ -10,7 +10,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
@@ -18,7 +18,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * to ping everyone and get responses.
  * @author Grzegorz Milka
  */
-public final class RunPingPong {
+public final class RunPingPong extends Peer {
+  private static Logger logger_ = Logger.getLogger(RunPingPong.class);
   /**
    * Allow testing server to start.
    */
@@ -26,61 +27,83 @@ public final class RunPingPong {
 
   private static final String PEER_REMOTE_NAME = "Peer";
   private static final String SERVER_REMOTE_NAME = "Server";
-  private static Logger logger_;
+  /**
+   * Prefix of test related parameters used in Peer.xml configuration file.
+   */
+  private static final String CONFIG_PREFIX = "systest.communication.pingpong.";
 
-  private RunPingPong() {
-  }
-
-  public static void main(String[] args) throws NebuloException, RemoteException {
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-    logger_ = Logger.getLogger(RunPingPong.class);
-
+  /**
+   * Main function for registaring RMI objects and initializing them.
+   * Needs pingpong-test-function to be set in config_ and in case of client
+   * also: peer-id, server-net-address, peer-net-address
+   */
+  @Override
+  protected void runPeer() {
     Thread.setDefaultUncaughtExceptionHandler(null);
 
-    String usage = "Usage: program {server| PEER_ID!=0 MY_NAME SERVER_NAME client}";
-    if (args.length != 1 && args.length != 4)
-      throw new IllegalArgumentException(usage);
-    else if ((args.length == 4 && ((!args[3].equals("client")) ||
-                                   (args[0].equals("0")))) ||
-             (args.length == 1 && !args[0].equals("server")))
-      throw new IllegalArgumentException(usage);
+    String function = config_.getString(CONFIG_PREFIX + "pingpong-test-function");
+    boolean isServer = function.equals("server");
 
-    boolean isServer = args.length == 1;
-
-    if (isServer) {
-      logger_.info("Creating server.");
-      TestingServerImpl server;
-      try {
-        server = new PingPongServer();
-      } catch (NebuloException e) {
-        logger_.error("Caught exception when creating peer: " + e);
-        return;
+    try {
+      if (isServer) {
+        initializeServer();
+      } else {
+        logger_.info("Creating client.");
+        try {
+          initializeClient();
+        } catch (NebuloException e) {
+          logger_.error("Client caught NebuloException: " + e);
+        }
       }
-      try {
-        Registry localRegistry = LocateRegistry.createRegistry(1099);
-        logger_.info("Local registry created");
-        TestingServer stub =
-          (TestingServer) UnicastRemoteObject.exportObject((TestingServer) server, 0);
-        localRegistry.rebind(SERVER_REMOTE_NAME, stub);
-        logger_.info("Server: " + server + " has been put to remote.");
-      } catch (RemoteException e) {
-        logger_.error("Received exception: " + e + ", ending client.");
-        throw e;
-      }
-      Thread thread = new Thread(server, "Org.Nebulostore.Testing.TestingServer");
-      thread.start();
-    } else {
-      logger_.info("Creating client.");
-      int peerId = Integer.parseInt(args[0]);
-      String myAddress = args[1];
-      String serverAddress = args[2];
-      initializeClient(peerId, myAddress, serverAddress);
+    } catch (RemoteException e) {
+      logger_.error("Client caught RemoteException: " + e);
     }
   }
 
-  private static void initializeClient(int peerId, String myAddress,
-      String serverAddress) throws NebuloException {
-    assert myAddress != null && serverAddress != null;
+  private void initializeServer() throws RemoteException {
+    logger_.info("Creating server.");
+    TestingServerImpl server;
+    try {
+      server = new PingPongServer();
+    } catch (NebuloException e) {
+      logger_.error("Caught exception when creating peer: " + e);
+      return;
+    }
+    try {
+      Registry localRegistry = LocateRegistry.createRegistry(1099);
+      logger_.info("Local registry created");
+      TestingServer stub =
+        (TestingServer) UnicastRemoteObject.exportObject((TestingServer) server, 0);
+      localRegistry.rebind(SERVER_REMOTE_NAME, stub);
+      logger_.info("Server: " + server + " has been put to remote.");
+    } catch (RemoteException e) {
+      logger_.error("Received exception: " + e + ", ending client.");
+      throw e;
+    }
+    Thread thread = new Thread(server, "Org.Nebulostore.Testing.TestingServer");
+    thread.start();
+  }
+
+  private void initializeClient() throws NebuloException, RemoteException {
+    String peerIdStr = config_.getString(CONFIG_PREFIX + "peer-id", "");
+
+    if (peerIdStr.isEmpty()) {
+      throw new IllegalArgumentException("PeerId needs to be set");
+    }
+    int peerId;
+    try {
+      peerId = Integer.parseInt(peerIdStr);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("PeerId needs to be an integer");
+    }
+
+    String myAddress = config_.getString(CONFIG_PREFIX + "peer-net-address", "");
+    String serverAddress = config_.getString(CONFIG_PREFIX + "server-net-address", "");
+    if (myAddress.isEmpty() || serverAddress.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Peer or server address or peer id needs to be set");
+    }
+
     PingPongPeerImpl pingPongPeer;
     try {
       pingPongPeer = new PingPongPeerImpl(peerId);
@@ -96,7 +119,6 @@ public final class RunPingPong {
     try {
       PingPongPeer stub =
         (PingPongPeer) UnicastRemoteObject.exportObject(pingPongPeer, 0);
-      //LocateRegistry.getRegistry();
       localRegistry = LocateRegistry.createRegistry(1099);
       logger_.info("Local registry created");
       localRegistry.rebind(peerName, stub);
@@ -106,9 +128,8 @@ public final class RunPingPong {
       return;
     }
 
-    // Connect to server and register
-    // Unbind peer in case of failure
-    // Wait for server to start
+    /* Connect to server and register. Unbind peer in case of failure
+     * Wait for server to start */
     try {
       Thread.sleep(RMI_SERVER_BOOTSTRAP_PERIOD);
     } catch (InterruptedException e) {

@@ -38,17 +38,25 @@ public final class BootstrapClient extends BootstrapService {
   PersistentAddressingPeer pAPeer_;
 
   //TODO(grzegorzmilka) Collision handling
+  /**
+   * commAddress - iff not equal to null then myCommAddress is set to it.
+   * Otherwise it is random
+   */
   public BootstrapClient(String bootstrapServerAddress,
       int commCliPort,
       int bootstrapPort,
       int tomP2PPort,
-      int bootstrapTomP2PPort) throws NebuloException {
+      int bootstrapTomP2PPort,
+      String commAddress) throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, bootstrapTomP2PPort);
     bootstrapServerAddress_ = bootstrapServerAddress;
 
     // Find my address both CommAddress and a real IP one
     logger_.info("Finding out my address.");
-    myCommAddress_ = CommAddress.newRandomCommAddress();
+    if (commAddress != null)
+        myCommAddress_ = new CommAddress(commAddress);
+    else
+        myCommAddress_ = CommAddress.newRandomCommAddress();
 
     pAPeer_ = new TomP2PClient();
     pAPeer_.setCommPort(commCliPort_);

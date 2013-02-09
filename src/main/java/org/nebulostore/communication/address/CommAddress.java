@@ -2,8 +2,11 @@ package org.nebulostore.communication.address;
 
 import java.io.Serializable;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.nebulostore.communication.dht.KeyDHT;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Grzegorz Milka
@@ -12,6 +15,21 @@ public class CommAddress implements Serializable {
   private static final long serialVersionUID = -1730034659685291738L;
   private final UUID uuid_;
   private static CommAddress zeroCommAddress_;
+
+  /**
+   * Creates CommAddress's UUID from string.
+   * String can be an integer or an UUID formatted string.
+   */
+  public CommAddress(String commAddress) {
+    checkNotNull(commAddress);
+    String uuidPattern = "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-" +
+        "[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}";
+    if (Pattern.matches(uuidPattern, commAddress)) {
+      uuid_ = UUID.fromString(commAddress);
+    } else {
+      uuid_ = new UUID(0, Integer.parseInt(commAddress));
+    }
+  }
 
   public CommAddress(long mostSigBits, long leastSigBits) {
     uuid_ = new UUID(mostSigBits, leastSigBits);
