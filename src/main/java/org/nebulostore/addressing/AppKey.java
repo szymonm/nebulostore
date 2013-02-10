@@ -3,6 +3,8 @@ package org.nebulostore.addressing;
 import java.io.Serializable;
 import java.math.BigInteger;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Application Key, identifies the user.
  * (immutable)
@@ -12,6 +14,7 @@ public final class AppKey implements Serializable {
   private final BigInteger key_;
 
   public AppKey(BigInteger key) {
+    checkNotNull(key);
     key_ = key;
   }
 

@@ -9,9 +9,11 @@ import org.nebulostore.communication.dht.KeyDHT;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
+ * Persistent identifier of NebuloStore instance.
+ * (immutable)
  * @author Grzegorz Milka
  */
-public class CommAddress implements Serializable {
+public final class CommAddress implements Serializable {
   private static final long serialVersionUID = -1730034659685291738L;
   private final UUID uuid_;
   private static CommAddress zeroCommAddress_;

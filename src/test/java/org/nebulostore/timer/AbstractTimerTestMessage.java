@@ -10,6 +10,10 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 public abstract class AbstractTimerTestMessage extends Message {
   private static final long serialVersionUID = -6136353092587796967L;
 
+  public AbstractTimerTestMessage(String jobId) {
+    super(jobId);
+  }
+
   @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);

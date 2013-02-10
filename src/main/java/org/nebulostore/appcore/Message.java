@@ -12,14 +12,18 @@ public abstract class Message implements Serializable {
   private static final long serialVersionUID = -2032656006415029507L;
 
   // ID used by Dispatcher to forward the message to proper thread (= running JobModule).
-  protected String jobId_;
+  protected final String jobId_;
 
   public Message() {
     jobId_ = CryptoUtils.getRandomString();
   }
 
-  protected Message(String jobID) {
+  public Message(String jobID) {
     jobId_ = jobID;
+  }
+
+  public String getId() {
+    return jobId_;
   }
 
   /**
@@ -30,10 +34,6 @@ public abstract class Message implements Serializable {
 
   public JobModule getHandler() throws NebuloException {
     // TODO(bolek): Change it into a more specific exception type.
-    throw new NebuloException("This is not an initializing message: " + this.getClass().toString());
-  }
-
-  public String getId() {
-    return jobId_;
+    throw new NebuloException(getClass().toString() + "  is not an initializing message type.");
   }
 }

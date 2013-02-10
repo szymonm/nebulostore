@@ -16,6 +16,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.NebuloObject;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
+import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
@@ -38,6 +39,7 @@ public class Peer implements Runnable {
   protected Thread dispatcherThread_;
   protected Thread networkThread_;
   protected AppKey appKey_;
+  protected CommAddress commAddress_;
   protected XMLConfiguration config_;
   protected Injector injector_;
 
@@ -54,7 +56,13 @@ public class Peer implements Runnable {
     } else {
       appKey_ = new AppKey(new BigInteger(appKey));
     }
-    injector_ = Guice.createInjector(new NebuloContext(appKey_, config_));
+    String commAddress = config_.getString("comm-address", "");
+    if (commAddress.isEmpty()) {
+      commAddress_ = new CommAddress(commAddress);
+    } else {
+      commAddress_ = CommAddress.newRandomCommAddress();
+    }
+    injector_ = Guice.createInjector(new NebuloContext(appKey_, commAddress_, config_));
     runPeer();
   }
 

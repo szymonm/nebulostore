@@ -9,8 +9,9 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 public class TimerTestMessage extends AbstractTimerTestMessage {
   private static final long serialVersionUID = 7915155806266242577L;
   public int code_;
+
   public TimerTestMessage(String jobId, int code) {
-    jobId_ = jobId;
+    super(jobId);
     code_ = code;
   }
 

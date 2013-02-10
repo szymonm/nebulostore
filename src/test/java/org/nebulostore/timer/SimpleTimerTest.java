@@ -37,7 +37,7 @@ public class SimpleTimerTest {
     Dispatcher dispatcher = new Dispatcher(dispatcherQueue, null, injector);
     GlobalContext.getInstance().setDispatcherQueue(dispatcherQueue);
 
-    InitSimpleTimerTestMessage message = new InitSimpleTimerTestMessage();
+    InitSimpleTimerTestMessage message = new InitSimpleTimerTestMessage("jobId");
     SimpleTimerTestModule module = message.handler_;
     dispatcherQueue.add(message);
 
