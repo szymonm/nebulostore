@@ -13,6 +13,9 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
+/*TODO(grzegorzmilka) Add proper shutdown. Right now it's only a make-shift for
+ * testing proper shutdown of CommunicationPeer. That is it only shutdowns
+ * properly when running as a server. */
 /**
  * Executes given PingPongPeer and if it is set as server it tries
  * to ping everyone and get responses.
@@ -32,6 +35,9 @@ public final class RunPingPong extends Peer {
    */
   private static final String CONFIG_PREFIX = "systest.communication.pingpong.";
 
+  private Thread serverThread_;
+  private TestingServerImpl testingServer_;
+
   /**
    * Main function for registaring RMI objects and initializing them.
    * Needs pingpong-test-function to be set in config_ and in case of client
@@ -47,6 +53,15 @@ public final class RunPingPong extends Peer {
     try {
       if (isServer) {
         initializeServer();
+        try {
+          serverThread_.join();
+        } catch (InterruptedException e) {
+          logger_.warn("Caught interrupt while joining to TestingServer");
+        }
+        if (!Thread.currentThread().isInterrupted()) {
+          shutdownServer();
+        }
+        System.exit(0);
       } else {
         logger_.info("Creating client.");
         try {
@@ -56,15 +71,18 @@ public final class RunPingPong extends Peer {
         }
       }
     } catch (RemoteException e) {
-      logger_.error("Client caught RemoteException: " + e);
+      logger_.error("RunPingPong caught RemoteException: " + e);
+      System.exit(1);
     }
   }
 
+  /**
+   * Initializes TestingServer (PingPongServer) and returns thread running it.
+   */
   private void initializeServer() throws RemoteException {
     logger_.info("Creating server.");
-    TestingServerImpl server;
     try {
-      server = new PingPongServer();
+      testingServer_ = new PingPongServer();
     } catch (NebuloException e) {
       logger_.error("Caught exception when creating peer: " + e);
       return;
@@ -73,15 +91,19 @@ public final class RunPingPong extends Peer {
       Registry localRegistry = LocateRegistry.createRegistry(1099);
       logger_.info("Local registry created");
       TestingServer stub =
-        (TestingServer) UnicastRemoteObject.exportObject((TestingServer) server, 0);
+        (TestingServer) UnicastRemoteObject.exportObject(testingServer_, 0);
       localRegistry.rebind(SERVER_REMOTE_NAME, stub);
-      logger_.info("Server: " + server + " has been put to remote.");
+      logger_.info("Server: " + testingServer_ + " has been put to remote.");
     } catch (RemoteException e) {
       logger_.error("Received exception: " + e + ", ending client.");
       throw e;
     }
-    Thread thread = new Thread(server, "Org.Nebulostore.Testing.TestingServer");
-    thread.start();
+    serverThread_ = new Thread(testingServer_, "Org.Nebulostore.Testing.TestingServer");
+    serverThread_.start();
+  }
+
+  private void shutdownServer() throws RemoteException {
+    UnicastRemoteObject.unexportObject(testingServer_, false);
   }
 
   private void initializeClient() throws NebuloException, RemoteException {

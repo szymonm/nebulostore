@@ -10,13 +10,16 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
+ * Server controlling remote peers for ping pong tests.
+ * It responsible for collecting information about remote peers. Running
+ * pingpong test and shutting down peers afterwards.
  * @author grzegorzmilka
  */
 public final class PingPongServer extends TestingServerImpl {
   private Map<Integer, PingPongPeer> peers_ =
     new HashMap<Integer, PingPongPeer>();
   private Boolean hasStarted_ = false;
-  // 5 minutes
+  // 60 seconds
   private static final int WAIT_PERIOD = 60000;
   // 60 seconds
   private static final int PING_DELAY = 60000;
@@ -51,7 +54,7 @@ public final class PingPongServer extends TestingServerImpl {
       PingPongPeer peer = entry.getValue();
 
       Collection<Integer> expectedRespondents =
-          new HashSet<Integer>(peers_.keySet());
+        new HashSet<Integer>(peers_.keySet());
       expectedRespondents.remove(peerId);
 
       try {
@@ -59,7 +62,7 @@ public final class PingPongServer extends TestingServerImpl {
         logger_.info(String.format("Sent ping of id %2d from peer: %2d", pingId, peerId));
       } catch (RemoteException e) {
         logger_.error(String.format("Could not send ping from peer: %2d," +
-            " due to: %s", peerId, e.toString()));
+              " due to: %s", peerId, e.toString()));
         continue;
       }
 
@@ -74,13 +77,13 @@ public final class PingPongServer extends TestingServerImpl {
         respondents = peer.getRespondents(pingId);
       } catch (RemoteException e) {
         logger_.error(String.format("Could get respondents from peer: %2d," +
-            " due to: %s", peerId, e.toString()));
+              " due to: %s", peerId, e.toString()));
         continue;
       }
       logger_.info(String.format("Peer %2d received response from: %s", peerId,
-          respondents.toString()));
+            respondents.toString()));
       logger_.info(String.format("Responsiveness level is: %d/%d.", respondents.size(),
-          expectedRespondents.size()));
+            expectedRespondents.size()));
       ++pingId;
     }
 
@@ -98,7 +101,7 @@ public final class PingPongServer extends TestingServerImpl {
     /*} catch (RuntimeException e) {
       logger_.error("Caught RuntimeException: " + e);
       e.printStackTrace();
-    }*/
+      }*/
   }
 
   @Override

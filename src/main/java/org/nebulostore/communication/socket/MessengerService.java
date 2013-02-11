@@ -12,6 +12,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -22,6 +23,9 @@ import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 
 
+/*TODO(grzegorzmilka) cancel CachedOOSDispatcher in shutdown.
+ * Currently the timer started in CachedOOSDispatcher is running even after
+ * endModule of MessengerService has been invoked */
 /**
  * Simple sender module.
  * Sends messages given to it by CommunicationPeer. If source address is null it
@@ -57,7 +61,12 @@ public class MessengerService extends Module {
           "shutting down.");
       return;
     }
-    if (!(msg instanceof CommMessage)) {
+    if (msg instanceof EndModuleMessage) {
+      logger_.info("Received EndModule message");
+      isEnding_.set(true);
+      endModule();
+      return;
+    } else if (!(msg instanceof CommMessage)) {
       logger_.error("Don't know what to do with message: " + msg);
       return;
     }
@@ -144,7 +153,8 @@ public class MessengerService extends Module {
       cacheMap_ = new HashMap<CommAddress, SocketOOSPair>();
       activeAddress_ = null;
       activeSOOSPair_ = null;
-      Timer socketCleaner = new Timer();
+      /* Set Timer to use a daemon thread */
+      Timer socketCleaner = new Timer(true);
       socketCleaner.schedule(new SocketCleaner(), CLEAN_TIMER, CLEAN_TIMER);
     }
 

@@ -36,13 +36,15 @@ import org.nebulostore.communication.address.TomP2PServer;
 //    Clients send "Possibly out of network" message when they can't connect to
 //    someone
 // TODO(grzegorzmilka) Inactive address cleanup
+// TODO(grzegorzmilka) Add to CommPeer CommPeerFound message after
+// bootstrapServer has been created. Just like after BootstrapClient.
 public class BootstrapServer extends BootstrapService implements Runnable {
   private static Logger logger_ = Logger.getLogger(BootstrapServer.class);
   private ServerSocket serverSocket_;
 
   private final CommAddress myCommAddress_;
   private final BootstrapMessage myWelcomeMessage_;
-  // TODO-GM make some ip address discovery here like in client
+  // TODO(grzegorzmilka) make some ip address discovery here like in client
   private final InetSocketAddress myInetSocketAddress_;
   private PersistentAddressingPeer pAPeer_;
   private ExecutorService service_ = Executors.newCachedThreadPool();

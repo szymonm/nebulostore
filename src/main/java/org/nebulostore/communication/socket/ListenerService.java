@@ -100,7 +100,7 @@ public class ListenerService extends Module {
       try {
         clientSocket = serverSocket_.accept();
       } catch (IOException e) {
-        logger_.error("IOException when accepting connection " + e);
+        logger_.warn("IOException when accepting connection " + e);
         continue;
       }
       logger_.debug("Accepted connection from: " +

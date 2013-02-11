@@ -162,8 +162,7 @@ public class Peer implements Runnable {
   protected void finishPeer() {
     // Wait for threads to finish execution.
     try {
-      // TODO: Make CommunicationPeer exit cleanly.
-      // networkThread_.join();
+      networkThread_.join();
       dispatcherThread_.join();
     } catch (InterruptedException exception) {
       logger_.fatal("Interrupted");
@@ -172,6 +171,7 @@ public class Peer implements Runnable {
   }
 
   public void quitNebuloStore() {
+    networkInQueue_.add(new EndModuleMessage());
     dispatcherInQueue_.add(new KillDispatcherMessage());
   }
 }

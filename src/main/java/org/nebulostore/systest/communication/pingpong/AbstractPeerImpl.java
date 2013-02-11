@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
@@ -71,18 +72,17 @@ public abstract class AbstractPeerImpl implements AbstractPeer {
     if (communicationPeer_ == null) {
       throw new IllegalStateException("Can not stop non existent commPeer.");
     }
-    communicationPeer_.endModule();
-    communicationPeerThread_.interrupt();
-    while (true) {
-      try {
-        communicationPeerThread_.join();
-        break;
-      } catch (InterruptedException e) {
-        logger_.warn("Interrupted when trying to join communicationPeerThread.");
-      }
+    logger_.info("Stopping Communication Peer.");
+    inQueue_.add(new EndModuleMessage());
+    try {
+      communicationPeerThread_.join();
+      logger_.info("CommunicationPeer stopped and killed");
+    } catch (InterruptedException e) {
+      logger_.info("Interrupted when trying to join communicationPeerThread.");
+      /* Setting interrupt flag */
+      Thread.currentThread().interrupt();
     }
     communicationPeer_ = null;
-    logger_.info("CommunicationPeer stopped and killed");
   }
 
   @Override

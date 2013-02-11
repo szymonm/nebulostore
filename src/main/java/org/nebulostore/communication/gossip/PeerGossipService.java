@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.address.CommAddress;
@@ -61,8 +62,12 @@ public final class PeerGossipService extends Module {
   private final int swappingFactor_;
   private List<PeerDescriptor> peers_ =
     Collections.synchronizedList(new LinkedList<PeerDescriptor>());
-  private final Timer gossipSender_ = new Timer();
-  private final TimerTask gossipSenderTask_ = new GossipSender();
+
+  /**
+   * Timer for running periodical gossip exchange.
+   * true argument stands for running as a deamon thread
+   */
+  private final Timer gossipSender_ = new Timer(true);
 
   private CommAddress myCommAddress_;
   /**
@@ -103,7 +108,10 @@ public final class PeerGossipService extends Module {
   @Override
   public void processMessage(Message msg) {
     logger_.debug("Received message: " + msg + ".");
-    if (msg instanceof ErrorCommMessage) {
+    if (msg instanceof EndModuleMessage) {
+      logger_.info("Received EndModule message");
+      endModule();
+    } else if (msg instanceof ErrorCommMessage) {
       //Couldn't reach a peer so delete him from peers_
       CommMessage commMsg = ((ErrorCommMessage) msg).getMessage();
       synchronized (peers_) {
@@ -198,7 +206,7 @@ public final class PeerGossipService extends Module {
    *
    * It returns null if no peer is present.
    */
-  //NOTE-GM: tail(oldest peer) strategy also works
+  //NOTE(grzegorzmilka): tail(oldest peer) strategy also works
   private PeerDescriptor selectPeer() {
     synchronized (peers_) {
       if (peers_.size() == 0)
@@ -337,6 +345,6 @@ public final class PeerGossipService extends Module {
   }
 
   private void stopGossipSender() {
-    gossipSenderTask_.cancel();
+    gossipSender_.cancel();
   }
 }

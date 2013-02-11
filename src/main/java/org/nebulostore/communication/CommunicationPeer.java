@@ -10,6 +10,7 @@ import java.util.logging.LogManager;
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -35,7 +36,6 @@ import org.nebulostore.communication.socket.MessengerService;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-//TODO(grzegorzmilka) add closing through message instead of interrupt
 //TODO(grzegorzmilka) apply Visitor pattern to message communication
 /**
  * Main module for communication with outside world.
@@ -259,39 +259,41 @@ public final class CommunicationPeer extends Module {
   public void endModule() {
     logger_.info("Starting endModule procedure of CommunicationPeer.");
     isEnding_.set(true);
-    messengerService_.endModule();
-    messengerThread_.interrupt();
-    while (true) {
-      try {
-        messengerThread_.join();
-        break;
-      } catch (InterruptedException e) {
-        logger_.warn("Caught InterruptedException when joining messengerThread.");
-      }
+    /* Start cancelling modules */
+
+    /* End messengerService */
+    messengerServiceInQueue_.add(new EndModuleMessage());
+    try {
+      messengerThread_.join();
+      logger_.info("Messenger thread ended.");
+    } catch (InterruptedException e) {
+      logger_.info("Caught InterruptedException when joining messenger thread.");
+      /* set interrupted flag for this thread */
+      Thread.currentThread().interrupt();
     }
-    logger_.info("MessengerThread ended.");
+
+    /* End listenerService */
     listenerService_.endModule();
-    listenerThread_.interrupt();
-    while (true) {
-      try {
-        listenerThread_.join();
-        break;
-      } catch (InterruptedException e) {
-        logger_.warn("Caught InterruptedException when joining listener.");
-      }
+    try {
+      listenerThread_.join();
+      logger_.info("Listener thread ended.");
+    } catch (InterruptedException e) {
+      logger_.info("Caught InterruptedException when joining listener.");
+      /* set interrupted flag for this thread */
+      Thread.currentThread().interrupt();
     }
-    logger_.info("ListenerThread ended.");
-    gossipService_.endModule();
-    gossipThread_.interrupt();
-    while (true) {
-      try {
-        gossipThread_.join();
-        break;
-      } catch (InterruptedException e) {
-        logger_.warn("Caught InterruptedException when joining gossiper.");
-      }
+
+    /* End gossipService */
+    gossipServiceInQueue_.add(new EndModuleMessage());
+    try {
+      gossipThread_.join();
+      logger_.info("Gossip thread ended.");
+    } catch (InterruptedException e) {
+      logger_.warn("Caught InterruptedException when joining gossiper.");
+      /* set interrupted flag for this thread */
+      Thread.currentThread().interrupt();
     }
-    logger_.info("GossipThread ended.");
+
     bootstrapService_.shutdownService();
     logger_.info("BootstrapService shutdown.");
     super.endModule();
@@ -305,7 +307,11 @@ public final class CommunicationPeer extends Module {
     }
     logger_.debug("Processing message: " + msg);
 
-    if (msg instanceof ErrorCommMessage) {
+    if (msg instanceof EndModuleMessage) {
+      logger_.info("Received EndModule message");
+      isEnding_.set(true);
+      endModule();
+    } else if (msg instanceof ErrorCommMessage) {
       logger_.info("Error comm message. Returning it to Dispatcher");
       gossipServiceInQueue_.add(msg);
       outQueue_.add(msg);
