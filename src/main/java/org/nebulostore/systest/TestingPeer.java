@@ -42,7 +42,7 @@ public class TestingPeer extends Peer {
       }
     }
     logger_.info("All tests finished successfully.");
-    dispatcherInQueue_.add(new KillDispatcherMessage());
+    quitNebuloStore();
     finishPeer();
     System.exit(0);
   }
