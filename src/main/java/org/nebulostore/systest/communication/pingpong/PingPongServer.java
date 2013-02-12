@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
@@ -18,7 +19,7 @@ import org.nebulostore.communication.address.CommAddress;
 public final class PingPongServer extends TestingServerImpl {
   private Map<Integer, PingPongPeer> peers_ =
     new HashMap<Integer, PingPongPeer>();
-  private Boolean hasStarted_ = false;
+  private AtomicBoolean hasStarted_ = new AtomicBoolean(false);
   // 60 seconds
   private static final int WAIT_PERIOD = 60000;
   // 60 seconds
@@ -35,7 +36,6 @@ public final class PingPongServer extends TestingServerImpl {
 
   @Override
   public void run() {
-    //try {
     logger_.info("Running server. Entering wait period.");
     try {
       Thread.sleep(WAIT_PERIOD);
@@ -44,9 +44,7 @@ public final class PingPongServer extends TestingServerImpl {
     }
     logger_.info("Wait period ended.");
 
-    synchronized (hasStarted_) {
-      hasStarted_ = true;
-    }
+    hasStarted_.set(true);
 
     int pingId = 0;
     for (Map.Entry<Integer, PingPongPeer> entry : peers_.entrySet()) {
@@ -110,21 +108,19 @@ public final class PingPongServer extends TestingServerImpl {
       logger_.warn("Someone tried to add incorrent type of peer: " + peer);
       throw new IllegalArgumentException("Peer: " + peer + " is not PingPongPeer.");
     }
-    synchronized (hasStarted_) {
-      if (hasStarted_)
-        return false;
-      // Throws RemoteException
-      int peerId = peer.getId();
-      CommAddress address = peer.getCommAddress();
-      if (peers_.containsKey(peerId)) {
-        logger_.warn("Someone tried to add peer with duplicate id: " + peerId);
-        throw new IllegalArgumentException("Peer: " + peerId + " already present");
-      }
-
-      peers_.put(peer.getId(), (PingPongPeer) peer);
-      logger_.info(String.format("Peer: %2d with address: %s added to map.",
-            peer.getId(), address));
-      return true;
+    if (hasStarted_.get())
+      return false;
+    // Throws RemoteException
+    int peerId = peer.getId();
+    CommAddress address = peer.getCommAddress();
+    if (peers_.containsKey(peerId)) {
+      logger_.warn("Someone tried to add peer with duplicate id: " + peerId);
+      throw new IllegalArgumentException("Peer: " + peerId + " already present");
     }
+
+    peers_.put(peer.getId(), (PingPongPeer) peer);
+    logger_.info(String.format("Peer: %2d with address: %s added to map.",
+          peer.getId(), address));
+    return true;
   }
 }

@@ -28,6 +28,8 @@ import org.nebulostore.communication.gossip.PeerGossipService;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * @author grzegorzmilka
  */
@@ -37,6 +39,7 @@ class MessageMedium implements Runnable {
   private final BlockingQueue<Message> inQueue_;
 
   MessageMedium(Map<CommAddress, PeerGossipService> gossipModules, BlockingQueue<Message> inQueue) {
+    checkNotNull(gossipModules);
     gossipModules_ = gossipModules;
     inQueue_ = inQueue;
   }
@@ -72,12 +75,11 @@ class MessageMedium implements Runnable {
       if (gossiper == null && message instanceof CommMessage)  {
         inQueue_.put(new ErrorCommMessage((CommMessage) message,
               new Exception("Testing Arbitrary Exception")));
-      } else {
+      } else if (gossiper != null) {
         gossiper.getInQueue().put(message);
       }
     }
   }
-
 }
 
 /**
@@ -231,7 +233,7 @@ public final class GossipTest extends Peer {
   @Override
   protected void runPeer() {
     nGossipers_ = Integer.parseInt(config_.getString(CONFIG_PREFIX + "num-gossipers"));
-    System.exit(runTest() ? 0 : 1);
+    runTest();
   }
 
   /**
@@ -364,7 +366,7 @@ public final class GossipTest extends Peer {
 
       Iterator<PeerGossipService> iterator = gossiperServiceGraph.iterator();
       for (GossiperNode gossiperNode : gossiperGraph) {
-        Collection<PeerDescriptor> peers = new HashSet<PeerDescriptor>();
+        Collection<PeerDescriptor> peers;
         try {
           peers = (Collection<PeerDescriptor>) getPeersMethod.invoke(iterator.next());
         } catch (IllegalAccessException e) {
@@ -494,7 +496,8 @@ public final class GossipTest extends Peer {
     mediumThread.setDaemon(true);
     mediumThread.start();
 
-    int gossipPeriod = Integer.parseInt(config_.getString(CONFIG_PREFIX + "gossip-period"));
+    int gossipPeriod = Integer.parseInt(config_.getString(
+          "communication.gossip-period"));
     int maxPeersSize = Integer.parseInt(config_.getString(CONFIG_PREFIX + "max-peers-size"));
     int healingFactor = Integer.parseInt(config_.getString(CONFIG_PREFIX + "healing-factor"));
     int swappingFactor = Integer.parseInt(config_.getString(CONFIG_PREFIX + "swapping-factor"));
@@ -536,7 +539,7 @@ public final class GossipTest extends Peer {
           java.lang.Math.min(smallestLargestCluster,
               result.sizeOfLargestComponent_);
       }
-      System.out.printf("(%d) isCohesive: %b, nOfComponents %n, " +
+      System.out.printf("(%d) isCohesive: %b, nOfComponents %d, " +
           "size of largest component: %d.%n", secFromStart, result.isCohesive_,
           result.components_.size(), result.sizeOfLargestComponent_);
       logger_.info("Result of test nr. " + i + ": " + result.isCohesive_);

@@ -41,13 +41,15 @@ public final class TomP2PClient extends TomP2PPeer {
       }
 
       try {
+        /* Shutdown peer if it exists, before running new peer */
         if (myPeer_ != null) {
           myPeer_.shutdown();
           try {
             Thread.sleep(1000);
           } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            /* Ignore */
+            logger_.debug("Received interrupt while waiting for peer " +
+                "to shutdown.");
           }
         }
         myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).

@@ -33,9 +33,8 @@ public class ValueDHT implements Serializable {
     try {
       oos = new ObjectOutputStream(baos);
       oos.writeObject(value_);
-    } catch (IOException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
 
     String serialized = new String(Base64.encode(baos.toByteArray()),
@@ -46,20 +45,14 @@ public class ValueDHT implements Serializable {
   public static ValueDHT build(String serialized) {
 
     byte[] data = null;
-    //    try {
     data = Base64.decode(serialized);
-    //    } catch (IOException e2) {
-    // TODO Auto-generated catch block
-    //      e2.printStackTrace();
-    //    }
     ByteArrayInputStream baos = new ByteArrayInputStream(data);
     ObjectInputStream ois = null;
     try {
       ois = new ObjectInputStream(baos);
       return new ValueDHT((Mergeable) ois.readObject());
-    } catch (IOException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }

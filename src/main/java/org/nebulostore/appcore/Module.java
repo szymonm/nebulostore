@@ -1,6 +1,7 @@
 package org.nebulostore.appcore;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -14,7 +15,7 @@ public abstract class Module implements Runnable {
   protected BlockingQueue<Message> inQueue_;
   protected BlockingQueue<Message> outQueue_;
   // Is this thread ready to die (false by default). This is set by endModule() method.
-  private boolean isFinished_;
+  private AtomicBoolean isFinished_ = new AtomicBoolean(false);
 
   private static Logger logger_ = Logger.getLogger(Module.class);
 
@@ -41,13 +42,13 @@ public abstract class Module implements Runnable {
     outQueue_ = outQueue;
   }
 
-  public void endModule() {
-    isFinished_ = true;
+  protected void endModule() {
+    isFinished_.set(true);
   }
 
   @Override
   public void run() {
-    while (!isFinished_) {
+    while (!isFinished_.get()) {
       try {
         processMessage(inQueue_.take());
         // If isFinished_ is set now, the thread will die.

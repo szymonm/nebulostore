@@ -23,9 +23,6 @@ import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 
 
-/*TODO(grzegorzmilka) cancel CachedOOSDispatcher in shutdown.
- * Currently the timer started in CachedOOSDispatcher is running even after
- * endModule of MessengerService has been invoked */
 /**
  * Simple sender module.
  * Sends messages given to it by CommunicationPeer. If source address is null it
@@ -47,10 +44,11 @@ public class MessengerService extends Module {
   }
 
   @Override
-  public void endModule() {
+  protected void endModule() {
     isEnding_.set(true);
     // Nothing to do here, because socket cache cleans up automatically after 1
     // second.
+    oosDispatcher_.shutdown();
     super.endModule();
   }
 
@@ -63,7 +61,6 @@ public class MessengerService extends Module {
     }
     if (msg instanceof EndModuleMessage) {
       logger_.info("Received EndModule message");
-      isEnding_.set(true);
       endModule();
       return;
     } else if (!(msg instanceof CommMessage)) {
@@ -100,14 +97,12 @@ public class MessengerService extends Module {
    *
    * Using is based on getting a socket for use and returning it through put
    * method when it is not needed;
-   * For now it only handles one socket in use at a time, but it should be easy to
-   * extend. It should the first thing too look into when it is found that
+   * For now it only handles one socket in use at a time, but it should be easy
+   * to extend. It should the first thing too look into when it is found that
    * communication is too slow.
    *
    * @author Grzegorz Milka
    */
-  //NOTE-GM: Can't find good name for this class. It should stress the fact that
-  //it is producing sockets, and managing them and expects them to be returned.
   private class CachedOOSDispatcher {
     /**
      * @author Grzegorz Milka
@@ -126,6 +121,7 @@ public class MessengerService extends Module {
     private SocketOOSPair activeSOOSPair_;
     // 1 second
     private static final int CLEAN_TIMER = 1000;
+    private Timer socketCleaner_;
 
     /**
      * @author Grzegorz Milka
@@ -141,7 +137,7 @@ public class MessengerService extends Module {
               socket.close();
               logger_.debug("Socket to: " + socket.getRemoteSocketAddress() + " closed.");
             } catch (IOException e) {
-              logger_.trace("Error when closing socket");
+              logger_.debug("Error when closing socket");
             }
           }
           cacheMap_.clear();
@@ -154,8 +150,8 @@ public class MessengerService extends Module {
       activeAddress_ = null;
       activeSOOSPair_ = null;
       /* Set Timer to use a daemon thread */
-      Timer socketCleaner = new Timer(true);
-      socketCleaner.schedule(new SocketCleaner(), CLEAN_TIMER, CLEAN_TIMER);
+      socketCleaner_ = new Timer(true);
+      socketCleaner_.schedule(new SocketCleaner(), CLEAN_TIMER, CLEAN_TIMER);
     }
 
     public ObjectOutputStream get(CommAddress commAddress) throws IOException {
@@ -174,7 +170,6 @@ public class MessengerService extends Module {
             socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());
             activeSOOSPair_ = new SocketOOSPair(socket,
                 new ObjectOutputStream(socket.getOutputStream()));
-            //TODO(grzegorzmilka): Can we group those exceptions?
           } catch (IOException e) {
             logger_.error("Socket to: " + commAddress +
                 " could not be created. " + e);
@@ -206,6 +201,24 @@ public class MessengerService extends Module {
         cacheMap_.put(activeAddress_, activeSOOSPair_);
         activeAddress_ = null;
         activeSOOSPair_ = null;
+      }
+    }
+
+    public void shutdown() {
+      logger_.debug("Shutting down: " + this);
+      socketCleaner_.cancel();
+      synchronized (cacheMap_) {
+        for (SocketOOSPair pair : cacheMap_.values()) {
+          Socket socket = pair.socket_;
+          try {
+            socket.close();
+            logger_.debug("Socket to: " + socket.getRemoteSocketAddress() +
+                " closed.");
+          } catch (IOException e) {
+            logger_.debug("Error when closing socket");
+          }
+        }
+        cacheMap_.clear();
       }
     }
   }

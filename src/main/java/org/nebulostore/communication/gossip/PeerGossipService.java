@@ -32,8 +32,6 @@ import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
  * "Gossip-based Peer Sampling" by Jelasty, Voulgaris...
  * @author Grzegorz Milka
  */
-//TODO(grzegorzmilka) Add peer discovery
-//TODO(grzegorzmilka) Add bootstrap handling
 public final class PeerGossipService extends Module {
   private final Logger logger_ = Logger.getLogger(PeerGossipService.class);
 
@@ -41,7 +39,6 @@ public final class PeerGossipService extends Module {
   /**
    * Period at which GossipSender sends its advertisments. In milliseconds.
    */
-  // Default: 40 seconds
   private final int gossipPeriod_;
   /**
    * Equivalent of c in the paper.
@@ -77,9 +74,9 @@ public final class PeerGossipService extends Module {
 
   public PeerGossipService(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue, CommAddress myCommAddress,
-      CommAddress bootstrapCommAddress) {
+      CommAddress bootstrapCommAddress, int gossipPeriod) {
     this(inQueue, outQueue, myCommAddress, bootstrapCommAddress,
-        40000, 20, 1, 5);
+        gossipPeriod, 20, 1, 5);
   }
 
   public PeerGossipService(BlockingQueue<Message> inQueue,

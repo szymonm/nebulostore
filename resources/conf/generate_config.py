@@ -13,7 +13,8 @@
             --TOMP2P_PORT=(tp2p_port)\
             --BOOTSTRAP_TOMP2P_PORT=(port)\
             --BDB_TYPE=(storage-holder|proxy)\
-            --COMM_ADDRESS=(|\d+|UUID)
+            --COMM_ADDRESS=(|\d+|UUID)\
+            --GOSSIP_PERIOD=(\d+)
 
     If some flags are missing, default values from Peer.xml.template are used.
 
@@ -25,7 +26,6 @@
             --PEER_ID=(\d+)
         communication.gossip test variables:
             --NUM_GOSSIPERS=(\d+)\
-            --GOSSIP_PERIOD=(\d+)\
             --MAX_PEERS_SIZE=(\d+)\
             --HEALING_FACTOR=(\d+)\
             --SWAPPING_FACTOR=(\d+)\

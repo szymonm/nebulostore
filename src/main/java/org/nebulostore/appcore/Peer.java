@@ -56,8 +56,8 @@ public class Peer implements Runnable {
     } else {
       appKey_ = new AppKey(new BigInteger(appKey));
     }
-    String commAddress = config_.getString("comm-address", "");
-    if (commAddress.isEmpty()) {
+    String commAddress = config_.getString("communication.comm-address", "");
+    if (!commAddress.isEmpty()) {
       commAddress_ = new CommAddress(commAddress);
     } else {
       commAddress_ = CommAddress.newRandomCommAddress();

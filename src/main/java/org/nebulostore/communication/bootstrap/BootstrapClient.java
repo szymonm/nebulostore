@@ -79,6 +79,7 @@ public final class BootstrapClient extends BootstrapService {
     }
 
     /* Now that we know our local address setup UPNP */
+    /* True iff upnp was successful */
     boolean upnpResult = false;
     try {
       upnpResult = setUpUpnpPortMapping();
@@ -89,11 +90,10 @@ public final class BootstrapClient extends BootstrapService {
 
     try {
       boolean foundAddress = false;
+      /* iff upnp wasn't succesful check whether our internet address is bound
+       * to some interface. If not throw exception */
       if (!upnpResult) {
         for (String localAddress : NATUtils.getLocalAddresses()) {
-          /* TODO remove  */
-          logger_.debug("Checking: " + pAPeer_.getCurrentInetSocketAddress().
-                getAddress().getHostAddress() + " " + localAddress);
           if (pAPeer_.getCurrentInetSocketAddress().getAddress().
               getHostAddress().equals(localAddress)) {
             foundAddress = true;

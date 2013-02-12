@@ -34,6 +34,9 @@ public abstract class BootstrapService {
     bootstrapTomP2PPort_ = bootstrapTomP2PPort;
   }
 
+  /**
+   * Return CommAddress of BootstrapServer.
+   */
   public abstract CommAddress getBootstrapCommAddress();
 
   public abstract CommAddressResolver getResolver();

@@ -16,7 +16,6 @@ import org.nebulostore.communication.messages.CommMessage;
 /**
  * @author Grzegorz Milka
  */
-//TODO(grzegorzmilka) serialVersionUID;
 public class PeerGossipMessage extends CommMessage {
   private static final long serialVersionUID = 5913576550043486522L;
 

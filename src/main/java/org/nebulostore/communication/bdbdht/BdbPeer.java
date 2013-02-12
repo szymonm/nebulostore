@@ -19,6 +19,7 @@ import com.sleepycat.je.Transaction;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -234,6 +235,12 @@ public class BdbPeer extends Module {
   @Override
   protected void processMessage(Message msg) throws NebuloException {
     logger_.debug("Processing message: " + msg);
+
+    if (msg instanceof EndModuleMessage) {
+      endModule();
+      return;
+    }
+
     if (msg instanceof HolderAdvertisementMessage) {
       logger_.info("Message accepted: " + msg);
 

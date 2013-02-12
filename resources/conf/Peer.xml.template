@@ -27,6 +27,10 @@
         <comm-address>
             @COMM_ADDRESS=@
         </comm-address>
+        <!-- Time in miliseconds inidicating interval between sent gossips-->
+        <gossip-period>
+            @GOSSIP_PERIOD=20000@
+        </gossip-period>
         <ports>
             <!-- Main port used by local instance for communication. -->
             <comm-cli-port>
@@ -108,9 +112,6 @@
                 <num-gossipers>
                     @NUM_GOSSIPERS=10@
                 </num-gossipers>
-                <gossip-period>
-                    @GOSSIP_PERIOD=2000@
-                </gossip-period>
                 <max-peers-size>
                     @MAX_PEERS_SIZE=20@
                 </max-peers-size>

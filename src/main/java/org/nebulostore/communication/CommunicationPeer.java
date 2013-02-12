@@ -161,10 +161,14 @@ public final class CommunicationPeer extends Module {
 
     isServer_ = config_.getString(CONFIG_PREFIX + "bootstrap.mode", "client").equals("server");
 
+    /* Initialize bootstrap service */
+
+    /* Get bootstrap server's address */
     String bootstrapServerAddress = config_.getString(CONFIG_PREFIX + "bootstrap.address", "none");
     if (bootstrapServerAddress.equals("none")) {
       throw new IllegalArgumentException("Bootstrap client address is not set.");
     }
+
     if (!isServer_) {
       bootstrapService_ = new BootstrapClient(bootstrapServerAddress,
           commCliPort_, bootstrapPort, tP2PPort, bootstrapTP2PPort, commAddress);
@@ -191,10 +195,12 @@ public final class CommunicationPeer extends Module {
     messengerService_ = new MessengerService(messengerServiceInQueue_,
         inQueue_, bootstrapService_.getResolver());
 
+    int gossipPeriod = config_.getInt(CONFIG_PREFIX + "gossip-period", 20000);
     gossipService_ = new PeerGossipService(gossipServiceInQueue_, inQueue_,
         bootstrapService_.getResolver().getMyCommAddress(),
-        bootstrapService_.getBootstrapCommAddress());
+        bootstrapService_.getBootstrapCommAddress(), gossipPeriod);
 
+    /* Start submodule's threads */
     listenerThread_ = new Thread(
         listenerService_, "Nebulostore.Communication.ListenerService");
     listenerThread_.setDaemon(true);
@@ -241,8 +247,7 @@ public final class CommunicationPeer extends Module {
     }
   }
 
-  //NOTE-GM Why was this made static? If CommunicationPeer is not singleton it
-  //should be "unstaticed". Ask about it on nebulo mailing. (TODO)
+  //NOTE(grzegorzmilka) "destatication" of this is in progress (someone's TODO)
   public static CommAddress getPeerAddress() {
     return bootstrapService_.getResolver().getMyCommAddress();
   }
@@ -256,7 +261,7 @@ public final class CommunicationPeer extends Module {
    * @author Grzegorz Milka
    */
   @Override
-  public void endModule() {
+  protected void endModule() {
     logger_.info("Starting endModule procedure of CommunicationPeer.");
     isEnding_.set(true);
     /* Start cancelling modules */
@@ -390,8 +395,15 @@ public final class CommunicationPeer extends Module {
       }
     } else {
       if (dhtPeerThread_ != null) {
-        dhtPeer_.endModule();
-        dhtPeerThread_.interrupt();
+        dhtPeerInQueue_.add(new EndModuleMessage());
+        try {
+          dhtPeerThread_.join();
+        } catch (InterruptedException e) {
+          logger_.info("Caught InterruptedException when joining dhtPeer " +
+              "Thread.");
+          /* set interrupted flag for this thread */
+          Thread.currentThread().interrupt();
+        }
       }
 
       if (dhtProvider.equals("bdb")) {

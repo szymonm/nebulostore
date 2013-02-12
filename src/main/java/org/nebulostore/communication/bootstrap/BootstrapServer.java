@@ -36,8 +36,6 @@ import org.nebulostore.communication.address.TomP2PServer;
 //    Clients send "Possibly out of network" message when they can't connect to
 //    someone
 // TODO(grzegorzmilka) Inactive address cleanup
-// TODO(grzegorzmilka) Add to CommPeer CommPeerFound message after
-// bootstrapServer has been created. Just like after BootstrapClient.
 public class BootstrapServer extends BootstrapService implements Runnable {
   private static Logger logger_ = Logger.getLogger(BootstrapServer.class);
   private ServerSocket serverSocket_;
@@ -85,6 +83,10 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   }
 
   @Override
+  /**
+   * Simple loop accepting handling incoming network connections.
+   * @author Grzegorz Milka
+   */
   public void run() {
     while (!isEnding_.get()) {
       Socket clientSocket;
@@ -93,7 +95,12 @@ public class BootstrapServer extends BootstrapService implements Runnable {
         logger_.info("Accepted connection from: " +
             clientSocket.getRemoteSocketAddress());
       } catch (IOException e) {
-        logger_.error("IOException when accepting connection " + e);
+        if (isEnding_.get()) {
+          logger_.info("IOException on serverSocket during shutdown of " +
+              "module: " + e);
+        } else {
+          logger_.warn("Unexpected IOException on serverSocket: " + e);
+        }
         continue;
       }
       service_.execute(new BootstrapProtocol(clientSocket));

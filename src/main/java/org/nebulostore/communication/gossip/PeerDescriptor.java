@@ -7,7 +7,6 @@ import org.nebulostore.communication.address.CommAddress;
 /**
  * @author Grzegorz Milka
  */
-//TODO(grzegorzmilka) serialVersionUID;
 public class PeerDescriptor implements Serializable {
   private static final long serialVersionUID = -5313861167029739516L;
   private CommAddress peerAddress_;

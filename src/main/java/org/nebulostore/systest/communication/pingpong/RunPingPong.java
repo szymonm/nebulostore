@@ -61,7 +61,6 @@ public final class RunPingPong extends Peer {
         if (!Thread.currentThread().isInterrupted()) {
           shutdownServer();
         }
-        System.exit(0);
       } else {
         logger_.info("Creating client.");
         try {
@@ -72,7 +71,6 @@ public final class RunPingPong extends Peer {
       }
     } catch (RemoteException e) {
       logger_.error("RunPingPong caught RemoteException: " + e);
-      System.exit(1);
     }
   }
 
@@ -135,7 +133,6 @@ public final class RunPingPong extends Peer {
     }
     String peerName = PEER_REMOTE_NAME;
     String serverName = SERVER_REMOTE_NAME;
-    assert serverName != null && peerName != null;
     Registry localRegistry;
     // Put my Peer to remote.
     try {

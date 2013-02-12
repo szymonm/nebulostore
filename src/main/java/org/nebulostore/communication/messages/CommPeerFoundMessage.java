@@ -7,6 +7,11 @@ import org.nebulostore.broker.PeerFoundHandler;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
+ * Notifies about found peers in the network.
+ * Contains CommAddress of the newly found peer in sourceAdress field.
+ * destAddress should be current peer's address. This message is to be used
+ * internally (not sent to other peers).
+ * @author Grzegorz Milka
  * @author Marcin Walas
  */
 public class CommPeerFoundMessage extends CommMessage {
