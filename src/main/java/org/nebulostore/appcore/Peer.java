@@ -56,6 +56,8 @@ public class Peer implements Runnable {
     } else {
       appKey_ = new AppKey(new BigInteger(appKey));
     }
+    /* TODO(bolek) change it so that commAddress is taken from
+     * CommunicationPeer */
     String commAddress = config_.getString("communication.comm-address", "");
     if (!commAddress.isEmpty()) {
       commAddress_ = new CommAddress(commAddress);

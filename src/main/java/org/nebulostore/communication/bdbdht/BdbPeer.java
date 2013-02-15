@@ -111,7 +111,7 @@ public class BdbPeer extends Module {
 
       database_ = env_.openDatabase(null, storeName_, dbConfig);
 
-      advertisementsTimer_ = new Timer();
+      advertisementsTimer_ = new Timer(true);
       advertisementsTimer_.schedule(new SendAdvertisement(), 4000, 2000);
 
       if (reconfigureRequest_ != null) {
@@ -154,6 +154,21 @@ public class BdbPeer extends Module {
   }
 
   private Environment createEnvironment(File dir) {
+    if (!dir.exists()) {
+      logger_.debug("Creating directory: " + dir + " for BdbPeer.");
+      boolean mkdirResult = dir.mkdirs();
+      if (!mkdirResult) {
+        logger_.error("Enviroment directory: " + dir +
+            " could not be created.");
+        throw new IllegalArgumentException("Enviroment directory: " + dir +
+            " could not be created.");
+      }
+    } else if (dir.exists() && !dir.isDirectory()) {
+      logger_.error("Enviroment path: " + dir + " is not a directory.");
+      throw new IllegalArgumentException("Enviroment path: " + dir +
+          " is not a directory.");
+    }
+
     EnvironmentConfig config = new EnvironmentConfig();
     config.setAllowCreate(true);
     config.setDurability(Durability.COMMIT_SYNC);

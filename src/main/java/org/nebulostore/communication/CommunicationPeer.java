@@ -266,6 +266,18 @@ public final class CommunicationPeer extends Module {
     isEnding_.set(true);
     /* Start cancelling modules */
 
+    /* End dhtPeer if any */
+    try {
+      if (dhtPeer_ != null) {
+        dhtPeerInQueue_.add(new EndModuleMessage());
+        dhtPeerThread_.join();
+      }
+    } catch (InterruptedException e) {
+      logger_.info("Caught InterruptedException when joining dht thread.");
+      /* set interrupted flag for this thread */
+      Thread.currentThread().interrupt();
+    }
+
     /* End messengerService */
     messengerServiceInQueue_.add(new EndModuleMessage());
     try {

@@ -1,6 +1,7 @@
 package org.nebulostore.systest.communication.pingpong;
 
 import java.rmi.RemoteException;
+import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,7 +17,7 @@ import org.nebulostore.communication.address.CommAddress;
 /**
  * @author grzegorzmilka
  */
-public abstract class AbstractPeerImpl implements AbstractPeer {
+public abstract class AbstractPeerImpl extends Observable implements AbstractPeer {
   private static final String CONFIGURATION_PATH = "resources/conf/Peer.xml";
   protected final Logger logger_;
   protected BlockingQueue<Message> inQueue_;
@@ -83,6 +84,9 @@ public abstract class AbstractPeerImpl implements AbstractPeer {
       Thread.currentThread().interrupt();
     }
     communicationPeer_ = null;
+
+    setChanged();
+    notifyObservers();
   }
 
   @Override
