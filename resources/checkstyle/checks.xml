@@ -255,9 +255,6 @@
     <!-- also override method equals(java.lang.Object)               -->
     <module name="CovariantEquals"/>
 
-    <!-- Avoid DCL as it doesn't work anyway -->
-    <module name="DoubleCheckedLocking"/>
-
     <!-- Avoid empty statements -->
     <module name="EmptyStatement"/>
 

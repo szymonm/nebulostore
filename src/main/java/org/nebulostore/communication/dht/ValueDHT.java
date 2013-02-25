@@ -43,9 +43,7 @@ public class ValueDHT implements Serializable {
   }
 
   public static ValueDHT build(String serialized) {
-
-    byte[] data = null;
-    data = Base64.decode(serialized);
+    byte[] data = Base64.decode(serialized);
     ByteArrayInputStream baos = new ByteArrayInputStream(data);
     ObjectInputStream ois = null;
     try {

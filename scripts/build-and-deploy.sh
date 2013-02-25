@@ -28,6 +28,7 @@ for i in `seq 1 $PEERS_NUM`
 do
     echo $i
     CURR_PATH="./$JAR_DIR/$i"
+    rm -rf $CURR_PATH
     mkdir -p $CURR_PATH
     mkdir -p $CURR_PATH/logs
     mkdir -p $CURR_PATH/storage/bdb

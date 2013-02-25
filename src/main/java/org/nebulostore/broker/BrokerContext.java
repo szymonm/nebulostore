@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -25,8 +26,8 @@ public final class BrokerContext {
   //TODO(szm,bolek): make fields private and create synchronized methods for accessing them.
 
   private final HashSet<Contract> contracts_ = new HashSet<Contract>();
-  private final HashMap<InstanceID, Vector<Contract>> contractMap_ =
-      new HashMap<InstanceID, Vector<Contract>>();
+  private final Map<InstanceID, Vector<Contract>> contractMap_ =
+      new TreeMap<InstanceID, Vector<Contract>>();
 
   /**
    * Available space for contract.

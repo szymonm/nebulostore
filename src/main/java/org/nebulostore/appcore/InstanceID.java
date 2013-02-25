@@ -10,7 +10,7 @@ import org.nebulostore.communication.dht.KeyDHT;
  * @author szymonmatejczyk
  *
  */
-public class InstanceID implements Serializable {
+public class InstanceID implements Serializable, Comparable<InstanceID> {
   private static final long serialVersionUID = 77L;
 
   private final CommAddress address_;
@@ -55,5 +55,10 @@ public class InstanceID implements Serializable {
 
   public KeyDHT toKeyDHT() {
     return null;
+  }
+
+  @Override
+  public int compareTo(InstanceID other) {
+    return address_.compareTo(other.address_);
   }
 }

@@ -50,6 +50,3 @@ done
 cd 1/resources/conf
 ./generate_config.py $COMMON_ARGS --APP_KEY=11 --BOOTSTRAP_MODE=server --CLI_PORT=10101 --TOMP2P_PORT=10301 --BDB_TYPE=storage-holder < Peer.xml.template > Peer.xml
 
-rm -rf /tmp/nebulostore
-mkdir -p /tmp/nebulostore/nebulo_baza
-
