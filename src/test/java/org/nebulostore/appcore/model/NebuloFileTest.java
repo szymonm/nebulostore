@@ -1,14 +1,11 @@
 package org.nebulostore.appcore.model;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 import static org.junit.Assert.assertTrue;
@@ -23,10 +20,11 @@ public final class NebuloFileTest {
     DOMConfigurator.configure("resources/conf/log4j.xml");
   }
 
-  @Test
   @Ignore
+  @Test
   public void testWriteMultipleChunks() {
-    NebuloFile file = new NebuloFile(new AppKey(BigInteger.ONE), new ObjectId(BigInteger.ONE));
+    NebuloFile file = null;
+    // = NebuloObjectUtils.getNewNebuloFile("1", "3");
 
     // Do three writes.
     byte[] as = new byte[35];

@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Job module that realizes putKey() API function.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
 public class PutKeyModule extends ReturningJobModule<Void> {
   private AppKey appKey_;
@@ -39,14 +39,14 @@ public class PutKeyModule extends ReturningJobModule<Void> {
     appKey_ = appKey;
   }
 
-  /*
+  /**
    * Constructor that runs newly created module.
    */
   public PutKeyModule(ReplicationGroup replicationGroup, BlockingQueue<Message> dispatcherQueue) {
-    checkNotNull(dispatcherQueue);
     visitor_ = new StateMachineVisitor();
     replicationGroup_ = replicationGroup;
-    runThroughDispatcher(dispatcherQueue);
+    setDispatcherQueue(checkNotNull(dispatcherQueue));
+    runThroughDispatcher();
   }
 
   /**

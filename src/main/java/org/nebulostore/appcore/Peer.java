@@ -1,19 +1,27 @@
 package org.nebulostore.appcore;
 
-import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.api.ApiFacade;
-import org.nebulostore.appcore.context.NebuloContext;
+import org.nebulostore.api.DeleteNebuloObjectModule;
+import org.nebulostore.api.GetNebuloObjectModule;
+import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.model.NebuloObject;
+import org.nebulostore.appcore.model.ObjectDeleter;
+import org.nebulostore.appcore.model.ObjectGetter;
+import org.nebulostore.appcore.model.ObjectWriter;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
@@ -22,24 +30,24 @@ import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.replicator.Replicator;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.nebulostore.subscription.api.SimpleSubscriptionNotificationHandler;
+import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
 
 /**
- * This is a regular peer with full functionality.
+ * This is a regular peer with full functionality. It creates, connects and runs all modules.
  * To create a different peer, subclass Peer and set its class name in configuration.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
 public class Peer implements Runnable {
   private static Logger logger_ = Logger.getLogger(Peer.class);
-  protected static final Long RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL = 2000L;
+  //protected static final Long RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL = 2000L;
 
-  protected BlockingQueue<Message> networkInQueue_;
-  protected BlockingQueue<Message> dispatcherInQueue_;
   protected Thread dispatcherThread_;
   protected Thread networkThread_;
+  protected BlockingQueue<Message> dispatcherInQueue_;
+  protected BlockingQueue<Message> networkInQueue_;
+
   protected AppKey appKey_;
-  protected CommAddress commAddress_;
   protected XMLConfiguration config_;
   protected Injector injector_;
 
@@ -47,25 +55,53 @@ public class Peer implements Runnable {
     config_ = config;
   }
 
+  @Inject
+  public void setDependencies(@Named("DispatcherQueue") BlockingQueue<Message> dispatcherQueue,
+      @Named("NetworkQueue") BlockingQueue<Message> networkQueue, AppKey appKey) {
+    dispatcherInQueue_ = dispatcherQueue;
+    networkInQueue_ = networkQueue;
+    appKey_ = appKey;
+  }
+
   @Override
-  public void run() {
-    checkNotNull(config_);
-    String appKey = config_.getString("app-key", "");
-    if (appKey.isEmpty()) {
-      appKey_ = new AppKey(CryptoUtils.getRandomId());
-    } else {
-      appKey_ = new AppKey(new BigInteger(appKey));
-    }
-    /* TODO(bolek) change it so that commAddress is taken from
-     * CommunicationPeer */
-    String commAddress = config_.getString("communication.comm-address", "");
-    if (!commAddress.isEmpty()) {
-      commAddress_ = new CommAddress(commAddress);
-    } else {
-      commAddress_ = CommAddress.newRandomCommAddress();
-    }
-    injector_ = Guice.createInjector(new NebuloContext(appKey_, commAddress_, config_));
+  public final void run() {
+    injector_ = createInjector();
+    injector_.injectMembers(this);
     runPeer();
+  }
+
+  public void quitNebuloStore() {
+    if (networkInQueue_ != null)
+      networkInQueue_.add(new EndModuleMessage());
+    if (dispatcherInQueue_ != null)
+      dispatcherInQueue_.add(new KillDispatcherMessage());
+  }
+
+  private Injector createInjector() {
+    return Guice.createInjector(new AbstractModule() {
+      @Override
+      protected void configure() {
+        bind(XMLConfiguration.class).toInstance(config_);
+
+        bind(AppKey.class).toInstance(new AppKey(config_.getString("app-key", "")));
+        // TODO(bolek) make it consistent with CommunicationPeer comm-address generation.
+        bind(CommAddress.class).toInstance(
+            new CommAddress(config_.getString("communication.comm-address", "")));
+
+        bind(new TypeLiteral<BlockingQueue<Message>>() { })
+          .annotatedWith(Names.named("NetworkQueue"))
+          .toInstance(new LinkedBlockingQueue<Message>());
+        bind(new TypeLiteral<BlockingQueue<Message>>() { })
+          .annotatedWith(Names.named("DispatcherQueue"))
+          .toInstance(new LinkedBlockingQueue<Message>());
+
+        bind(ObjectGetter.class).to(GetNebuloObjectModule.class);
+        bind(ObjectWriter.class).to(WriteNebuloObjectModule.class);
+        bind(ObjectDeleter.class).to(DeleteNebuloObjectModule.class);
+
+        bind(SubscriptionNotificationHandler.class).to(SimpleSubscriptionNotificationHandler.class);
+      }
+    });
   }
 
   protected void runPeer() {
@@ -86,10 +122,8 @@ public class Peer implements Runnable {
    * Method that creates, connects and runs core application modules.
    */
   protected void startPeer() {
-    networkInQueue_ = new LinkedBlockingQueue<Message>();
-    dispatcherInQueue_ = new LinkedBlockingQueue<Message>();
+    // TODO(bolek): Remove ApiFacade.
     ApiFacade.initApi(dispatcherInQueue_);
-    NebuloObject.initObjectApi(dispatcherInQueue_);
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
     dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_,
@@ -170,10 +204,5 @@ public class Peer implements Runnable {
       logger_.fatal("Interrupted");
       return;
     }
-  }
-
-  public void quitNebuloStore() {
-    networkInQueue_.add(new EndModuleMessage());
-    dispatcherInQueue_.add(new KillDispatcherMessage());
   }
 }

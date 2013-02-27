@@ -8,8 +8,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
+
 import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
@@ -30,32 +33,40 @@ public abstract class NebuloObject implements Serializable {
 
   // TODO(bolek): Is this constant more global?
   protected static final int TIMEOUT_SEC = 60;
-  static BlockingQueue<Message> dispatcherQueue_;
 
-  // TODO(bolek): final?
-  protected NebuloAddress address_;
+  protected final NebuloAddress address_;
   protected transient CommAddress sender_;
 
   protected transient String lastCommittedVersion_;
   protected transient Set<String> previousVersions_;
   protected Subscribers subscribers_;
+  protected transient BlockingQueue<Message> dispatcherQueue_;
 
-
-  public static void initObjectApi(BlockingQueue<Message> queue) {
-    dispatcherQueue_ = queue;
-  }
-
-  public static NebuloObject fromAddress(NebuloAddress key) throws NebuloException {
-    // Create a handler and run it through dispatcher.
-    GetNebuloObjectModule module = new GetNebuloObjectModule(key, dispatcherQueue_);
-    // Exception from getResult() is simply passed to the user.
-    return module.getResult(TIMEOUT_SEC);
-  }
+  protected transient Provider<ObjectGetter> objectGetterProvider_;
+  protected transient Provider<ObjectWriter> objectWriterProvider_;
+  protected transient Provider<ObjectDeleter> objectDeleterProvider_;
 
   protected NebuloObject(NebuloAddress address) {
     address_ = address;
     subscribers_ = new Subscribers();
     previousVersions_ = new HashSet<String>();
+    objectGetterProvider_ = null;
+    objectWriterProvider_ = null;
+    objectDeleterProvider_ = null;
+  }
+
+  @Inject
+  public void setProviders(Provider<ObjectGetter> objectGetterProvider,
+                           Provider<ObjectWriter> objectWriterProvider,
+                           Provider<ObjectDeleter> objectDeleterProvider) {
+    objectGetterProvider_ = objectGetterProvider;
+    objectWriterProvider_ = objectWriterProvider;
+    objectDeleterProvider_ = objectDeleterProvider;
+  }
+
+  @Inject
+  public void setDispatcherQueue(@Named("DispatcherQueue") BlockingQueue<Message> queue) {
+    dispatcherQueue_ = queue;
   }
 
   public NebuloAddress getAddress() {

@@ -18,6 +18,10 @@ public final class AppKey implements Serializable {
     key_ = key;
   }
 
+  public AppKey(String key) {
+    this(new BigInteger(key));
+  }
+
   public BigInteger getKey() {
     return key_;
   }

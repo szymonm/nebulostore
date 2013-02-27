@@ -7,6 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Scanner;
 
+import com.google.inject.Inject;
+
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
@@ -14,7 +16,7 @@ import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.NebuloFile;
-import org.nebulostore.appcore.model.NebuloObject;
+import org.nebulostore.appcore.model.NebuloObjectFactory;
 
 /**
  * This is a very simple text interface to interact with NebuloStore.
@@ -40,7 +42,7 @@ import org.nebulostore.appcore.model.NebuloObject;
  *          content = "poprawna_zawartosc_pliku"
  *          destination_path = "pliczek"
  *
- * @author bolek
+ * @author Bolek Kulbabinski
  */
 public final class TextInterface extends Peer {
   private static final String DEFAULT_APPKEY = "22";
@@ -48,15 +50,26 @@ public final class TextInterface extends Peer {
   private static final String DEFAULT_CONTENT = "poprawna zawartosc pliku\n";
   private static final String DEFAULT_FILE_NAME = "plik.txt";
 
+  private NebuloObjectFactory objectFactory_;
+
+  @Inject
+  public void setDependencies(NebuloObjectFactory objectFactory) {
+    objectFactory_ = objectFactory;
+  }
+
   protected void runPeer() {
     System.out.print("Starting NebuloStore ...\n");
     startPeer();
     putKey();
-    inputLoop();
+    try {
+      inputLoop();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     finishPeer();
   }
 
-  protected void inputLoop() {
+  protected void inputLoop() throws IOException {
     Scanner in = new Scanner(System.in, "UTF-8");
     while (true) {
       System.out.print("$ ");
@@ -118,8 +131,9 @@ public final class TextInterface extends Peer {
 
   /**
    * read (appkey) (objectId) (destination_path).
+   * @throws IOException
    */
-  private void read(String[] input) {
+  private void read(String[] input) throws IOException {
     String[] tokens = input;
     if (tokens.length == 1) {
       tokens = new String[4];
@@ -141,14 +155,17 @@ public final class TextInterface extends Peer {
     }
 
     System.out.println("Successfully received file!");
+    FileOutputStream fos = null;
     try {
-      FileOutputStream fos = new FileOutputStream(tokens[3]);
+      fos = new FileOutputStream(tokens[3]);
       fos.write(data);
-      fos.close();
     } catch (FileNotFoundException exception) {
       System.out.println("Cannot write file!");
     } catch (IOException exception) {
       System.out.println("Cannot write file!");
+    } finally {
+      if (fos != null)
+        fos.close();
     }
   }
 
@@ -165,13 +182,14 @@ public final class TextInterface extends Peer {
     }
     NebuloFile file;
     try {
-      file = (NebuloFile) NebuloObject.fromAddress(
+      file = (NebuloFile) objectFactory_.fetchExistingNebuloObject(
           new NebuloAddress(new AppKey(new BigInteger(tokens[1])),
               new ObjectId(new BigInteger(tokens[2]))));
       System.out.println("Successfully fetched existing file");
     } catch (NebuloException exception) {
-      file = new NebuloFile(new AppKey(new BigInteger(tokens[1])),
-          new ObjectId(new BigInteger(tokens[2])));
+      file = objectFactory_.createNewNebuloFile(new NebuloAddress(
+          new AppKey(new BigInteger(tokens[1])),
+          new ObjectId(new BigInteger(tokens[2]))));
       System.out.println("Successfully created new file.");
     }
     try {
@@ -244,7 +262,8 @@ public final class TextInterface extends Peer {
     try {
       AppKey appKey = new AppKey(new BigInteger(appKeyString));
       ObjectId objectId = new ObjectId(new BigInteger(objectIdString));
-      return (NebuloFile) NebuloObject.fromAddress(new NebuloAddress(appKey, objectId));
+      return (NebuloFile) objectFactory_.fetchExistingNebuloObject(
+          new NebuloAddress(appKey, objectId));
     } catch (NebuloException exception) {
       System.out.println("Got exception from 'fromAddress()': " + exception.getMessage());
       return null;

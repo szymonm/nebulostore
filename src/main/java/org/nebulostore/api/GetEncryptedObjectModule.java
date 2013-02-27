@@ -13,33 +13,30 @@ import org.nebulostore.replicator.messages.SendObjectMessage;
 import org.nebulostore.utils.Pair;
 
 /**
- *
  * @author szymonmatejczyk
- *
  */
 public class GetEncryptedObjectModule extends GetModule<Pair<EncryptedObject, Set<String>>> {
   private static Logger logger_ = Logger.getLogger(GetModule.class);
-
   private final GetEncryptedObjectVisitor visitor_ = new GetEncryptedObjectVisitor();
 
-  public GetEncryptedObjectModule(NebuloAddress nebuloKey) {
-    super(nebuloKey);
+  public GetEncryptedObjectModule(NebuloAddress nebuloAddress) {
+    fetchObject(nebuloAddress, null);
   }
 
   /**
    * Constructor that runs this module through dispatcher.
    */
-  public GetEncryptedObjectModule(NebuloAddress nebuloKey,
+  public GetEncryptedObjectModule(NebuloAddress nebuloAddress,
       BlockingQueue<Message> dispatcherQueue) {
-    super(nebuloKey);
-    runThroughDispatcher(dispatcherQueue);
+    setDispatcherQueue(dispatcherQueue);
+    fetchObject(nebuloAddress, null);
   }
 
 
-  public GetEncryptedObjectModule(NebuloAddress nebuloKey,
+  public GetEncryptedObjectModule(NebuloAddress nebuloAddress,
       CommAddress replicaAddress, BlockingQueue<Message> dispatcherQueue) {
-    super(nebuloKey, replicaAddress);
-    runThroughDispatcher(dispatcherQueue);
+    setDispatcherQueue(dispatcherQueue);
+    fetchObject(nebuloAddress, replicaAddress);
   }
 
   /**
@@ -58,7 +55,6 @@ public class GetEncryptedObjectModule extends GetModule<Pair<EncryptedObject, Se
       }
       return null;
     }
-
   }
 
 

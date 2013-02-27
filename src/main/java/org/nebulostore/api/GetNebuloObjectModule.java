@@ -1,49 +1,25 @@
 package org.nebulostore.api;
 
-import java.util.concurrent.BlockingQueue;
-
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.NebuloObject;
-import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.appcore.model.ObjectGetter;
 import org.nebulostore.crypto.CryptoException;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.replicator.messages.SendObjectMessage;
 
 /**
- * @author bolek
  * Job module that fetches an existing object from NebuloStore.
+ * @author Bolek Kulbabinski
  */
-public class GetNebuloObjectModule extends GetModule<NebuloObject> {
-
-  private final StateMachineVisitor visitor_;
-
+public class GetNebuloObjectModule extends GetModule<NebuloObject> implements ObjectGetter {
   private static Logger logger_ = Logger.getLogger(GetNebuloObjectModule.class);
+  private final StateMachineVisitor visitor_ = new StateMachineVisitor();
 
-  public GetNebuloObjectModule(NebuloAddress nebuloKey) {
-    super(nebuloKey);
-    visitor_ = new StateMachineVisitor();
-  }
-
-  /*
-   * Constructor that runs newly created module.
-   */
-  public GetNebuloObjectModule(NebuloAddress nebuloKey, BlockingQueue<Message> dispatcherQueue) {
-    super(nebuloKey);
-    visitor_ = new StateMachineVisitor();
-    runThroughDispatcher(dispatcherQueue);
-  }
-
-  /*
-   * Constructor that runs newly created module in the ADDRESS_GIVEN mode.
-   */
-  public GetNebuloObjectModule(NebuloAddress nebuloKey, CommAddress replicaAddress,
-      BlockingQueue<Message> dispatcherQueue) {
-    super(nebuloKey, replicaAddress);
-    visitor_ = new StateMachineVisitor();
-    runThroughDispatcher(dispatcherQueue);
+  @Override
+  public NebuloObject awaitResult(int timeoutSec) throws NebuloException {
+    return getResult(timeoutSec);
   }
 
   /**

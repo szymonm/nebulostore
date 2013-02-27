@@ -20,28 +20,24 @@ import org.nebulostore.replicator.messages.GetObjectMessage;
 import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * @author bolek
  * Job module that fetches V from NebuloStore.
+ * Dependencies: object address. Optional: replica comm-address.
  * @param <V> Returning type.
+ * @author Bolek Kulbabinski
  */
 public abstract class GetModule<V> extends ReturningJobModule<V> {
-
-  protected final NebuloAddress address_;
-  protected CommAddress queryAddress_;
-
   private static Logger logger_ = Logger.getLogger(GetModule.class);
 
-  public GetModule(NebuloAddress nebuloKey) {
-    address_ = nebuloKey;
-  }
+  protected NebuloAddress address_;
+  protected CommAddress replicaAddress_;
 
-  /*
-   * Constructor that runs newly created module in the ADDRESS_GIVEN mode.
-   */
-  public GetModule(NebuloAddress nebuloKey, CommAddress replicaAddress) {
-    address_ = nebuloKey;
-    queryAddress_ = replicaAddress;
+  public void fetchObject(NebuloAddress address, CommAddress replicaAddress) {
+    address_ = checkNotNull(address);
+    replicaAddress_ = replicaAddress;
+    runThroughDispatcher();
   }
 
   /**
@@ -74,7 +70,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
             new KeyDHT(address_.getAppKey().getKey())));
       } else if (state_ == STATE.ADDRESS_GIVEN) {
         state_ = STATE.REPLICA_FETCH;
-        queryReplica(queryAddress_);
+        queryReplica(replicaAddress_);
       } else {
         incorrectState(state_.name(), message);
       }

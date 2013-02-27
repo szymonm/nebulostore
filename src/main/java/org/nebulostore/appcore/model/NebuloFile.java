@@ -8,22 +8,19 @@ import java.math.BigInteger;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.api.DeleteNebuloObjectModule;
-import org.nebulostore.api.GetNebuloObjectModule;
-import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.replicator.TransactionAnswer;
 
 import static org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
 
+
 /**
- * @author bolek
- * File (only metadata).
+ * File. Only metadata is stored in this object, real data is represented by FileChunk.
+ * Constructors are package-protected. Use NebuloObjectFactory to create objects.
+ * @author Bolek Kulbabinski
  */
 
 public class NebuloFile extends NebuloObject {
@@ -57,10 +54,9 @@ public class NebuloFile extends NebuloObject {
       if (chunk_ == null) {
         // Use metadata holder for chunk query.
         // TODO(bolek): Retry with full address if unsuccessful.
-        GetNebuloObjectModule module =
-            new GetNebuloObjectModule(address_, fileSender_, dispatcherQueue_);
-        // Exception from getResult() is simply passed to the user.
-        chunk_ = (FileChunk) module.getResult(TIMEOUT_SEC);
+        ObjectGetter getter = objectGetterProvider_.get();
+        getter.fetchObject(address_, fileSender_);
+        chunk_ = (FileChunk) getter.awaitResult(TIMEOUT_SEC);
       }
       return chunk_.getData();
     }
@@ -70,15 +66,17 @@ public class NebuloFile extends NebuloObject {
       isChanged_ = true;
     }
 
-    public DeleteNebuloObjectModule deleteChunk() throws NebuloException {
-      return new DeleteNebuloObjectModule(address_, dispatcherQueue_);
+    public ObjectDeleter deleteChunk() throws NebuloException {
+      ObjectDeleter deleter = objectDeleterProvider_.get();
+      deleter.deleteObject(address_);
+      return deleter;
     }
 
-    public WriteNebuloObjectModule sync() {
+    public ObjectWriter sync() {
       if (isChanged_) {
-        WriteNebuloObjectModule syncModule = new WriteNebuloObjectModule(address_, chunk_,
-            dispatcherQueue_, chunk_.getVersions());
-        return syncModule;
+        ObjectWriter writer = objectWriterProvider_.get();
+        writer.writeObject(address_, chunk_, chunk_.getVersions());
+        return writer;
       } else {
         return null;
       }
@@ -113,25 +111,12 @@ public class NebuloFile extends NebuloObject {
   protected Vector<FileChunkWrapper> chunks_;
   protected int chunkSize_ = DEFAULT_CHUNK_SIZE_BYTES;
 
-  /**
-   * New, empty file.
-   */
-  public NebuloFile(AppKey appKey) {
-    // TODO(bolek): Here should come more sophisticated ID generation method to account for
-    //   (probably) fixed replication groups with ID intervals. (ask Broker? what size?)
-    this(appKey, new ObjectId(CryptoUtils.getRandomId()), DEFAULT_CHUNK_SIZE_BYTES);
+  NebuloFile(NebuloAddress address) {
+    this(address, DEFAULT_CHUNK_SIZE_BYTES);
   }
 
-  public NebuloFile(AppKey appKey, ObjectId objectId) {
-    this(appKey, objectId, DEFAULT_CHUNK_SIZE_BYTES);
-  }
-
-  public NebuloFile(NebuloAddress address) {
-    this(address.getAppKey(), address.getObjectId());
-  }
-
-  public NebuloFile(AppKey appKey, ObjectId objectId, int chunkSize) {
-    super(new NebuloAddress(appKey, objectId));
+  NebuloFile(NebuloAddress address, int chunkSize) {
+    super(address);
     chunkSize_ = chunkSize;
     initNewFile();
   }
@@ -267,15 +252,16 @@ public class NebuloFile extends NebuloObject {
   @Override
   protected void runSync() throws NebuloException {
     logger_.info("Running sync on file ");
-    Vector<WriteNebuloObjectModule> updateModules = new Vector<WriteNebuloObjectModule>();
+    Vector<ObjectWriter> updateModules = new Vector<ObjectWriter>();
     // Run sync for all chunks in parallel.
     for (int i = 0; i < chunks_.size(); ++i) {
       logger_.debug("Creating update module for chunk " + i);
       updateModules.add(chunks_.get(i).sync());
     }
     // Run sync for NebuloFile (metadata).
-    updateModules.add(new WriteNebuloObjectModule(address_, this, dispatcherQueue_,
-        previousVersions_));
+    ObjectWriter writer = objectWriterProvider_.get();
+    writer.writeObject(address_, this, previousVersions_);
+    updateModules.add(writer);
 
     // Wait for all results.
     NebuloException caughtException = null;
@@ -290,15 +276,15 @@ public class NebuloFile extends NebuloObject {
     }
     if (caughtException != null) {
       // aborting the transaction
-      for (WriteNebuloObjectModule update : updateModules) {
-        update.setAnswer(TransactionAnswer.ABORT);
+      for (ObjectWriter writerModule : updateModules) {
+        writerModule.setAnswer(TransactionAnswer.ABORT);
       }
       throw caughtException;
     } else {
       logger_.debug("Commiting transaction");
-      for (WriteNebuloObjectModule update : updateModules) {
-        if (update != null) {
-          update.setAnswer(TransactionAnswer.COMMIT);
+      for (ObjectWriter writerModule : updateModules) {
+        if (writerModule != null) {
+          writerModule.setAnswer(TransactionAnswer.COMMIT);
         }
       }
       for (FileChunkWrapper chunk : chunks_) {
@@ -306,29 +292,31 @@ public class NebuloFile extends NebuloObject {
       }
       notifySubscribers(NotificationReason.FILE_CHANGED);
     }
-    for (WriteNebuloObjectModule update : updateModules) {
-      if (update != null) {
-        update.getResult(TIMEOUT_SEC);
+    for (ObjectWriter writerModule : updateModules) {
+      if (writerModule != null) {
+        writerModule.awaitResult(TIMEOUT_SEC);
       }
     }
   }
 
   @Override
   public void delete() throws NebuloException {
-    logger_.info("Running delete on file ");
-    Vector<DeleteNebuloObjectModule> deleteModules = new Vector<DeleteNebuloObjectModule>();
+    logger_.info("Running delete on file.");
+    Vector<ObjectDeleter> deleteModules = new Vector<ObjectDeleter>();
     // Run delete for all chunks in parallel.
     for (int i = 0; i < chunks_.size(); ++i) {
       logger_.debug("Creating delete module for chunk " + i);
       deleteModules.add(chunks_.get(i).deleteChunk());
     }
     // Run delete for NebuloFile (metadata).
-    deleteModules.add(new DeleteNebuloObjectModule(address_, dispatcherQueue_));
+    ObjectDeleter deleter = objectDeleterProvider_.get();
+    deleter.deleteObject(address_);
+    deleteModules.add(deleter);
     notifySubscribers(NotificationReason.FILE_DELETED);
     // Wait for all results.
     for (int i = 0; i < deleteModules.size(); ++i) {
       if (deleteModules.get(i) != null) {
-        deleteModules.get(i).getResult(TIMEOUT_SEC);
+        deleteModules.get(i).awaitResult(TIMEOUT_SEC);
       }
     }
   }

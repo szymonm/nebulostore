@@ -2,7 +2,6 @@ package org.nebulostore.api;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.ContractList;
@@ -13,6 +12,7 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.model.ObjectDeleter;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.messages.ErrorCommMessage;
@@ -25,22 +25,23 @@ import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.DeleteObjectMessage;
 
 /**
- * @author bolek
+ * @author Bolek Kulbabinski
  */
-public class DeleteNebuloObjectModule extends ReturningJobModule<Void> {
+public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implements ObjectDeleter {
   private static Logger logger_ = Logger.getLogger(DeleteNebuloObjectModule.class);
 
-  private final NebuloAddress address_;
-  private final StateMachineVisitor visitor_;
+  private NebuloAddress address_;
+  private final StateMachineVisitor visitor_ = new StateMachineVisitor();
 
-  /*
-   * Constructor that runs newly created module.
-   */
-  public DeleteNebuloObjectModule(NebuloAddress nebuloKey, BlockingQueue<Message> dispatcherQueue) {
-    address_ = nebuloKey;
-    visitor_ = new StateMachineVisitor();
-    setOutQueue(dispatcherQueue);
-    runThroughDispatcher(dispatcherQueue);
+  @Override
+  public void deleteObject(NebuloAddress address) {
+    address_ = address;
+    runThroughDispatcher();
+  }
+
+  @Override
+  public void awaitResult(int timeoutSec) throws NebuloException {
+    getResult(timeoutSec);
   }
 
   /**

@@ -1,18 +1,30 @@
 package org.nebulostore.appcore.context;
 
-import java.math.BigInteger;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.commons.configuration.XMLConfiguration;
+import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
+
 import org.nebulostore.addressing.AppKey;
+import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
  * Guice context with default values.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
-public class DefaultTestContext extends NebuloContext {
-  public DefaultTestContext() {
-    super(new AppKey(new BigInteger("1")), CommAddress.newRandomCommAddress(),
-        new XMLConfiguration());
+public class DefaultTestContext extends AbstractModule {
+  @Override
+  protected void configure() {
+    bind(AppKey.class).toInstance(new AppKey("1"));
+    bind(CommAddress.class).toInstance(new CommAddress("2"));
+    bind(new TypeLiteral<BlockingQueue<Message>>() { })
+      .annotatedWith(Names.named("NetworkQueue"))
+      .toInstance(new LinkedBlockingQueue<Message>());
+    bind(new TypeLiteral<BlockingQueue<Message>>() { })
+      .annotatedWith(Names.named("DispatcherQueue"))
+      .toInstance(new LinkedBlockingQueue<Message>());
   }
 }

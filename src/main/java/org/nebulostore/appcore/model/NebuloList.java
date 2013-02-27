@@ -8,21 +8,20 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.ListMergeException;
 import org.nebulostore.appcore.exceptions.NebuloException;
-
-import static org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
+import org.nebulostore.replicator.TransactionAnswer;
+import org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
 
 /**
  * List of NebuloObjects.
  */
-public class NebuloList extends NebuloObject implements Iterable<NebuloElement> {
+public final class NebuloList extends NebuloObject implements Iterable<NebuloElement> {
+  private static Logger logger_ = Logger.getLogger(NebuloList.class);
   private static final long serialVersionUID = 8346982029337955123L;
-  private static Logger logger_ = Logger.getLogger(NebuloObject.class);
 
-  protected ArrayList<NebuloElement> elements_;
-  protected Set<BigInteger> removedIds_;
+  ArrayList<NebuloElement> elements_;
+  Set<BigInteger> removedIds_;
 
   /**
    * List iterator.
@@ -60,28 +59,28 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
     }
   }
 
-  public NebuloList(NebuloAddress nebuloAddress) {
+  NebuloList(NebuloAddress nebuloAddress) {
     super(nebuloAddress);
     elements_ = new ArrayList<NebuloElement>();
     removedIds_ = new TreeSet<BigInteger>();
   }
 
   @Override
-  public Iterator<NebuloElement> iterator() {
+  public ListIterator iterator() {
     return new ListIterator();
   }
 
   public void append(NebuloElement element) throws NebuloException {
     elements_.add(element);
     //TODO(bolek): Should we commit immediately?
-    runSync();
+    //runSync();
   }
 
   public void add(ListIterator iterator, NebuloElement element) throws NebuloException {
     int index = iterator.currIndex_ + 1;
     elements_.add(index, element);
     //TODO(bolek): Should we commit immediately?
-    runSync();
+    //runSync();
   }
 
   /**
@@ -145,19 +144,30 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
     elements_ = newList;
   }
 
-  private void addIfNotRemoved(ArrayList<NebuloElement> list, NebuloElement elem,
-      Set<BigInteger> removed) {
-    if (!removed.contains(elem.elementId_)) {
-      list.add(elem);
+  @Override
+  protected void runSync() throws NebuloException {
+    logger_.info("Running sync on list.");
+    ObjectWriter writer = objectWriterProvider_.get();
+    writer.writeObject(address_, this, previousVersions_);
+
+    try {
+      writer.getSemiResult(TIMEOUT_SEC);
+      writer.setAnswer(TransactionAnswer.COMMIT);
+      writer.awaitResult(TIMEOUT_SEC);
+      notifySubscribers(NotificationReason.FILE_CHANGED);
+    } catch (NebuloException exception) {
+      writer.setAnswer(TransactionAnswer.ABORT);
+      throw exception;
     }
   }
 
   @Override
-  protected void runSync() throws NebuloException {
-    WriteNebuloObjectModule writer = new WriteNebuloObjectModule(address_, this, dispatcherQueue_,
-        previousVersions_);
-    notifySubscribers(NotificationReason.FILE_CHANGED);
-    writer.getResult(TIMEOUT_SEC);
+  public void delete() throws NebuloException {
+    logger_.info("Running delete on list.");
+    ObjectDeleter deleter = objectDeleterProvider_.get();
+    deleter.deleteObject(address_);
+    deleter.awaitResult(TIMEOUT_SEC);
+    notifySubscribers(NotificationReason.FILE_DELETED);
   }
 
   @Override
@@ -184,9 +194,10 @@ public class NebuloList extends NebuloObject implements Iterable<NebuloElement> 
     return true;
   }
 
-  @Override
-  public void delete() throws NebuloException {
-    // TODO(bolek): Missing implementation!
-    logger_.error("Delete is not implemented!");
+  private void addIfNotRemoved(ArrayList<NebuloElement> list, NebuloElement elem,
+      Set<BigInteger> removed) {
+    if (!removed.contains(elem.elementId_)) {
+      list.add(elem);
+    }
   }
 }

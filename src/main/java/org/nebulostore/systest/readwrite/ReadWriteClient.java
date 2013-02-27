@@ -13,7 +13,7 @@ import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.NebuloFile;
-import org.nebulostore.appcore.model.NebuloObject;
+import org.nebulostore.appcore.model.NebuloObjectFactory;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.ConductorClient;
 import org.nebulostore.conductor.messages.NewPhaseMessage;
@@ -21,7 +21,7 @@ import org.nebulostore.conductor.messages.UserCommMessage;
 
 /**
  * ReadWrite client.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
 public final class ReadWriteClient extends ConductorClient {
   private static final long serialVersionUID = -7238750658102427676L;
@@ -35,6 +35,7 @@ public final class ReadWriteClient extends ConductorClient {
   private AppKey myAppKey_;
   private int clientId_;
   private NebuloFile myFile_;
+  private NebuloObjectFactory objectFactory_;
   private final ReadWriteStats stats_;
 
   public ReadWriteClient(String serverJobId, int numPhases, CommAddress[] clients, int clientId) {
@@ -50,13 +51,18 @@ public final class ReadWriteClient extends ConductorClient {
     myAppKey_ = appKey;
   }
 
+  @Inject
+  public void setNebuloObjectFactory(NebuloObjectFactory objectFactory) {
+    objectFactory_ = objectFactory;
+  }
+
   @Override
   protected void initVisitors() {
     visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
-    visitors_[1] = new Visitor1();
-    visitors_[2] = new Visitor2();
-    visitors_[3] = new Visitor3();
+    visitors_[1] = new AddressExchangeVisitor();
+    visitors_[2] = new ReadFilesVisitor();
+    visitors_[3] = new DeleteFileVisitor();
     visitors_[4] = new LastPhaseVisitor(stats_);
   }
 
@@ -71,11 +77,12 @@ public final class ReadWriteClient extends ConductorClient {
   /**
    * Phase 1 - Create new file, send its address to everyone and receive their information.
    */
-  final class Visitor1 extends TestingModuleVisitor  {
+  final class AddressExchangeVisitor extends TestingModuleVisitor  {
     @Override
     public Void visit(NewPhaseMessage message) {
       sleep(INITIAL_SLEEP);
-      myFile_ = new NebuloFile(myAppKey_, new ObjectId(new BigInteger((clientId_ + 1) + "000")));
+      myFile_ = objectFactory_.createNewNebuloFile(
+          new ObjectId(new BigInteger((clientId_ + 1) + "000")));
       try {
         myFile_.write(myAppKey_.getKey().toString().getBytes("UTF-8"), 0);
       } catch (NebuloException exception) {
@@ -111,7 +118,7 @@ public final class ReadWriteClient extends ConductorClient {
   /**
    * Phase 2 - read all the files and verify.
    */
-  final class Visitor2 extends TestingModuleVisitor {
+  final class ReadFilesVisitor extends TestingModuleVisitor {
     @Override
     public Void visit(NewPhaseMessage message) {
       for (NebuloAddress address : files_) {
@@ -119,7 +126,7 @@ public final class ReadWriteClient extends ConductorClient {
         // Try to fetch each file at most MAX_ITER times.
         for (int iter = 1; iter <= MAX_ITER; ++iter) {
           try {
-            NebuloFile file = (NebuloFile) NebuloObject.fromAddress(address);
+            NebuloFile file = (NebuloFile) objectFactory_.fetchExistingNebuloObject(address);
             byte[] content = file.read(0, 1000);
             if (!Arrays.equals(content,
                 address.getAppKey().getKey().toString().getBytes("UTF-8"))) {
@@ -149,7 +156,7 @@ public final class ReadWriteClient extends ConductorClient {
   /**
    * Phase 3 - delete my file.
    */
-  final class Visitor3 extends TestingModuleVisitor {
+  final class DeleteFileVisitor extends TestingModuleVisitor {
     @Override
     public Void visit(NewPhaseMessage message) {
       try {

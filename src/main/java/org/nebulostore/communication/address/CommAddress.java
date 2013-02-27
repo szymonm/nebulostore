@@ -28,8 +28,10 @@ public final class CommAddress implements Serializable, Comparable<CommAddress> 
         "[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}";
     if (Pattern.matches(uuidPattern, commAddress)) {
       uuid_ = UUID.fromString(commAddress);
-    } else {
+    } else if (!commAddress.isEmpty()) {
       uuid_ = new UUID(0, Integer.parseInt(commAddress));
+    } else {
+      uuid_ = UUID.randomUUID();
     }
   }
 

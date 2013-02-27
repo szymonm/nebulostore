@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.ContractList;
@@ -17,6 +16,7 @@ import org.nebulostore.appcore.TwoStepReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.appcore.model.NebuloObject;
+import org.nebulostore.appcore.model.ObjectWriter;
 import org.nebulostore.async.SendAsynchronousMessagesForPeerModule;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
@@ -39,40 +39,39 @@ import org.nebulostore.replicator.messages.UpdateRejectMessage;
 import org.nebulostore.replicator.messages.UpdateWithholdMessage;
 
 /**
- * @author bolek
+ * @author Bolek Kulbabinski
  * @author szymonmatejczyk
  */
 
 public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Void,
-  TransactionAnswer> {
+    TransactionAnswer> implements ObjectWriter {
+  private static Logger logger_ = Logger.getLogger(WriteNebuloObjectModule.class);
   /* small files below 1MB */
   private static final int SMALL_FILE_THRESHOLD = 1024 * 1024;
 
   /* number of confirmation messages required from replicas to return success */
   private static final int CONFIRMATIONS_REQUIRED = 2;
 
-  private final NebuloAddress address_;
-  private final NebuloObject object_;
-  private final Set<String> previousVersionSHAs_;
-  private final StateMachineVisitor visitor_;
+  private NebuloAddress address_;
+  private NebuloObject object_;
+  private Set<String> previousVersionSHAs_;
+  private final StateMachineVisitor visitor_ = new StateMachineVisitor();
 
   private String commitVersion_;
   private int nRecipients_;
 
-  private static Logger logger_ = Logger.getLogger(WriteNebuloObjectModule.class);
-
-  /*
-   * Constructor that runs newly created module.
-   */
-  public WriteNebuloObjectModule(NebuloAddress nebuloKey, NebuloObject object,
-      BlockingQueue<Message> dispatcherQueue, Set<String> previousVersionSHAs) {
-    logger_.debug("ctor");
-    address_ = nebuloKey;
-    object_ = object;
+  @Override
+  public void writeObject(NebuloAddress nebuloAddress, NebuloObject objectToWrite,
+      Set<String> previousVersionSHAs) {
+    address_ = nebuloAddress;
+    object_ = objectToWrite;
     previousVersionSHAs_ = previousVersionSHAs;
-    visitor_ = new StateMachineVisitor();
-    setOutQueue(dispatcherQueue);
-    runThroughDispatcher(dispatcherQueue);
+    runThroughDispatcher();
+  }
+
+  @Override
+  public void awaitResult(int timeoutSec) throws NebuloException {
+    getResult(timeoutSec);
   }
 
   /**

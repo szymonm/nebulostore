@@ -2,14 +2,17 @@ package org.nebulostore.appcore;
 
 import java.util.concurrent.BlockingQueue;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
 /**
- * @author bolek
  * Base class for all job handlers - modules that are managed by dispatcher.
  * Message queues outQueue_ and inQueue_ are always connected to dispatcher.
+ * @author Bolek Kulbabinski
  */
 public abstract class JobModule extends Module {
   private static Logger logger_ = Logger.getLogger(JobModule.class);
@@ -26,21 +29,33 @@ public abstract class JobModule extends Module {
     jobId_ = jobId;
   }
 
-  public void setNetworkQueue(BlockingQueue<Message> networkQueue) {
+  @Inject
+  public void setNetworkQueue(@Named("NetworkQueue") BlockingQueue<Message> networkQueue) {
     networkQueue_ = networkQueue;
+  }
+
+  @Inject
+  public void setDispatcherQueue(@Named("DispatcherQueue") BlockingQueue<Message> dispatcherQueue) {
+    outQueue_ = dispatcherQueue;
   }
 
   /**
    * Run this module through a JobInitMessage (with new random ID) sent to Dispatcher.
    */
-  public void runThroughDispatcher(BlockingQueue<Message> dispatcherQueue) {
+  public void runThroughDispatcher() {
     if (isStarted_) {
       logger_.error("Module already ran.");
       return;
     }
 
     isStarted_ = true;
-    dispatcherQueue.add(new JobInitMessage(this));
+    outQueue_.add(new JobInitMessage(this));
+  }
+
+  // TODO(bolek): Remove it!
+  public void runThroughDispatcher(BlockingQueue<Message> queue) {
+    setDispatcherQueue(queue);
+    runThroughDispatcher();
   }
 
   /**
