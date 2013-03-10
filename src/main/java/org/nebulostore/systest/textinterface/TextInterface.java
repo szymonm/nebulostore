@@ -52,6 +52,10 @@ public final class TextInterface extends Peer {
 
   private NebuloObjectFactory objectFactory_;
 
+  public TextInterface() {
+    objectFactory_ = null;
+  }
+
   @Inject
   public void setDependencies(NebuloObjectFactory objectFactory) {
     objectFactory_ = objectFactory;

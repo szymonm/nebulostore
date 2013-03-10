@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
@@ -14,17 +13,17 @@ import static org.junit.Assert.assertTrue;
  * Simple unit test for NebuloFile.
  */
 public final class NebuloFileTest {
+  private static final String APP_KEY = "1";
+  private static final String OBJECT_ID = "3";
 
   @BeforeClass
   public static void init() {
     DOMConfigurator.configure("resources/conf/log4j.xml");
   }
 
-  @Ignore
   @Test
   public void testWriteMultipleChunks() {
-    NebuloFile file = null;
-    // = NebuloObjectUtils.getNewNebuloFile("1", "3");
+    NebuloFile file = NebuloObjectUtils.getNewNebuloFile(APP_KEY, OBJECT_ID);
 
     // Do three writes.
     byte[] as = new byte[35];

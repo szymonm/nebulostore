@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
  * Simple timer tests.
  * @author szymonmatejczyk
  */
-@Ignore
 public class SimpleTimerTest {
 
   @Before
@@ -30,6 +29,7 @@ public class SimpleTimerTest {
     DOMConfigurator.configure("resources/conf/log4j.xml");
   }
 
+  @Ignore
   @Test
   public void testWithDispatcher() {
     BlockingQueue<Message> dispatcherQueue = new LinkedBlockingQueue<Message>();

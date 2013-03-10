@@ -1,71 +1,97 @@
 package org.nebulostore.appcore.model;
 
-import java.math.BigInteger;
-
 import org.junit.Test;
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.ListMergeException;
+import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.model.NebuloList.ListIterator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Simple unit test for NebuloList.
  */
 public final class NebuloListTest {
-  private NebuloAddress addr_ = new NebuloAddress(new AppKey(BigInteger.ONE),
-                                                  new ObjectId(BigInteger.ONE));
+  private static final String APP_KEY = "22";
+  private static final String OBJECT_ID = "123";
+
+  private final NebuloElement a_ = NebuloObjectUtils.getNewNebuloElement("1", "11");
+  private final NebuloElement b_ = NebuloObjectUtils.getNewNebuloElement("2", "22");
+  private final NebuloElement c_ = NebuloObjectUtils.getNewNebuloElement("3", "33");
+  private final NebuloElement d_ = NebuloObjectUtils.getNewNebuloElement("4", "44");
 
   @Test
-  public void testMergeOk() {
-    NebuloElement a = new NebuloElement(new EncryptedObject(new byte[2]));
-    NebuloElement b = new NebuloElement(new EncryptedObject(new byte[2]));
-    NebuloElement c = new NebuloElement(new EncryptedObject(new byte[2]));
-    NebuloElement d = new NebuloElement(new EncryptedObject(new byte[2]));
+  public void testAddingAndIterating() throws NebuloException {
+    NebuloList list = NebuloObjectUtils.getNewNebuloList(APP_KEY, OBJECT_ID);
+    list.append(a_);
+    list.append(c_);
+    ListIterator iter = list.iterator();
+    iter.next();
+    list.add(iter, b_);
 
+    NebuloElement[] elements = {a_, b_, c_};
+    verifyListElements(list, elements);
+  }
+
+  @Test
+  public void testRemoving() throws NebuloException {
+    NebuloList list = NebuloObjectUtils.getNewNebuloList(APP_KEY, OBJECT_ID);
+    list.append(a_);
+    list.append(b_);
+    list.append(c_);
+    list.append(d_);
+
+    ListIterator iter = list.iterator();
+    iter.next();
+    iter.remove();
+    iter.next();
+    iter.next();
+    iter.remove();
+
+    NebuloElement[] elements = {b_, d_};
+    verifyListElements(list, elements);
+  }
+
+  @Test
+  public void testMergeOk() throws NebuloException {
     // A - B (C removed)
-    NebuloList one = new NebuloList(addr_);
-    one.elements_.add(a);
-    one.elements_.add(b);
-    one.removedIds_.add(c.elementId_);
+    NebuloList one = NebuloObjectUtils.getNewNebuloList(APP_KEY, OBJECT_ID);
+    one.append(a_);
+    one.append(b_);
+    one.removedIds_.add(c_.elementId_);
 
     // D - A - C
-    NebuloList two = new NebuloList(addr_);
-    two.elements_.add(d);
-    two.elements_.add(a);
-    two.elements_.add(c);
+    NebuloList two = NebuloObjectUtils.getNewNebuloList(APP_KEY, OBJECT_ID);
+    two.append(d_);
+    two.append(a_);
+    two.append(c_);
 
     try {
       one.mergeWith(two);
     } catch (ListMergeException e) {
       assertTrue(false);
     }
-    assertTrue(one.elements_.size() == 3);
-    assertTrue(one.elements_.get(0).equals(d));
-    assertTrue(one.elements_.get(1).equals(a));
-    assertTrue(one.elements_.get(2).equals(b));
+    assertEquals(one.elements_.size(), 3);
+    assertEquals(one.elements_.get(0), d_);
+    assertEquals(one.elements_.get(1), a_);
+    assertEquals(one.elements_.get(2), b_);
   }
 
   @Test
-  public void testMergeBad() {
-    NebuloElement a = new NebuloElement(new EncryptedObject(new byte[2]));
-    NebuloElement b = new NebuloElement(new EncryptedObject(new byte[2]));
-    NebuloElement c = new NebuloElement(new EncryptedObject(new byte[2]));
-    NebuloElement d = new NebuloElement(new EncryptedObject(new byte[2]));
-
+  public void testMergeBad() throws NebuloException {
     // A - B - C
-    NebuloList one = new NebuloList(addr_);
-    one.elements_.add(a);
-    one.elements_.add(b);
-    one.elements_.add(c);
+    NebuloList one = NebuloObjectUtils.getNewNebuloList(APP_KEY, OBJECT_ID);
+    one.append(a_);
+    one.append(b_);
+    one.append(c_);
 
     // D - C - A - B
-    NebuloList two = new NebuloList(addr_);
-    two.elements_.add(d);
-    two.elements_.add(c);
-    two.elements_.add(a);
-    two.elements_.add(b);
+    NebuloList two = NebuloObjectUtils.getNewNebuloList(APP_KEY, OBJECT_ID);
+    two.append(d_);
+    two.append(c_);
+    two.append(a_);
+    two.append(b_);
 
     try {
       one.mergeWith(two);
@@ -75,4 +101,12 @@ public final class NebuloListTest {
     }
   }
 
+  private void verifyListElements(NebuloList list, NebuloElement[] elements) {
+    ListIterator iter = list.iterator();
+    for (NebuloElement elem : elements) {
+      assertTrue(iter.hasNext());
+      assertEquals(elem, iter.next());
+    }
+    assertFalse(iter.hasNext());
+  }
 }

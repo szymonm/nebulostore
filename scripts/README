@@ -9,7 +9,11 @@ Tests available:
         ./scripts/local-read-write-test.sh
         ./scripts/planet-lab-read-write-test.sh
 
-    3. Interactive terminal
+    3. List read-write-delete test, 6 peers (5 clients + server)
+        ./scripts/local-lists-test.sh
+        ./scripts/planet-lab-lists-test.sh
+
+    4. Interactive terminal
         ./scripts/console-test.sh
 
 

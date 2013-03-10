@@ -1,53 +1,47 @@
-package org.nebulostore.systest.readwrite;
+package org.nebulostore.systest.lists;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Vector;
 
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.model.NebuloFile;
+import org.nebulostore.appcore.model.NebuloElement;
+import org.nebulostore.appcore.model.NebuloList;
+import org.nebulostore.appcore.model.NebuloList.ListIterator;
 import org.nebulostore.appcore.model.NebuloObjectFactory;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.ConductorClient;
 import org.nebulostore.conductor.messages.NewPhaseMessage;
+import org.nebulostore.crypto.CryptoException;
+import org.nebulostore.crypto.CryptoUtils;
 
 /**
- * ReadWrite client.
+ * Lists client.
  * @author Bolek Kulbabinski
  */
-public final class ReadWriteClient extends ConductorClient {
+public final class ListsClient extends ConductorClient {
   private static final long serialVersionUID = -7238750658102427676L;
-  private static Logger logger_ = Logger.getLogger(ReadWriteClient.class);
+  private static Logger logger_ = Logger.getLogger(ListsClient.class);
   private static final int MAX_ITER = 10;
   private static final int INITIAL_SLEEP = 5000;
   private static final int ITER_SLEEP = 500;
+  private static final int N_CASES = 3;
 
   private CommAddress[] clients_;
-  private Vector<NebuloAddress> files_;
-  private AppKey myAppKey_;
+  private Vector<NebuloAddress> addresses_;
   private int clientId_;
-  private NebuloFile myFile_;
+  private NebuloList myList_;
   private transient NebuloObjectFactory objectFactory_;
-  private final ReadWriteStats stats_;
 
-  public ReadWriteClient(String serverJobId, int numPhases, CommAddress[] clients, int clientId) {
+  public ListsClient(String serverJobId, int numPhases, CommAddress[] clients, int clientId) {
     super(serverJobId, numPhases);
     clients_ = clients;
     clientId_ = clientId;
-    files_ = new Vector<NebuloAddress>();
-    stats_ = new ReadWriteStats();
-  }
-
-  @Inject
-  public void setAppKey(AppKey appKey) {
-    myAppKey_ = appKey;
+    addresses_ = new Vector<NebuloAddress>();
   }
 
   @Inject
@@ -59,25 +53,29 @@ public final class ReadWriteClient extends ConductorClient {
   protected void initVisitors() {
     visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
-    myFile_ = createFile();
-    visitors_[1] = new AddressExchangeVisitor(clients_, files_, clientId_, myFile_.getAddress(),
+    myList_ = createList();
+    visitors_[1] = new AddressExchangeVisitor(clients_, addresses_, clientId_, myList_.getAddress(),
         INITIAL_SLEEP);
     visitors_[2] = new ReadFilesVisitor();
     visitors_[3] = new DeleteFileVisitor();
-    visitors_[4] = new LastPhaseVisitor(stats_);
+    visitors_[4] = new IgnoreNewPhaseVisitor();
   }
 
-  private NebuloFile createFile() {
-    NebuloFile file = objectFactory_.createNewNebuloFile(
+  private NebuloList createList() {
+    NebuloList list = objectFactory_.createNewNebuloList(
         new ObjectId(new BigInteger((clientId_ + 1) + "000")));
     try {
-      file.write(myAppKey_.getKey().toString().getBytes("UTF-8"), 0);
-      return file;
-    } catch (NebuloException exception) {
-      endWithError("Unable to write NebuloFile (" + exception.getMessage() + ")");
+      for (int i = 0; i < N_CASES; ++i) {
+        BigInteger value = list.getAddress().getObjectId().getKey().add(BigInteger.valueOf(i));
+        list.append(new NebuloElement(CryptoUtils.encryptObject(value)));
+      }
+      list.sync();
+      return list;
+    } catch (CryptoException e) {
+      endWithError("Exception while encrypting object: " + e.getMessage());
       return null;
-    } catch (UnsupportedEncodingException e) {
-      endWithError("Unable to encode string in UTF-8.");
+    } catch (NebuloException e) {
+      endWithError("Exception in list append: " + e.getMessage());
       return null;
     }
   }
@@ -88,31 +86,26 @@ public final class ReadWriteClient extends ConductorClient {
   final class ReadFilesVisitor extends TestingModuleVisitor {
     @Override
     public Void visit(NewPhaseMessage message) {
-      for (NebuloAddress address : files_) {
-        boolean fetched = false;
+      for (NebuloAddress address : addresses_) {
         // Try to fetch each file at most MAX_ITER times.
         for (int iter = 1; iter <= MAX_ITER; ++iter) {
           try {
-            NebuloFile file = (NebuloFile) objectFactory_.fetchExistingNebuloObject(address);
-            byte[] content = file.read(0, 1000);
-            if (!Arrays.equals(content,
-                address.getAppKey().getKey().toString().getBytes("UTF-8"))) {
-              endWithError("File content is incorrect (" + new String(content, "UTF-8") + ")");
-              return null;
-            } else {
-              logger_.debug("Received correct file from address " + address);
-              fetched = true;
-              break;
+            NebuloList list = (NebuloList) objectFactory_.fetchExistingNebuloObject(address);
+            ListIterator iterator = list.iterator();
+            for (int i = 0; i < N_CASES; ++i) {
+              BigInteger elem = (BigInteger) CryptoUtils.decryptObject(iterator.next().getData());
+              BigInteger good = list.getAddress().getObjectId().getKey().add(BigInteger.valueOf(i));
+              if (!good.equals(elem)) {
+                endWithError("List content is incorrect (" + elem + " != " + good + ")");
+                return null;
+              }
             }
+            logger_.debug("Received correct list from address " + address);
+            break;
           } catch (NebuloException e) {
-            logger_.debug("Unable to fetch file with address " + address + " in iteration " + iter);
-          } catch (UnsupportedEncodingException e) {
-            logger_.debug("Unable to decode received string in UTF-8.");
+            logger_.debug("Unable to fetch list with address " + address + " in iteration " + iter);
           }
           sleep(ITER_SLEEP);
-        }
-        if (!fetched) {
-          stats_.addAddress(address);
         }
       }
       phaseFinished();
@@ -127,7 +120,7 @@ public final class ReadWriteClient extends ConductorClient {
     @Override
     public Void visit(NewPhaseMessage message) {
       try {
-        myFile_.delete();
+        myList_.delete();
       } catch (NebuloException e) {
         endWithError("Unable to delete file (" + e.getMessage() + ")");
         return null;

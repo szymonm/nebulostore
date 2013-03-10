@@ -1,8 +1,10 @@
 package org.nebulostore.conductor;
 
 import java.io.Serializable;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
@@ -17,7 +19,7 @@ import org.nebulostore.conductor.messages.NewPhaseMessage;
 import org.nebulostore.conductor.messages.StatsMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocMessage;
-
+import org.nebulostore.conductor.messages.UserCommMessage;
 /**
  * Base class for all TestingModules(test cases run on peers).
  * @author szymonmatejczyk
@@ -88,6 +90,14 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   }
 
   protected abstract void initVisitors();
+
+  protected void sleep(int millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e1) {
+      logger_.debug("Interrupted while sleeping.");
+    }
+  }
 
   @Override
   protected void processMessage(Message message) throws NebuloException {
@@ -169,7 +179,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
   /**
    * Default visitor for last phase. Handles GatherStatsMessage (and FinishMessage).
-   * @author bolek
+   * @author Bolek Kulbabinski
    */
   protected class LastPhaseVisitor extends TestingModuleVisitor {
     protected CaseStatistics stats_;
@@ -189,6 +199,53 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     public Void visit(NewPhaseMessage message) {
       logger_.debug("Received NewPhaseMessage in GatherStats state.");
       return null;
+    }
+  }
+
+  /**
+   * Send my object's address to everyone and receive their information (used as a first phase
+   * visitor in some test scenarios).
+   * @author Bolek Kulbabinski
+   */
+  protected final class AddressExchangeVisitor extends TestingModuleVisitor {
+    private final CommAddress[] clients_;
+    private final int currClientIndex_;
+    private final Vector<NebuloAddress> addresses_;
+    private final NebuloAddress myAddress_;
+    private final int initialSleep_;
+
+    public AddressExchangeVisitor(CommAddress[] clients, Vector<NebuloAddress> addresses,
+        int myClientId, NebuloAddress myAddress, int initialSleep) {
+      clients_ = clients;
+      addresses_ = addresses;
+      currClientIndex_ = myClientId;
+      myAddress_ = myAddress;
+      initialSleep_ = initialSleep;
+    }
+
+    @Override
+    public Void visit(NewPhaseMessage message) {
+      sleep(initialSleep_);
+      logger_.debug("Sending NebuloAddress to " + clients_.length + " peers.");
+      for (int i = 0; i < clients_.length; ++i)
+        if (i != currClientIndex_)
+          networkQueue_.add(new UserCommMessage(jobId_, clients_[i], myAddress_));
+      tryFinishPhase();
+      return null;
+    }
+
+    @Override
+    public Void visit(UserCommMessage message) {
+      NebuloAddress receivedAddr = (NebuloAddress) message.getContent();
+      logger_.debug("Received NebuloAddress: " + receivedAddr);
+      addresses_.add(receivedAddr);
+      tryFinishPhase();
+      return null;
+    }
+
+    private void tryFinishPhase() {
+      if (addresses_.size() == clients_.length - 1)
+        phaseFinished();
     }
   }
 }

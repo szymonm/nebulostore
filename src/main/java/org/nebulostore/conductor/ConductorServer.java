@@ -155,18 +155,19 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   }
 
   /**
-   * Sends messages to discovered peers to initialize test modules on their
-   * side. See: TestInitMessage, PingPongServer.
+   * Called after enough clients are discovered.
+   * Should send messages to discovered peers to initialize test modules on their side.
    */
   public abstract void initClients();
 
   /**
-   * Feeds concrete implementation with statistics gathered from test clients.
+   * Called after the test is finished.
+   * Should fill statistics gathered from test clients.
    */
   public abstract void feedStats(CommAddress sender, CaseStatistics stats);
 
   /**
-   * Returns additional statistics from the upper module.
+   * Called after the test is finished. Should return additional statistics from the test.
    */
   protected abstract String getAdditionalStats();
 
