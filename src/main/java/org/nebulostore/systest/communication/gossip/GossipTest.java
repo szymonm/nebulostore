@@ -169,7 +169,7 @@ final class ChurnFactory {
       gossipModules_.remove(gossiperAddr);
 
       logger_.debug("Ending gossiper: " + gossiperAddr);
-      gossiper.endModule();
+      gossiper.shutdown();
       gossipThread.interrupt();
       while (true) {
         try {

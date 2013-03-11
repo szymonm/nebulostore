@@ -96,10 +96,9 @@ public final class PeerGossipService extends Module {
     startGossipSender();
   }
 
-  @Override
-  public void endModule() {
+  public void shutdown() {
     stopGossipSender();
-    super.endModule();
+    endModule();
   }
 
   @Override
@@ -107,7 +106,7 @@ public final class PeerGossipService extends Module {
     logger_.debug("Received message: " + msg + ".");
     if (msg instanceof EndModuleMessage) {
       logger_.info("Received EndModule message");
-      endModule();
+      shutdown();
     } else if (msg instanceof ErrorCommMessage) {
       //Couldn't reach a peer so delete him from peers_
       CommMessage commMsg = ((ErrorCommMessage) msg).getMessage();

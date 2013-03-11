@@ -60,12 +60,12 @@ class HashAddressResolver implements CommAddressResolver {
       return inetSocketAddress;
     } catch (IOException e) {
       String errMessage = "IOException when try to resolve address.";
-      logger_.error(errMessage + " " + e);
+      logger_.warn(errMessage + " " + e);
       throw new IOException(errMessage, e);
     } catch (ClassNotFoundException e) {
       String errMessage = "Received data of unknown type given right key. " +
         "Expected InetSocketAddress.";
-      logger_.error(errMessage);
+      logger_.warn(errMessage);
       throw new IOException(errMessage, e);
     }
   }

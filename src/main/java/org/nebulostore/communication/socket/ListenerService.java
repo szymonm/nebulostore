@@ -56,12 +56,12 @@ public class ListenerService extends Module {
           logger_.debug("Added received message: " + msg + " to outgoing queue");
         }
       } catch (ClassNotFoundException e) {
-        logger_.error("Error when handling received message " + e);
+        logger_.warn("Error when handling received message: " + e);
       } catch (EOFException e) {
         logger_.debug("End of connection with: " +
             clientSocket_.getRemoteSocketAddress() + " " + e);
       } catch (IOException e) {
-        logger_.error("IOException in connection with: " +
+        logger_.warn("IOException in connection with: " +
             clientSocket_.getRemoteSocketAddress() + " " + e);
       } finally {
         try {
@@ -109,16 +109,15 @@ public class ListenerService extends Module {
     }
   }
 
-  @Override
-  public void endModule() {
+  public void shutdown() {
     isEnding_.set(true);
     try {
       serverSocket_.close();
     } catch (IOException e) {
-      logger_.error("Error when closing serverSocket: " + e);
+      logger_.trace("Error when closing serverSocket: " + e);
     }
     service_.shutdownNow();
-    super.endModule();
+    endModule();
   }
 
   @Override

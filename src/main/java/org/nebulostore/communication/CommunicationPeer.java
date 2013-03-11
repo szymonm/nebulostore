@@ -260,9 +260,8 @@ public final class CommunicationPeer extends Module {
    *
    * @author Grzegorz Milka
    */
-  @Override
-  protected void endModule() {
-    logger_.info("Starting endModule procedure of CommunicationPeer.");
+  private void shutdown() {
+    logger_.info("Starting shutdown procedure of CommunicationPeer.");
     isEnding_.set(true);
     /* Start cancelling modules */
 
@@ -290,7 +289,7 @@ public final class CommunicationPeer extends Module {
     }
 
     /* End listenerService */
-    listenerService_.endModule();
+    listenerService_.shutdown();
     try {
       listenerThread_.join();
       logger_.info("Listener thread ended.");
@@ -313,7 +312,7 @@ public final class CommunicationPeer extends Module {
 
     bootstrapService_.shutdownService();
     logger_.info("BootstrapService shutdown.");
-    super.endModule();
+    endModule();
   }
 
   @Override
@@ -327,7 +326,7 @@ public final class CommunicationPeer extends Module {
     if (msg instanceof EndModuleMessage) {
       logger_.info("Received EndModule message");
       isEnding_.set(true);
-      endModule();
+      shutdown();
     } else if (msg instanceof ErrorCommMessage) {
       logger_.info("Error comm message. Returning it to Dispatcher");
       gossipServiceInQueue_.add(msg);
@@ -338,7 +337,7 @@ public final class CommunicationPeer extends Module {
         reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
             (ReconfigureDHTMessage) msg);
       } catch (NebuloException e) {
-        logger_.error(e);
+        logger_.warn(e);
       }
     } else if (msg instanceof HolderAdvertisementMessage) {
       dhtPeerInQueue_.add(msg);
@@ -353,7 +352,7 @@ public final class CommunicationPeer extends Module {
         logger_.debug("OutDHTMessage forwarded to Dispatcher" + msg.getClass().toString());
         outQueue_.add(msg);
       } else {
-        logger_.error("Unrecognized DHTMessage: " + msg);
+        logger_.warn("Unrecognized DHTMessage: " + msg);
       }
     } else if (msg instanceof BdbMessageWrapper) {
       logger_.debug("BDB DHT message received");
@@ -365,7 +364,7 @@ public final class CommunicationPeer extends Module {
         logger_.debug("BDB DHT message forwarded to Dispatcher");
         outQueue_.add(casted.getWrapped());
       } else {
-        logger_.error("Unrecognized BdbMessageWrapper: " + msg);
+        logger_.warn("Unrecognized BdbMessageWrapper: " + msg);
       }
     } else if (msg instanceof PeerGossipMessage) {
       if (((CommMessage) msg).getDestinationAddress().equals(
@@ -379,7 +378,7 @@ public final class CommunicationPeer extends Module {
       }
 
       if (((CommMessage) msg).getDestinationAddress() == null) {
-        logger_.error("Null destination address set for " + msg + ". Dropping the message.");
+        logger_.warn("Null destination address set for " + msg + ". Dropping the message.");
       } else if (((CommMessage) msg).getDestinationAddress().equals(
             bootstrapService_.getResolver().getMyCommAddress())) {
         logger_.debug("message forwarded to Dispatcher");

@@ -55,8 +55,7 @@ public final class TomP2PClient extends TomP2PPeer {
         myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).
             setPorts(tomP2PPort_).makeAndListen();
       } catch (IOException e) {
-        String errMsg = "Error when making peer";
-        logger_.error(errMsg + " " + e);
+        logger_.error("Error when making peer: " + e);
         throw e;
       }
 
@@ -218,7 +217,7 @@ public final class TomP2PClient extends TomP2PPeer {
           uploadCurrentInetSocketAddress(myInetSocketAddress);
         } catch (IOException e) {
           String errMsg = "Error when trying to update address to kademlia";
-          logger_.error(errMsg + " " + e);
+          logger_.warn(errMsg + " " + e);
           return;
         }
         logger_.info("Info about my address has been put to kademlia.");

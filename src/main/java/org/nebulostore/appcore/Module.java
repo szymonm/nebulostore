@@ -42,7 +42,7 @@ public abstract class Module implements Runnable {
     outQueue_ = outQueue;
   }
 
-  protected void endModule() {
+  protected final void endModule() {
     isFinished_.set(true);
   }
 

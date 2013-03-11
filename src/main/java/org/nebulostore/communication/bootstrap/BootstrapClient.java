@@ -75,7 +75,7 @@ public final class BootstrapClient extends BootstrapService {
     try {
       sendAndReceiveHelloMsg();
     } catch (IOException e) {
-      logger_.error("Error when sending hello message " + e);
+      logger_.warn("Error when sending hello message " + e);
     }
 
     /* Now that we know our local address setup UPNP */
@@ -85,7 +85,7 @@ public final class BootstrapClient extends BootstrapService {
       upnpResult = setUpUpnpPortMapping();
       logger_.info("Upnp port mapping set up.");
     } catch (IOException e) {
-      logger_.error("Error when setting UPNP port mapping: " + e);
+      logger_.warn("Error when setting UPNP port mapping: " + e);
     }
 
     try {
@@ -178,7 +178,7 @@ public final class BootstrapClient extends BootstrapService {
       throw e;
     } catch (ClassNotFoundException e) {
       String errMsg = "Read object is not BootstrapMessage.";
-      logger_.error("errMsg");
+      logger_.warn(errMsg);
       throw new IOException(errMsg, e);
     } finally {
       socket.close();

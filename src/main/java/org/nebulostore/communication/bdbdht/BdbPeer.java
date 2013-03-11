@@ -140,8 +140,7 @@ public class BdbPeer extends Module {
     }
   }
 
-  @Override
-  public void endModule() {
+  private void shutdown() {
     logger_.info("Ending bdb peer");
     if (!isProxy_) {
       advertisementsTimer_.cancel();
@@ -150,7 +149,7 @@ public class BdbPeer extends Module {
       env_.close();
     }
 
-    super.endModule();
+    endModule();
   }
 
   private Environment createEnvironment(File dir) {
@@ -252,7 +251,7 @@ public class BdbPeer extends Module {
     logger_.debug("Processing message: " + msg);
 
     if (msg instanceof EndModuleMessage) {
-      endModule();
+      shutdown();
       return;
     }
 
@@ -276,7 +275,7 @@ public class BdbPeer extends Module {
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) {
-        logger_.error(e);
+        logger_.debug(e);
       }
       inQueue_.add(msg);
       return;
@@ -290,7 +289,7 @@ public class BdbPeer extends Module {
         senderInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
             (DHTMessage) msg));
       } else {
-        logger_.error("Unknown message of type: " + msg);
+        logger_.warn("Unknown message of type: " + msg);
       }
     } else {
       logger_.info("Message accepted: " + msg);
@@ -310,7 +309,7 @@ public class BdbPeer extends Module {
       } else if (message instanceof GetDHTMessage) {
         get((GetDHTMessage) message, fromNetwork, sourceAddress);
       } else {
-        logger_.error("BdbPeer got message that is not supported");
+        logger_.warn("BdbPeer got message that is not supported");
       }
     }
   }

@@ -124,7 +124,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
     try {
       serverSocket_.close();
     } catch (IOException e) {
-      logger_.error("Error when closing serverSocket: " + e);
+      logger_.debug("Error when closing serverSocket: " + e);
     }
     service_.shutdownNow();
   }
@@ -152,7 +152,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
           ObjectInputStream ois = new ObjectInputStream(socketIS);
           msg = (BootstrapMessage) ois.readObject();
         } catch (ClassNotFoundException e) {
-          logger_.error("Error when handling received message " + e);
+          logger_.warn("Error when handling received message " + e);
           return;
         } catch (EOFException e) {
           //GM Possibly client has just checked if this server works
@@ -169,7 +169,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
         logger_.info("Sent Hello message to: " + msg.getPeerAddress() +
             "/" + clientSocket_.getRemoteSocketAddress());
       } catch (IOException e) {
-        logger_.error("IOException when handling client: " +
+        logger_.warn("IOException when handling client: " +
             clientSocket_.getRemoteSocketAddress() + ", error: " + e);
       } finally {
         try {
@@ -177,7 +177,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
               clientSocket_.getRemoteSocketAddress());
           clientSocket_.close();
         } catch (IOException e) {
-          logger_.error("IOException when closing client's socket: " + e);
+          logger_.debug("IOException when closing client's socket: " + e);
         }
       }
     }
