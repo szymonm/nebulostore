@@ -57,7 +57,7 @@ public class DispatcherTest {
    * JobEndMessage and verify that it was not forwarded to the worker thread.
    */
   @Test
-  public void testHandlerExists() {
+  public void testHandlerExists() throws InterruptedException {
     /**
      * Simple module that counts messages.
      */
@@ -112,11 +112,8 @@ public class DispatcherTest {
     inQueue_.add(new DummyMessage());
     inQueue_.add(new JobEndedMessage("1"));
     inQueue_.add(new KillDispatcherMessage());
-    try {
-      thread_.join();
-    } catch (InterruptedException exception) {
-      assertTrue(false);
-    }
+    thread_.join();
+
     // Verify that only two messages were handled by a worker thread.
     assertTrue(staticCounter_ == 2);
   }

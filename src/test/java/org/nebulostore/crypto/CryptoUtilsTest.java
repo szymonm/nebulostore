@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * CryptoUtils test class.
+ * @author Bolek Kulbabinski
  */
 public class CryptoUtilsTest {
   private static final String APP_KEY = "22";
@@ -22,8 +23,10 @@ public class CryptoUtilsTest {
     ArrayList<String> list = new ArrayList<String>();
     list.add("One");
     list.add("Two");
+
     ArrayList<?> list2 =
         (ArrayList<?>) CryptoUtils.deserializeObject(CryptoUtils.serializeObject(list));
+
     assertTrue(list2.size() == 2);
     assertTrue(list2.get(0).equals("One"));
     assertTrue(list2.get(1).equals("Two"));
@@ -32,7 +35,9 @@ public class CryptoUtilsTest {
   @Test
   public void testNebuloFileEncryption() throws CryptoException {
     NebuloFile file = NebuloObjectUtils.getNewNebuloFile(APP_KEY, OBJECT_ID);
+
     Object object = CryptoUtils.decryptObject(CryptoUtils.encryptObject(file));
+
     assertTrue(object instanceof NebuloFile);
     NebuloFile file2 = (NebuloFile) object;
     assertTrue(file2.getAddress().getAppKey().getKey().equals(new BigInteger(APP_KEY)));

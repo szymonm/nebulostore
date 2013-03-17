@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Simple unit test for NebuloList.
+ * @author Bolek Kulbabinski
  */
 public final class NebuloListTest {
   private static final String APP_KEY = "22";
@@ -67,18 +68,15 @@ public final class NebuloListTest {
     two.append(a_);
     two.append(c_);
 
-    try {
-      one.mergeWith(two);
-    } catch (ListMergeException e) {
-      assertTrue(false);
-    }
+    one.mergeWith(two);
+
     assertEquals(one.elements_.size(), 3);
     assertEquals(one.elements_.get(0), d_);
     assertEquals(one.elements_.get(1), a_);
     assertEquals(one.elements_.get(2), b_);
   }
 
-  @Test
+  @Test (expected = ListMergeException.class)
   public void testMergeBad() throws NebuloException {
     // A - B - C
     NebuloList one = NebuloObjectUtils.getNewNebuloList(APP_KEY, OBJECT_ID);
@@ -93,12 +91,8 @@ public final class NebuloListTest {
     two.append(a_);
     two.append(b_);
 
-    try {
-      one.mergeWith(two);
-      assertTrue(false);
-    } catch (ListMergeException e) {
-      assertTrue(true);
-    }
+    one.mergeWith(two);
+    // Expected exception.
   }
 
   private void verifyListElements(NebuloList list, NebuloElement[] elements) {
