@@ -1,4 +1,5 @@
-<project name="NebuloStore">
+<project>
+    <name>NebuloStore</name>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nebulostore</groupId>
     <artifactId>nebulostore</artifactId>
