@@ -2,9 +2,10 @@
 
 # Automatic local N-peer test.
 # Please run from trunk level (./scripts/local-ping-ping-test.sh)
-# Optional parameters: TestServerClassName number_of_peers number_of_iterations
+# Optional parameters: peer_class_name test_server_class_name number_of_peers number_of_iterations
 # Prints "SUCCESS" or "FAILURE"
 
+PEERNAME="org.nebulostore.systest.TestingPeer"
 TESTNAME="org.nebulostore.systest.pingpong.PingPongServer"
 PEER_NUM=3
 TEST_ITER=3
@@ -12,9 +13,10 @@ BOOTSTRAP_DELAY=2
 LOG_DIR=logs
 
 if [ $1 ]; then
-  TESTNAME=$1
-  PEER_NUM=$2
-  TEST_ITER=$3
+  PEERNAME=$1
+  TESTNAME=$2
+  PEER_NUM=$3
+  TEST_ITER=$4
 fi
 
 # Build peers.
@@ -22,7 +24,7 @@ echo "BUILDING ..."
 ./scripts/build-and-deploy.sh $PEER_NUM peer > /dev/null
 
 # Generate and copy config files.
-./scripts/generate-config-files.sh $TESTNAME $PEER_NUM $TEST_ITER localhost
+./scripts/generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $TEST_ITER localhost
 for i in `seq 1 $PEER_NUM`
 do
     mv Peer.xml.$i ./build/jar/$i/resources/conf/Peer.xml

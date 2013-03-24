@@ -3,22 +3,21 @@
 # Generate config files for test peers. First peer is bootstrap server.
 # Last peer is testing peer.
 # Optionally, the following parameters might be provided:
-#   test_class_name number_of_peers number_of_test_iterations bootstrap_address
+#   peer_class_name test_class_name number_of_peers number_of_test_iterations bootstrap_address
 
+PEERNAME="org.nebulostore.systest.TestingPeer"
 TESTNAME="org.nebulostore.systest.pingpong.PingPongServer"
 PEER_NUM=3
 TEST_ITER=3
 BOOTSTRAP_ADDRESS="localhost"
-
-PEERNAME="org.nebulostore.systest.TestingPeer"
-
 COMMON_ARGS="--BOOTSTRAP_PORT=10201 --BOOTSTRAP_TOMP2P_PORT=10301"
 
 if [ $1 ]; then
-  TESTNAME=$1
-  PEER_NUM=$2
-  TEST_ITER=$3
-  BOOTSTRAP_ADDRESS=$4
+  PEERNAME=$1
+  TESTNAME=$2
+  PEER_NUM=$3
+  TEST_ITER=$4
+  BOOTSTRAP_ADDRESS=$5
 fi
 
 # Generate test list.
@@ -55,6 +54,7 @@ do
     padded=`printf "%02d" $i`
     ./resources/conf/generate_config.py $COMMON_ARGS --APP_KEY=$i$i --CLASS_NAME=$PEERNAME --TEST_LIST=$CONCAT\
          --BOOTSTRAP_MODE=$BOOTSTRAP_MODE --CLI_PORT=101$padded --TOMP2P_PORT=103$padded --BDB_TYPE=$BDB_TYPE\
-         --BOOTSTRAP_ADDRESS=$BOOTSTRAP_ADDRESS --IS_SERVER=$IS_SERVER < ./resources/conf/Peer.xml.template > Peer.xml.$i
+         --BOOTSTRAP_ADDRESS=$BOOTSTRAP_ADDRESS --IS_SERVER=$IS_SERVER --NUM_TEST_PARTICIPANTS=$PEER_NUM\
+         < ./resources/conf/Peer.xml.template > Peer.xml.$i
 done
 

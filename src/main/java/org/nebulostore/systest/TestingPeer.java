@@ -36,6 +36,7 @@ public class TestingPeer extends Peer {
       ConductorServer testServer = null;
       try {
         testServer = (ConductorServer) Class.forName(className).newInstance();
+        testServer.initialize(config_);
         logger_.info("Starting " + className + " test.");
         if (runTest(testServer, className)) {
           logger_.info("Test " + className + " succeeded!");

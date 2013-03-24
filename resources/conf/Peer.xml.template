@@ -86,6 +86,9 @@
         <is-server>
             @IS_SERVER=false@
         </is-server>
+        <num-test-participants>
+            @NUM_TEST_PARTICIPANTS=3@
+        </num-test-participants>
         <!-- TestingPeer executes the following list of test cases. -->
         <testing-peer-class-list>
             @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer,org.nebulostore.conductor.readwrite.ReadWriteServer@

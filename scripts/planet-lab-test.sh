@@ -2,9 +2,10 @@
 
 # Automatic local N-peer test.
 # Please run from trunk level (./scripts/local-ping-ping-test.sh)
-# Optional parameters: TestServerClassName number_of_peers number_of_iterations
+# Optional parameters: peer_class_name test_server_class_name number_of_peers number_of_iterations
 # Prints "SUCCESS" or "FAILURE"
 
+PEERNAME="org.nebulostore.systest.TestingPeer"
 TESTNAME="org.nebulostore.systest.pingpong.PingPongServer"
 PEER_NUM=3
 TEST_ITER=3
@@ -19,10 +20,11 @@ LOG_DIR=logs
 SSH_OPTIONS="StrictHostKeyChecking=no"
 
 if [ $1 ]; then
-  TESTNAME=$1
-  PEER_NUM=$2
-  TEST_ITER=$3
-  HOST_LIST=$4
+  PEERNAME=$1
+  TESTNAME=$2
+  PEER_NUM=$3
+  TEST_ITER=$4
+  HOST_LIST=$5
 fi
 
 # Build and copy peers.
@@ -49,7 +51,7 @@ done
 
 # Generate and copy config files.
 echo "RUNNING ..."
-./scripts/generate-config-files.sh $TESTNAME $PEER_NUM $TEST_ITER $BOOTSTRAP_PEER
+./scripts/generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $TEST_ITER $BOOTSTRAP_PEER
 i=1
 for host in `cat $HOST_LIST`
 do

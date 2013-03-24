@@ -21,6 +21,7 @@ import org.nebulostore.crypto.CryptoUtils;
 
 /**
  * Lists client.
+ *
  * @author Bolek Kulbabinski
  */
 public final class ListsClient extends ConductorClient {

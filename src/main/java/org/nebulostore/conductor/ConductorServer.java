@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
@@ -31,11 +32,13 @@ import org.nebulostore.timer.MessageGenerator;
  */
 public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   private static Logger logger_ = Logger.getLogger(ConductorServer.class);
+  private static final String N_PEERS_CONFIG = "systest.num-test-participants";
 
   /**
    * Time(in secs) after which, if not successful, test is failed.
    */
   public final int timeout_;
+  public final int phaseTimeout_;
 
   /**
    * Current phase.
@@ -70,11 +73,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    * successfully.
    */
   protected final int lastPhase_;
-
-  /**
-   * Number of peers found to start handshake procedure.
-   */
-  protected final int peersFound_;
 
   /**
    * Number of peers needed to perform this test.
@@ -118,23 +116,43 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    */
   private final Timer internalCheckTimer_;
 
-  protected ConductorServer(int lastPhase, int peersNeeded, int timeout,
-      String clientsJobId, String testDescription) {
-    this(lastPhase, peersNeeded, peersNeeded, timeout, timeout, clientsJobId, testDescription);
+  protected ConductorServer(int lastPhase, int timeout, String clientsJobId,
+      String testDescription) {
+    this(lastPhase, 0, timeout, timeout, clientsJobId, testDescription);
   }
 
-  protected ConductorServer(int lastPhase, int peersFound, int peersNeeded,
-      int timeout, int phaseTimeout, String clientsJobId, String testDescription) {
+  protected ConductorServer(int lastPhase, int peersNeeded, int timeout,
+      String clientsJobId, String testDescription) {
+    this(lastPhase, peersNeeded, timeout, timeout, clientsJobId, testDescription);
+  }
+
+  protected ConductorServer(int lastPhase, int peersNeeded, int timeout, int phaseTimeout,
+      String clientsJobId, String testDescription) {
     clientsJobId_ = clientsJobId;
     lastPhase_ = lastPhase;
     timeout_ = timeout;
-    peersFound_ = peersFound;
+    phaseTimeout_ = phaseTimeout;
     peersNeeded_ = peersNeeded;
     testDescription_ = testDescription;
     visitor_ = new ServerTestingModuleVisitor();
     internalCheckTimer_ = new Timer();
+  }
+
+  public void initialize(XMLConfiguration config) {
+    schedulePhaseTimer();
+    if (peersNeeded_ == 0)
+      initializeFromConfig(config);
+  }
+
+  protected void schedulePhaseTimer() {
     internalCheckTimer_.schedule(new PhaseTimeoutTimer(),
-        3L * 1000L * phaseTimeout, 1000L * phaseTimeout);
+        3L * 1000L * phaseTimeout_, 1000L * phaseTimeout_);
+  }
+
+  protected void initializeFromConfig(XMLConfiguration config) {
+    peersNeeded_ = config.getInteger(N_PEERS_CONFIG, 0);
+    if (peersNeeded_ == 0)
+      throw new RuntimeException("Unable to initilize number of test participants from config!");
   }
 
   /**

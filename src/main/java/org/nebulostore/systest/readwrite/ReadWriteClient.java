@@ -20,6 +20,7 @@ import org.nebulostore.conductor.messages.NewPhaseMessage;
 
 /**
  * ReadWrite client.
+ *
  * @author Bolek Kulbabinski
  */
 public final class ReadWriteClient extends ConductorClient {

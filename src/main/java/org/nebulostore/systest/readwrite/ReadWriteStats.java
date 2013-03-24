@@ -7,7 +7,8 @@ import org.nebulostore.conductor.CaseStatistics;
 
 /**
  * Statistics for read-write test.
- * @author bolek
+ *
+ * @author Bolek Kulbabinski
  */
 public final class ReadWriteStats extends CaseStatistics {
   private static final long serialVersionUID = -2676033693308257318L;

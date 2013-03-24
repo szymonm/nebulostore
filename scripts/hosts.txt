@@ -3,7 +3,6 @@ planetlab2.ci.pwr.wroc.pl
 planetlab2.informatik.uni-wuerzburg.de
 planetlab1.unineuchatel.ch
 ple1.dmcs.p.lodz.pl
-planetlab3.cs.st-andrews.ac.uk
 ple2.tu.koszalin.pl
 plab2.ple.silweb.pl
 planetlab1.cesnet.cz
@@ -16,3 +15,4 @@ mars.planetlab.haw-hamburg.de
 merkur.planetlab.haw-hamburg.de
 host3-plb.loria.fr
 planetlab2.wiwi.hu-berlin.de
+planetlab3.cs.st-andrews.ac.uk
