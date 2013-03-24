@@ -18,7 +18,7 @@
     <communication>
         <!-- Sets CommAddress to comm-address iff not empty, otherwise
              CommAddress is a random UUID. comm-address can be an integer or an
-             UUID formatted string, where UUID syntax is defined as 
+             UUID formatted string, where UUID syntax is defined as
              (from java's doc):
                  UUID                   = 4*<hexOctet> "-" 2*hexOctet "-"
                                           2*<hexOctet> "-" 2*<hexOctet> "-"
@@ -83,6 +83,9 @@
         </cling-config>
     </communication>
     <systest>
+        <is-server>
+            @IS_SERVER=false@
+        </is-server>
         <!-- TestingPeer executes the following list of test cases. -->
         <testing-peer-class-list>
             @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer,org.nebulostore.conductor.readwrite.ReadWriteServer@
