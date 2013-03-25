@@ -63,7 +63,7 @@ do
 done
 
 # Kill remaining peers.
-kill `ps -a | grep Nebulostore | grep -v grep | awk '{ print $1 }'`
+kill `ps -ao pid,command | grep Nebulostore | grep -v grep | awk '{ print $1 }'`
 if [ $EXIT_CODE -eq 0 ]
 then
     echo "SUCCESS"
