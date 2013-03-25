@@ -9,7 +9,7 @@ PEERNAME="org.nebulostore.systest.TestingPeer"
 TESTNAME="org.nebulostore.systest.pingpong.PingPongServer"
 PEER_NUM=3
 TEST_ITER=3
-BOOTSTRAP_DELAY=2
+BOOTSTRAP_DELAY=3
 LOG_DIR=logs
 
 if [ $1 ]; then
@@ -24,31 +24,36 @@ echo "BUILDING ..."
 ./scripts/build-and-deploy.sh $PEER_NUM peer > /dev/null
 
 # Generate and copy config files.
-./scripts/generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $TEST_ITER localhost
+./scripts/generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $((PEER_NUM-1)) $TEST_ITER localhost
 for i in `seq 1 $PEER_NUM`
 do
     mv Peer.xml.$i ./build/jar/$i/resources/conf/Peer.xml
 done
 
-# Run peers.
+# Run server normally and clients in background.
 echo "RUNNING ..."
 cd build/jar
-for i in `seq 1 $(($PEER_NUM-1))`
-do
-    cd $i
-    java -jar Nebulostore.jar &
-    sleep $BOOTSTRAP_DELAY
-    cd ..
-done
 
-cd $PEER_NUM
+run_clients() {
+    sleep $BOOTSTRAP_DELAY
+    for i in `seq 2 $PEER_NUM`
+    do
+        cd $i
+        java -jar Nebulostore.jar &
+        cd ..
+    done
+}
+run_clients &
+
 EXIT_CODE=0
+cd 1
 java -jar Nebulostore.jar
 if [ $? -ne 0 ]; then
   EXIT_CODE=1
 fi
 cd ../../..
 
+# Copy logs.
 rm -rf $LOG_DIR
 mkdir $LOG_DIR
 echo "COPYING LOGS ..."
@@ -58,7 +63,7 @@ do
 done
 
 # Kill remaining peers.
-kill `jobs -p`
+kill `ps -a | grep Nebulostore | grep -v grep | awk '{ print $1 }'`
 if [ $EXIT_CODE -eq 0 ]
 then
     echo "SUCCESS"

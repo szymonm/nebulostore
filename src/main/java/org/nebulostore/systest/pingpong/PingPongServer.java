@@ -17,16 +17,17 @@ public final class PingPongServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(PingPongServer.class);
   private static final int NUM_PHASES = 2;
   private static final int NUM_CLIENTS = 2;
+  private static final int INITIAL_SLEEP = 2000;
   private static final int TIMEOUT_SEC = 60;
 
   public PingPongServer() {
     super(NUM_PHASES, NUM_CLIENTS, TIMEOUT_SEC, "PingPongClient_" + CryptoUtils.getRandomString(),
         "PingPong server");
-    useServerAsClient_ = false;
   }
 
   @Override
   public void initClients() {
+    sleep(INITIAL_SLEEP);
     Iterator<CommAddress> i = clients_.iterator();
     CommAddress pingAddress = i.next();
     logger_.debug("Initializing ping: " + pingAddress.toString());

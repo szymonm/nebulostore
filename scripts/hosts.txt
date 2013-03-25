@@ -8,7 +8,6 @@ plab2.ple.silweb.pl
 planetlab1.cesnet.cz
 planetlab02.mpi-sws.mpg.de
 planetlab1.informatik.uni-goettingen.de
-pl1.bell-labs.fr
 prata.mimuw.edu.pl
 planetlab-1.imperial.ac.uk
 mars.planetlab.haw-hamburg.de

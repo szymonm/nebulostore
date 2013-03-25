@@ -80,9 +80,9 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   protected int peersNeeded_;
 
   /**
-   * Is server used also as one of test clients.
+   * Is server used also as one of test clients (false by default).
    */
-  protected boolean useServerAsClient_ = true;
+  protected boolean useServerAsClient_;
 
   /**
    * Are statistics gathered at the end of test (false by default).
@@ -191,6 +191,14 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
   protected boolean isSuccessful() {
     return successful_;
+  }
+
+  protected void sleep(int millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e1) {
+      logger_.debug("Interrupted while sleeping.");
+    }
   }
 
   private boolean trySetClients() {

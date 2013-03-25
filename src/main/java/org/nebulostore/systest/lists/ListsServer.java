@@ -2,7 +2,6 @@ package org.nebulostore.systest.lists;
 
 import java.util.Iterator;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.CaseStatistics;
 import org.nebulostore.conductor.ConductorServer;
@@ -17,23 +16,17 @@ import org.nebulostore.crypto.CryptoUtils;
 public final class ListsServer extends ConductorServer {
   private static final int NUM_PHASES = 3;
   private static final int TIMEOUT_SEC = 200;
+  private static final int INITIAL_SLEEP = 5000;
 
   public ListsServer() {
     super(NUM_PHASES, TIMEOUT_SEC, "ListsClient_" + CryptoUtils.getRandomString(),
         "Lists server");
-  }
-
-  public void initialize(XMLConfiguration config) {
-    schedulePhaseTimer();
-    initializeFromConfig(config);
-    // Do not use server as one of test participants.
-    --peersNeeded_;
-    useServerAsClient_ = false;
     gatherStats_ = false;
   }
 
   @Override
   public void initClients() {
+    sleep(INITIAL_SLEEP);
     Iterator<CommAddress> it = clients_.iterator();
     CommAddress[] clients = new CommAddress[peersNeeded_];
     for (int i = 0; i < peersNeeded_; ++i)

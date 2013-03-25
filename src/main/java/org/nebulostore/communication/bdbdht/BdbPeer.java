@@ -272,12 +272,12 @@ public class BdbPeer extends Module {
       logger_.debug("Sleeping and waiting for holderCommAddress");
       //TODO-GM Why are we sleeping? Couldn't we add those messages to some kind
       //of queue?
+      inQueue_.add(msg);
       try {
         Thread.sleep(500);
       } catch (InterruptedException e) {
         logger_.debug(e);
       }
-      inQueue_.add(msg);
       return;
     }
 

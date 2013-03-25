@@ -2,7 +2,6 @@ package org.nebulostore.systest.readwrite;
 
 import java.util.Iterator;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.communication.address.CommAddress;
@@ -19,24 +18,18 @@ import org.nebulostore.crypto.CryptoUtils;
 public final class ReadWriteServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(ReadWriteServer.class);
   private static final int NUM_PHASES = 3;
+  private static final int INITIAL_SLEEP = 5000;
   private static final int TIMEOUT_SEC = 200;
 
   public ReadWriteServer() {
     super(NUM_PHASES, TIMEOUT_SEC, "ReadWriteClient_" + CryptoUtils.getRandomString(),
         "ReadWrite server");
-  }
-
-  public void initialize(XMLConfiguration config) {
-    schedulePhaseTimer();
-    initializeFromConfig(config);
-    // Do not use server as one of test participants.
-    --peersNeeded_;
-    useServerAsClient_ = false;
     gatherStats_ = true;
   }
 
   @Override
   public void initClients() {
+    sleep(INITIAL_SLEEP);
     Iterator<CommAddress> it = clients_.iterator();
     CommAddress[] clients = new CommAddress[peersNeeded_];
     for (int i = 0; i < peersNeeded_; ++i)
