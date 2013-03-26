@@ -8,7 +8,6 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
@@ -41,11 +40,11 @@ public final class GetAsynchronousMessagesModuleTest {
     BlockingQueue<Message> outQueue = new LinkedBlockingQueue<Message>();
 
     // TODO(szymonmatejczyk): This seems to be broken now.
-    //BrokerContext.getInstance().setInstanceID(new InstanceID(CommAddress.getZero()));
-    InstanceID synchroPeerId = new InstanceID(CommAddress.getZero());
-    GetAsynchronousMessagesModule module = new GetAsynchronousMessagesModule(outQueue, networkQueue,
-        outQueue, BrokerContext.getInstance(), synchroPeerId);
+    CommAddress synchroPeerAddress = CommAddress.getZero();
+    GetAsynchronousMessagesModule module = new GetAsynchronousMessagesModule(networkQueue,
+        outQueue, BrokerContext.getInstance(), synchroPeerAddress);
     module.setInQueue(inQueue);
+    module.setOutQueue(outQueue);
 
     new Thread(module).start();
 
@@ -73,7 +72,7 @@ public final class GetAsynchronousMessagesModuleTest {
     assertTrue(msg instanceof GetAsynchronousMessagesMessage);
     GetAsynchronousMessagesMessage gam = (GetAsynchronousMessagesMessage) msg;
     assertEquals(gam.getId(), jobId);
-    assertTrue(gam.getDestinationAddress() == synchroPeerId.getAddress());
+    assertTrue(gam.getDestinationAddress() == synchroPeerAddress);
     //assertTrue(gam.getRecipient() == BrokerContext.getInstance().instanceID_);
 
     LinkedList<AsynchronousMessage> list = new LinkedList<AsynchronousMessage>();

@@ -21,24 +21,24 @@ public class InstanceMetadata implements Serializable, Mergeable {
 
   CommAddress currentAddress_;
   /* Communication addresses of peers that store messages for @instance.*/
-  LinkedList<InstanceID> inboxHolders_;
+  LinkedList<CommAddress> inboxHolders_;
 
   private final ConcurrentLinkedQueue<PeerConnectionSurvey> statistics_ =
       new ConcurrentLinkedQueue<PeerConnectionSurvey>();
 
-  public InstanceMetadata(AppKey owner, LinkedList<InstanceID> inboxHolders) {
+  public InstanceMetadata(AppKey owner, LinkedList<CommAddress> inboxHolders) {
     owner_ = owner;
     inboxHolders_  = inboxHolders;
   }
 
   public InstanceMetadata(AppKey owner, CommAddress currentAddress,
-      LinkedList<InstanceID> inboxHolders) {
+      LinkedList<CommAddress> inboxHolders) {
     owner_ = owner;
     currentAddress_ = currentAddress;
     inboxHolders_ = inboxHolders;
   }
 
-  public LinkedList<InstanceID> getInboxHolders() {
+  public LinkedList<CommAddress> getInboxHolders() {
     return inboxHolders_;
   }
 

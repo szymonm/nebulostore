@@ -17,7 +17,7 @@ import org.nebulostore.broker.BrokerContext;
 public class ResponseWithAsynchronousMessagesModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(ResponseWithAsynchronousMessagesModule.class);
 
-  private BrokerContext context_;
+  private final BrokerContext context_;
 
   public ResponseWithAsynchronousMessagesModule(BrokerContext context) {
     super();
@@ -30,14 +30,16 @@ public class ResponseWithAsynchronousMessagesModule extends JobModule {
   }
 
   /* Message handling for broker */
-  private Visitor visitor_ = new Visitor();
+  private final Visitor visitor_ = new Visitor();
 
   /**
    * Visitor.
    * @author szymonmatejczyk
    */
   private class Visitor extends MessageVisitor<Void> {
+    @Override
     public Void visit(GetAsynchronousMessagesMessage message) {
+      jobId_ = message.getId();
       // TODO(szm): prevent message flooding
       AsynchronousMessagesMessage reply = new AsynchronousMessagesMessage(message.getId(),
           message.getDestinationAddress(), message.getSourceAddress(),
@@ -49,6 +51,7 @@ public class ResponseWithAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
+    @Override
     public Void visit(GotAsynchronousMessagesMessage message) {
       // We assume that if Peer asks for AM to him, there won't be new messages
       // for him.
@@ -56,7 +59,6 @@ public class ResponseWithAsynchronousMessagesModule extends JobModule {
         logger_.debug(message.getRecipient().toString() +
             " successfully downloaded " + "asynchronous messages.");
       } else {
-        // TODO(szm): shouldn't be an error?
         logger_.warn("Got ACK, that shouldn't be sent.");
       }
       endJobModule();

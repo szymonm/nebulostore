@@ -1,6 +1,5 @@
 package org.nebulostore.async.messages;
 
-import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -14,11 +13,11 @@ import org.nebulostore.communication.messages.CommMessage;
  */
 public class StoreAsynchronousMessage extends CommMessage {
   private static final long serialVersionUID = -491541878523453225L;
-  InstanceID recipient_;
+  CommAddress recipient_;
   AsynchronousMessage message_;
 
   public StoreAsynchronousMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress, InstanceID recipient,
+      CommAddress destAddress, CommAddress recipient,
       AsynchronousMessage message) {
     super(jobId, sourceAddress, destAddress);
     recipient_ = recipient;
@@ -29,10 +28,11 @@ public class StoreAsynchronousMessage extends CommMessage {
     return message_;
   }
 
-  public InstanceID getRecipient() {
+  public CommAddress getRecipient() {
     return recipient_;
   }
 
+  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }

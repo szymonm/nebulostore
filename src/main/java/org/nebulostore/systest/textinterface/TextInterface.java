@@ -65,6 +65,7 @@ public final class TextInterface extends Peer {
     System.out.print("Starting NebuloStore ...\n");
     startPeer();
     putKey();
+    runInitialModules(dispatcherInQueue_);
     try {
       inputLoop();
     } catch (IOException e) {

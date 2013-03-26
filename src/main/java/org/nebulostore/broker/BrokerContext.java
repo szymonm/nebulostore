@@ -9,25 +9,32 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
  * All persistent data held by Broker.
+ *
  * @author szymonmatejczyk
  */
 public final class BrokerContext {
   private static Logger logger_ = Logger.getLogger(BrokerContext.class);
   private static BrokerContext instance_;
 
-  //TODO(szm,bolek): make fields private and create synchronized methods for accessing them.
+  // TODO(szm,bolek): make fields private and create synchronized methods for accessing them.
 
-  private final HashSet<Contract> contracts_ = new HashSet<Contract>();
-  private final Map<InstanceID, Vector<Contract>> contractMap_ =
-      new TreeMap<InstanceID, Vector<Contract>>();
+  private final ContractsSet contracts_ = new ContractsSet();
+  private final Map<CommAddress, Vector<Contract>> contractMap_ =
+      new TreeMap<CommAddress, Vector<Contract>>();
+
+  private final ReadWriteLock readWriteLock_ = new ReentrantReadWriteLock();
+  private final Lock readLock_ = readWriteLock_.readLock();
+  private final Lock writeLock_ = readWriteLock_.writeLock();
 
   /**
    * Available space for contract.
@@ -37,30 +44,30 @@ public final class BrokerContext {
   /**
    * Contract offers send to peers, waiting for response.
    */
-  public HashMap<InstanceID, Contract> contractOffers_ = new HashMap<InstanceID, Contract>();
+  public HashMap<CommAddress, Contract> contractOffers_ = new HashMap<CommAddress, Contract>();
 
   /**
    * Peers already discovered by this instance.
    */
-  public HashSet<InstanceID> knownPeers_ = new HashSet<InstanceID>();
+  public HashSet<CommAddress> knownPeers_ = new HashSet<CommAddress>();
 
   /* Asynchronous messages */
 
   /**
    * Messages waiting to be retrieved by peers.
    */
-  public Map<InstanceID, LinkedList<AsynchronousMessage> > waitingAsynchronousMessagesMap_ =
-      new HashMap<InstanceID, LinkedList<AsynchronousMessage> >();
+  public Map<CommAddress, LinkedList<AsynchronousMessage>> waitingAsynchronousMessagesMap_ =
+      new HashMap<CommAddress, LinkedList<AsynchronousMessage>>();
 
   /**
    * InstanceId's of peers, that retrieved AM, but haven't sent response yet.
    */
-  public Set<InstanceID> waitingForAck_ = new HashSet<InstanceID>();
+  public Set<CommAddress> waitingForAck_ = new HashSet<CommAddress>();
 
   /**
    * Synchro-peers of this instance. Cached from DHT.
    */
-  public List<InstanceID> myInboxHolders_ = new LinkedList<InstanceID>();
+  public List<CommAddress> myInboxHolders_ = new LinkedList<CommAddress>();
 
   /**
    * JobId of jobs we are waiting for response from.
@@ -68,44 +75,80 @@ public final class BrokerContext {
   public Set<String> waitingForMessages_ = new HashSet<String>();
 
   public static BrokerContext getInstance() {
-    if (instance_ == null)
+    if (instance_ == null) {
       instance_ = new BrokerContext();
+    }
     return instance_;
   }
 
   public void addContract(Contract contract) {
-    // TODO(bolek,szm): better way to synchronize?
-    synchronized (contracts_) {
-      synchronized (contractMap_) {
-        logger_.debug("Adding contract with: " + contract.getPeer().getAddress().toString());
-        contracts_.add(contract);
-        if (contractMap_.containsKey(contract.getPeer())) {
-          contractMap_.get(contract.getPeer()).add(contract);
-        } else {
-          Vector<Contract> vector = new Vector<Contract>();
-          vector.add(contract);
-          contractMap_.put(contract.getPeer(), vector);
-        }
+    writeLock_.lock();
+    try {
+      logger_.debug("Adding contract with: " + contract.getPeer().toString());
+      contracts_.add(contract);
+      if (contractMap_.containsKey(contract.getPeer())) {
+        contractMap_.get(contract.getPeer()).add(contract);
+      } else {
+        Vector<Contract> vector = new Vector<Contract>();
+        vector.add(contract);
+        contractMap_.put(contract.getPeer(), vector);
       }
+    } finally {
+      writeLock_.unlock();
     }
   }
 
-  public Vector<Contract> getUserContracts(InstanceID id) {
-    return contractMap_.get(id);
+  public void remove(Contract contract) {
+    writeLock_.lock();
+    try {
+      logger_.debug("Removing contract with: " + contract.getPeer().toString());
+      contracts_.remove(contract);
+      if (contractMap_.containsKey(contract.getPeer())) {
+        contractMap_.get(contract.getPeer()).remove(contract);
+      } else {
+        logger_.warn("Removing not existing contract with: " +
+            contract.getPeer().toString());
+      }
+    } finally {
+      writeLock_.unlock();
+    }
+  }
+
+  public ContractsSet acquireReadAccessToContracts() {
+    readLock_.lock();
+    return contracts_;
+  }
+
+  public void disposeReadAccessToContracts() {
+    readLock_.unlock();
+  }
+
+  public Vector<Contract> getUserContracts(CommAddress id) {
+    readLock_.lock();
+    try {
+      return contractMap_.get(id);
+    } finally {
+      readLock_.unlock();
+    }
   }
 
   public CommAddress[] getReplicas() {
-    synchronized (contracts_) {
+    readLock_.lock();
+    try {
       CommAddress[] addresses = new CommAddress[contracts_.size()];
       Iterator<Contract> iter = contracts_.iterator();
       int i = 0;
       while (iter.hasNext()) {
-        addresses[i] = iter.next().getPeer().getAddress();
+        addresses[i] = iter.next().getPeer();
         i++;
       }
       return addresses;
+    } finally {
+      readLock_.unlock();
     }
   }
 
-  private BrokerContext() { }
+
+  private BrokerContext() {
+  }
 }

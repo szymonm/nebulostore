@@ -3,7 +3,6 @@ package org.nebulostore.async;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.InstanceMetadata;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
@@ -50,6 +49,7 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
   public class SendAsynchronousMessagesForPeerModuleVisitor extends MessageVisitor<Void> {
     @Override
     public Void visit(JobInitMessage message) {
+      jobId_ = message.getId();
       GetDHTMessage m = new GetDHTMessage(jobId_, recipient_.toKeyDHT());
       networkQueue_.add(m);
       return null;
@@ -60,9 +60,9 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
       if (message.getKey().equals(recipient_.toKeyDHT())) {
         if (message.getValue().getValue() instanceof InstanceMetadata) {
           InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
-          for (InstanceID inboxHolder : metadata.getInboxHolders()) {
-            networkQueue_.add(new StoreAsynchronousMessage(jobId_, null, inboxHolder.getAddress(),
-                new InstanceID(recipient_), message_));
+          for (CommAddress inboxHolder : metadata.getInboxHolders()) {
+            networkQueue_.add(new StoreAsynchronousMessage(jobId_, null, inboxHolder,
+                recipient_, message_));
           }
         }
       }

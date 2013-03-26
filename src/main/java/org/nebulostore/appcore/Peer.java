@@ -22,6 +22,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.ObjectDeleter;
 import org.nebulostore.appcore.model.ObjectGetter;
 import org.nebulostore.appcore.model.ObjectWriter;
+import org.nebulostore.async.AddSynchroPeerModule;
+import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
@@ -29,9 +31,12 @@ import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.replicator.Replicator;
 import org.nebulostore.subscription.api.SimpleSubscriptionNotificationHandler;
 import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
+import org.nebulostore.timer.MessageGenerator;
+import org.nebulostore.timer.PeriodicMessageSender;
 
 /**
  * This is a regular peer with full functionality. It creates, connects and runs all modules.
@@ -107,6 +112,7 @@ public class Peer implements Runnable {
   protected void runPeer() {
     startPeer();
     putKey();
+    runInitialModules(dispatcherInQueue_);
     finishPeer();
   }
 
@@ -156,19 +162,20 @@ public class Peer implements Runnable {
     // Run everything.
     networkThread_.start();
     dispatcherThread_.start();
-    runInitialModules(dispatcherInQueue_);
   }
 
   protected void runInitialModules(BlockingQueue<Message> dispatcherQueue) {
+    // TODO(szm): better module loading
+
     // Periodically checking asynchronous messages.
-    /*IMessageGenerator retriveAMGenerator = new IMessageGenerator() {
+    MessageGenerator retrieveAMGenerator = new MessageGenerator() {
       @Override
       public Message generate() {
         return new JobInitMessage(new RetrieveAsynchronousMessagesModule());
       }
     };
     PeriodicMessageSender sender = new PeriodicMessageSender(
-        retriveAMGenerator, RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL,
+        retrieveAMGenerator, RetrieveAsynchronousMessagesModule.INTERVAL,
         dispatcherQueue);
     dispatcherQueue.add(new JobInitMessage(sender));
 
@@ -179,11 +186,12 @@ public class Peer implements Runnable {
         return new JobInitMessage(new AddSynchroPeerModule());
       }
     };
+
     // TODO(bolek,szm): Temporarily disabled due to errors.
-    //NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
+    NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
 
     // Turning on statistics gossiping module.
-    IMessageGenerator gossipingModuleGenerator = new IMessageGenerator() {
+    /*IMessageGenerator gossipingModuleGenerator = new IMessageGenerator() {
       @Override
       public Message generate() {
         return new JobInitMessage(new RandomPeersGossipingModule());
@@ -192,7 +200,8 @@ public class Peer implements Runnable {
     PeriodicMessageSender gossiping = new PeriodicMessageSender(
         gossipingModuleGenerator, RandomPeersGossipingModule.INTERVAL,
         dispatcherQueue);
-    dispatcherQueue.add(new JobInitMessage(gossiping));*/
+    dispatcherQueue.add(new JobInitMessage(gossiping));
+    */
   }
 
   protected void finishPeer() {

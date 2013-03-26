@@ -108,6 +108,14 @@
       <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
     </layout>
   </appender>
+  
+  <appender name="FA-async" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/async.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %p - %m - (%c)%n" />
+    </layout>
+  </appender>
 
   <logger name="org.nebulostore.communication.bdbdht">
     <level value="DEBUG"/>
@@ -161,7 +169,7 @@
 
   <logger name="org.nebulostore.async">
     <level value="DEBUG" />
-    <appender-ref ref="FA-testing" />
+    <appender-ref ref="FA-async" />
     <appender-ref ref="FA" />
   </logger>
 

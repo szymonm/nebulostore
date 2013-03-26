@@ -3,8 +3,6 @@ package org.nebulostore.async;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.GlobalContext;
-import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
@@ -13,6 +11,8 @@ import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
 import org.nebulostore.broker.BrokerContext;
+import org.nebulostore.communication.CommunicationPeer;
+import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
 /**
@@ -30,21 +30,18 @@ public class GetAsynchronousMessagesModule extends JobModule {
   /**
    * Peer, from that this module downloades messages.
    */
-  private final InstanceID synchroPeer_;
+  private final CommAddress synchroPeer_;
 
   /** This peer instance ID. */
-  private final InstanceID instanceID_;
+  private final CommAddress myAddress_;
 
-  public GetAsynchronousMessagesModule(BlockingQueue<Message> outQueue,
-      BlockingQueue<Message> networkQueue, BlockingQueue<Message> resultQueue,
-      BrokerContext context, InstanceID synchroPeer) {
+  public GetAsynchronousMessagesModule(BlockingQueue<Message> networkQueue,
+      BlockingQueue<Message> resultQueue, BrokerContext context, CommAddress synchroPeer) {
     super();
-    setOutQueue(outQueue);
     setNetworkQueue(networkQueue);
     resultQueue_ = resultQueue;
     synchroPeer_ = synchroPeer;
-    instanceID_ = GlobalContext.getInstance().getInstanceID();
-    runThroughDispatcher(outQueue_);
+    myAddress_ = CommunicationPeer.getPeerAddress();
   }
 
   private final GetAsynchronousMessagesVisitor visitor_ = new GetAsynchronousMessagesVisitor();
@@ -69,8 +66,9 @@ public class GetAsynchronousMessagesModule extends JobModule {
 
     @Override
     public Void visit(JobInitMessage message) {
+      jobId_ = message.getId();
       GetAsynchronousMessagesMessage m = new GetAsynchronousMessagesMessage(message.getId(),
-          null, synchroPeer_.getAddress(), instanceID_);
+          null, synchroPeer_, myAddress_);
       networkQueue_.add(m);
       state_ = STATE.WAITING_FOR_MESSAGES;
       return null;

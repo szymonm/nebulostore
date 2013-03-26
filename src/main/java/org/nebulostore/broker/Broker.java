@@ -4,10 +4,11 @@ import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.ReplicationGroup;
 import org.nebulostore.api.PutKeyModule;
-import org.nebulostore.appcore.InstanceID;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
@@ -34,6 +35,13 @@ public class Broker extends JobModule {
   private static final int TIMEOUT_SEC = 10;
   private static final int MAX_CONTRACTS = 3;
   private final BrokerVisitor visitor_;
+
+  CommAddress myAddress_;
+
+  @Inject
+  private void setCommAddress(CommAddress myAddress) {
+    myAddress_ = myAddress;
+  }
 
   public Broker(String jobId, boolean permanentInstance) {
     super(jobId);
@@ -102,12 +110,12 @@ public class Broker extends JobModule {
         Iterator<CommAddress> iterator = knownPeers.iterator();
         while (iterator.hasNext()) {
           CommAddress address = iterator.next();
-          if (BrokerContext.getInstance().getUserContracts(new InstanceID(address)) == null &&
+          if (BrokerContext.getInstance().getUserContracts(address) == null &&
               !address.equals(CommunicationPeer.getPeerAddress())) {
             // Send offer to new peer (10MB by default).
             logger_.debug("Sending offer to " + address);
             networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), null, address,
-                new Contract("contract", new InstanceID(address), 10 * 1024)));
+                new Contract("contract", myAddress_, address, 10 * 1024)));
             break;
           }
         }
