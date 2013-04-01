@@ -100,6 +100,7 @@ public class Dispatcher extends Module {
             handler.setInQueue(newInQueue);
             injector_.injectMembers(handler);
             if (handler.isQuickNonBlockingTask()) {
+              logger_.debug("Executing in current thread.");
               handler.run();
             } else {
               Thread newThread = new Thread(handler, handler.getClass().getSimpleName() + ":" +
@@ -114,7 +115,7 @@ public class Dispatcher extends Module {
             logger_.debug("Message does not contain a handler.");
           }
         } else {
-          logger_.debug("Delegate message to an existing worker thread.");
+          logger_.debug("Delegating message to an existing worker thread.");
           workersQueues_.get(jobId).add(message);
         }
         return null;

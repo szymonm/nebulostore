@@ -1,5 +1,8 @@
 package org.nebulostore.broker;
 
+import com.google.inject.Inject;
+
+import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -9,6 +12,8 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * @author Bolek Kulbabinski
  */
 public class BrokerMessageForwarder extends JobModule {
+  private static Logger logger_ = Logger.getLogger(BrokerMessageForwarder.class);
+
   private Broker broker_;
   private Message message_;
 
@@ -16,6 +21,7 @@ public class BrokerMessageForwarder extends JobModule {
     message_ = message;
   }
 
+  @Inject
   public void setBroker(Broker broker) {
     broker_ = broker;
   }
@@ -27,6 +33,7 @@ public class BrokerMessageForwarder extends JobModule {
 
   @Override
   protected void initModule() {
+    logger_.debug("Forwarding message " + message_.getClass().getName() + " to Broker.");
     broker_.getInQueue().add(message_);
     endJobModule();
   }

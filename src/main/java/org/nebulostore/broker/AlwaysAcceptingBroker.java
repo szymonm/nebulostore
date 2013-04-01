@@ -2,6 +2,8 @@ package org.nebulostore.broker;
 
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -29,6 +31,7 @@ public class AlwaysAcceptingBroker extends Broker {
   private static final int TIMEOUT_SEC = 10;
   private static final int MAX_CONTRACTS = 3;
   private final BrokerVisitor visitor_ = new BrokerVisitor();
+  private Set<CommAddress> offerRecipients_ = new TreeSet<CommAddress>();
 
   /**
    * Visitor.
@@ -44,10 +47,11 @@ public class AlwaysAcceptingBroker extends Broker {
     public Void visit(ContractOfferMessage message) {
       // Accept every offer!
       logger_.debug("Accepting offer from: " + message.getSourceAddress());
+      //TODO(bolek): Do we want it here?
       NetworkContext.getInstance().addFoundPeer(message.getSourceAddress());
+      //TODO(bolek): Should we accept same offer twice?
       networkQueue_.add(new OfferReplyMessage(message.getId(), message.getDestinationAddress(),
           message.getSourceAddress(), message.getContract(), true));
-      endJobModule();
       return null;
     }
 
@@ -70,7 +74,6 @@ public class AlwaysAcceptingBroker extends Broker {
       } else {
         logger_.debug("Peer " + message.getSourceAddress() + " rejected our offer.");
       }
-      endJobModule();
       return null;
     }
 
@@ -83,11 +86,13 @@ public class AlwaysAcceptingBroker extends Broker {
         while (iterator.hasNext()) {
           CommAddress address = iterator.next();
           if (BrokerContext.getInstance().getUserContracts(address) == null &&
-              !address.equals(CommunicationPeer.getPeerAddress())) {
+              !address.equals(CommunicationPeer.getPeerAddress()) &&
+              !offerRecipients_.contains(address)) {
             // Send offer to new peer (10MB by default).
             logger_.debug("Sending offer to " + address);
             networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), null, address,
                 new Contract("contract", myAddress_, address, 10 * 1024)));
+            offerRecipients_.add(address);
             break;
           }
         }

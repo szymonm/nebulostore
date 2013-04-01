@@ -13,6 +13,7 @@ public class JobInitMessage extends Message {
   private final transient JobModule jobModule_;
 
   public JobInitMessage(JobModule jobModule) {
+    super(jobModule.getJobId());
     jobModule_ = jobModule;
   }
 

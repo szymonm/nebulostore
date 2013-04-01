@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.messages.JobEndedMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
@@ -22,7 +23,7 @@ public abstract class JobModule extends Module {
   private boolean isStarted_;
 
   public JobModule() {
-    jobId_ = null;
+    jobId_ = CryptoUtils.getRandomString();
   }
 
   public JobModule(String jobId) {

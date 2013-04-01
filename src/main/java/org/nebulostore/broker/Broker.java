@@ -21,6 +21,11 @@ public abstract class Broker extends JobModule {
     myAddress_ = myAddress;
   }
 
+  @Override
+  protected void initModule() {
+    subscribeForCommPeerFoundEvents();
+  }
+
   protected void subscribeForCommPeerFoundEvents() {
     NetworkContext.getInstance().addContextChangeMessageGenerator(new MessageGenerator() {
       @Override
