@@ -98,17 +98,18 @@ public class Dispatcher extends Module {
             JobModule handler = message.getHandler();
             BlockingQueue<Message> newInQueue = new LinkedBlockingQueue<Message>();
             handler.setInQueue(newInQueue);
-            handler.setOutQueue(inQueue_);
             injector_.injectMembers(handler);
-            // Network queue is dispatcher's out queue.
-            handler.setNetworkQueue(outQueue_);
-            workersQueues_.put(jobId, newInQueue);
-            Thread newThread = new Thread(handler, handler.getClass().getSimpleName() + ":" +
-                jobId);
-            workersThreads_.put(jobId, newThread);
-            logger_.debug("Starting new thread.");
-            newThread.start();
-            newInQueue.add(message);
+            if (handler.isQuickNonBlockingTask()) {
+              handler.run();
+            } else {
+              Thread newThread = new Thread(handler, handler.getClass().getSimpleName() + ":" +
+                  jobId);
+              workersQueues_.put(jobId, newInQueue);
+              workersThreads_.put(jobId, newThread);
+              logger_.debug("Starting new thread.");
+              newThread.start();
+              newInQueue.add(message);
+            }
           } catch (NebuloException exception) {
             logger_.debug("Message does not contain a handler.");
           }

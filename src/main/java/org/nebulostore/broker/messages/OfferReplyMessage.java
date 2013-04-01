@@ -3,7 +3,7 @@ package org.nebulostore.broker.messages;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.broker.Broker;
+import org.nebulostore.broker.BrokerMessageForwarder;
 import org.nebulostore.broker.Contract;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
@@ -34,7 +34,7 @@ public class OfferReplyMessage extends CommMessage {
 
   @Override
   public JobModule getHandler() throws NebuloException {
-    return new Broker(jobId_, false);
+    return new BrokerMessageForwarder(this);
   }
 
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {

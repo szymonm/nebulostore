@@ -19,7 +19,7 @@ public abstract class JobModule extends Module {
 
   protected BlockingQueue<Message> networkQueue_;
   protected String jobId_;
-  protected boolean isStarted_;
+  private boolean isStarted_;
 
   public JobModule() {
     jobId_ = null;
@@ -42,7 +42,7 @@ public abstract class JobModule extends Module {
   /**
    * Run this module through a JobInitMessage (with new random ID) sent to Dispatcher.
    */
-  public void runThroughDispatcher() {
+  public synchronized void runThroughDispatcher() {
     if (isStarted_) {
       logger_.error("Module already ran.");
       return;
@@ -53,9 +53,23 @@ public abstract class JobModule extends Module {
   }
 
   // TODO(bolek): Remove it!
+  @Deprecated
   public void runThroughDispatcher(BlockingQueue<Message> queue) {
     setDispatcherQueue(queue);
     runThroughDispatcher();
+  }
+
+  /**
+   * Returning true will result in running this JobModule in Dispatcher's thread (without creating
+   * new one). Use with care as it may easily slow down or block Dispatcher and the whole system.
+   * When this is set to true, module should perform a fast operation and exit immediately.
+   */
+  public boolean isQuickNonBlockingTask() {
+    return false;
+  }
+
+  public String getJobId() {
+    return jobId_;
   }
 
   /**
@@ -66,10 +80,7 @@ public abstract class JobModule extends Module {
     endModule();
 
     // Inform dispatcher that we are going to die.
-    outQueue_.add(new JobEndedMessage(jobId_));
-  }
-
-  public String getJobId() {
-    return jobId_;
+    if (!isQuickNonBlockingTask())
+      outQueue_.add(new JobEndedMessage(jobId_));
   }
 }
