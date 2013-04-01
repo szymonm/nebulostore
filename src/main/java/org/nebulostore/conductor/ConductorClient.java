@@ -79,10 +79,8 @@ public abstract class ConductorClient extends JobModule implements Serializable 
    * the test has ended for that peer).
    */
   private TestingModuleVisitor getVisitor() {
-    if (visitors_ == null) {
+    if (visitors_ == null)
       initVisitors();
-    }
-    logger_.debug("get Visitor in phase: " + phase_);
     if (visitors_ != null && phase_ < visitors_.length)
       return visitors_[phase_];
     else
@@ -101,7 +99,6 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
   @Override
   protected void processMessage(Message message) throws NebuloException {
-    logger_.debug("processMessage on: " + message.toString());
     TestingModuleVisitor visitor = getVisitor();
     if (visitor != null)
       message.accept(visitor);

@@ -1,19 +1,13 @@
 Please run all scripts from trunk level (./scripts/script-name.sh).
 
 Tests available:
-    1. Ping-pong test, 3 peers (2 clients + server)
-        ./scripts/local-ping-pong-test.sh
-        ./scripts/planet-lab-ping-pong-test.sh
+    1. Local tests:
+        ./scripts/run-local-test.sh
 
-    2. Read-write-delete test, 6 peers (5 clients + server)
-        ./scripts/local-read-write-test.sh
-        ./scripts/planet-lab-read-write-test.sh
+    2. Planet-lab tests (ssh key required):
+        ./scripts/run-planet-lab-test.sh
 
-    3. List read-write-delete test, 6 peers (5 clients + server)
-        ./scripts/local-lists-test.sh
-        ./scripts/planet-lab-lists-test.sh
-
-    4. Interactive terminal
+    3. Interactive terminal
         ./scripts/console-test.sh
 
 

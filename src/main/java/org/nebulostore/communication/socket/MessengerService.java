@@ -316,6 +316,7 @@ public class MessengerService extends Module {
 
     @Override
     public void run() {
+      logger_.debug("Executing MessageSender for " + commMsg_.getDestinationAddress());
       ObjectOutputStream oos = null;
       try {
         oos = oosDispatcher_.get(commMsg_.getDestinationAddress());

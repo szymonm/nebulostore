@@ -27,7 +27,7 @@ import org.nebulostore.crypto.CryptoUtils;
 public final class ListsClient extends ConductorClient {
   private static final long serialVersionUID = -7238750658102427676L;
   private static Logger logger_ = Logger.getLogger(ListsClient.class);
-  private static final int MAX_ITER = 10;
+  private static final int MAX_ITER = 2;
   private static final int INITIAL_SLEEP = 5000;
   private static final int ITER_SLEEP = 500;
   private static final int N_CASES = 3;
@@ -53,6 +53,7 @@ public final class ListsClient extends ConductorClient {
   @Override
   protected void initVisitors() {
     visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
+    sleep(INITIAL_SLEEP);
     visitors_[0] = new EmptyInitializationVisitor();
     myList_ = createList();
     visitors_[1] = new AddressExchangeVisitor(clients_, addresses_, clientId_, myList_.getAddress(),

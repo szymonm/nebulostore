@@ -51,6 +51,6 @@ do
     ./resources/conf/generate_config.py $COMMON_ARGS --APP_KEY=$i$i --CLASS_NAME=$PEERNAME --TEST_LIST=$CONCAT\
          --BOOTSTRAP_MODE=$BOOTSTRAP_MODE --CLI_PORT=101$PADDED --TOMP2P_PORT=103$PADDED --BDB_TYPE=$BDB_TYPE\
          --BOOTSTRAP_ADDRESS=$BOOTSTRAP_ADDRESS --IS_SERVER=$IS_SERVER --NUM_TEST_PARTICIPANTS=$TEST_CLIENTS_NUM\
-         < ./resources/conf/Peer.xml.template > Peer.xml.$i
+         --COMM_ADDRESS=00000000-0000-0000-00$PADDED-000000000000 < ./resources/conf/Peer.xml.template > Peer.xml.$i
 done
 

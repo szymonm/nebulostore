@@ -273,7 +273,8 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
     @Override
     public Void visit(NetworkContextChangedMessage message) {
-      logger_.debug("Received NetworkContextChangedMessage.");
+      logger_.debug("Received NetworkContextChangedMessage (we know " +
+          NetworkContext.getInstance().getKnownPeers().size() + " peers).");
       if (testingState_ == TestingState.CollectingPeers && trySetClients()) {
         testingState_ = TestingState.Initializing;
         initClients();
@@ -283,13 +284,11 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
     @Override
     public Void visit(TocMessage message) {
-      logger_.debug("Received TocMessage.");
       if (!clients_.contains(message.getSourceAddress()) || message.getPhase() != phase_) {
         return null;
       }
 
-      logger_.debug("TocMessage received. Tocs: " + tocs_ + "(from: " +
-          message.getSourceAddress() + ")");
+      logger_.debug("TocMessage received from: " + message.getSourceAddress() + ". Tocs: " + tocs_);
 
       if (tocsAddresses_.contains(message.getSourceAddress())) {
         logger_.debug("Already received toc from this address");

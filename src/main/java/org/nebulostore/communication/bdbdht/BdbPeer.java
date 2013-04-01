@@ -2,8 +2,10 @@ package org.nebulostore.communication.bdbdht;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 
 import com.google.inject.Inject;
@@ -112,7 +114,7 @@ public class BdbPeer extends Module {
       database_ = env_.openDatabase(null, storeName_, dbConfig);
 
       advertisementsTimer_ = new Timer(true);
-      advertisementsTimer_.schedule(new SendAdvertisement(), 4000, 2000);
+      advertisementsTimer_.schedule(new SendAdvertisement(), 500, 500);
 
       if (reconfigureRequest_ != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
@@ -131,11 +133,15 @@ public class BdbPeer extends Module {
    * Module that sends holder advertisements.
    */
   public class SendAdvertisement extends TimerTask {
+    private Set<CommAddress> done_ = new TreeSet<CommAddress>();
     @Override
     public void run() {
-      logger_.info("Sending holder advertisements to remote hosts...");
       for (CommAddress address : NetworkContext.getInstance().getKnownPeers()) {
-        senderInQueue_.add(new HolderAdvertisementMessage(address));
+        if (!done_.contains(address)) {
+          logger_.info("Sending holder advertisement to " + address);
+          senderInQueue_.add(new HolderAdvertisementMessage(address));
+          done_.add(address);
+        }
       }
     }
   }

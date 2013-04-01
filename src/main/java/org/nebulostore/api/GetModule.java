@@ -58,7 +58,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
     @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
-      logger_.debug("Retrieving file...");
+      logger_.debug("Retrieving file " + address_);
       if (state_ == STATE.INIT) {
         // State 1 - Send groupId to DHT and wait for reply.
         state_ = STATE.DHT_QUERY;
