@@ -7,6 +7,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.LogManager;
 
+import com.google.inject.Inject;
+
 import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
@@ -19,7 +21,7 @@ import org.nebulostore.communication.bdbdht.BdbPeer;
 import org.nebulostore.communication.bootstrap.BootstrapClient;
 import org.nebulostore.communication.bootstrap.BootstrapServer;
 import org.nebulostore.communication.bootstrap.BootstrapService;
-import org.nebulostore.communication.gossip.PeerGossipService;
+import org.nebulostore.communication.gossip.GossipService;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
@@ -48,6 +50,9 @@ public final class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static final String CONFIG_PREFIX = "communication.";
   private XMLConfiguration config_;
+
+  // TODO(bolek, grzegorzmilka): make this non-static ASAP!
+  private static CommAddress commAddress_;
 
   /**
    * Module for handling bootstraping peer to network.
@@ -87,7 +92,7 @@ public final class CommunicationPeer extends Module {
    * Once every x seconds gossiper gossips to get updated view on the network.
    */
   private BlockingQueue<Message> gossipServiceInQueue_;
-  private PeerGossipService gossipService_;
+  private GossipService gossipService_;
   private Thread gossipThread_;
 
 
@@ -97,15 +102,29 @@ public final class CommunicationPeer extends Module {
 
   private int commCliPort_;
 
-  public CommunicationPeer(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue,
-      XMLConfiguration config) throws NebuloException {
+  public CommunicationPeer(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
     super(inQueue, outQueue);
+  }
+
+  @Inject
+  public void setDependencies(XMLConfiguration config, CommAddress commAddress,
+      GossipService gossipService) {
     config_ = config;
-    initPeer();
+    commAddress_ = commAddress;
+    gossipService_ = gossipService;
+  }
+
+  @Override
+  protected void initModule() {
+    try {
+      initPeer();
+    } catch (NebuloException e) {
+      throw new RuntimeException("Unable to initialize network!", e);
+    }
   }
 
   private void initPeer() throws NebuloException {
-    logger_.debug("Starting CommunicationPeer");
+    logger_.debug("Starting CommunicationPeer with CommAddress = " + commAddress_);
     checkNotNull(config_);
 
     String clingConfPath = config_.getString(CONFIG_PREFIX + "cling-config");
@@ -117,23 +136,16 @@ public final class CommunicationPeer extends Module {
     int bootstrapTP2PPort;
     int tP2PPort;
 
-    /* CommAddress configuration */
-    String commAddress = null;
-
     try {
       String commCliPortConf = "ports.comm-cli-port";
       String bPortConf = "ports.bootstrap-port";
       String bServTP2PPortConf = "ports.bootstrap-server-tomp2p-port";
       String tP2PPortConf = "ports.tomp2p-port";
-      String commAddressConf = "comm-address";
 
       commCliPort_ = config_.getInt(CONFIG_PREFIX + commCliPortConf, -1);
       bootstrapPort = config_.getInt(CONFIG_PREFIX + bPortConf, -1);
       bootstrapTP2PPort = config_.getInt(CONFIG_PREFIX + bServTP2PPortConf, -1);
       tP2PPort = config_.getInt(CONFIG_PREFIX + tP2PPortConf, -1);
-      commAddress = config_.getString(CONFIG_PREFIX + commAddressConf, "");
-      if (commAddress.isEmpty())
-        commAddress = null;
 
       if (commCliPort_ == -1 || bootstrapPort == -1 ||
           bootstrapTP2PPort == -1 || tP2PPort == -1) {
@@ -171,13 +183,11 @@ public final class CommunicationPeer extends Module {
 
     if (!isServer_) {
       bootstrapService_ = new BootstrapClient(bootstrapServerAddress,
-          commCliPort_, bootstrapPort, tP2PPort, bootstrapTP2PPort, commAddress);
+          commCliPort_, bootstrapPort, tP2PPort, bootstrapTP2PPort, commAddress_);
       logger_.info("Created BootstrapClient.");
-      inQueue_.add(new CommPeerFoundMessage(bootstrapService_.getBootstrapCommAddress(),
-            bootstrapService_.getResolver().getMyCommAddress()));
     } else {
       bootstrapService_ = new BootstrapServer(bootstrapServerAddress,
-              commCliPort_, bootstrapPort, bootstrapTP2PPort, commAddress);
+              commCliPort_, bootstrapPort, bootstrapTP2PPort, commAddress_);
       try {
         bootstrapService_.startUpService();
       } catch (IOException e) {
@@ -195,10 +205,10 @@ public final class CommunicationPeer extends Module {
     messengerService_ = new MessengerService(messengerServiceInQueue_,
         inQueue_, bootstrapService_.getResolver());
 
-    int gossipPeriod = config_.getInt(CONFIG_PREFIX + "gossip-period", 20000);
-    gossipService_ = new PeerGossipService(gossipServiceInQueue_, inQueue_,
-        bootstrapService_.getResolver().getMyCommAddress(),
-        bootstrapService_.getBootstrapCommAddress(), gossipPeriod);
+    gossipService_.setInQueue(gossipServiceInQueue_);
+    gossipService_.setOutQueue(inQueue_);
+    gossipService_.setDependencies(config_, commAddress_);
+    gossipService_.setBootstrapCommAddress(bootstrapService_.getBootstrapCommAddress());
 
     /* Start submodule's threads */
     listenerThread_ = new Thread(
@@ -249,7 +259,7 @@ public final class CommunicationPeer extends Module {
 
   //NOTE(grzegorzmilka) "destatication" of this is in progress (someone's TODO)
   public static CommAddress getPeerAddress() {
-    return bootstrapService_.getResolver().getMyCommAddress();
+    return commAddress_;
   }
 
   /**

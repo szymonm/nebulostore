@@ -7,6 +7,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
@@ -24,10 +25,12 @@ import org.nebulostore.appcore.model.ObjectGetter;
 import org.nebulostore.appcore.model.ObjectWriter;
 import org.nebulostore.async.AddSynchroPeerModule;
 import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
+import org.nebulostore.broker.AlwaysAcceptingBroker;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.crypto.CryptoUtils;
+import org.nebulostore.communication.gossip.GossipService;
+import org.nebulostore.communication.gossip.PeerGossipService;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -53,6 +56,7 @@ public class Peer implements Runnable {
   protected BlockingQueue<Message> networkInQueue_;
 
   protected AppKey appKey_;
+  protected Broker broker_;
   protected XMLConfiguration config_;
   protected Injector injector_;
 
@@ -62,9 +66,12 @@ public class Peer implements Runnable {
 
   @Inject
   public void setDependencies(@Named("DispatcherQueue") BlockingQueue<Message> dispatcherQueue,
-      @Named("NetworkQueue") BlockingQueue<Message> networkQueue, AppKey appKey) {
+                              @Named("NetworkQueue") BlockingQueue<Message> networkQueue,
+                              Broker broker,
+                              AppKey appKey) {
     dispatcherInQueue_ = dispatcherQueue;
     networkInQueue_ = networkQueue;
+    broker_ = broker;
     appKey_ = appKey;
   }
 
@@ -82,37 +89,51 @@ public class Peer implements Runnable {
       dispatcherInQueue_.add(new KillDispatcherMessage());
   }
 
-  private Injector createInjector() {
-    return Guice.createInjector(new AbstractModule() {
-      @Override
-      protected void configure() {
-        bind(XMLConfiguration.class).toInstance(config_);
+  protected Injector createInjector() {
+    return Guice.createInjector(new PeerGuiceModule());
+  }
 
-        bind(AppKey.class).toInstance(new AppKey(config_.getString("app-key", "")));
-        // TODO(bolek) make it consistent with CommunicationPeer comm-address generation.
-        bind(CommAddress.class).toInstance(
-            new CommAddress(config_.getString("communication.comm-address", "")));
+  /**
+   * Standard dependency configuration.
+   * @author Bolek Kulbabinski
+   */
+  protected class PeerGuiceModule extends AbstractModule {
+    @Override
+    protected void configure() {
+      bind(XMLConfiguration.class).toInstance(config_);
 
-        bind(new TypeLiteral<BlockingQueue<Message>>() { })
-          .annotatedWith(Names.named("NetworkQueue"))
-          .toInstance(new LinkedBlockingQueue<Message>());
-        bind(new TypeLiteral<BlockingQueue<Message>>() { })
-          .annotatedWith(Names.named("DispatcherQueue"))
-          .toInstance(new LinkedBlockingQueue<Message>());
+      bind(AppKey.class).toInstance(new AppKey(config_.getString("app-key", "")));
+      bind(CommAddress.class).toInstance(
+          new CommAddress(config_.getString("communication.comm-address", "")));
 
-        bind(ObjectGetter.class).to(GetNebuloObjectModule.class);
-        bind(ObjectWriter.class).to(WriteNebuloObjectModule.class);
-        bind(ObjectDeleter.class).to(DeleteNebuloObjectModule.class);
+      bind(new TypeLiteral<BlockingQueue<Message>>() { })
+        .annotatedWith(Names.named("NetworkQueue")).toInstance(new LinkedBlockingQueue<Message>());
+      bind(new TypeLiteral<BlockingQueue<Message>>() { })
+        .annotatedWith(Names.named("DispatcherQueue")).toInstance(
+            new LinkedBlockingQueue<Message>());
 
-        bind(SubscriptionNotificationHandler.class).to(SimpleSubscriptionNotificationHandler.class);
-      }
-    });
+      bind(ObjectGetter.class).to(GetNebuloObjectModule.class);
+      bind(ObjectWriter.class).to(WriteNebuloObjectModule.class);
+      bind(ObjectDeleter.class).to(DeleteNebuloObjectModule.class);
+
+      bind(SubscriptionNotificationHandler.class).to(SimpleSubscriptionNotificationHandler.class);
+      configureCommunicationPeer();
+      configureBroker();
+    }
+
+    protected void configureCommunicationPeer() {
+      bind(GossipService.class).to(PeerGossipService.class);
+    }
+
+    protected void configureBroker() {
+      bind(Broker.class).to(AlwaysAcceptingBroker.class).in(Scopes.SINGLETON);
+    }
   }
 
   protected void runPeer() {
     startPeer();
     putKey();
-    runInitialModules(dispatcherInQueue_);
+    runInitialModules();
     finishPeer();
   }
 
@@ -132,17 +153,13 @@ public class Peer implements Runnable {
     ApiFacade.initApi(dispatcherInQueue_);
 
     // Create dispatcher - outQueue will be passed to newly created tasks.
-    dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_,
-        networkInQueue_, injector_), "Dispatcher");
+    dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_),
+        "Dispatcher");
 
     // Create network module.
-    try {
-      CommunicationPeer peer = new CommunicationPeer(networkInQueue_, dispatcherInQueue_, config_);
-      networkThread_ = new Thread(peer, "CommunicationPeer");
-    } catch (NebuloException exception) {
-      logger_.fatal("Error while creating CommunicationPeer");
-      System.exit(1);
-    }
+    CommunicationPeer peer = new CommunicationPeer(networkInQueue_, dispatcherInQueue_);
+    injector_.injectMembers(peer);
+    networkThread_ = new Thread(peer, "CommunicationPeer");
 
     //TODO(bolek): Remove NetworkContext.
     //NetworkContext.getInstance().setAppKey(appKey_);
@@ -152,9 +169,7 @@ public class Peer implements Runnable {
     /*GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
     dispatcherInQueue_.add(new JobInitMessage(new RegisterInstanceInDHTModule()));*/
 
-    // Create Broker.
-    String brokerJobId = CryptoUtils.getRandomId().toString();
-    dispatcherInQueue_.add(new JobInitMessage(brokerJobId, new Broker(brokerJobId, true)));
+    runBroker();
 
     // Initialize Replicator.
     Replicator.setConfig(config_);
@@ -164,7 +179,11 @@ public class Peer implements Runnable {
     dispatcherThread_.start();
   }
 
-  protected void runInitialModules(BlockingQueue<Message> dispatcherQueue) {
+  protected void runBroker() {
+    broker_.runThroughDispatcher();
+  }
+
+  protected void runInitialModules() {
     // TODO(szm): better module loading
 
     // Periodically checking asynchronous messages.
@@ -176,8 +195,8 @@ public class Peer implements Runnable {
     };
     PeriodicMessageSender sender = new PeriodicMessageSender(
         retrieveAMGenerator, RetrieveAsynchronousMessagesModule.INTERVAL,
-        dispatcherQueue);
-    dispatcherQueue.add(new JobInitMessage(sender));
+        dispatcherInQueue_);
+    dispatcherInQueue_.add(new JobInitMessage(sender));
 
     // Add found peer to synchro peers.
     MessageGenerator addFoundSynchroPeer = new MessageGenerator() {

@@ -6,18 +6,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Base class for all modules.
  * Module is an object that is runnable and communicates via in/out queues.
+ * @author Bolek Kulbabinski
  */
 public abstract class Module implements Runnable {
+  private static Logger logger_ = Logger.getLogger(Module.class);
 
   protected BlockingQueue<Message> inQueue_;
   protected BlockingQueue<Message> outQueue_;
-  // Is this thread ready to die (false by default). This is set by endModule() method.
   private AtomicBoolean isFinished_ = new AtomicBoolean(false);
-
-  private static Logger logger_ = Logger.getLogger(Module.class);
 
   public Module() { }
 
@@ -30,10 +31,6 @@ public abstract class Module implements Runnable {
     return inQueue_;
   }
 
-  public BlockingQueue<Message> getOutQueue() {
-    return outQueue_;
-  }
-
   public void setInQueue(BlockingQueue<Message> inQueue) {
     inQueue_ = inQueue;
   }
@@ -42,12 +39,18 @@ public abstract class Module implements Runnable {
     outQueue_ = outQueue;
   }
 
+  /**
+   * Call from subclass to finish this module's thread execution.
+   * TODO(bolek): Do we need to send one last message or interrupt the queue here?
+   */
   protected final void endModule() {
     isFinished_.set(true);
   }
 
   @Override
   public void run() {
+    checkNotNull(inQueue_);
+    initModule();
     while (!isFinished_.get()) {
       try {
         processMessage(inQueue_.take());
@@ -61,6 +64,11 @@ public abstract class Module implements Runnable {
       }
     }
   }
+
+  /**
+   * Override it to handle thread initialization.
+   */
+  protected void initModule() { }
 
   protected abstract void processMessage(Message message) throws NebuloException;
 

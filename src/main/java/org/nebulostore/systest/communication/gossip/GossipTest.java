@@ -18,6 +18,7 @@ import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 import org.nebulostore.appcore.Message;
@@ -100,6 +101,7 @@ final class ChurnFactory {
   private final Map<CommAddress, Thread> gossipThreads_;
   private final int nGossipers_;
   private final BlockingQueue<Message> mediumInQueue_;
+  private final XMLConfiguration config_;
   private static Logger logger_ = Logger.getLogger(ChurnFactory.class);
 
   public ChurnFactory(Map<CommAddress, PeerGossipService> gossipModules,
@@ -107,7 +109,8 @@ final class ChurnFactory {
       int gossipPeriod,
       int maxPeersSize,
       int healingFactor,
-      int swappingFactor) {
+      int swappingFactor,
+      XMLConfiguration config) {
     bootstrapCommAddr_ = CommAddress.newRandomCommAddress();
     gossipModules_ = gossipModules;
     gossipThreads_ = new HashMap<CommAddress, Thread>();
@@ -117,6 +120,7 @@ final class ChurnFactory {
     maxPeersSize_ = maxPeersSize;
     healingFactor_ = healingFactor;
     swappingFactor_ = swappingFactor;
+    config_ = config;
   }
 
   public void setUp() {
@@ -144,9 +148,10 @@ final class ChurnFactory {
     }
 
     BlockingQueue<Message> gossiperInQueue = new LinkedBlockingQueue<Message>();
-    PeerGossipService gossipService = new PeerGossipService(gossiperInQueue,
-        mediumInQueue_, commAddr, bootstrapCommAddr_, gossipPeriod_,
-        maxPeersSize_, healingFactor_, swappingFactor_);
+    PeerGossipService gossipService = new PeerGossipService();
+    gossipService.setInQueue(gossiperInQueue);
+    gossipService.setOutQueue(mediumInQueue_);
+    gossipService.setDependencies(config_, commAddr);
 
     synchronized (gossipModules_) {
       gossipModules_.put(commAddr, gossipService);
@@ -504,7 +509,7 @@ public final class GossipTest extends Peer {
 
     ChurnFactory churn = new ChurnFactory(gossipModules_, nGossipers_,
         mediumInQueue, gossipPeriod, maxPeersSize,
-        healingFactor, swappingFactor);
+        healingFactor, swappingFactor, config_);
 
     churn.setUp();
     CheckCohesivenessReport result = new CheckCohesivenessReport();

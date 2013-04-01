@@ -6,33 +6,48 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.conductor.ConductorServer;
 
 /**
- * Class that runs test server. If IS_SERVER_CONFIG option is set to false
+ * Class that runs test server. If "systest.is-server" option is set to false
  * it behaves like standard Peer.
  *
  * @author Bolek Kulbabinski
  */
 public class TestingPeer extends Peer {
   private static Logger logger_ = Logger.getLogger(TestingPeer.class);
-  private static final String CLASS_LIST_CONFIG = "systest.testing-peer-class-list";
-  private static final String IS_SERVER_CONFIG = "systest.is-server";
+  protected static final String CLASS_LIST_CONFIG = "systest.testing-peer-class-list";
+  protected static final String IS_SERVER_CONFIG = "systest.is-server";
+  protected static final String N_TEST_PARTICIPANTS_CONFIG = "systest.num-test-participants";
+
+  protected String[] testClasses_;
+  protected int nTestParticipants_;
+  protected boolean isTestServer_;
 
   @Override
   protected void runPeer() {
     logger_.info("Starting testing peer with appKey = " + appKey_);
+    readConfig();
     startPeer();
     putKey();
 
-    if (config_.getBoolean(IS_SERVER_CONFIG, false))
+    if (isTestServer_)
       runTestingServer();
 
     finishPeer();
     System.exit(0);
   }
 
+  protected void readConfig() {
+    testClasses_ = config_.getStringArray(CLASS_LIST_CONFIG);
+    if (testClasses_.length == 0)
+      throw new RuntimeException("Cannot read test classes list!");
+    nTestParticipants_ = config_.getInt(N_TEST_PARTICIPANTS_CONFIG, -1);
+    if (nTestParticipants_ == -1)
+      throw new RuntimeException("Cannot read number of test participants!");
+    isTestServer_ = config_.getBoolean(IS_SERVER_CONFIG, false);
+  }
+
   protected void runTestingServer() {
-    String[] testClasses = config_.getStringArray(CLASS_LIST_CONFIG);
-    logger_.info("Running " + testClasses.length + " tests.");
-    for (String className : testClasses) {
+    logger_.info("Running " + testClasses_.length + " tests.");
+    for (String className : testClasses_) {
       ConductorServer testServer = null;
       try {
         testServer = (ConductorServer) Class.forName(className).newInstance();

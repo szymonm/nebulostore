@@ -13,6 +13,7 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.gossip.PeerGossipService;
 
 /**
  * @author grzegorzmilka
@@ -57,10 +58,13 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
         throw new NebuloException("Configuration read error in: " + CONFIGURATION_PATH);
       }
 
+      CommAddress commAddress = new CommAddress(config.getString("communication.comm-address", ""));
       inQueue_ = new LinkedBlockingQueue<Message>();
       outQueue_ = new LinkedBlockingQueue<Message>();
-      communicationPeer_ =
-        new CommunicationPeer(inQueue_, outQueue_, config);
+      PeerGossipService gossipService = new PeerGossipService();
+      gossipService.setDependencies(config, commAddress);
+      communicationPeer_ = new CommunicationPeer(inQueue_, outQueue_);
+      communicationPeer_.setDependencies(config, commAddress, gossipService);
       communicationPeerThread_ = new Thread(communicationPeer_,
           "Nebulostore.Communication.CommunicationPeer");
       communicationPeerThread_.setDaemon(true);

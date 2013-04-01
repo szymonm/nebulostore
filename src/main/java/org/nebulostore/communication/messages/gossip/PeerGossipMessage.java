@@ -14,6 +14,12 @@ import org.nebulostore.communication.messages.CommMessage;
 
 
 /**
+ * Message handled by GossipService modules. Message can be of types {PUSH, PULL, PUSH+PULL}.
+ * If its type set contains PUSH, the message also contains a list of peers, that the receiver will
+ * handle.
+ * If its type set contains PULL, the message works as a request. Receiver should respond with
+ * a PUSH message.
+ *
  * @author Grzegorz Milka
  */
 public class PeerGossipMessage extends CommMessage {

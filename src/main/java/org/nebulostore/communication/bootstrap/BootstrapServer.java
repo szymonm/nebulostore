@@ -53,16 +53,13 @@ public class BootstrapServer extends BootstrapService implements Runnable {
    * Otherwise it is random
    */
   public BootstrapServer(String bootstrapServerAddress,
-      int commCliPort, int bootstrapPort, int tomP2PPort, String commAddress)
+      int commCliPort, int bootstrapPort, int tomP2PPort, CommAddress commAddress)
     throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, tomP2PPort);
     myInetSocketAddress_ = new InetSocketAddress(bootstrapServerAddress, commCliPort_);
     bootstrapPort_ = bootstrapPort;
     tomP2PPort_ = tomP2PPort;
-    if (commAddress != null)
-        myCommAddress_ = new CommAddress(commAddress);
-    else
-        myCommAddress_ = CommAddress.newRandomCommAddress();
+    myCommAddress_ = commAddress;
     myWelcomeMessage_ = new BootstrapMessage(myCommAddress_);
     pAPeer_ = null;
     serverSocket_ = null;

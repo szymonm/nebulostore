@@ -33,6 +33,7 @@ import org.nebulostore.communication.messages.dht.OkDHTMessage;
 import org.nebulostore.communication.messages.dht.OutDHTMessage;
 import org.nebulostore.communication.messages.dht.PutDHTMessage;
 import org.nebulostore.communication.messages.dht.ValueDHTMessage;
+import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
 import org.nebulostore.conductor.messages.ErrorMessage;
 import org.nebulostore.conductor.messages.FinishMessage;
 import org.nebulostore.conductor.messages.GatherStatsMessage;
@@ -75,6 +76,10 @@ public abstract class MessageVisitor<R> {
   /* Base class. */
   public R visit(Message message) throws NebuloException {
     return visitDefault(message);
+  }
+
+  public R visit(EndModuleMessage message) throws NebuloException {
+    return visitDefault((Message) message);
   }
 
   /* Dispatcher messages. */
@@ -129,6 +134,10 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(DiscoveryMessage message) throws NebuloException {
+    return visit((CommMessage) message);
+  }
+
+  public R visit(PeerGossipMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 

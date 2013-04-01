@@ -47,17 +47,13 @@ public final class BootstrapClient extends BootstrapService {
       int bootstrapPort,
       int tomP2PPort,
       int bootstrapTomP2PPort,
-      String commAddress) throws NebuloException {
+      CommAddress commAddress) throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, bootstrapTomP2PPort);
     bootstrapServerAddress_ = bootstrapServerAddress;
 
     // Find my address both CommAddress and a real IP one
     logger_.info("Finding out my address.");
-    if (commAddress != null)
-        myCommAddress_ = new CommAddress(commAddress);
-    else
-        myCommAddress_ = CommAddress.newRandomCommAddress();
-
+    myCommAddress_ = commAddress;
     pAPeer_ = new TomP2PClient();
     pAPeer_.setCommPort(commCliPort_);
     pAPeer_.setDHTPort(tomP2PPort_);

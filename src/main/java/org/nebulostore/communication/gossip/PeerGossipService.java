@@ -13,12 +13,10 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
@@ -32,31 +30,32 @@ import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
  * "Gossip-based Peer Sampling" by Jelasty, Voulgaris...
  * @author Grzegorz Milka
  */
-public final class PeerGossipService extends Module {
+//TODO (grzegorzmilka): Change name of this class to reflect the algorithm used.
+public final class PeerGossipService extends GossipService {
   private final Logger logger_ = Logger.getLogger(PeerGossipService.class);
 
   private static final Random RANDOMIZER = new Random();
   /**
    * Period at which GossipSender sends its advertisments. In milliseconds.
    */
-  private final int gossipPeriod_;
+  private int gossipPeriod_;
   /**
    * Equivalent of c in the paper.
    *
    * It has to be greater than 1 (or even 3) to ensure non-empty gossips.
    */
   // Default: 20
-  private final int maxPeersSize_;
+  private final int maxPeersSize_ = 20;
   /**
    * Equivalent of H in the paper.
    */
   // Default: 1
-  private final int healingFactor_;
+  private final int healingFactor_ = 1;
   /**
    * Equivalent of S in the paper.
    */
   // Default: 5
-  private final int swappingFactor_;
+  private final int swappingFactor_ = 5;
   private List<PeerDescriptor> peers_ =
     Collections.synchronizedList(new LinkedList<PeerDescriptor>());
 
@@ -66,33 +65,13 @@ public final class PeerGossipService extends Module {
    */
   private final Timer gossipSender_ = new Timer(true);
 
-  private CommAddress myCommAddress_;
-  /**
-   * Address pointing to bootstrap server.
-   */
-  private CommAddress bootstrapCommAddress_;
+  public PeerGossipService() { }
 
-  public PeerGossipService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue, CommAddress myCommAddress,
-      CommAddress bootstrapCommAddress, int gossipPeriod) {
-    this(inQueue, outQueue, myCommAddress, bootstrapCommAddress,
-        gossipPeriod, 20, 1, 5);
-  }
-
-  public PeerGossipService(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue, CommAddress myCommAddress,
-      CommAddress bootstrapCommAddress,
-      int gossipPeriod,
-      int maxPeersSize,
-      int healingFactor,
-      int swappingFactor) {
-    super(inQueue, outQueue);
-    myCommAddress_ = myCommAddress;
-    bootstrapCommAddress_ = bootstrapCommAddress;
-    gossipPeriod_ = gossipPeriod;
-    maxPeersSize_ = maxPeersSize;
-    healingFactor_ = healingFactor;
-    swappingFactor_ = swappingFactor;
+  @Override
+  protected void initModule() {
+    gossipPeriod_ = config_.getInt(CONFIG_PREFIX + "gossip-period", 20000);
+    // Bootstrap is already found.
+    outQueue_.add(new CommPeerFoundMessage(bootstrapCommAddress_, commAddress_));
     startGossipSender();
   }
 
@@ -130,13 +109,6 @@ public final class PeerGossipService extends Module {
   }
 
   /**
-   * Get period at which gossiper sends it's advertisments.
-   */
-  public int getGossipPeriod() {
-    return gossipPeriod_;
-  }
-
-  /**
    * Get random active peer.
    *
    * It returns null if no peer is present.
@@ -159,7 +131,7 @@ public final class PeerGossipService extends Module {
     @Override
     public void run() {
       PeerDescriptor recipient = selectPeer();
-      if (recipient == null && !bootstrapCommAddress_.equals(myCommAddress_)) {
+      if (recipient == null && !bootstrapCommAddress_.equals(commAddress_)) {
         synchronized (peers_) {
           peers_.add(new PeerDescriptor(bootstrapCommAddress_));
           recipient = selectPeer();
@@ -219,7 +191,7 @@ public final class PeerGossipService extends Module {
    */
   private Collection<PeerDescriptor> getPeers() {
     synchronized (peers_) {
-      return new LinkedList(peers_);
+      return new LinkedList<PeerDescriptor>(peers_);
     }
   }
 
@@ -239,7 +211,7 @@ public final class PeerGossipService extends Module {
   private PeerGossipMessage prepareMsgToSend(CommAddress recipient,
       EnumSet <PeerGossipMessage.MessageType> msgType) {
     if (!msgType.contains(PeerGossipMessage.MessageType.PUSH)) {
-      return new PeerGossipMessage(myCommAddress_, recipient, msgType,
+      return new PeerGossipMessage(commAddress_, recipient, msgType,
           new LinkedList<PeerDescriptor>());
     }
 
@@ -262,9 +234,9 @@ public final class PeerGossipService extends Module {
     if (bufferToSend.size() > (maxPeersSize_ / 2 - 1))
       bufferToSend.subList(maxPeersSize_ / 2 - 1, bufferToSend.size() - 1).clear();
 
-    bufferToSend.add(0, new PeerDescriptor(myCommAddress_));
+    bufferToSend.add(0, new PeerDescriptor(commAddress_));
 
-    return new PeerGossipMessage(myCommAddress_, recipient, msgType,
+    return new PeerGossipMessage(commAddress_, recipient, msgType,
         bufferToSend);
   }
 
@@ -278,7 +250,7 @@ public final class PeerGossipService extends Module {
       Set<PeerDescriptor> oldPeers = new HashSet<PeerDescriptor>(peers_);
 
       //Remove myself if present
-      otherPeers.remove(new PeerDescriptor(myCommAddress_));
+      otherPeers.remove(new PeerDescriptor(commAddress_));
       //Append new list and remove duplicates leaving younger descriptors.
       //Assuming no duplicates in otherPeers.
       for (PeerDescriptor peer : otherPeers) {
@@ -326,7 +298,7 @@ public final class PeerGossipService extends Module {
       newPeers.removeAll(oldPeers);
       logger_.debug("Size of new peers: " + newPeers.size());
       for (PeerDescriptor peer : newPeers) {
-        outQueue_.add(new CommPeerFoundMessage(peer.getPeerAddress(), myCommAddress_));
+        outQueue_.add(new CommPeerFoundMessage(peer.getPeerAddress(), commAddress_));
       }
     }
   }
