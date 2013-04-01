@@ -2,11 +2,13 @@ package org.nebulostore.communication.bdbdht;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.inject.Inject;
 import com.sleepycat.je.Database;
@@ -66,6 +68,7 @@ public class BdbPeer extends Module {
   private final ReconfigureDHTMessage reconfigureRequest_;
   private Timer advertisementsTimer_;
   private XMLConfiguration config_;
+  private Queue<Message> messageCache_ = new LinkedBlockingQueue<Message>();
 
   @Inject
   public void setConfig(XMLConfiguration config) {
@@ -270,20 +273,13 @@ public class BdbPeer extends Module {
       holderCommAddress_ = ((HolderAdvertisementMessage) msg)
           .getSourceAddress();
       logger_.info("Holder detected at " + holderCommAddress_);
+      cleanCache();
       return;
     }
 
     if (isProxy_ && holderCommAddress_ == null) {
-      logger_.debug("Holder not set up, waiting...");
-      logger_.debug("Sleeping and waiting for holderCommAddress");
-      //TODO-GM Why are we sleeping? Couldn't we add those messages to some kind
-      //of queue?
-      inQueue_.add(msg);
-      try {
-        Thread.sleep(500);
-      } catch (InterruptedException e) {
-        logger_.debug(e);
-      }
+      logger_.debug("Holder not set up, waiting for HolderAdvertisementMessage");
+      messageCache_.add(msg);
       return;
     }
 
@@ -318,6 +314,13 @@ public class BdbPeer extends Module {
         logger_.warn("BdbPeer got message that is not supported");
       }
     }
+  }
+
+  private void cleanCache() throws NebuloException {
+    logger_.debug("Cleaning cache.");
+    while (!messageCache_.isEmpty())
+      processMessage(messageCache_.remove());
+    logger_.debug("Finished cleaning cache.");
   }
 
   public CommAddress getHolderAddress() {
