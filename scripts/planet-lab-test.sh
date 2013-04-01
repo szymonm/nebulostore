@@ -16,7 +16,7 @@ BOOTSTRAP_PEER="localhost"
 BOOTSTRAP_DELAY=5
 
 USER=mimuw_nebulostore
-REMOTE_DIR=`whoami`
+REMOTE_DIR="nebulostore_autodeploy/"`whoami`
 LOG_DIR=logs
 SSH_OPTIONS="StrictHostKeyChecking=no"
 
@@ -40,9 +40,9 @@ i=1
 for host in `cat $HOST_LIST`
 do
     echo "  " $host
-    ssh -o $SSH_OPTIONS -l $USER $host "rm -rf $REMOTE_DIR/logs* $REMOTE_DIR/storage* $REMOTE_DIR/resources* $REMOTE_DIR/Nebulostore.jar"
+    ssh -o $SSH_OPTIONS -l $USER $host "mkdir -p $REMOTE_DIR; rm -rf $REMOTE_DIR/logs* $REMOTE_DIR/storage* $REMOTE_DIR/resources*"
     mv Peer.xml.$i build/jar/1/resources/conf/Peer.xml
-    rsync -ru ./build/jar/1/* $USER@$host:~/$REMOTE_DIR/
+    rsync -rul ./build/jar/1/* $USER@$host:~/$REMOTE_DIR/
     if [ $i -eq $PEER_NUM ]
     then
         break

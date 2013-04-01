@@ -24,6 +24,9 @@ mvn clean install -P $MAVEN_TARGET
 
 echo "Building done. Copying..."
 
+rm -rf $JAR_DIR
+mkdir -p $JAR_DIR
+rsync -r $MAVEN_LIB $JAR_DIR/
 for i in `seq 1 $PEERS_NUM`
 do
     echo $i
@@ -32,8 +35,8 @@ do
     mkdir -p $CURR_PATH
     mkdir -p $CURR_PATH/logs
     mkdir -p $CURR_PATH/storage/bdb
+    ln -s ../lib $CURR_PATH/lib
     cp $MAVEN_JAR $CURR_PATH/$JAR
-    rsync -r $MAVEN_LIB $CURR_PATH/
     rsync -r --exclude=.svn resources $CURR_PATH
 done
 

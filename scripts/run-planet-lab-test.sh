@@ -4,12 +4,12 @@ if [ $1 ]; then
     N=$1
 else
     echo "Please select PlanetLab test to run (or provide the number as a parameter):"
-    echo "    1) ping-pong test (3 peers)"
-    echo "    2) read-write test (7 peers)"
-    echo "    3) lists test (7 peers)"
-    echo "    4) performance lists test (10 peers)"
-    echo "    5) performance lists test (15 peers)"
-    echo "    6) performance lists test (30 peers)"
+    echo "    1) ping-pong test (3 peers / 2 test clients)"
+    echo "    2) read-write test (7 peers / 5 test clients)"
+    echo "    3) lists test (7 peers / 5 test clients)"
+    echo "    4) performance lists test (10 peers / 8 test clients)"
+    echo "    5) performance lists test (15 peers / 12 test clients)"
+    echo "    6) performance lists test (25 peers / 20 test clients)"
     read N
 fi
 
@@ -42,7 +42,7 @@ case $N in
     6) ./scripts/planet-lab-test.sh\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
-           30 24 1\
+           25 20 1\
            scripts/hosts.txt;;
 esac
 
