@@ -6,7 +6,7 @@
 
 HOST_LIST="scripts/hosts.txt"
 
-N=100
+N=200
 USER=mimuw_nebulostore
 REMOTE_DIR="nebulostore_autodeploy/"
 SSH_OPTIONS="StrictHostKeyChecking=no"

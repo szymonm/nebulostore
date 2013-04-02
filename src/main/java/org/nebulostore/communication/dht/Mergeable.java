@@ -23,7 +23,6 @@ public interface Mergeable extends Serializable {
    * and the local map is empty.
    *
    * @param other the other Mergeable object
-   * @return
    */
   Mergeable merge(Mergeable other);
 }

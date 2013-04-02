@@ -55,7 +55,6 @@ planetlab-3.imperial.ac.uk
 planetlab2.aston.ac.uk
 plnode-03.gpolab.bbn.com
 planetlab1.diku.dk
-planetlab3.di.unito.it
 planetlab-1.imperial.ac.uk
 planetlab-2.ida.liu.se
 planetlab01.tkn.tu-berlin.de
@@ -69,7 +68,6 @@ planetlab1.utt.fr
 planetlab2.cs.uoi.gr
 planetlab2.s3.kth.se
 planetlab2.ci.pwr.wroc.pl
-planetlab1.di.unito.it
 ple1.dmcs.p.lodz.pl
 scratchy.comlab.bth.se
 iraplab2.iralab.uni-karlsruhe.de
@@ -135,7 +133,6 @@ planetlab1.xeno.cl.cam.ac.uk
 planet02.hhi.fraunhofer.de
 planet1.zib.de
 planetlab1.inf.ethz.ch
-host4-plb.loria.fr
 planetlab02.mpi-sws.mpg.de
 onelab6.iet.unipi.it
 whitefall.planetlab.cs.umd.edu
@@ -150,7 +147,6 @@ planetlab1.fit.vutbr.cz
 planetlab4.inf.ethz.ch
 miranda.planetlab.cs.umd.edu
 mercury.silicon-valley.ru
-pl2.planetlab.ics.tut.ac.jp
 planetlab1.sics.se
 planetlab1.s3.kth.se
 planet1.elte.hu
