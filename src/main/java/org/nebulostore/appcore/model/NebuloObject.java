@@ -37,7 +37,6 @@ public abstract class NebuloObject implements Serializable {
   protected final NebuloAddress address_;
   protected transient CommAddress sender_;
 
-  protected transient String lastCommittedVersion_;
   protected transient Set<String> previousVersions_;
   protected Subscribers subscribers_;
   protected transient BlockingQueue<Message> dispatcherQueue_;
@@ -98,17 +97,8 @@ public abstract class NebuloObject implements Serializable {
 
   public abstract void delete() throws NebuloException;
 
-  public String getLastCommittedVersion() {
-    return lastCommittedVersion_;
-  }
-
-  public void setLastCommittedVersion(String lastCommittedVersion) {
-    lastCommittedVersion_ = lastCommittedVersion;
-  }
-
   public void newVersionCommitted(String version) {
-    previousVersions_.add(lastCommittedVersion_);
-    lastCommittedVersion_ = version;
+    previousVersions_.add(version);
   }
 
   public void subscribe() throws NebuloException {

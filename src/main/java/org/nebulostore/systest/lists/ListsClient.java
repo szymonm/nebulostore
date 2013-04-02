@@ -70,8 +70,8 @@ public final class ListsClient extends ConductorClient {
       for (int i = 0; i < N_CASES; ++i) {
         BigInteger value = list.getAddress().getObjectId().getKey().add(BigInteger.valueOf(i));
         list.append(new NebuloElement(CryptoUtils.encryptObject(value)));
+        list.sync();
       }
-      list.sync();
       return list;
     } catch (CryptoException e) {
       endWithError("Exception while encrypting object: " + e.getMessage());

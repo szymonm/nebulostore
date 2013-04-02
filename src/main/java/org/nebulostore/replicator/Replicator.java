@@ -62,6 +62,7 @@ public class Replicator extends JobModule {
   // Hashtable is synchronized.
   //TODO(szm): filesLocations and previousVersions should be stored on disk!!
   private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
+  // NOTE: Including current version.
   private static Hashtable<ObjectId, Set<String>> previousVersions_ = new Hashtable<ObjectId,
       Set<String>>();
   private static Hashtable<ObjectId, Boolean> freshnessMap_ = new Hashtable<ObjectId, Boolean>(256);
@@ -380,23 +381,18 @@ public class Replicator extends JobModule {
     file.delete();
     locksMap_.get(objectId).release();
     if (newObjectTransaction) {
-      // New lcoal object wasn't created.
+      // New local object wasn't created.
       locksMap_.remove(objectId);
     }
   }
 
   /**
-   * Returns true only if every previous version stored in previousVersions_ is contained by
-   * previousVersions and also this version - current is in previousVersions_.
+   * Returns true only if the latest version of the file stored in this replicator belongs to the
+   * set of versions known by the peer requesting update.
    */
   private static boolean previousVersionsMatch(ObjectId objectId, String current,
       Set<String> previousVersions) {
-    for (String s : previousVersions_.get(objectId))
-      if (!previousVersions.contains(s))
-        return false;
-    if (!previousVersions.contains(current))
-      return false;
-    return true;
+    return previousVersions.contains(current);
   }
 
   /**

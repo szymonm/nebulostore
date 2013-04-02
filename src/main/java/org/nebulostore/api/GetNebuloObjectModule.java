@@ -36,7 +36,6 @@ public class GetNebuloObjectModule extends GetModule<NebuloObject> implements Ob
           nebuloObject = (NebuloObject) CryptoUtils.decryptObject(message.getEncryptedEntity());
           nebuloObject.setSender(message.getSourceAddress());
           nebuloObject.setVersions(message.getVersions());
-          nebuloObject.setLastCommittedVersion(CryptoUtils.sha(message.getEncryptedEntity()));
         } catch (CryptoException exception) {
           // TODO(bolek): Error not fatal? Retry?
           endWithError(exception);
