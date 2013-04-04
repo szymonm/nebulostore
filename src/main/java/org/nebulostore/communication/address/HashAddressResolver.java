@@ -9,6 +9,7 @@ import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.exceptions.AddressNotPresentException;
 
 /**
@@ -36,7 +37,10 @@ class HashAddressResolver implements CommAddressResolver {
       Data data = null;
       // TODO(grzegorzmilka): Fix this workaround.
       for (int i = 1; i <= MAX_RETRIES; ++i) {
-        futureDHT = myPeer_.get(new Number160(commAddress.hashCode())).start();
+        Number160 addressKey = KeyDHT.combine(
+            KeyDHT.COMMUNICATION_KEY,
+            new Number160(commAddress.hashCode()));
+        futureDHT = myPeer_.get(addressKey).start();
         logger_.trace("Returned FutureDHT: " + futureDHT);
         futureDHT.awaitUninterruptibly();
         data = futureDHT.getData();

@@ -17,10 +17,11 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.bdbdht.BdbPeer;
 import org.nebulostore.communication.bootstrap.BootstrapClient;
 import org.nebulostore.communication.bootstrap.BootstrapServer;
 import org.nebulostore.communication.bootstrap.BootstrapService;
+import org.nebulostore.communication.dht.BdbPeer;
+import org.nebulostore.communication.dht.KademliaPeer;
 import org.nebulostore.communication.gossip.GossipService;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
@@ -187,7 +188,7 @@ public final class CommunicationPeer extends Module {
       logger_.info("Created BootstrapClient.");
     } else {
       bootstrapService_ = new BootstrapServer(bootstrapServerAddress,
-              commCliPort_, bootstrapPort, bootstrapTP2PPort, commAddress_);
+          commCliPort_, bootstrapPort, bootstrapTP2PPort, commAddress_);
       try {
         bootstrapService_.startUpService();
       } catch (IOException e) {
@@ -432,12 +433,18 @@ public final class CommunicationPeer extends Module {
             messengerServiceInQueue_, reconfigureRequest);
         bdbPeer.setConfig(config_);
         dhtPeer_ = bdbPeer;
+      } else if (dhtProvider.equals("kademlia")) {
+        KademliaPeer kademliaPeer = new KademliaPeer(dhtPeerInQueue_, outQueue_,
+            bootstrapService_.getTP2PPeer());
+        kademliaPeer.setConfig(config_);
+        dhtPeer_ = kademliaPeer;
       } else {
         throw new NebuloException("Unsupported DHT Provider in configuration");
       }
       dhtPeerThread_ = new Thread(dhtPeer_, "Nebulostore.Communication.DHT");
       dhtPeerThread_.setDaemon(true);
       dhtPeerThread_.start();
+      logger_.info("(Re)started DHT Thread");
     }
   }
 }

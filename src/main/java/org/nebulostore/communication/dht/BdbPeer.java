@@ -1,4 +1,4 @@
-package org.nebulostore.communication.bdbdht;
+package org.nebulostore.communication.dht;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -29,8 +29,6 @@ import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.KeyDHT;
-import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;

@@ -24,8 +24,14 @@ import org.nebulostore.appcore.model.EncryptedObject;
 public final class CryptoUtils {
   private static Logger logger_ = Logger.getLogger(CryptoUtils.class);
 
+  /**
+   * Create cryptographically secure 128-bit long positive BigInteger.
+   */
   public static BigInteger getRandomId() {
-    return new BigInteger(130, RANDOM);
+    BigInteger id =  new BigInteger(128, RANDOM);
+    if (id.compareTo(new BigInteger("0")) == -1)
+        id = id.negate().subtract(new BigInteger("-1"));
+    return id;
   }
 
   public static String getRandomString() {

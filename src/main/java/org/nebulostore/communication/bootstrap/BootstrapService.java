@@ -2,6 +2,8 @@ package org.nebulostore.communication.bootstrap;
 
 import java.io.IOException;
 
+import net.tomp2p.p2p.Peer;
+
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.address.CommAddressResolver;
 
@@ -39,6 +41,7 @@ public abstract class BootstrapService {
    */
   public abstract CommAddress getBootstrapCommAddress();
 
+  public abstract Peer getTP2PPeer();
   public abstract CommAddressResolver getResolver();
 
   public abstract void startUpService() throws IOException;

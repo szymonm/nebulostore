@@ -12,11 +12,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.tomp2p.p2p.Peer;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.address.CommAddressResolver;
 import org.nebulostore.communication.address.PersistentAddressingPeer;
+import org.nebulostore.communication.address.TomP2PPeer;
 import org.nebulostore.communication.address.TomP2PServer;
 
 /**
@@ -107,6 +110,11 @@ public class BootstrapServer extends BootstrapService implements Runnable {
   @Override
   public CommAddress getBootstrapCommAddress() {
     return myCommAddress_;
+  }
+
+  @Override
+  public Peer getTP2PPeer() {
+    return ((TomP2PPeer) pAPeer_).getPeer();
   }
 
   @Override

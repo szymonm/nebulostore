@@ -7,14 +7,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Application Key, identifies the user.
+ *
+ * The AppKey is represented by a 128 bit positive BigInteger in 2 complement
+ * notation. Any other value causes an exception.
  * (immutable)
  */
 public final class AppKey implements Serializable {
   private static final long serialVersionUID = -5977296486784377545L;
+  private static final int MAX_BIT_SIZE = 128;
   private final BigInteger key_;
 
   public AppKey(BigInteger key) {
     checkNotNull(key);
+    if (key.compareTo(new BigInteger("0")) == -1 ||
+        key.bitLength() > MAX_BIT_SIZE)
+      throw new IllegalArgumentException("key has to be positive and smaller than 1<<128");
     key_ = key;
   }
 

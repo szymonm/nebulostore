@@ -11,6 +11,7 @@ import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.storage.Data;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.communication.dht.KeyDHT;
 
 /**
  * TomP2P's kademlia based implementation of persistent addressing service.
@@ -69,6 +70,10 @@ public abstract class TomP2PPeer implements PersistentAddressingPeer {
     myCommAddress_ = myCommAddress;
   }
 
+  public Peer getPeer() {
+    return myPeer_;
+  }
+
   @Override
   public CommAddressResolver getResolver() {
     checkSetUp();
@@ -87,7 +92,10 @@ public abstract class TomP2PPeer implements PersistentAddressingPeer {
   public void uploadCurrentInetSocketAddress(InetSocketAddress address)
     throws IOException {
     checkSetUp();
-    FutureDHT putFuture = myPeer_.put(new Number160(myCommAddress_.hashCode())).
+    Number160 addressKey = KeyDHT.combine(
+        KeyDHT.COMMUNICATION_KEY,
+        new Number160(myCommAddress_.hashCode()));
+    FutureDHT putFuture = myPeer_.put(addressKey).
       setData(new Data(address)).start().awaitUninterruptibly();
     if (!putFuture.isSuccess()) {
       throw new IOException("Couldn't upload address to kademlia. " +

@@ -7,12 +7,15 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import net.tomp2p.p2p.Peer;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.address.CommAddressResolver;
 import org.nebulostore.communication.address.PersistentAddressingPeer;
 import org.nebulostore.communication.address.TomP2PClient;
+import org.nebulostore.communication.address.TomP2PPeer;
 import org.nebulostore.communication.exceptions.AddressNotPresentException;
 import org.nebulostore.communication.nat.NATUtils;
 
@@ -127,6 +130,11 @@ public final class BootstrapClient extends BootstrapService {
   //function even though the object is useless otherwise
   public void startUpService() {
     return;
+  }
+
+  @Override
+  public Peer getTP2PPeer() {
+    return ((TomP2PPeer) pAPeer_).getPeer();
   }
 
   @Override
