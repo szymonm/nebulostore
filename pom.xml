@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nebulostore</groupId>
     <artifactId>nebulostore</artifactId>
-    <version>0.7</version>
+    <version>0.8-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,9 +46,9 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:svn:https://svn.mimuw.edu.pl/repos/nebulostore/tags/nebulostore-0.7</connection>
-        <developerConnection>scm:svn:https://svn.mimuw.edu.pl/repos/nebulostore/tags/nebulostore-0.7</developerConnection>
-        <url>https://svn.mimuw.edu.pl/repos/nebulostore/tags/nebulostore-0.7</url>
+        <connection>scm:svn:https://svn.mimuw.edu.pl/repos/nebulostore/trunk</connection>
+        <developerConnection>scm:svn:https://svn.mimuw.edu.pl/repos/nebulostore/trunk</developerConnection>
+        <url>https://svn.mimuw.edu.pl/repos/nebulostore/trunk</url>
     </scm>
 
     <profiles>
