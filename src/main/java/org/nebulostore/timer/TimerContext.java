@@ -37,18 +37,18 @@ public final class TimerContext {
     Long curNextTime = nextMessageTime();
     delayedMessagesQueue_.add(new TimedMessage(time, message));
     // Runs timer automatically.
-    if (timerModule_ == null)
+    if (timerModule_ == null) {
       timerModule_ = new TimerModule(getDispatcherQueue());
-    else {
-      if (curNextTime != null && time < curNextTime) {
+    } else {
+      if ((curNextTime != null) && (time < curNextTime)) {
         waitingOnNext_.signal();
       }
     }
     lock_.unlock();
   }
 
-  public void notifyWithTimeoutMessageAfter(String jobId, long miliseconds) {
-    addDelayedMessage(miliseconds, new TimeoutMessage(jobId));
+  public void notifyWithTimeoutMessageAfter(String jobId, long delayMs) {
+    addDelayedMessage(System.currentTimeMillis() + delayMs, new TimeoutMessage(jobId));
   }
 
   public void cancelNotifications(String jobId) {
@@ -71,10 +71,11 @@ public final class TimerContext {
    * Returns time of next message in the queue or null if queue is empty.
    */
   synchronized Long nextMessageTime() {
-    if (delayedMessagesQueue_.peek() != null)
+    if (delayedMessagesQueue_.peek() != null) {
       return delayedMessagesQueue_.peek().time_;
-    else
+    } else {
       return null;
+    }
   }
 
   /**
@@ -82,15 +83,17 @@ public final class TimerContext {
    */
   synchronized Message pollNextMessage() {
     TimedMessage tm = delayedMessagesQueue_.poll();
-    if (tm == null)
+    if (tm == null) {
       return null;
-    else
+    } else {
       return tm.message_;
+    }
   }
 
   public static TimerContext getInstance() {
-    if (instance_ == null)
+    if (instance_ == null) {
       instance_ = new TimerContext();
+    }
 
     return instance_;
   }
@@ -116,33 +119,41 @@ public final class TimerContext {
     public int hashCode() {
       final int prime = 31;
       int result = 1;
-      result = prime * result + getOuterType().hashCode();
-      result = prime * result + ((message_ == null) ? 0 : message_.hashCode());
-      result = prime * result + ((time_ == null) ? 0 : time_.hashCode());
+      result = (prime * result) + getOuterType().hashCode();
+      result = (prime * result) + ((message_ == null) ? 0 : message_.hashCode());
+      result = (prime * result) + ((time_ == null) ? 0 : time_.hashCode());
       return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-      if (this == obj)
+      if (this == obj) {
         return true;
-      if (obj == null)
+      }
+      if (obj == null) {
         return false;
-      if (getClass() != obj.getClass())
+      }
+      if (getClass() != obj.getClass()) {
         return false;
+      }
       TimedMessage other = (TimedMessage) obj;
-      if (!getOuterType().equals(other.getOuterType()))
+      if (!getOuterType().equals(other.getOuterType())) {
         return false;
+      }
       if (message_ == null) {
-        if (other.message_ != null)
+        if (other.message_ != null) {
           return false;
-      } else if (!message_.equals(other.message_))
+        }
+      } else if (!message_.equals(other.message_)) {
         return false;
+      }
       if (time_ == null) {
-        if (other.time_ != null)
+        if (other.time_ != null) {
           return false;
-      } else if (!time_.equals(other.time_))
+        }
+      } else if (!time_.equals(other.time_)) {
         return false;
+      }
       return true;
     }
 

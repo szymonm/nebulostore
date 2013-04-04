@@ -30,6 +30,12 @@ public class TimerModule extends JobModule {
     message.accept(visitor_);
   }
 
+  private void endTimerModule() {
+    TimerContext context = TimerContext.getInstance();
+    context.timerModule_ = null;
+    endJobModule();
+  }
+
   /**
    * Visitor.
    */
@@ -43,8 +49,10 @@ public class TimerModule extends JobModule {
       try {
         while (context_.nextMessageTime() != null) {
           if (context_.nextMessageTime() <= System.currentTimeMillis()) {
-            logger_.debug("sending delayed message");
-            outQueue_.add(context_.pollNextMessage());
+            Message m = context_.pollNextMessage();
+            logger_.debug("sending delayed message: " + m.getClass().toString() + " id: " +
+                          m.getId());
+            outQueue_.add(m);
           } else {
             context_.waitingOnNext_.await(
                 context_.nextMessageTime() - System.currentTimeMillis(),
@@ -54,10 +62,10 @@ public class TimerModule extends JobModule {
       } catch (InterruptedException e) {
         error("Interrupted");
       } finally {
+        logger_.debug("timer module finishing");
+        endTimerModule();
         context_.lock_.unlock();
       }
-      context_.timerModule_ = null;
-      endJobModule();
       return null;
     }
 
