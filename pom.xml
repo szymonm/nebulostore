@@ -21,7 +21,7 @@
         <repository>
             <id>naan</id>
             <name>Nebulostore Maven Repos</name>
-            <url>http://naan.mimuw.edu.pl:8888/artifactory/ext-snapshot-local</url>
+            <url>http://naan.mimuw.edu.pl:8888/artifactory/maven</url>
         </repository>
         <repository>
             <id>teleal-repo</id>
