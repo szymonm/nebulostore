@@ -36,12 +36,12 @@
         <snapshotRepository>
             <id>naan</id>
             <name>naan-snapshots</name>
-            <url>http://naan.mimuw.edu.pl:8888/artifactory/ext-snapshot-local</url>
+            <url>http://naan.mimuw.edu.pl:8888/artifactory/maven</url>
         </snapshotRepository>
         <repository>
             <id>naan</id>
             <name>naan-releases</name>
-            <url>http://naan.mimuw.edu.pl:8888/artifactory/ext-release-local</url>
+            <url>http://naan.mimuw.edu.pl:8888/artifactory/maven</url>
         </repository>
     </distributionManagement>
 
