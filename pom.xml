@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nebulostore</groupId>
     <artifactId>nebulostore</artifactId>
-    <version>0.5</version>
+    <version>0.5-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,8 +19,9 @@
             <layout>default</layout>
         </repository>
         <repository>
-            <id>tomp2p.net</id>
-            <url>http://tomp2p.net/dev/mvn/</url>
+            <id>naan</id>
+            <name>Nebulostore Maven Repos</name>
+            <url>http://naan.mimuw.edu.pl:8888/artifactory/ext-snapshot-local</url>
         </repository>
         <repository>
             <id>teleal-repo</id>
@@ -30,6 +31,25 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>naan</id>
+            <name>naan-snapshots</name>
+            <url>http://naan.mimuw.edu.pl:8888/artifactory/ext-snapshot-local</url>
+        </snapshotRepository>
+        <repository>
+            <id>naan</id>
+            <name>naan-releases</name>
+            <url>http://naan.mimuw.edu.pl:8888/artifactory/ext-release-local</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <connection>scm:svn:https://svn.mimuw.edu.pl/repos/nebulostore/trunk</connection>
+        <developerConnection>scm:svn:https://svn.mimuw.edu.pl/repos/nebulostore/trunk</developerConnection>
+        <url>https://svn.mimuw.edu.pl/repos/nebulostore/trunk</url>
+    </scm>
 
     <profiles>
         <profile>
