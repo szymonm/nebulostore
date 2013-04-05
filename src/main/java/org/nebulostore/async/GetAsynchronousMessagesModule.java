@@ -2,6 +2,8 @@ package org.nebulostore.async;
 
 import java.util.concurrent.BlockingQueue;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
@@ -11,7 +13,6 @@ import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
 import org.nebulostore.broker.BrokerContext;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
@@ -28,20 +29,21 @@ public class GetAsynchronousMessagesModule extends JobModule {
   private final BlockingQueue<Message> resultQueue_;
 
   /**
-   * Peer, from that this module downloades messages.
+   * Peer, from that this module downloads messages.
    */
   private final CommAddress synchroPeer_;
-
-  /** This peer instance ID. */
-  private final CommAddress myAddress_;
+  private CommAddress myAddress_;
 
   public GetAsynchronousMessagesModule(BlockingQueue<Message> networkQueue,
       BlockingQueue<Message> resultQueue, BrokerContext context, CommAddress synchroPeer) {
-    super();
     setNetworkQueue(networkQueue);
     resultQueue_ = resultQueue;
     synchroPeer_ = synchroPeer;
-    myAddress_ = CommunicationPeer.getPeerAddress();
+  }
+
+  @Inject
+  public void setCommAddress(CommAddress commAddress) {
+    myAddress_ = commAddress;
   }
 
   private final GetAsynchronousMessagesVisitor visitor_ = new GetAsynchronousMessagesVisitor();

@@ -33,7 +33,7 @@ public final class ListsServer extends ConductorServer {
       clients[i] = it.next();
     for (int i = 0; i < peersNeeded_; ++i)
       networkQueue_.add(new InitMessage(clientsJobId_, null, clients[i],
-          new ListsClient(jobId_, NUM_PHASES, clients, i)));
+          new ListsClient(jobId_, commAddress_, NUM_PHASES, clients, i)));
   }
 
   @Override

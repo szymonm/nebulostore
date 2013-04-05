@@ -10,11 +10,9 @@ import java.util.TreeSet;
 
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
-
 
 /**
  * @author Grzegorz Milka
@@ -27,8 +25,8 @@ public final class PingPongPeerImpl extends AbstractPeerImpl implements PingPong
    */
   private Map<Integer, Collection<Integer> > respondents_;
 
-  public PingPongPeerImpl(int peerId) throws NebuloException {
-    super(peerId);
+  public PingPongPeerImpl(int peerId, CommAddress commAddress) throws NebuloException {
+    super(peerId, commAddress);
     knownPeers_ = new HashSet<CommAddress>();
     oldPings_ = new HashSet<Integer>();
     respondents_ = new HashMap<Integer, Collection<Integer> >();
@@ -51,8 +49,7 @@ public final class PingPongPeerImpl extends AbstractPeerImpl implements PingPong
     respondents_.put(pingId, new TreeSet<Integer>());
     logger_.debug("Sending ping to: " + knownPeers_);
     for (CommAddress peer : knownPeers_) {
-      PingMessage pingMsg = new PingMessage(CommunicationPeer.getPeerAddress(),
-              peer, peerId_, pingId);
+      PingMessage pingMsg = new PingMessage(commAddress_, peer, peerId_, pingId);
       inQueue_.add(pingMsg);
     }
   }

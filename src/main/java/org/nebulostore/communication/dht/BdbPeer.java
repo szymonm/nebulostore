@@ -27,7 +27,6 @@ import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
@@ -59,7 +58,6 @@ public class BdbPeer extends Module {
 
   private boolean isProxy_;
   private CommAddress holderCommAddress_;
-  //host1.planetlab.informatik.tu-darmstadt.de
   private final CommAddress bdbHolderCommAddress_ = null;
 
   private final BlockingQueue<Message> senderInQueue_;
@@ -67,10 +65,16 @@ public class BdbPeer extends Module {
   private Timer advertisementsTimer_;
   private XMLConfiguration config_;
   private Queue<Message> messageCache_ = new LinkedBlockingQueue<Message>();
+  private CommAddress commAddress_;
 
   @Inject
   public void setConfig(XMLConfiguration config) {
     config_ = config;
+  }
+
+  @Inject
+  public void setCommAddress(CommAddress commAddress) {
+    commAddress_ = commAddress;
   }
 
   /**
@@ -121,7 +125,7 @@ public class BdbPeer extends Module {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
       }
 
-      holderCommAddress_ = CommunicationPeer.getPeerAddress();
+      holderCommAddress_ = commAddress_;
     } else {
       logger_.info("Configuring as proxy");
       isProxy_ = true;

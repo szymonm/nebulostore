@@ -8,7 +8,6 @@ import java.util.concurrent.BlockingQueue;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.timer.MessageGenerator;
 
@@ -26,6 +25,7 @@ public final class NetworkContext {
   private final Vector<CommAddress> knownPeersVector_;
 
   private Set<CommAddress> randomPeersSample_ = new HashSet<CommAddress>();
+  private CommAddress commAddress_;
 
   /**
    * Messages to be send to dispatcher when context changes.
@@ -41,9 +41,13 @@ public final class NetworkContext {
 
   private NetworkContext() {
     knownPeers_ = new HashSet<CommAddress>();
-    knownPeers_.add(CommunicationPeer.getPeerAddress());
     knownPeersVector_ = new Vector<CommAddress>();
-    knownPeersVector_.add(CommunicationPeer.getPeerAddress());
+  }
+
+  public void setCommAddress(CommAddress commAddress) {
+    commAddress_ = commAddress;
+    knownPeers_.add(commAddress_);
+    knownPeersVector_.add(commAddress_);
   }
 
   private void contextChanged() {

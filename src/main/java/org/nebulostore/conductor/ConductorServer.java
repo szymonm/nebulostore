@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.inject.Inject;
+
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.GlobalContext;
@@ -12,7 +14,6 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.NetworkContextChangedMessage;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.messages.ErrorMessage;
 import org.nebulostore.conductor.messages.FinishMessage;
@@ -115,6 +116,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    * Timer for watching maximum stage time.
    */
   private final Timer internalCheckTimer_;
+  protected CommAddress commAddress_;
 
   protected ConductorServer(int lastPhase, int timeout, String clientsJobId,
       String testDescription) {
@@ -136,6 +138,11 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     testDescription_ = testDescription;
     visitor_ = new ServerTestingModuleVisitor();
     internalCheckTimer_ = new Timer();
+  }
+
+  @Inject
+  public void setCommAddress(CommAddress commAddress) {
+    commAddress_ = commAddress;
   }
 
   public void initialize(XMLConfiguration config) {
@@ -207,7 +214,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       logger_.debug("Enough peers in NetworkContext. Initializing clients...");
       clients_ = new HashSet<CommAddress>(NetworkContext.getInstance().getKnownPeers());
       if (!useServerAsClient_) {
-        clients_.remove(CommunicationPeer.getPeerAddress());
+        clients_.remove(commAddress_);
       }
       return true;
     } else {

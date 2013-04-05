@@ -36,7 +36,7 @@ public final class ReadWriteServer extends ConductorServer {
       clients[i] = it.next();
     for (int i = 0; i < peersNeeded_; ++i)
       networkQueue_.add(new InitMessage(clientsJobId_, null, clients[i],
-          new ReadWriteClient(jobId_, NUM_PHASES, clients, i)));
+          new ReadWriteClient(jobId_, commAddress_, NUM_PHASES, clients, i)));
   }
 
   @Override

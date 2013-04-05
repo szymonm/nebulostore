@@ -51,16 +51,14 @@ public final class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static final String CONFIG_PREFIX = "communication.";
   private XMLConfiguration config_;
-
-  // TODO(bolek, grzegorzmilka): make this non-static ASAP!
-  private static CommAddress commAddress_;
+  private CommAddress commAddress_;
 
   /**
    * Module for handling bootstraping peer to network.
    *
    * It can be either server or client, depending on configuration
    */
-  private static BootstrapService bootstrapService_;
+  private BootstrapService bootstrapService_;
 
   /**
    * DHT module available to higher layers.
@@ -258,11 +256,6 @@ public final class CommunicationPeer extends Module {
     }
   }
 
-  //NOTE(grzegorzmilka) "destatication" of this is in progress (someone's TODO)
-  public static CommAddress getPeerAddress() {
-    return commAddress_;
-  }
-
   /**
    * Kills this peer with its submodules.
    *
@@ -385,7 +378,7 @@ public final class CommunicationPeer extends Module {
         messengerServiceInQueue_.add(msg);
     } else if (msg instanceof CommMessage) {
       if (((CommMessage) msg).getSourceAddress() == null) {
-        ((CommMessage) msg).setSourceAddress(getPeerAddress());
+        ((CommMessage) msg).setSourceAddress(commAddress_);
       }
 
       if (((CommMessage) msg).getDestinationAddress() == null) {
@@ -432,6 +425,7 @@ public final class CommunicationPeer extends Module {
         BdbPeer bdbPeer = new BdbPeer(dhtPeerInQueue_, outQueue_,
             messengerServiceInQueue_, reconfigureRequest);
         bdbPeer.setConfig(config_);
+        bdbPeer.setCommAddress(commAddress_);
         dhtPeer_ = bdbPeer;
       } else if (dhtProvider.equals("kademlia")) {
         KademliaPeer kademliaPeer = new KademliaPeer(dhtPeerInQueue_, outQueue_,

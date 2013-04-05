@@ -15,7 +15,6 @@ import com.google.inject.name.Named;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.subscription.model.Subscribers;
 import org.nebulostore.subscription.model.SubscriptionNotification;
@@ -35,6 +34,7 @@ public abstract class NebuloObject implements Serializable {
   protected static final int TIMEOUT_SEC = 60;
 
   protected final NebuloAddress address_;
+  private transient CommAddress commAddress_;
   protected transient CommAddress sender_;
 
   protected transient Set<String> previousVersions_;
@@ -66,6 +66,11 @@ public abstract class NebuloObject implements Serializable {
   @Inject
   public void setDispatcherQueue(@Named("DispatcherQueue") BlockingQueue<Message> queue) {
     dispatcherQueue_ = queue;
+  }
+
+  @Inject
+  public void setCommAddress(CommAddress commAddress) {
+    commAddress_ = commAddress;
   }
 
   public NebuloAddress getAddress() {
@@ -102,16 +107,14 @@ public abstract class NebuloObject implements Serializable {
   }
 
   public void subscribe() throws NebuloException {
-    CommAddress myAddress = getInstanceCommAddress();
-    boolean subscribersExpanded = subscribers_.addSubscriber(myAddress);
+    boolean subscribersExpanded = subscribers_.addSubscriber(commAddress_);
     if (subscribersExpanded) {
       runSync();
     }
   }
 
   public void removeSubscription() throws NebuloException {
-    CommAddress myAddress = getInstanceCommAddress();
-    boolean subscribersChanged = subscribers_.removesSubscriber(myAddress);
+    boolean subscribersChanged = subscribers_.removesSubscriber(commAddress_);
     if (subscribersChanged) {
       runSync();
     }
@@ -119,17 +122,12 @@ public abstract class NebuloObject implements Serializable {
 
   protected void notifySubscribers(NotificationReason notificationReason) {
     if (isNotificationNecessary()) {
-      CommAddress applicationAddress = getInstanceCommAddress();
       SubscriptionNotification notification =
           new SubscriptionNotification(address_, notificationReason);
-      new NotifySubscribersModule(applicationAddress, dispatcherQueue_,
+      new NotifySubscribersModule(commAddress_, dispatcherQueue_,
           notification, subscribers_.getSubscribersAddresses());
       //We don't need to wait  for a ack. Async msgs will be send automatically
     }
-  }
-
-  private CommAddress getInstanceCommAddress() {
-    return CommunicationPeer.getPeerAddress();
   }
 
   private boolean isNotificationNecessary() {

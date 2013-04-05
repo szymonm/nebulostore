@@ -10,7 +10,6 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.TimeoutMessage;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.messages.dht.GetDHTMessage;
@@ -27,16 +26,14 @@ import org.nebulostore.timer.TimerContext;
  */
 public class TestPeersConnectionModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(TestPeersConnectionModule.class);
-
-  private final CommAddress peer_;
-
   private static final long TIMEOUT_MILLIS = 5000L;
 
-  public TestPeersConnectionModule(CommAddress peer) {
-    peer_ = peer;
-  }
+  private final CommAddress myAddress_;
+  private TPCVisitor visitor_ = new TPCVisitor();
 
-  TPCVisitor visitor_ = new TPCVisitor();
+  public TestPeersConnectionModule(CommAddress peer) {
+    myAddress_ = peer;
+  }
 
   /**
    * Visitor.
@@ -49,9 +46,9 @@ public class TestPeersConnectionModule extends JobModule {
     @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
-      networkQueue_.add(new GetDHTMessage(message.getId(), peer_.toKeyDHT()));
+      networkQueue_.add(new GetDHTMessage(message.getId(), myAddress_.toKeyDHT()));
       sendTime_ = System.currentTimeMillis();
-      networkQueue_.add(new ConnectionTestMessage(null,  peer_));
+      networkQueue_.add(new ConnectionTestMessage(null,  myAddress_));
       TimerContext.getInstance().notifyWithTimeoutMessageAfter(getJobId(), TIMEOUT_MILLIS);
       return null;
     }
@@ -60,9 +57,9 @@ public class TestPeersConnectionModule extends JobModule {
     public Void visit(ConnectionTestResponseMessage message) {
       // TODO(szm): other statistics
       // TODO(szm): bandwidth??
-      stats_.add(new PeerConnectionSurvey(CommunicationPeer.getPeerAddress(),
+      stats_.add(new PeerConnectionSurvey(myAddress_,
           System.currentTimeMillis(), ConnectionAttribute.AVAILABILITY, 1.0));
-      stats_.add(new PeerConnectionSurvey(CommunicationPeer.getPeerAddress(),
+      stats_.add(new PeerConnectionSurvey(myAddress_,
           System.currentTimeMillis(), ConnectionAttribute.LATENCY,
           (sendTime_ - System.currentTimeMillis()) / 2.0));
 
@@ -97,7 +94,8 @@ public class TestPeersConnectionModule extends JobModule {
         metadata.getStatistics().add(pcs);
       }
       //TODO(szm): A co z synchronizacja na poziomie DHT??? -> odpowiedni merge
-      networkQueue_.add(new PutDHTMessage(getJobId(), peer_.toKeyDHT(), new ValueDHT(metadata)));
+      networkQueue_.add(new PutDHTMessage(getJobId(), myAddress_.toKeyDHT(),
+          new ValueDHT(metadata)));
       TimerContext.getInstance().cancelNotifications(getJobId());
       endJobModule();
     }

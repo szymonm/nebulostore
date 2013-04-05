@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -71,7 +70,7 @@ public class RegisterInstanceInDHTModule extends ReturningJobModule<Boolean> {
       if (state_ == State.WAITING_FOR_RESPONSE) {
         logger_.debug("Unable to retrive InstanceMetadata from DHT, putting new.");
         // TODO(szm): read from file if exists
-        networkQueue_.add(new PutDHTMessage(jobId_, CommunicationPeer.getPeerAddress().toKeyDHT(),
+        networkQueue_.add(new PutDHTMessage(jobId_, myAddress_.toKeyDHT(),
           new ValueDHT(new InstanceMetadata(appKey_, myAddress_, new LinkedList<CommAddress>()))));
         state_ = State.PUT_DHT;
       } else if (state_ == State.PUT_DHT) {

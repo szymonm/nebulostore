@@ -167,6 +167,7 @@ public class Peer implements Runnable {
 
     // TODO(szymonmatejczyk): Remove GlobalContext.
     GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
+    NetworkContext.getInstance().setCommAddress(commAddress_);
 
     //Register instance in DHT
     /*GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));

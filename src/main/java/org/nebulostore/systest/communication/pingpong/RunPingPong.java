@@ -91,7 +91,7 @@ public final class RunPingPong extends Peer {
   private void initializeServer() throws RemoteException {
     logger_.info("Creating server.");
     try {
-      testingServer_ = new PingPongServer();
+      testingServer_ = new PingPongServer(commAddress_);
     } catch (NebuloException e) {
       logger_.error("Caught exception when creating peer: " + e);
       return;
@@ -139,7 +139,7 @@ public final class RunPingPong extends Peer {
     }
 
     try {
-      pingPongPeer_ = new PingPongPeerImpl(peerId);
+      pingPongPeer_ = new PingPongPeerImpl(peerId, commAddress_);
     } catch (NebuloException e) {
       logger_.error("Caught NebuloException when creating peer");
       throw e;

@@ -19,8 +19,8 @@ public final class PongClient extends ConductorClient {
   BigInteger magicNumber_;
   CommAddress sender_;
 
-  public PongClient(String serverJobId, int numPhases) {
-    super(serverJobId, numPhases);
+  public PongClient(String serverJobId, CommAddress serverAddress, int numPhases) {
+    super(serverJobId, numPhases, serverAddress);
   }
 
   @Override

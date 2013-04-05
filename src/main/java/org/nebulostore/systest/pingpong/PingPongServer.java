@@ -35,9 +35,9 @@ public final class PingPongServer extends ConductorServer {
     logger_.debug("Initializing pong: " + pongAddress.toString());
 
     networkQueue_.add(new InitMessage(clientsJobId_, null, pingAddress,
-        new PingClient(jobId_, NUM_PHASES, pongAddress)));
+        new PingClient(jobId_, commAddress_, NUM_PHASES, pongAddress)));
     networkQueue_.add(new InitMessage(clientsJobId_, null, pongAddress,
-        new PongClient(jobId_, NUM_PHASES)));
+        new PongClient(jobId_, commAddress_, NUM_PHASES)));
   }
 
   @Override

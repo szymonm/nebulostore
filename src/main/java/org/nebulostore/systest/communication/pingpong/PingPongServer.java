@@ -25,9 +25,12 @@ public final class PingPongServer extends TestingServerImpl {
   // 60 seconds
   private static final int PING_DELAY = 60000;
 
-  public PingPongServer() throws NebuloException {
+  private CommAddress commAddress_;
+
+  public PingPongServer(CommAddress commAddress) throws NebuloException {
+    commAddress_ = commAddress;
     try {
-      peers_.put(0, new PingPongPeerImpl(0));
+      peers_.put(0, new PingPongPeerImpl(0, commAddress));
     } catch (NebuloException e) {
       logger_.error("NebuloException when creating server's peer: " + e);
       throw e;

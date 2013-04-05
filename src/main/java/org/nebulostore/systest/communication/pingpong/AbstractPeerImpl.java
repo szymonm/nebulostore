@@ -26,9 +26,11 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
   protected CommunicationPeer communicationPeer_;
   protected Thread communicationPeerThread_;
   protected int peerId_;
+  protected CommAddress commAddress_;
 
-  public AbstractPeerImpl(int peerId) throws NebuloException {
+  public AbstractPeerImpl(int peerId, CommAddress commAddress) throws NebuloException {
     logger_ = Logger.getLogger(this.getClass());
+    commAddress_ = commAddress;
     peerId_ = peerId;
 
     try {
@@ -98,7 +100,7 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
     if (communicationPeer_ == null) {
       throw new IllegalStateException("Can not get address from non existent commPeer.");
     }
-    return CommunicationPeer.getPeerAddress();
+    return commAddress_;
   }
 
   public boolean isActive() throws RemoteException {

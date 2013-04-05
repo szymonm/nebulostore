@@ -38,8 +38,9 @@ public final class ReadWriteClient extends ConductorClient {
   private transient NebuloObjectFactory objectFactory_;
   private final ReadWriteStats stats_;
 
-  public ReadWriteClient(String serverJobId, int numPhases, CommAddress[] clients, int clientId) {
-    super(serverJobId, numPhases);
+  public ReadWriteClient(String serverJobId, CommAddress serverAddress, int numPhases,
+      CommAddress[] clients, int clientId) {
+    super(serverJobId, numPhases, serverAddress);
     clients_ = clients;
     clientId_ = clientId;
     files_ = new Vector<NebuloAddress>();

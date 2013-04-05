@@ -20,8 +20,9 @@ public final class PingClient extends ConductorClient {
   private final CommAddress pongAddress_;
   private final BigInteger magicNumber_;
 
-  public PingClient(String serverJobId, int numPhases, CommAddress pongAddress) {
-    super(serverJobId, numPhases);
+  public PingClient(String serverJobId, CommAddress serverAddress, int numPhases,
+      CommAddress pongAddress) {
+    super(serverJobId, numPhases, serverAddress);
     magicNumber_ = CryptoUtils.getRandomId();
     pongAddress_ = pongAddress;
   }

@@ -9,7 +9,6 @@ import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.messages.ErrorMessage;
 import org.nebulostore.conductor.messages.FinishMessage;
@@ -20,6 +19,7 @@ import org.nebulostore.conductor.messages.StatsMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.conductor.messages.UserCommMessage;
+
 /**
  * Base class for all TestingModules(test cases run on peers).
  * @author szymonmatejczyk
@@ -43,10 +43,10 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
   protected int phase_;
 
-  public ConductorClient(String serverJobId, int numPhases) {
+  public ConductorClient(String serverJobId, int numPhases, CommAddress serverCommAddress) {
     serverJobId_ = serverJobId;
     numPhases_ = numPhases;
-    server_ = CommunicationPeer.getPeerAddress();
+    server_ = serverCommAddress;
   }
 
   /**
@@ -58,8 +58,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
   protected void phaseFinished() {
     logger_.debug("Phase finished. Sending TocMessage");
-    networkQueue_.add(new TocMessage(serverJobId_, CommunicationPeer.getPeerAddress(), server_,
-        phase_));
+    networkQueue_.add(new TocMessage(serverJobId_, null, server_, phase_));
     ++phase_;
   }
 

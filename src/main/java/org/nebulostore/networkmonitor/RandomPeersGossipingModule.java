@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.JobModule;
@@ -14,7 +16,6 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.TimeoutMessage;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.networkmonitor.messages.RandomPeersSampleMessage;
@@ -34,6 +35,12 @@ public class RandomPeersGossipingModule extends JobModule {
   public static final long INTERVAL = 1000L;
 
   private final RPGVisitor visitor_ = new RPGVisitor();
+  private CommAddress myAddress_;
+
+  @Inject
+  void setCommAddress(CommAddress myAddress) {
+    myAddress_ = myAddress;
+  }
 
   /**
    * Visitor.
@@ -65,7 +72,7 @@ public class RandomPeersGossipingModule extends JobModule {
       }
       CommAddress remotePeer = it.next();
 
-      view.add(CommunicationPeer.getPeerAddress());
+      view.add(myAddress_);
       networkQueue_.add(new RandomPeersSampleMessage(null, remotePeer, view));
       TimerContext.getInstance().notifyWithTimeoutMessageAfter(getJobId(), TIMEOUT_MILLIS);
       return null;
@@ -80,9 +87,9 @@ public class RandomPeersGossipingModule extends JobModule {
         NetworkContext.getInstance().setRandomPeersSample(view);
       } else {
         logger_.debug("Received gossiping message.");
-        view.add(CommunicationPeer.getPeerAddress());
+        view.add(myAddress_);
         networkQueue_.add(new RandomPeersSampleMessage(null, message.getSourceAddress(), view));
-        view.remove(CommunicationPeer.getPeerAddress());
+        view.remove(myAddress_);
         view.addAll(message.getPeersSet());
         view = selectView(view);
       }

@@ -38,8 +38,9 @@ public final class ListsClient extends ConductorClient {
   private NebuloList myList_;
   private transient NebuloObjectFactory objectFactory_;
 
-  public ListsClient(String serverJobId, int numPhases, CommAddress[] clients, int clientId) {
-    super(serverJobId, numPhases);
+  public ListsClient(String serverJobId, CommAddress serverAddress, int numPhases,
+      CommAddress[] clients, int clientId) {
+    super(serverJobId, numPhases, serverAddress);
     clients_ = clients;
     clientId_ = clientId;
     addresses_ = new Vector<NebuloAddress>();

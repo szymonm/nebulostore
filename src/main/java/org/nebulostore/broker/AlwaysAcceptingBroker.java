@@ -14,7 +14,6 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.broker.messages.ContractOfferMessage;
 import org.nebulostore.broker.messages.OfferReplyMessage;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.crypto.CryptoUtils;
@@ -86,8 +85,7 @@ public class AlwaysAcceptingBroker extends Broker {
         while (iterator.hasNext()) {
           CommAddress address = iterator.next();
           if (BrokerContext.getInstance().getUserContracts(address) == null &&
-              !address.equals(CommunicationPeer.getPeerAddress()) &&
-              !offerRecipients_.contains(address)) {
+              !address.equals(myAddress_) && !offerRecipients_.contains(address)) {
             // Send offer to new peer (10MB by default).
             logger_.debug("Sending offer to " + address);
             networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), null, address,
