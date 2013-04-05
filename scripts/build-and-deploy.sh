@@ -4,7 +4,7 @@
 # Optional parameters: number_of_peers maven_profile_name
 
 PEERS_NUM=4
-MAVEN_JAR="target/nebulostore-0.5.jar"
+MAVEN_JAR="target/nebulostore-0.9-SNAPSHOT.jar"
 MAVEN_LIB="target/lib"
 MAVEN_TARGET="peer"
 BUILD_DIR="build"

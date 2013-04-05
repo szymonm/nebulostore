@@ -32,6 +32,7 @@
         </repository>
     </repositories>
 
+    <!--
     <distributionManagement>
         <snapshotRepository>
             <id>naan</id>
@@ -44,6 +45,7 @@
             <url>http://naan.mimuw.edu.pl:8888/artifactory/maven</url>
         </repository>
     </distributionManagement>
+    -->
 
     <scm>
         <connection>scm:svn:https://svn.mimuw.edu.pl/repos/nebulostore/trunk</connection>
