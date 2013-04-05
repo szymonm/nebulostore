@@ -100,14 +100,16 @@ public class Dispatcher extends Module {
             handler.setInQueue(newInQueue);
             injector_.injectMembers(handler);
             if (handler.isQuickNonBlockingTask()) {
-              logger_.debug("Executing in current thread.");
+              logger_.debug("Executing in current thread with handler of type " +
+                  handler.getClass().getName());
               handler.run();
             } else {
               Thread newThread = new Thread(handler, handler.getClass().getSimpleName() + ":" +
                   jobId);
               workersQueues_.put(jobId, newInQueue);
               workersThreads_.put(jobId, newThread);
-              logger_.debug("Starting new thread.");
+              logger_.debug("Starting new thread with handler of type " +
+                  handler.getClass().getName());
               newThread.start();
               newInQueue.add(message);
             }

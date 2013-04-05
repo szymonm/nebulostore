@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.api.ApiFacade;
+import org.nebulostore.addressing.AppKey;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
@@ -39,12 +39,17 @@ public class RegisterInstanceInDHTModule extends ReturningJobModule<Boolean> {
   private enum State { QUERY_DHT, WAITING_FOR_RESPONSE, PUT_DHT }
 
   private CommAddress myAddress_;
+  private AppKey appKey_;
 
   @Inject
-  private void setMyAddress(CommAddress myAddress) {
+  public void setMyAddress(CommAddress myAddress) {
     myAddress_ = myAddress;
   }
 
+  @Inject
+  public void setMyAppKey(AppKey appKey) {
+    appKey_ = appKey;
+  }
 
   /**
    * Visitor.
@@ -66,10 +71,8 @@ public class RegisterInstanceInDHTModule extends ReturningJobModule<Boolean> {
       if (state_ == State.WAITING_FOR_RESPONSE) {
         logger_.debug("Unable to retrive InstanceMetadata from DHT, putting new.");
         // TODO(szm): read from file if exists
-        networkQueue_.add(new PutDHTMessage(jobId_,
-            CommunicationPeer.getPeerAddress().toKeyDHT(),
-            new ValueDHT(new InstanceMetadata(ApiFacade.getAppKey(),
-                myAddress_, new LinkedList<CommAddress>()))));
+        networkQueue_.add(new PutDHTMessage(jobId_, CommunicationPeer.getPeerAddress().toKeyDHT(),
+          new ValueDHT(new InstanceMetadata(appKey_, myAddress_, new LinkedList<CommAddress>()))));
         state_ = State.PUT_DHT;
       } else if (state_ == State.PUT_DHT) {
         logger_.error("Unable to put InstanceMetadata to DHT. " +

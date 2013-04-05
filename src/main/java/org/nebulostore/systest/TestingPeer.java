@@ -26,7 +26,8 @@ public class TestingPeer extends Peer {
     logger_.info("Starting testing peer with appKey = " + appKey_);
     readConfig();
     startPeer();
-    putKey();
+    runBroker();
+    putKey(appKey_);
 
     if (isTestServer_)
       runTestingServer();

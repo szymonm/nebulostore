@@ -12,7 +12,6 @@ import com.google.inject.Inject;
 import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.api.ApiFacade;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.NebuloFile;
@@ -64,8 +63,8 @@ public final class TextInterface extends Peer {
   protected void runPeer() {
     System.out.print("Starting NebuloStore ...\n");
     startPeer();
-    putKey();
-    runInitialModules();
+    putKey(appKey_);
+    runBroker();
     try {
       inputLoop();
     } catch (IOException e) {
@@ -125,13 +124,7 @@ public final class TextInterface extends Peer {
       tokens = new String[2];
       tokens[1] = DEFAULT_APPKEY;
     }
-    try {
-      ApiFacade.putKey(new AppKey(new BigInteger(tokens[1])));
-      System.out.println("Successfully executed putKey(" + tokens[1] + ").");
-    } catch (NebuloException exception) {
-      System.out.println("Got exception: " + exception.getMessage());
-      return;
-    }
+    super.putKey(new AppKey(new BigInteger(tokens[1])));
   }
 
   /**

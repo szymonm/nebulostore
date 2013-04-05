@@ -1,5 +1,6 @@
 package org.nebulostore.appcore;
 
+import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,9 +16,10 @@ import com.google.inject.name.Names;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.addressing.AppKey;
-import org.nebulostore.api.ApiFacade;
+import org.nebulostore.addressing.ReplicationGroup;
 import org.nebulostore.api.DeleteNebuloObjectModule;
 import org.nebulostore.api.GetNebuloObjectModule;
+import org.nebulostore.api.PutKeyModule;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.ObjectDeleter;
@@ -59,6 +61,7 @@ public class Peer implements Runnable {
   protected Broker broker_;
   protected XMLConfiguration config_;
   protected Injector injector_;
+  protected CommAddress commAddress_;
 
   public void setConfiguration(XMLConfiguration config) {
     config_ = config;
@@ -68,11 +71,13 @@ public class Peer implements Runnable {
   public void setDependencies(@Named("DispatcherQueue") BlockingQueue<Message> dispatcherQueue,
                               @Named("NetworkQueue") BlockingQueue<Message> networkQueue,
                               Broker broker,
-                              AppKey appKey) {
+                              AppKey appKey,
+                              CommAddress commAddress) {
     dispatcherInQueue_ = dispatcherQueue;
     networkInQueue_ = networkQueue;
     broker_ = broker;
     appKey_ = appKey;
+    commAddress_ = commAddress;
   }
 
   @Override
@@ -132,47 +137,44 @@ public class Peer implements Runnable {
 
   protected void runPeer() {
     startPeer();
-    putKey();
-    runInitialModules();
+    runBroker();
+    runAsyncModules();
+    putKey(appKey_);
     finishPeer();
   }
 
-  protected void putKey() {
+  protected void putKey(AppKey appKey) {
+    // TODO(bolek): This should be part of broker.
+    PutKeyModule module = new PutKeyModule(new ReplicationGroup(new CommAddress[]{commAddress_},
+        new BigInteger("0"), new BigInteger("1000000")), dispatcherInQueue_);
     try {
-      ApiFacade.putKey(appKey_);
-    } catch (NebuloException e) {
-      logger_.error(e);
+      module.getResult(30);
+    } catch (NebuloException exception) {
+      logger_.error("Unable to execute PutKeyModule!", exception);
     }
   }
 
   /**
-   * Method that creates, connects and runs core application modules.
+   * Method that creates, connects and runs Dispatcher and Communication modules.
    */
   protected void startPeer() {
-    // TODO(bolek): Remove ApiFacade.
-    ApiFacade.initApi(dispatcherInQueue_);
+    Dispatcher dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
+    dispatcherThread_ = new Thread(dispatcher, "Dispatcher");
 
-    // Create dispatcher - outQueue will be passed to newly created tasks.
-    dispatcherThread_ = new Thread(new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_),
-        "Dispatcher");
-
-    // Create network module.
     CommunicationPeer peer = new CommunicationPeer(networkInQueue_, dispatcherInQueue_);
     injector_.injectMembers(peer);
     networkThread_ = new Thread(peer, "CommunicationPeer");
 
-    //TODO(bolek): Remove NetworkContext.
-    //NetworkContext.getInstance().setAppKey(appKey_);
+    // TODO(szymonmatejczyk): Remove GlobalContext.
     GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
 
     //Register instance in DHT
     /*GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
     dispatcherInQueue_.add(new JobInitMessage(new RegisterInstanceInDHTModule()));*/
 
-    runBroker();
-
     // Initialize Replicator.
     Replicator.setConfig(config_);
+    Replicator.setAppKey(appKey_);
 
     // Run everything.
     networkThread_.start();
@@ -183,9 +185,7 @@ public class Peer implements Runnable {
     broker_.runThroughDispatcher();
   }
 
-  protected void runInitialModules() {
-    // TODO(szm): better module loading
-
+  protected void runAsyncModules() {
     // Periodically checking asynchronous messages.
     MessageGenerator retrieveAMGenerator = new MessageGenerator() {
       @Override

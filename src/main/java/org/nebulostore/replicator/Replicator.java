@@ -16,8 +16,8 @@ import com.google.inject.Inject;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
+import org.nebulostore.addressing.AppKey;
 import org.nebulostore.addressing.ObjectId;
-import org.nebulostore.api.ApiFacade;
 import org.nebulostore.api.GetEncryptedObjectModule;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
@@ -67,6 +67,7 @@ public class Replicator extends JobModule {
       Set<String>>();
   private static Hashtable<ObjectId, Boolean> freshnessMap_ = new Hashtable<ObjectId, Boolean>(256);
   private static Hashtable<ObjectId, Semaphore> locksMap_ = new Hashtable<ObjectId, Semaphore>();
+  private static AppKey appKey_;
 
   private final MessageVisitor<Void> visitor_;
 
@@ -74,6 +75,11 @@ public class Replicator extends JobModule {
   public static void setConfig(XMLConfiguration config) {
     config_ = config;
     pathPrefix_ = config_.getString(CONFIG_PREFIX + "storage-path");
+  }
+
+  @Inject
+  public static void setAppKey(AppKey appKey) {
+    appKey_ = appKey;
   }
 
   public Replicator(String jobId, BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
@@ -469,6 +475,6 @@ public class Replicator extends JobModule {
 
   private static String getLocationPrefix() {
     checkNotNull(pathPrefix_);
-    return pathPrefix_ + ApiFacade.getAppKey().getKey().intValue() + "/";
+    return pathPrefix_ + "/" + appKey_.getKey().intValue() + "/";
   }
 }

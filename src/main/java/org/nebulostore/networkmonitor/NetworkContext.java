@@ -6,7 +6,6 @@ import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.AppKey;
 import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.CommunicationPeer;
@@ -22,7 +21,6 @@ import org.nebulostore.timer.MessageGenerator;
 public final class NetworkContext {
   private static Logger logger_ = Logger.getLogger(NetworkContext.class);
   private static NetworkContext instance_;
-  private static AppKey appKey_;
 
   private final HashSet<CommAddress> knownPeers_;
   private final Vector<CommAddress> knownPeersVector_;
@@ -96,14 +94,6 @@ public final class NetworkContext {
       }
       contextChanged();
     }
-  }
-
-  public void setAppKey(AppKey appKey) {
-    appKey_ = appKey;
-  }
-
-  public static AppKey getAppKey() {
-    return appKey_;
   }
 
   private BlockingQueue<Message> getDispatcherQueue() {
