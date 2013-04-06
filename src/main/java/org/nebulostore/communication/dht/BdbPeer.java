@@ -265,14 +265,6 @@ public class BdbPeer extends Module {
   @Override
   protected void processMessage(Message msg) throws NebuloException {
     logger_.debug("Processing message: " + msg);
-
-    if (isProxy_ && holderCommAddress_ == null) {
-      logger_.debug("Holder not set up, waiting for HolderAdvertisementMessage");
-      messageCache_.add(msg);
-      return;
-    }
-
-    logger_.info("Message accepted: " + msg);
     msg.accept(msgVisitor_);
   }
 
@@ -294,13 +286,13 @@ public class BdbPeer extends Module {
    */
   private final class BDBProxyMessageVisitor extends MessageVisitor<Void> {
     @Override
-    public Void visit(EndModuleMessage msg) {
-      shutdown();
-      return null;
-    }
-
-    @Override
     public Void visit(DHTMessage msg) {
+      if (holderCommAddress_ == null) {
+        logger_.debug("Holder not set up, waiting for HolderAdvertisementMessage");
+        messageCache_.add(msg);
+        return null;
+      }
+
       logger_.debug("Message accepted. " + msg);
       logger_.debug("Putting message to be sent to holder (taskId = " +
           msg.getId() + ")");
@@ -310,8 +302,22 @@ public class BdbPeer extends Module {
     }
 
     @Override
-    public Void visit(Message msg) {
-      logger_.warn("Unknown message of type: " + msg);
+    public Void visit(EndModuleMessage msg) {
+      shutdown();
+      return null;
+    }
+
+    @Override
+    public Void visit(HolderAdvertisementMessage msg) throws NebuloException {
+      logger_.info("Message accepted: " + msg);
+
+      if (holderCommAddress_ == null && reconfigureRequest_ != null) {
+        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
+      }
+
+      holderCommAddress_ = msg.getSourceAddress();
+      logger_.info("Holder detected at " + holderCommAddress_);
+      cleanCache();
       return null;
     }
   }
