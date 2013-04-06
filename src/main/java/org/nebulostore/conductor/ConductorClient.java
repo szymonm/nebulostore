@@ -102,7 +102,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     if (visitor != null)
       message.accept(visitor);
     else
-      logger_.debug("ignoring " + message.getClass().getName() + " in last phase.");
+      logger_.debug("ignoring " + message.getClass().getSimpleName() + " in last phase.");
   }
 
   protected void assertTrue(Boolean b, String message) {
@@ -149,7 +149,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     @Override
     public Void visit(InitMessage message) {
       jobId_ = message.getId();
-      logger_.debug("Test client initialized: " + message.getHandler().getClass().toString());
+      logger_.debug("Test client initialized: " + message.getHandler().getClass().getSimpleName());
       phaseFinished();
       return null;
     }

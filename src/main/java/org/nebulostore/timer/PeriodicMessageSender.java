@@ -46,7 +46,7 @@ public class PeriodicMessageSender extends JobModule {
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       Message m = messageGenerator_.generate();
-      logger_.debug("PMS: " + m.getClass().toString());
+      logger_.debug("PMS: " + m.getClass().getSimpleName());
       outQueue_.add(m);
       endJobModule();
       TimerContext.getInstance().addDelayedMessage(System.currentTimeMillis() + period_,

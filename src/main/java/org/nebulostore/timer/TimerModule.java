@@ -50,7 +50,7 @@ public class TimerModule extends JobModule {
         while (context_.nextMessageTime() != null) {
           if (context_.nextMessageTime() <= System.currentTimeMillis()) {
             Message m = context_.pollNextMessage();
-            logger_.debug("sending delayed message: " + m.getClass().toString() + " id: " +
+            logger_.debug("sending delayed message: " + m.getClass().getSimpleName() + " id: " +
                           m.getId());
             outQueue_.add(m);
           } else {

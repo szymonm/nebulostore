@@ -17,7 +17,6 @@ planetlab3.mini.pw.edu.pl
 planetlab6.csee.usf.edu
 rochefort.infonet.fundp.ac.be
 ple2.ipv6.lip6.fr
-host149-82-static.93-94-b.business.telecomitalia.it
 planetlab2.inf.ethz.ch
 ple2.tu.koszalin.pl
 planetlabeu-2.tssg.org
@@ -36,7 +35,6 @@ planetlab3.upc.es
 planetlab2.ics.forth.gr
 planetlab1.fct.ualg.pt
 plab-2.diegm.uniud.it
-host147-82-static.93-94-b.business.telecomitalia.it
 iraplab1.iralab.uni-karlsruhe.de
 planetlab3.inf.ethz.ch
 planetlab1.montefiore.ulg.ac.be

@@ -34,6 +34,6 @@ public abstract class Message implements Serializable {
 
   public JobModule getHandler() throws NebuloException {
     // TODO(bolek): Change it into a more specific exception type.
-    throw new NebuloException(getClass().toString() + "  is not an initializing message type.");
+    throw new NebuloException(getClass().getSimpleName() + " is not an initializing message type.");
   }
 }

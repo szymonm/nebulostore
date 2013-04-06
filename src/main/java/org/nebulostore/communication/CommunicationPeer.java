@@ -350,10 +350,10 @@ public final class CommunicationPeer extends Module {
       outQueue_.add(msg);
     } else if (msg instanceof DHTMessage) {
       if (msg instanceof InDHTMessage) {
-        logger_.debug("InDHTMessage forwarded to DHT" + msg.getClass().toString());
+        logger_.debug("InDHTMessage forwarded to DHT" + msg.getClass().getSimpleName());
         dhtPeerInQueue_.add(msg);
       } else if (msg instanceof OutDHTMessage) {
-        logger_.debug("OutDHTMessage forwarded to Dispatcher" + msg.getClass().toString());
+        logger_.debug("OutDHTMessage forwarded to Dispatcher" + msg.getClass().getSimpleName());
         outQueue_.add(msg);
       } else {
         logger_.warn("Unrecognized DHTMessage: " + msg);

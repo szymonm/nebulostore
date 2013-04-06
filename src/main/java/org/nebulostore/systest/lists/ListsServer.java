@@ -15,7 +15,7 @@ import org.nebulostore.crypto.CryptoUtils;
  */
 public final class ListsServer extends ConductorServer {
   private static final int NUM_PHASES = 3;
-  private static final int TIMEOUT_SEC = 400;
+  private static final int TIMEOUT_SEC = 600;
   private static final int INITIAL_SLEEP = 5000;
 
   public ListsServer() {

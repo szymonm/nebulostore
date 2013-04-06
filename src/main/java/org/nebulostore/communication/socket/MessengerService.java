@@ -77,7 +77,7 @@ public class MessengerService extends Module {
       commMsg.setSourceAddress(resolver_.getMyCommAddress());
     }
     logger_.debug("Sending msg: " + commMsg + " of class: " +
-        commMsg.getClass().getName() + " to: " +
+        commMsg.getClass().getSimpleName() + " to: " +
         commMsg.getDestinationAddress());
 
     service_.execute(new MessageSender(commMsg));

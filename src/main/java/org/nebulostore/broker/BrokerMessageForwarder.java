@@ -33,7 +33,7 @@ public class BrokerMessageForwarder extends JobModule {
 
   @Override
   protected void initModule() {
-    logger_.debug("Forwarding message " + message_.getClass().getName() + " to Broker.");
+    logger_.debug("Forwarding message " + message_.getClass().getSimpleName() + " to Broker.");
     broker_.getInQueue().add(message_);
     endJobModule();
   }

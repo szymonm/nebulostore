@@ -135,7 +135,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
     }
 
     protected void incorrectState(String stateName, Message message) {
-      logger_.warn(message.getClass().getName() + " received in state " + stateName);
+      logger_.warn(message.getClass().getSimpleName() + " received in state " + stateName);
     }
   }
 

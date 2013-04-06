@@ -90,7 +90,7 @@ public class Dispatcher extends Module {
       if (message.getId() != null) {
         String jobId = message.getId();
         logger_.debug("Received message with jobID: " + jobId + " and class name: " +
-            message.getClass().getName());
+            message.getClass().getSimpleName());
 
         if (!workersQueues_.containsKey(jobId)) {
           // Spawn a new thread to handle the message.
@@ -101,15 +101,15 @@ public class Dispatcher extends Module {
             injector_.injectMembers(handler);
             if (handler.isQuickNonBlockingTask()) {
               logger_.debug("Executing in current thread with handler of type " +
-                  handler.getClass().getName());
+                  handler.getClass().getSimpleName());
               handler.run();
             } else {
               Thread newThread = new Thread(handler, handler.getClass().getSimpleName() + ":" +
-                  jobId);
+                  jobId.substring(0, Math.min(8, jobId.length())));
               workersQueues_.put(jobId, newInQueue);
               workersThreads_.put(jobId, newThread);
               logger_.debug("Starting new thread with handler of type " +
-                  handler.getClass().getName());
+                  handler.getClass().getSimpleName());
               newThread.start();
               newInQueue.add(message);
             }
@@ -123,7 +123,7 @@ public class Dispatcher extends Module {
         return null;
       } else {
         logger_.debug("Received message with NULL jobID and class name: " +
-            message.getClass().getName());
+            message.getClass().getSimpleName());
       }
       return null;
     }
