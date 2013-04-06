@@ -5,14 +5,14 @@ import java.util.concurrent.BlockingQueue;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.addressing.ContractList;
-import org.nebulostore.addressing.IntervalCollisionException;
-import org.nebulostore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.ReturningJobModule;
+import org.nebulostore.appcore.addressing.AppKey;
+import org.nebulostore.appcore.addressing.ContractList;
+import org.nebulostore.appcore.addressing.IntervalCollisionException;
+import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;

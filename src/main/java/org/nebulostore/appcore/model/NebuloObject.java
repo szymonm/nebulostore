@@ -12,8 +12,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
-import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.subscription.model.Subscribers;

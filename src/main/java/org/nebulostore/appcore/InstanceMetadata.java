@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.nebulostore.addressing.AppKey;
+import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.Mergeable;
 import org.nebulostore.networkmonitor.PeerConnectionSurvey;

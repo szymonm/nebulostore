@@ -2,8 +2,8 @@ package org.nebulostore.appcore;
 
 import java.io.Serializable;
 
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.addressing.ContractList;
+import org.nebulostore.appcore.addressing.AppKey;
+import org.nebulostore.appcore.addressing.ContractList;
 import org.nebulostore.communication.dht.Mergeable;
 
 /**

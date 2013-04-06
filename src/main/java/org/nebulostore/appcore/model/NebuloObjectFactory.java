@@ -3,9 +3,9 @@ package org.nebulostore.appcore.model;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.addressing.ObjectId;
+import org.nebulostore.appcore.addressing.AppKey;
+import org.nebulostore.appcore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.crypto.CryptoUtils;
 

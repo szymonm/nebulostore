@@ -16,12 +16,12 @@ import com.google.inject.Inject;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.addressing.ObjectId;
 import org.nebulostore.api.GetEncryptedObjectModule;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.addressing.AppKey;
+import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.communication.address.CommAddress;

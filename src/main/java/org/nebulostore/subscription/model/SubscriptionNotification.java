@@ -2,7 +2,7 @@ package org.nebulostore.subscription.model;
 
 import java.io.Serializable;
 
-import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

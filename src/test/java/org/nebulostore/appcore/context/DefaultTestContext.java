@@ -7,8 +7,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 
-import org.nebulostore.addressing.AppKey;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.communication.address.CommAddress;
 
 /**

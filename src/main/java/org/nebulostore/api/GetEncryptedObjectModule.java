@@ -4,8 +4,8 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.communication.address.CommAddress;

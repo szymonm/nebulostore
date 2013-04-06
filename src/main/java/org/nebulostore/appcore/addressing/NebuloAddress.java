@@ -1,6 +1,7 @@
-package org.nebulostore.addressing;
+package org.nebulostore.appcore.addressing;
 
 import java.io.Serializable;
+
 
 /**
  * (AppKey, ObjectId) pair uniquely identifying object.

@@ -15,12 +15,12 @@ import com.google.inject.name.Names;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.addressing.ReplicationGroup;
 import org.nebulostore.api.DeleteNebuloObjectModule;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.api.PutKeyModule;
 import org.nebulostore.api.WriteNebuloObjectModule;
+import org.nebulostore.appcore.addressing.AppKey;
+import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.ObjectDeleter;
 import org.nebulostore.appcore.model.ObjectGetter;

@@ -1,4 +1,4 @@
-package org.nebulostore.addressing;
+package org.nebulostore.appcore.addressing;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
 

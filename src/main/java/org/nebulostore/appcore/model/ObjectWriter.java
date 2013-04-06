@@ -2,7 +2,7 @@ package org.nebulostore.appcore.model;
 
 import java.util.Set;
 
-import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.replicator.TransactionAnswer;
 

@@ -2,7 +2,7 @@ package org.nebulostore.systest.readwrite;
 
 import java.util.Vector;
 
-import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.conductor.CaseStatistics;
 
 /**

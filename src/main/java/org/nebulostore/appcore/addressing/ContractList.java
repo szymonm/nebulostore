@@ -1,9 +1,8 @@
-package org.nebulostore.addressing;
+package org.nebulostore.appcore.addressing;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-
 
 /**
  * List of replication groups.

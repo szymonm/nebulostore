@@ -6,13 +6,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.ContractList;
-import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.TwoStepReturningJobModule;
+import org.nebulostore.appcore.addressing.ContractList;
+import org.nebulostore.appcore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.appcore.model.NebuloObject;

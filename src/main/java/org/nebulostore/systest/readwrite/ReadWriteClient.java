@@ -8,9 +8,9 @@ import java.util.Vector;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.AppKey;
-import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.addressing.ObjectId;
+import org.nebulostore.appcore.addressing.AppKey;
+import org.nebulostore.appcore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.NebuloFile;
 import org.nebulostore.appcore.model.NebuloObjectFactory;

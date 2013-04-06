@@ -3,11 +3,11 @@ package org.nebulostore.async;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.NebuloAddress;
 import org.nebulostore.appcore.InstanceMetadata;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;

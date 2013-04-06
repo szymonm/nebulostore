@@ -1,4 +1,4 @@
-package org.nebulostore.addressing;
+package org.nebulostore.appcore.addressing;
 
 import java.io.Serializable;
 import java.math.BigInteger;

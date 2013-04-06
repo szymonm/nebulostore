@@ -1,13 +1,13 @@
 package org.nebulostore.api;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.ContractList;
-import org.nebulostore.addressing.NebuloAddress;
-import org.nebulostore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.ReturningJobModule;
+import org.nebulostore.appcore.addressing.ContractList;
+import org.nebulostore.appcore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;

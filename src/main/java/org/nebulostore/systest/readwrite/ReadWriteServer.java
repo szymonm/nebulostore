@@ -3,7 +3,7 @@ package org.nebulostore.systest.readwrite;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.CaseStatistics;
 import org.nebulostore.conductor.ConductorServer;

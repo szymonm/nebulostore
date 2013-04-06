@@ -1,6 +1,6 @@
 package org.nebulostore.appcore.model;
 
-import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**

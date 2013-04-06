@@ -3,7 +3,7 @@ package org.nebulostore.appcore.model;
 import java.io.Serializable;
 import java.math.BigInteger;
 
-import org.nebulostore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.crypto.CryptoUtils;
 
 /**

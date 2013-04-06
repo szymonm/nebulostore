@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.addressing.AppKey;
+import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
