@@ -18,6 +18,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.messages.dht.DelDHTMessage;
@@ -44,6 +45,7 @@ public class KademliaPeer extends Module {
   private net.tomp2p.p2p.Peer masterPeer_;
 
   private XMLConfiguration config_;
+  private MessageVisitor<Void> msgVisitor_;
 
   @Inject
   public void setConfig(XMLConfiguration config) {
@@ -59,6 +61,7 @@ public class KademliaPeer extends Module {
       Peer masterPeer) {
     super(inQueue, outQueue);
     masterPeer_ = masterPeer;
+    msgVisitor_ = new KademliaPeerMessageVisitor();
   }
 
   @Override
@@ -245,18 +248,37 @@ public class KademliaPeer extends Module {
   @Override
   protected void processMessage(Message msg) throws NebuloException {
     logger_.debug("Processing message: " + msg);
+    msg.accept(msgVisitor_);
+  }
 
-    if (msg instanceof EndModuleMessage) {
+  /**
+   * Message Visitor for KademliaPeer.
+   *
+   * @author Grzegorz Milka
+   */
+  private final class KademliaPeerMessageVisitor extends MessageVisitor<Void> {
+    @Override
+    public Void visit(EndModuleMessage msg) {
       shutdown();
-      return;
-    } else if (msg instanceof PutDHTMessage) {
-      put((PutDHTMessage) msg);
-    } else if (msg instanceof GetDHTMessage) {
-      get((GetDHTMessage) msg);
-    } else if (msg instanceof DelDHTMessage) {
-      remove((DelDHTMessage) msg);
-    } else {
-      logger_.warn("KademliaPeer got message that is not supported");
+      return null;
+    }
+
+    @Override
+    public Void visit(PutDHTMessage msg) {
+      put(msg);
+      return null;
+    }
+
+    @Override
+    public Void visit(GetDHTMessage msg) {
+      get(msg);
+      return null;
+    }
+
+    @Override
+    public Void visit(DelDHTMessage msg) {
+      remove(msg);
+      return null;
     }
   }
 }

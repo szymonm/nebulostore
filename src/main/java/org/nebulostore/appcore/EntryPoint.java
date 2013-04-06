@@ -21,6 +21,7 @@ public final class EntryPoint {
     try {
       DOMConfigurator.configure(LOG4J_CONFIG_PATH);
       XMLConfiguration config = initConfig();
+      setDefaultThreadUncaughtExceptionHandler();
       Peer peer = createPeer(config);
       Thread peerThread = new Thread(peer, "Peer Main Thread");
       peerThread.start();
@@ -29,6 +30,32 @@ public final class EntryPoint {
       logger_.fatal("Unable to start NebuloStore! (" + exception.getMessage() + ")");
     } catch (InterruptedException e) {
       logger_.fatal("InterruptedException while waiting for peer thread!");
+    }
+  }
+
+  /**
+   * Default exception handler for threads.
+   *
+   * Logs error down and shuts down the application.
+   * @author Grzegorz Milka
+   */
+  private static final class NebuloUncaughtExceptionHandler implements
+    Thread.UncaughtExceptionHandler {
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+      logger_.fatal("Thread: " + t + " has caught an irrecoverable " +
+          "exception: " + e + ". Shutting down Nebulostore.");
+      System.exit(1);
+    }
+  }
+
+  private static void setDefaultThreadUncaughtExceptionHandler() {
+    try {
+      Thread.setDefaultUncaughtExceptionHandler(
+          new NebuloUncaughtExceptionHandler());
+    } catch (SecurityException e) {
+      logger_.warn("Caught security exception: " + e +
+          " when setting exception handler.");
     }
   }
 

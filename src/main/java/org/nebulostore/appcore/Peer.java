@@ -32,7 +32,7 @@ import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.gossip.GossipService;
-import org.nebulostore.communication.gossip.PeerGossipService;
+import org.nebulostore.communication.gossip.PeerSamplingGossipService;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
@@ -127,7 +127,7 @@ public class Peer implements Runnable {
     }
 
     protected void configureCommunicationPeer() {
-      bind(GossipService.class).to(PeerGossipService.class);
+      bind(GossipService.class).to(PeerSamplingGossipService.class);
     }
 
     protected void configureBroker() {

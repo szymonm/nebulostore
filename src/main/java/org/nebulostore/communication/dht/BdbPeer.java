@@ -25,6 +25,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
@@ -65,6 +66,7 @@ public class BdbPeer extends Module {
   private Timer advertisementsTimer_;
   private XMLConfiguration config_;
   private Queue<Message> messageCache_ = new LinkedBlockingQueue<Message>();
+  private MessageVisitor<Void> msgVisitor_;
   private CommAddress commAddress_;
 
   @Inject
@@ -103,6 +105,7 @@ public class BdbPeer extends Module {
     if (config_.getString(CONFIG_PREFIX + "type", "proxy").equals("storage-holder")) {
       logger_.info("Configuring as bdb database holder");
 
+      msgVisitor_ = new BDBServerMessageVisitor();
       storagePath_ = config_.getString(CONFIG_PREFIX + "sleepycat.storage-path");
       storeName_ = config_.getString(CONFIG_PREFIX + "sleepycat.storage-name");
       checkNotNull(storagePath_);
@@ -128,6 +131,8 @@ public class BdbPeer extends Module {
       holderCommAddress_ = commAddress_;
     } else {
       logger_.info("Configuring as proxy");
+
+      msgVisitor_ = new BDBProxyMessageVisitor();
       isProxy_ = true;
       holderCommAddress_ = bdbHolderCommAddress_;
     }
@@ -261,61 +266,14 @@ public class BdbPeer extends Module {
   protected void processMessage(Message msg) throws NebuloException {
     logger_.debug("Processing message: " + msg);
 
-    if (msg instanceof EndModuleMessage) {
-      shutdown();
-      return;
-    }
-
-    if (msg instanceof HolderAdvertisementMessage) {
-      logger_.info("Message accepted: " + msg);
-
-      if (holderCommAddress_ == null && reconfigureRequest_ != null) {
-        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
-      }
-      holderCommAddress_ = ((HolderAdvertisementMessage) msg)
-          .getSourceAddress();
-      logger_.info("Holder detected at " + holderCommAddress_);
-      cleanCache();
-      return;
-    }
-
     if (isProxy_ && holderCommAddress_ == null) {
       logger_.debug("Holder not set up, waiting for HolderAdvertisementMessage");
       messageCache_.add(msg);
       return;
     }
 
-    if (isProxy_) {
-      if (msg instanceof DHTMessage) {
-        logger_.debug("Message accepted. " + msg);
-        logger_.debug("Putting message to be sent to holder (taskId = " +
-            msg.getId() + ")");
-        senderInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
-            (DHTMessage) msg));
-      } else {
-        logger_.warn("Unknown message of type: " + msg);
-      }
-    } else {
-      logger_.info("Message accepted: " + msg);
-      boolean fromNetwork = false;
-      CommAddress sourceAddress = null;
-      Message message;
-      if (msg instanceof BdbMessageWrapper) {
-        message = ((BdbMessageWrapper) msg).getWrapped();
-        fromNetwork = true;
-        sourceAddress = ((BdbMessageWrapper) msg).getSourceAddress();
-      } else {
-        message = msg;
-      }
-
-      if (message instanceof PutDHTMessage) {
-        put((PutDHTMessage) message, fromNetwork, sourceAddress);
-      } else if (message instanceof GetDHTMessage) {
-        get((GetDHTMessage) message, fromNetwork, sourceAddress);
-      } else {
-        logger_.warn("BdbPeer got message that is not supported");
-      }
-    }
+    logger_.info("Message accepted: " + msg);
+    msg.accept(msgVisitor_);
   }
 
   private void cleanCache() throws NebuloException {
@@ -327,5 +285,90 @@ public class BdbPeer extends Module {
 
   public CommAddress getHolderAddress() {
     return holderCommAddress_;
+  }
+
+  /**
+   * Message Visitor for proxy BDB Peer.
+   *
+   * @author Grzegorz Milka
+   */
+  private final class BDBProxyMessageVisitor extends MessageVisitor<Void> {
+    @Override
+    public Void visit(EndModuleMessage msg) {
+      shutdown();
+      return null;
+    }
+
+    @Override
+    public Void visit(DHTMessage msg) {
+      logger_.debug("Message accepted. " + msg);
+      logger_.debug("Putting message to be sent to holder (taskId = " +
+          msg.getId() + ")");
+      senderInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
+          (DHTMessage) msg));
+      return null;
+    }
+
+    @Override
+    public Void visit(Message msg) {
+      logger_.warn("Unknown message of type: " + msg);
+      return null;
+    }
+  }
+
+  /**
+   * Message Visitor for server BDB Peer.
+   *
+   * @author Grzegorz Milka
+   */
+  private final class BDBServerMessageVisitor extends MessageVisitor<Void> {
+    @Override
+    public Void visit(EndModuleMessage msg) {
+      shutdown();
+      return null;
+    }
+
+    @Override
+    public Void visit(BdbMessageWrapper msg) throws NebuloException {
+      boolean fromNetwork = true;
+      CommAddress sourceAddress = msg.getSourceAddress();
+      Message message = msg.getWrapped();
+
+      if (message instanceof PutDHTMessage) {
+        put((PutDHTMessage) message, fromNetwork, sourceAddress);
+      } else if (message instanceof GetDHTMessage) {
+        get((GetDHTMessage) message, fromNetwork, sourceAddress);
+      } else {
+        message.accept(msgVisitor_);
+      }
+      return null;
+    }
+
+    @Override
+    public Void visit(HolderAdvertisementMessage msg) throws NebuloException {
+      logger_.info("Message accepted: " + msg);
+
+      if (holderCommAddress_ == null && reconfigureRequest_ != null) {
+        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
+      }
+
+      holderCommAddress_ = msg.getSourceAddress();
+      logger_.info("Holder detected at " + holderCommAddress_);
+      cleanCache();
+      return null;
+    }
+
+
+    @Override
+    public Void visit(PutDHTMessage msg) {
+      put(msg, false, null);
+      return null;
+    }
+
+    @Override
+    public Void visit(GetDHTMessage msg) {
+      get(msg, false, null);
+      return null;
+    }
   }
 }

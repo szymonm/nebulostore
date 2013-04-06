@@ -25,7 +25,7 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.gossip.PeerDescriptor;
-import org.nebulostore.communication.gossip.PeerGossipService;
+import org.nebulostore.communication.gossip.PeerSamplingGossipService;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 
@@ -36,10 +36,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 class MessageMedium implements Runnable {
   private static Logger logger_ = Logger.getLogger(MessageMedium.class);
-  private final Map<CommAddress, PeerGossipService> gossipModules_;
+  private final Map<CommAddress, PeerSamplingGossipService> gossipModules_;
   private final BlockingQueue<Message> inQueue_;
 
-  MessageMedium(Map<CommAddress, PeerGossipService> gossipModules, BlockingQueue<Message> inQueue) {
+  MessageMedium(Map<CommAddress, PeerSamplingGossipService> gossipModules,
+      BlockingQueue<Message> inQueue) {
     checkNotNull(gossipModules);
     gossipModules_ = gossipModules;
     inQueue_ = inQueue;
@@ -72,7 +73,7 @@ class MessageMedium implements Runnable {
     }
 
     synchronized (gossipModules_) {
-      PeerGossipService gossiper = gossipModules_.get(destAddress);
+      PeerSamplingGossipService gossiper = gossipModules_.get(destAddress);
       if (gossiper == null && message instanceof CommMessage)  {
         inQueue_.put(new ErrorCommMessage((CommMessage) message,
               new Exception("Testing Arbitrary Exception")));
@@ -97,14 +98,14 @@ final class ChurnFactory {
   private final int healingFactor_;
   private final int swappingFactor_;
   private final CommAddress bootstrapCommAddr_;
-  private final Map<CommAddress, PeerGossipService> gossipModules_;
+  private final Map<CommAddress, PeerSamplingGossipService> gossipModules_;
   private final Map<CommAddress, Thread> gossipThreads_;
   private final int nGossipers_;
   private final BlockingQueue<Message> mediumInQueue_;
   private final XMLConfiguration config_;
   private static Logger logger_ = Logger.getLogger(ChurnFactory.class);
 
-  public ChurnFactory(Map<CommAddress, PeerGossipService> gossipModules,
+  public ChurnFactory(Map<CommAddress, PeerSamplingGossipService> gossipModules,
       int nGossipers, BlockingQueue<Message> mediumInQueue,
       int gossipPeriod,
       int maxPeersSize,
@@ -148,7 +149,7 @@ final class ChurnFactory {
     }
 
     BlockingQueue<Message> gossiperInQueue = new LinkedBlockingQueue<Message>();
-    PeerGossipService gossipService = new PeerGossipService();
+    PeerSamplingGossipService gossipService = new PeerSamplingGossipService();
     gossipService.setInQueue(gossiperInQueue);
     gossipService.setOutQueue(mediumInQueue_);
     gossipService.setDependencies(config_, commAddr);
@@ -168,7 +169,7 @@ final class ChurnFactory {
 
   private void deleteGossiper(CommAddress gossiperAddr) {
     synchronized (gossipModules_) {
-      PeerGossipService gossiper = gossipModules_.get(gossiperAddr);
+      PeerSamplingGossipService gossiper = gossipModules_.get(gossiperAddr);
       Thread gossipThread = gossipThreads_.get(gossiperAddr);
       gossipThreads_.remove(gossiperAddr);
       gossipModules_.remove(gossiperAddr);
@@ -205,8 +206,8 @@ final class ChurnFactory {
  */
 public final class GossipTest extends Peer {
   private static Logger logger_ = Logger.getLogger(GossipTest.class);
-  private final Map<CommAddress, PeerGossipService> gossipModules_ =
-    new HashMap<CommAddress, PeerGossipService>();
+  private final Map<CommAddress, PeerSamplingGossipService> gossipModules_ =
+    new HashMap<CommAddress, PeerSamplingGossipService>();
 
   /**
    * Prefix of test related parameters used in Peer.xml configuration file.
@@ -353,23 +354,24 @@ public final class GossipTest extends Peer {
 
     synchronized (gossipModules_) {
       try {
-        getPeersMethod = PeerGossipService.class.getDeclaredMethod("getPeers");
+        getPeersMethod = PeerSamplingGossipService.class.getDeclaredMethod("getPeers");
       } catch (NoSuchMethodException e) {
         logger_.error("Exception: " + e + " when trying to get private method getPeers.");
         throw new RuntimeException(e.toString());
       }
       getPeersMethod.setAccessible(true);
 
-      ArrayList<PeerGossipService> gossiperServiceGraph = new ArrayList<PeerGossipService>();
+      ArrayList<PeerSamplingGossipService> gossiperServiceGraph =
+        new ArrayList<PeerSamplingGossipService>();
 
       for (CommAddress gossiperAddr : gossipModules_.keySet()) {
-        PeerGossipService gossiper = gossipModules_.get(gossiperAddr);
+        PeerSamplingGossipService gossiper = gossipModules_.get(gossiperAddr);
         indexMap.put(gossiperAddr, gossiperGraph.size());
         gossiperGraph.add(new GossiperNode(gossiperGraph.size(), gossiperAddr));
         gossiperServiceGraph.add(gossiper);
       }
 
-      Iterator<PeerGossipService> iterator = gossiperServiceGraph.iterator();
+      Iterator<PeerSamplingGossipService> iterator = gossiperServiceGraph.iterator();
       for (GossiperNode gossiperNode : gossiperGraph) {
         Collection<PeerDescriptor> peers;
         try {

@@ -24,6 +24,8 @@ import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
+import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
+import org.nebulostore.communication.messages.bdbdht.HolderAdvertisementMessage;
 import org.nebulostore.communication.messages.dht.DHTMessage;
 import org.nebulostore.communication.messages.dht.DelDHTMessage;
 import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
@@ -142,6 +144,10 @@ public abstract class MessageVisitor<R> {
   }
 
   /* DHT messages. */
+  public R visit(BdbMessageWrapper message) throws NebuloException {
+    return visit((CommMessage) message);
+  }
+
   public R visit(DHTMessage message) throws NebuloException {
     return visit((Message) message);
   }
@@ -156,6 +162,10 @@ public abstract class MessageVisitor<R> {
 
   public R visit(GetDHTMessage message) throws NebuloException {
     return visit((InDHTMessage) message);
+  }
+
+  public R visit(HolderAdvertisementMessage message) throws NebuloException {
+    return visit((CommMessage) message);
   }
 
   public R visit(InDHTMessage message) throws NebuloException {

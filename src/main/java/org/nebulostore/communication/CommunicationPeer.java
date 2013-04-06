@@ -14,6 +14,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
@@ -51,6 +52,7 @@ public final class CommunicationPeer extends Module {
   private static Logger logger_ = Logger.getLogger(CommunicationPeer.class);
   private static final String CONFIG_PREFIX = "communication.";
   private XMLConfiguration config_;
+  private MessageVisitor<Void> msgVisitor_;
   private CommAddress commAddress_;
 
   /**
@@ -103,6 +105,7 @@ public final class CommunicationPeer extends Module {
 
   public CommunicationPeer(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
     super(inQueue, outQueue);
+    msgVisitor_ = new CommPeerMsgVisitor();
   }
 
   @Inject
@@ -326,16 +329,35 @@ public final class CommunicationPeer extends Module {
       return;
     }
     logger_.debug("Processing message: " + msg);
+    msg.accept(msgVisitor_);
+  }
 
-    if (msg instanceof EndModuleMessage) {
+  /**
+   * Message Visitor for CommunicationPeer.
+   *
+   * @author Grzegorz Milka
+   */
+  private final class CommPeerMsgVisitor extends MessageVisitor<Void> {
+    @Override
+    public Void visit(EndModuleMessage msg) {
       logger_.info("Received EndModule message");
       isEnding_.set(true);
       shutdown();
-    } else if (msg instanceof ErrorCommMessage) {
+
+      return null;
+    }
+
+    @Override
+    public Void visit(ErrorCommMessage msg) {
       logger_.info("Error comm message. Returning it to Dispatcher");
       gossipServiceInQueue_.add(msg);
       outQueue_.add(msg);
-    } else if (msg instanceof ReconfigureDHTMessage) {
+
+      return null;
+    }
+
+    @Override
+    public Void visit(ReconfigureDHTMessage msg) {
       try {
         logger_.info("Got reconfigure request with jobId: " + msg.getId());
         reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
@@ -343,12 +365,25 @@ public final class CommunicationPeer extends Module {
       } catch (NebuloException e) {
         logger_.warn(e);
       }
-    } else if (msg instanceof HolderAdvertisementMessage) {
+
+      return null;
+    }
+
+    public Void visit(HolderAdvertisementMessage msg) {
       dhtPeerInQueue_.add(msg);
-    } else if (msg instanceof CommPeerFoundMessage) {
+      return null;
+    }
+
+    @Override
+    public Void visit(CommPeerFoundMessage msg) {
       logger_.debug("CommPeerFound message forwarded to Dispatcher");
       outQueue_.add(msg);
-    } else if (msg instanceof DHTMessage) {
+
+      return null;
+    }
+
+    @Override
+    public Void visit(DHTMessage msg) {
       if (msg instanceof InDHTMessage) {
         logger_.debug("InDHTMessage forwarded to DHT" + msg.getClass().getSimpleName());
         dhtPeerInQueue_.add(msg);
@@ -358,7 +393,12 @@ public final class CommunicationPeer extends Module {
       } else {
         logger_.warn("Unrecognized DHTMessage: " + msg);
       }
-    } else if (msg instanceof BdbMessageWrapper) {
+
+      return null;
+    }
+
+    @Override
+    public Void visit(BdbMessageWrapper msg) {
       logger_.debug("BDB DHT message received");
       BdbMessageWrapper casted = (BdbMessageWrapper) msg;
       if (casted.getWrapped() instanceof InDHTMessage) {
@@ -370,13 +410,22 @@ public final class CommunicationPeer extends Module {
       } else {
         logger_.warn("Unrecognized BdbMessageWrapper: " + msg);
       }
-    } else if (msg instanceof PeerGossipMessage) {
+      return null;
+
+    }
+
+    @Override
+    public Void visit(PeerGossipMessage msg) {
       if (((CommMessage) msg).getDestinationAddress().equals(
             bootstrapService_.getResolver().getMyCommAddress()))
         gossipServiceInQueue_.add(msg);
       else
         messengerServiceInQueue_.add(msg);
-    } else if (msg instanceof CommMessage) {
+      return null;
+    }
+
+    @Override
+    public Void visit(CommMessage msg) {
       if (((CommMessage) msg).getSourceAddress() == null) {
         ((CommMessage) msg).setSourceAddress(commAddress_);
       }
@@ -391,8 +440,7 @@ public final class CommunicationPeer extends Module {
         logger_.debug("message forwarded to MessengerService");
         messengerServiceInQueue_.add(msg);
       }
-    } else {
-      logger_.warn("Unrecognized message of type " + msg);
+      return null;
     }
   }
 

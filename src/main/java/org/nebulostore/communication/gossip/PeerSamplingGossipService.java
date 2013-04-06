@@ -30,9 +30,8 @@ import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
  * "Gossip-based Peer Sampling" by Jelasty, Voulgaris...
  * @author Grzegorz Milka
  */
-//TODO (grzegorzmilka): Change name of this class to reflect the algorithm used.
-public final class PeerGossipService extends GossipService {
-  private final Logger logger_ = Logger.getLogger(PeerGossipService.class);
+public final class PeerSamplingGossipService extends GossipService {
+  private final Logger logger_ = Logger.getLogger(PeerSamplingGossipService.class);
 
   private static final Random RANDOMIZER = new Random();
   /**
@@ -65,7 +64,7 @@ public final class PeerGossipService extends GossipService {
    */
   private final Timer gossipSender_ = new Timer(true);
 
-  public PeerGossipService() { }
+  public PeerSamplingGossipService() { }
 
   @Override
   protected void initModule() {

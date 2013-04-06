@@ -19,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
@@ -41,12 +42,14 @@ public class MessengerService extends Module {
   private CachedOOSDispatcher oosDispatcher_;
   private ExecutorService service_ = Executors.newCachedThreadPool();
   private AtomicBoolean isEnding_ = new AtomicBoolean(false);
+  private MessageVisitor msgVisitor_;
 
   public MessengerService(BlockingQueue<Message> inQueue,
       BlockingQueue<Message> outQueue, CommAddressResolver resolver) {
     super(inQueue, outQueue);
     resolver_ = resolver;
     oosDispatcher_ = new CachedOOSDispatcher();
+    msgVisitor_ = new MessengerMsgVisitor();
   }
 
   private void shutdown() {
@@ -63,24 +66,12 @@ public class MessengerService extends Module {
           "shutting down.");
       return;
     }
-    if (msg instanceof EndModuleMessage) {
-      logger_.info("Received EndModule message");
-      shutdown();
-      return;
-    } else if (!(msg instanceof CommMessage)) {
-      logger_.error("Don't know what to do with message: " + msg);
-      return;
+    try {
+      msg.accept(msgVisitor_);
+    } catch (NebuloException e) {
+      logger_.warn("NebuloException: " + e + " occured when trying to send " +
+          "msg: " + msg);
     }
-    CommMessage commMsg = (CommMessage) msg;
-    if (commMsg.getSourceAddress() == null) {
-      logger_.debug("Source address set to null, changing to my address.");
-      commMsg.setSourceAddress(resolver_.getMyCommAddress());
-    }
-    logger_.debug("Sending msg: " + commMsg + " of class: " +
-        commMsg.getClass().getSimpleName() + " to: " +
-        commMsg.getDestinationAddress());
-
-    service_.execute(new MessageSender(commMsg));
   }
 
   /**
@@ -347,6 +338,32 @@ public class MessengerService extends Module {
         oosDispatcher_.put(commMsg_.getDestinationAddress());
       }
     }
+  }
 
+  /**
+   * Message Visitor for MessengerService.
+   *
+   * @author Grzegorz Milka
+   */
+  private class MessengerMsgVisitor extends MessageVisitor<Void> {
+    public Void visit(EndModuleMessage msg) {
+      logger_.info("Received EndModule message");
+      shutdown();
+      return null;
+    }
+
+    @Override
+    public Void visit(CommMessage commMsg) {
+      if (commMsg.getSourceAddress() == null) {
+        logger_.debug("Source address set to null, changing to my address.");
+        commMsg.setSourceAddress(resolver_.getMyCommAddress());
+      }
+      logger_.debug("Sending msg: " + commMsg + " of class: " +
+          commMsg.getClass().getName() + " to: " +
+          commMsg.getDestinationAddress());
+
+      service_.execute(new MessageSender(commMsg));
+      return null;
+    }
   }
 }
