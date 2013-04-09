@@ -78,9 +78,9 @@
         </profile>
 
         <profile>
-            <id>default</id>
+            <id>full</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <build>
                 <plugins>
