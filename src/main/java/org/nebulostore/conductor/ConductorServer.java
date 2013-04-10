@@ -24,6 +24,8 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.timer.MessageGenerator;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Testing module that acts as a Test Server.
  * Remember to set lastPhase_ and peersNeeded_ in subclass.
@@ -116,6 +118,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    */
   private final Timer internalCheckTimer_;
   protected CommAddress commAddress_;
+  protected XMLConfiguration config_;
 
   protected ConductorServer(int lastPhase, int timeout, String clientsJobId,
       String testDescription) {
@@ -144,10 +147,15 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     commAddress_ = commAddress;
   }
 
-  public void initialize(XMLConfiguration config) {
+  @Inject
+  public void setConfig(XMLConfiguration config) {
+    config_ = config;
+  }
+
+  public void initialize() {
     schedulePhaseTimer();
     if (peersNeeded_ == 0)
-      initializeFromConfig(config);
+      initializeFromConfig();
   }
 
   protected void schedulePhaseTimer() {
@@ -155,8 +163,9 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
         3L * 1000L * phaseTimeout_, 1000L * phaseTimeout_);
   }
 
-  protected void initializeFromConfig(XMLConfiguration config) {
-    peersNeeded_ = config.getInteger(N_PEERS_CONFIG, 0);
+  protected void initializeFromConfig() {
+    checkNotNull(config_);
+    peersNeeded_ = config_.getInteger(N_PEERS_CONFIG, 0);
     if (peersNeeded_ == 0)
       throw new RuntimeException("Unable to initilize number of test participants from config!");
   }

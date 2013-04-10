@@ -53,13 +53,6 @@ public abstract class JobModule extends Module {
     outQueue_.add(new JobInitMessage(this));
   }
 
-  // TODO(bolek): Remove it!
-  @Deprecated
-  public void runThroughDispatcher(BlockingQueue<Message> queue) {
-    setDispatcherQueue(queue);
-    runThroughDispatcher();
-  }
-
   /**
    * Returning true will result in running this JobModule in Dispatcher's thread (without creating
    * new one). Use with care as it may easily slow down or block Dispatcher and the whole system.

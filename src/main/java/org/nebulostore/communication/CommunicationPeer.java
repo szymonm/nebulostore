@@ -277,6 +277,7 @@ public final class CommunicationPeer extends Module {
       if (dhtPeer_ != null) {
         dhtPeerInQueue_.add(new EndModuleMessage());
         dhtPeerThread_.join();
+        logger_.info("DHT thread ended.");
       }
     } catch (InterruptedException e) {
       logger_.info("Caught InterruptedException when joining dht thread.");

@@ -33,7 +33,8 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
       AsynchronousMessage message, BlockingQueue<Message> dispatcherQueue) {
     recipient_ = recipient;
     message_ = message;
-    runThroughDispatcher(dispatcherQueue);
+    outQueue_ = dispatcherQueue;
+    runThroughDispatcher();
   }
 
   private final MessageVisitor<Void> visitor_ = new SendAsynchronousMessagesForPeerModuleVisitor();

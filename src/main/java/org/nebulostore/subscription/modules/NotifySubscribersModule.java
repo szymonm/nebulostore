@@ -35,7 +35,8 @@ public class NotifySubscribersModule extends JobModule {
     this.subscriptionNotification_ = checkNotNull(subscriptionNotification);
     this.subscribersAddresses_ = checkNotNull(subscribersAddresses);
     this.sourceAddress_ = checkNotNull(sourceAddress);
-    runThroughDispatcher(dispatcherQueue);
+    this.outQueue_ = dispatcherQueue;
+    runThroughDispatcher();
   }
 
   @Override

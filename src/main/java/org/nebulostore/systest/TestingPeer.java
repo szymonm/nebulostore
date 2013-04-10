@@ -52,7 +52,7 @@ public class TestingPeer extends Peer {
       ConductorServer testServer = null;
       try {
         testServer = (ConductorServer) Class.forName(className).newInstance();
-        testServer.initialize(config_);
+        injector_.injectMembers(testServer);
         logger_.info("Starting " + className + " test.");
         if (runTest(testServer, className)) {
           logger_.info("Test " + className + " succeeded!");
@@ -76,10 +76,11 @@ public class TestingPeer extends Peer {
     System.exit(1);
   }
 
-  private boolean runTest(ConductorServer testModule, String testName) {
+  private boolean runTest(ConductorServer testServer, String testName) {
     try {
-      testModule.runThroughDispatcher(dispatcherInQueue_);
-      testModule.getResult();
+      testServer.initialize();
+      testServer.runThroughDispatcher();
+      testServer.getResult();
       return true;
     } catch (NebuloException exception) {
       logger_.error("NebuloException at test " + testName + " : " + exception.getMessage());
