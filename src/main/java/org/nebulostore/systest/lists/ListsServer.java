@@ -1,6 +1,8 @@
 package org.nebulostore.systest.lists;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.CaseStatistics;
@@ -28,11 +30,11 @@ public final class ListsServer extends ConductorServer {
   public void initClients() {
     sleep(INITIAL_SLEEP);
     Iterator<CommAddress> it = clients_.iterator();
-    CommAddress[] clients = new CommAddress[peersNeeded_];
+    List<CommAddress> clients = new ArrayList<CommAddress>(peersNeeded_);
     for (int i = 0; i < peersNeeded_; ++i)
-      clients[i] = it.next();
+      clients.add(it.next());
     for (int i = 0; i < peersNeeded_; ++i)
-      networkQueue_.add(new InitMessage(clientsJobId_, null, clients[i],
+      networkQueue_.add(new InitMessage(clientsJobId_, null, clients.get(i),
           new ListsClient(jobId_, commAddress_, NUM_PHASES, clients, i)));
   }
 

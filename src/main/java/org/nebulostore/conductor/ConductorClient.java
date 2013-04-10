@@ -1,6 +1,8 @@
 package org.nebulostore.conductor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -204,15 +206,15 @@ public abstract class ConductorClient extends JobModule implements Serializable 
    * @author Bolek Kulbabinski
    */
   protected final class AddressExchangeVisitor extends TestingModuleVisitor {
-    private final CommAddress[] clients_;
+    private final List<CommAddress> clients_;
     private final int currClientIndex_;
     private final Vector<NebuloAddress> addresses_;
     private final NebuloAddress myAddress_;
     private final int initialSleep_;
 
-    public AddressExchangeVisitor(CommAddress[] clients, Vector<NebuloAddress> addresses,
+    public AddressExchangeVisitor(List<CommAddress> clients, Vector<NebuloAddress> addresses,
         int myClientId, NebuloAddress myAddress, int initialSleep) {
-      clients_ = clients;
+      clients_ = new ArrayList<CommAddress>(clients);
       addresses_ = addresses;
       currClientIndex_ = myClientId;
       myAddress_ = myAddress;
@@ -222,10 +224,10 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     @Override
     public Void visit(NewPhaseMessage message) {
       sleep(initialSleep_);
-      logger_.debug("Sending NebuloAddress to " + clients_.length + " peers.");
-      for (int i = 0; i < clients_.length; ++i)
+      logger_.debug("Sending NebuloAddress to " + clients_.size() + " peers.");
+      for (int i = 0; i < clients_.size(); ++i)
         if (i != currClientIndex_)
-          networkQueue_.add(new UserCommMessage(jobId_, clients_[i], myAddress_));
+          networkQueue_.add(new UserCommMessage(jobId_, clients_.get(i), myAddress_));
       tryFinishPhase();
       return null;
     }
@@ -240,7 +242,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     }
 
     private void tryFinishPhase() {
-      if (addresses_.size() == clients_.length - 1)
+      if (addresses_.size() == clients_.size() - 1)
         phaseFinished();
     }
   }

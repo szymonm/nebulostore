@@ -1,6 +1,8 @@
 package org.nebulostore.systest.lists;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import com.google.inject.Inject;
@@ -32,16 +34,16 @@ public final class ListsClient extends ConductorClient {
   private static final int ITER_SLEEP = 500;
   private static final int N_CASES = 3;
 
-  private CommAddress[] clients_;
+  private List<CommAddress> clients_;
   private Vector<NebuloAddress> addresses_;
   private int clientId_;
   private NebuloList myList_;
   private transient NebuloObjectFactory objectFactory_;
 
   public ListsClient(String serverJobId, CommAddress serverAddress, int numPhases,
-      CommAddress[] clients, int clientId) {
+      List<CommAddress> clients, int clientId) {
     super(serverJobId, numPhases, serverAddress);
-    clients_ = clients;
+    clients_ = new ArrayList<CommAddress>(clients);
     clientId_ = clientId;
     addresses_ = new Vector<NebuloAddress>();
   }

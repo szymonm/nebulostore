@@ -2,7 +2,9 @@ package org.nebulostore.systest.readwrite;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 import com.google.inject.Inject;
@@ -30,7 +32,7 @@ public final class ReadWriteClient extends ConductorClient {
   private static final int INITIAL_SLEEP = 5000;
   private static final int ITER_SLEEP = 500;
 
-  private CommAddress[] clients_;
+  private List<CommAddress> clients_;
   private Vector<NebuloAddress> files_;
   private AppKey myAppKey_;
   private int clientId_;
@@ -39,9 +41,9 @@ public final class ReadWriteClient extends ConductorClient {
   private final ReadWriteStats stats_;
 
   public ReadWriteClient(String serverJobId, CommAddress serverAddress, int numPhases,
-      CommAddress[] clients, int clientId) {
+      List<CommAddress> clients, int clientId) {
     super(serverJobId, numPhases, serverAddress);
-    clients_ = clients;
+    clients_ = new ArrayList<CommAddress>(clients);
     clientId_ = clientId;
     files_ = new Vector<NebuloAddress>();
     stats_ = new ReadWriteStats();
