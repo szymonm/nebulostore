@@ -21,6 +21,8 @@ import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.replicator.DeleteObjectException;
 import org.nebulostore.replicator.Replicator;
+import org.nebulostore.timer.TimeoutMessage;
+import org.nebulostore.timer.Timer;
 
 
 /**
@@ -31,14 +33,20 @@ import org.nebulostore.replicator.Replicator;
  */
 public class RetrieveAsynchronousMessagesModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(RetrieveAsynchronousMessagesModule.class);
-
-  public static final Long INTERVAL = 2000L;
+  private static final long INSTANCE_TIMEOUT = 10000L;
+  public static final long EXECUTION_PERIOD = 5000L;
 
   private CommAddress myAddress_;
+  private Timer timer_;
 
   @Inject
-  private void setPeerAddress(CommAddress address) {
+  public void setPeerAddress(CommAddress address) {
     myAddress_ = address;
+  }
+
+  @Inject
+  public void setTimer(Timer timer) {
+    timer_ = timer;
   }
 
   @Override
@@ -61,6 +69,7 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
       jobId_ = message.getId();
       GetDHTMessage m = new GetDHTMessage(jobId_, myAddress_.toKeyDHT());
       networkQueue_.add(m);
+      timer_.schedule(jobId_, INSTANCE_TIMEOUT);
       return null;
     }
 
@@ -126,11 +135,16 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
+    @Override
+    public Void visit(TimeoutMessage message) {
+      logger_.debug("Timeout in RetrieveAsynchronousMessagesModule.");
+      endJobModule();
+      return null;
+    }
 
     private void error(String jobId, NebuloException error) {
       logger_.warn("Unable to retrive asynchronous messages: " + error.getMessage());
       endJobModule();
     }
   }
-
 }

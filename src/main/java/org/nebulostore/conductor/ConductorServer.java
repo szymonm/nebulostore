@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.ReturningJobModule;
@@ -265,7 +264,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
          * wait for enough peers to perform the test - start to listen for
          * NetworkContext changes.
          */
-        GlobalContext.getInstance().setDispatcherQueue(outQueue_);
         notificationGenerator_ = new MessageGenerator() {
           @Override
           public Message generate() {

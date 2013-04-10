@@ -63,6 +63,7 @@ import org.nebulostore.replicator.messages.TransactionResultMessage;
 import org.nebulostore.replicator.messages.UpdateRejectMessage;
 import org.nebulostore.replicator.messages.UpdateWithholdMessage;
 import org.nebulostore.subscription.messages.NotifySubscriberMessage;
+import org.nebulostore.timer.TimeoutMessage;
 
 /**
  * Generic Message visitor class. All 'visit' methods should call handlers for base classes.

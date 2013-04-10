@@ -7,11 +7,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.xml.DOMConfigurator;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -43,11 +41,6 @@ public class ReplicatorTest {
   public static void init() {
     DOMConfigurator.configure("resources/conf/log4j.xml");
     // TODO(bolek): Set mock configuration.
-  }
-
-  @Before
-  public void setUp() {
-    GlobalContext.getInstance().setDispatcherQueue(deadDispatcherQueue_);
   }
 
   // TODO(bolek): Refactor this test with fake disk writes.

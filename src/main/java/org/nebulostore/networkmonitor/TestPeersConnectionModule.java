@@ -3,12 +3,13 @@ package org.nebulostore.networkmonitor;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.InstanceMetadata;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.TimeoutMessage;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
@@ -18,7 +19,8 @@ import org.nebulostore.communication.messages.dht.ValueDHTMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.networkmonitor.messages.ConnectionTestMessage;
 import org.nebulostore.networkmonitor.messages.ConnectionTestResponseMessage;
-import org.nebulostore.timer.TimerContext;
+import org.nebulostore.timer.TimeoutMessage;
+import org.nebulostore.timer.Timer;
 
 /**
  * Tests peers connection data(ex. availability, bandwidth, ...). Appends result to DHT.
@@ -30,9 +32,15 @@ public class TestPeersConnectionModule extends JobModule {
 
   private final CommAddress myAddress_;
   private TPCVisitor visitor_ = new TPCVisitor();
+  private Timer timer_;
 
   public TestPeersConnectionModule(CommAddress peer) {
     myAddress_ = peer;
+  }
+
+  @Inject
+  public void setTimer(Timer timer) {
+    timer_ = timer;
   }
 
   /**
@@ -49,7 +57,7 @@ public class TestPeersConnectionModule extends JobModule {
       networkQueue_.add(new GetDHTMessage(message.getId(), myAddress_.toKeyDHT()));
       sendTime_ = System.currentTimeMillis();
       networkQueue_.add(new ConnectionTestMessage(null,  myAddress_));
-      TimerContext.getInstance().notifyWithTimeoutMessageAfter(getJobId(), TIMEOUT_MILLIS);
+      timer_.schedule(jobId_, TIMEOUT_MILLIS);
       return null;
     }
 
@@ -96,7 +104,7 @@ public class TestPeersConnectionModule extends JobModule {
       //TODO(szm): A co z synchronizacja na poziomie DHT??? -> odpowiedni merge
       networkQueue_.add(new PutDHTMessage(getJobId(), myAddress_.toKeyDHT(),
           new ValueDHT(metadata)));
-      TimerContext.getInstance().cancelNotifications(getJobId());
+      timer_.cancelTimer();
       endJobModule();
     }
 

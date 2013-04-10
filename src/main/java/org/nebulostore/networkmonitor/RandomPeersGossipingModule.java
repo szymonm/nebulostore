@@ -10,16 +10,15 @@ import java.util.TreeSet;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.TimeoutMessage;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.networkmonitor.messages.RandomPeersSampleMessage;
-import org.nebulostore.timer.TimerContext;
+import org.nebulostore.timer.TimeoutMessage;
+import org.nebulostore.timer.Timer;
 
 /**
  * Gossiping between peers to exchange random peers sample.
@@ -36,10 +35,16 @@ public class RandomPeersGossipingModule extends JobModule {
 
   private final RPGVisitor visitor_ = new RPGVisitor();
   private CommAddress myAddress_;
+  private Timer timer_;
 
   @Inject
   void setCommAddress(CommAddress myAddress) {
     myAddress_ = myAddress;
+  }
+
+  @Inject
+  public void setTimer(Timer timer) {
+    timer_ = timer;
   }
 
   /**
@@ -74,7 +79,7 @@ public class RandomPeersGossipingModule extends JobModule {
 
       view.add(myAddress_);
       networkQueue_.add(new RandomPeersSampleMessage(null, remotePeer, view));
-      TimerContext.getInstance().notifyWithTimeoutMessageAfter(getJobId(), TIMEOUT_MILLIS);
+      timer_.schedule(jobId_, TIMEOUT_MILLIS);
       return null;
     }
 
@@ -94,7 +99,7 @@ public class RandomPeersGossipingModule extends JobModule {
         view = selectView(view);
       }
       updateStatistics(view);
-      TimerContext.getInstance().cancelNotifications(getJobId());
+      timer_.cancelTimer();
       endJobModule();
       return null;
     }
@@ -119,7 +124,8 @@ public class RandomPeersGossipingModule extends JobModule {
   public void updateStatistics(Set<CommAddress> peers) {
     for (CommAddress peer : peers) {
       TestPeersConnectionModule testConnection = new TestPeersConnectionModule(peer);
-      testConnection.runThroughDispatcher(GlobalContext.getInstance().getDispatcherQueue());
+      testConnection.setOutQueue(outQueue_);
+      testConnection.runThroughDispatcher();
     }
   }
 

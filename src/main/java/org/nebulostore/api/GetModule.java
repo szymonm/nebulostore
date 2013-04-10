@@ -1,5 +1,10 @@
 package org.nebulostore.api;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
@@ -7,7 +12,6 @@ import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.addressing.ContractList;
 import org.nebulostore.appcore.addressing.NebuloAddress;
-import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
@@ -19,6 +23,8 @@ import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
 import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
 import org.nebulostore.replicator.messages.SendObjectMessage;
+import org.nebulostore.timer.TimeoutMessage;
+import org.nebulostore.timer.Timer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -30,9 +36,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public abstract class GetModule<V> extends ReturningJobModule<V> {
   private static Logger logger_ = Logger.getLogger(GetModule.class);
+  private static final long REPLICA_WAIT_MILLIS = 5000L;
 
   protected NebuloAddress address_;
   protected CommAddress replicaAddress_;
+  protected Timer timer_;
+
+  @Inject
+  public void setTimer(Timer timer) {
+    timer_ = timer;
+  }
 
   public void fetchObject(NebuloAddress address, CommAddress replicaAddress) {
     address_ = checkNotNull(address);
@@ -50,6 +63,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
    */
   protected abstract class GetModuleVisitor extends MessageVisitor<Void> {
     protected STATE state_;
+    protected SortedSet<CommAddress> replicationGroup_;
 
     public GetModuleVisitor() {
       state_ = STATE.INIT;
@@ -70,7 +84,9 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
             new KeyDHT(address_.getAppKey().getKey())));
       } else if (state_ == STATE.ADDRESS_GIVEN) {
         state_ = STATE.REPLICA_FETCH;
-        queryReplica(replicaAddress_);
+        replicationGroup_ = new TreeSet<CommAddress>();
+        replicationGroup_.add(replicaAddress_);
+        queryNextReplica();
       } else {
         incorrectState(state_.name(), message);
       }
@@ -88,13 +104,11 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
         // TODO(bolek): How to avoid casting here? Make ValueDHTMessage generic?
         Metadata metadata = (Metadata) message.getValue().getValue();
         ContractList contractList = metadata.getContractList();
-        ReplicationGroup group = contractList.getGroup(address_.getObjectId());
-        if (group == null) {
+        replicationGroup_ = contractList.getGroup(address_.getObjectId()).getReplicatorSet();
+        if (replicationGroup_ == null) {
           endWithError(new NebuloException("No peers replicating this object."));
         } else {
-          // TODO(bolek): Ask other replicas if first query is unsuccessful.
-          logger_.debug("Querying replica (" + group.getReplicator(0) + ")");
-          queryReplica(group.getReplicator(0));
+          queryNextReplica();
         }
       } else {
         incorrectState(state_.name(), message);
@@ -114,10 +128,26 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
       return null;
     }
 
-    public void queryReplica(CommAddress replicaAddress) {
-      // Source address will be added by Network module.
-      networkQueue_.add(new GetObjectMessage(CryptoUtils.getRandomId().toString(), null,
-          replicaAddress, address_.getObjectId(), jobId_));
+    public void queryNextReplica() {
+      if (replicationGroup_.size() == 0) {
+        endWithError(new NebuloException("No replica responded in time."));
+      } else {
+        CommAddress replicator = replicationGroup_.first();
+        replicationGroup_.remove(replicator);
+        logger_.debug("Querying replica (" + replicator + ")");
+        networkQueue_.add(new GetObjectMessage(CryptoUtils.getRandomId().toString(), null,
+            replicator, address_.getObjectId(), jobId_));
+        timer_.schedule(jobId_, REPLICA_WAIT_MILLIS, STATE.REPLICA_FETCH.name());
+      }
+    }
+
+    @Override
+    public Void visit(TimeoutMessage message) {
+      if (state_ == STATE.REPLICA_FETCH && state_.name().equals(message.getMessageContent())) {
+        logger_.debug("Timeout - replica didn't respond in time. Trying another one.");
+        queryNextReplica();
+      }
+      return null;
     }
 
     @Override

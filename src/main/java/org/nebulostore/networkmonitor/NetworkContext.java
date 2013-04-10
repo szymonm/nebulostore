@@ -6,7 +6,6 @@ import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.GlobalContext;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.timer.MessageGenerator;
@@ -32,6 +31,7 @@ public final class NetworkContext {
    */
   private final HashSet<MessageGenerator> contextChangeMessageGenerators_ =
       new HashSet<MessageGenerator>();
+  private BlockingQueue<Message> dispatcherQueue_;
 
   public static NetworkContext getInstance() {
     if (instance_ == null)
@@ -51,9 +51,8 @@ public final class NetworkContext {
   }
 
   private void contextChanged() {
-    for (MessageGenerator m : contextChangeMessageGenerators_) {
-      getDispatcherQueue().add(m.generate());
-    }
+    for (MessageGenerator m : contextChangeMessageGenerators_)
+      dispatcherQueue_.add(m.generate());
   }
 
   /**
@@ -100,11 +99,8 @@ public final class NetworkContext {
     }
   }
 
-  private BlockingQueue<Message> getDispatcherQueue() {
-    if (GlobalContext.getInstance().getDispatcherQueue() == null) {
-      logger_.error("Dispatcher queue not set up.");
-    }
-    return GlobalContext.getInstance().getDispatcherQueue();
+  public void setDispatcherQueue(BlockingQueue<Message> dispatcherQueue) {
+    dispatcherQueue_ = dispatcherQueue;
   }
 
   public Set<CommAddress> getRandomPeersSample() {
@@ -114,6 +110,4 @@ public final class NetworkContext {
   public void setRandomPeersSample(Set<CommAddress> randomPeersSample) {
     randomPeersSample_ = randomPeersSample;
   }
-
-
 }

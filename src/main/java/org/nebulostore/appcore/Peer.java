@@ -41,7 +41,8 @@ import org.nebulostore.replicator.Replicator;
 import org.nebulostore.subscription.api.SimpleSubscriptionNotificationHandler;
 import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
 import org.nebulostore.timer.MessageGenerator;
-import org.nebulostore.timer.PeriodicMessageSender;
+import org.nebulostore.timer.Timer;
+import org.nebulostore.timer.TimerImpl;
 
 /**
  * This is a regular peer with full functionality. It creates, connects and runs all modules.
@@ -50,7 +51,6 @@ import org.nebulostore.timer.PeriodicMessageSender;
  */
 public class Peer implements Runnable {
   private static Logger logger_ = Logger.getLogger(Peer.class);
-  //protected static final Long RETRIVE_ASYNCHRONOUS_MESSAGES_INTERVAL = 2000L;
 
   protected Thread dispatcherThread_;
   protected Thread networkThread_;
@@ -62,6 +62,7 @@ public class Peer implements Runnable {
   protected XMLConfiguration config_;
   protected Injector injector_;
   protected CommAddress commAddress_;
+  protected Timer peerTimer_;
 
   public void setConfiguration(XMLConfiguration config) {
     config_ = config;
@@ -72,12 +73,14 @@ public class Peer implements Runnable {
                               @Named("NetworkQueue") BlockingQueue<Message> networkQueue,
                               Broker broker,
                               AppKey appKey,
-                              CommAddress commAddress) {
+                              CommAddress commAddress,
+                              Timer timer) {
     dispatcherInQueue_ = dispatcherQueue;
     networkInQueue_ = networkQueue;
     broker_ = broker;
     appKey_ = appKey;
     commAddress_ = commAddress;
+    peerTimer_ = timer;
   }
 
   @Override
@@ -122,6 +125,9 @@ public class Peer implements Runnable {
       bind(ObjectDeleter.class).to(DeleteNebuloObjectModule.class);
 
       bind(SubscriptionNotificationHandler.class).to(SimpleSubscriptionNotificationHandler.class);
+
+      bind(Timer.class).to(TimerImpl.class);
+
       configureCommunicationPeer();
       configureBroker();
     }
@@ -165,9 +171,8 @@ public class Peer implements Runnable {
     injector_.injectMembers(peer);
     networkThread_ = new Thread(peer, "CommunicationPeer");
 
-    // TODO(szymonmatejczyk): Remove GlobalContext.
-    GlobalContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
     NetworkContext.getInstance().setCommAddress(commAddress_);
+    NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
 
     //Register instance in DHT
     /*GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
@@ -187,17 +192,9 @@ public class Peer implements Runnable {
   }
 
   protected void runAsyncModules() {
-    // Periodically checking asynchronous messages.
-    MessageGenerator retrieveAMGenerator = new MessageGenerator() {
-      @Override
-      public Message generate() {
-        return new JobInitMessage(new RetrieveAsynchronousMessagesModule());
-      }
-    };
-    PeriodicMessageSender sender = new PeriodicMessageSender(
-        retrieveAMGenerator, RetrieveAsynchronousMessagesModule.INTERVAL,
-        dispatcherInQueue_);
-    dispatcherInQueue_.add(new JobInitMessage(sender));
+    // Periodically checking asynchronous messages starting from now.
+    peerTimer_.scheduleRepeated(new JobInitMessage(new RetrieveAsynchronousMessagesModule()),
+        0L, RetrieveAsynchronousMessagesModule.EXECUTION_PERIOD);
 
     // Add found peer to synchro peers.
     MessageGenerator addFoundSynchroPeer = new MessageGenerator() {
@@ -206,8 +203,6 @@ public class Peer implements Runnable {
         return new JobInitMessage(new AddSynchroPeerModule());
       }
     };
-
-    // TODO(bolek,szm): Temporarily disabled due to errors.
     NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
 
     // Turning on statistics gossiping module.
