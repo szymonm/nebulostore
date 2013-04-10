@@ -357,7 +357,7 @@ public final class GossipTest extends Peer {
         getPeersMethod = PeerSamplingGossipService.class.getDeclaredMethod("getPeers");
       } catch (NoSuchMethodException e) {
         logger_.error("Exception: " + e + " when trying to get private method getPeers.");
-        throw new RuntimeException(e.toString());
+        throw new RuntimeException(e);
       }
       getPeersMethod.setAccessible(true);
 
@@ -379,11 +379,11 @@ public final class GossipTest extends Peer {
         } catch (IllegalAccessException e) {
           logger_.error("Exception: " + e + " when trying to invoke private " +
               "method getPeers.");
-          throw new RuntimeException(e.toString());
+          throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
           logger_.error("Exception: " + e + " when trying to invoke private " +
               "method getPeers.");
-          throw new RuntimeException(e.toString());
+          throw new RuntimeException(e);
         }
 
         for (PeerDescriptor peer : peers) {

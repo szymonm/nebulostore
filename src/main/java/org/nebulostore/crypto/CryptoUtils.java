@@ -66,7 +66,7 @@ public final class CryptoUtils {
       out.close();
       baos.close();
     } catch (IOException exception) {
-      throw new CryptoException("IOError in serializing object: " + exception.getMessage());
+      throw new CryptoException("IOError in serializing object.", exception);
     }
     return result;
   }
@@ -80,9 +80,9 @@ public final class CryptoUtils {
       bais.close();
       in.close();
     } catch (IOException exception) {
-      throw new CryptoException("IOError in deserializing object: " + exception.getMessage());
+      throw new CryptoException("IOError in deserializing object.", exception);
     } catch (ClassNotFoundException exception) {
-      throw new CryptoException("Cannot deserialize object of unknown class.");
+      throw new CryptoException("Cannot deserialize object of unknown class.", exception);
     }
     return o;
   }

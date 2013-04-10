@@ -35,6 +35,8 @@ public class Dispatcher extends Module {
    * on their types.
    */
   public class MessageDispatchVisitor extends MessageVisitor<Void> {
+    private static final int MAX_LOGGED_JOB_ID_LENGTH = 8;
+
     /*
      * Special handling for JobEndedMessage.
      * Remove MSG_ID from Dispatcher's map.
@@ -69,8 +71,7 @@ public class Dispatcher extends Module {
     public Void visit(KillDispatcherMessage message) throws NebuloException {
       Thread[] threads =
           workersThreads_.values().toArray(new Thread[workersThreads_.values().size()]);
-      logger_.debug("Quitting dispatcher, waiting for " + String.valueOf(threads.length) +
-          " job threads.");
+      logger_.debug("Quitting dispatcher, waiting for " + threads.length + " job threads.");
       for (int i = 0; i < threads.length; ++i) {
         try {
           threads[i].join(JOIN_TIMEOUT_MILLIS);
@@ -105,7 +106,7 @@ public class Dispatcher extends Module {
               handler.run();
             } else {
               Thread newThread = new Thread(handler, handler.getClass().getSimpleName() + ":" +
-                  jobId.substring(0, Math.min(8, jobId.length())));
+                  jobId.substring(0, Math.min(MAX_LOGGED_JOB_ID_LENGTH, jobId.length())));
               workersQueues_.put(jobId, newInQueue);
               workersThreads_.put(jobId, newThread);
               logger_.debug("Starting new thread with handler of type " +

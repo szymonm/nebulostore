@@ -11,4 +11,8 @@ public class CryptoException extends NebuloException {
   public CryptoException(String message) {
     super(message);
   }
+
+  public CryptoException(String message, Exception cause) {
+    super(message, cause);
+  }
 }

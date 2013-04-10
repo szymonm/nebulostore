@@ -63,7 +63,7 @@ public final class EntryPoint {
     try {
       return new XMLConfiguration(CONFIGURATION_PATH);
     } catch (ConfigurationException cex) {
-      throw new NebuloException("Configuration read error in: " + CONFIGURATION_PATH);
+      throw new NebuloException("Configuration read error in: " + CONFIGURATION_PATH, cex);
     }
   }
 
@@ -74,11 +74,11 @@ public final class EntryPoint {
       peer.setConfiguration(config);
       return peer;
     } catch (InstantiationException e) {
-      throw new NebuloException("Could not instantiate class " + className + ".");
+      throw new NebuloException("Could not instantiate class " + className + ".", e);
     } catch (IllegalAccessException e) {
-      throw new NebuloException("Constructor for class " + className + " is not accessible.");
+      throw new NebuloException("Constructor for class " + className + " is not accessible.", e);
     } catch (ClassNotFoundException e) {
-      throw new NebuloException("Class " + className + " not found.");
+      throw new NebuloException("Class " + className + " not found.", e);
     }
   }
 

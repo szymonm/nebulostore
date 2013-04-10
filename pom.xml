@@ -130,7 +130,33 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <version>2.9</version>
                         <configuration>
-                            <show>public</show>
+                            <show>protected</show>
+                            <groups>
+                                <group>
+                                    <title>Application Core</title>
+                                    <packages>org.nebulostore.appcore*</packages>
+                                </group>
+                                <group>
+                                    <title>Communication</title>
+                                    <packages>org.nebulostore.communication*</packages>
+                                </group>
+                                <group>
+                                    <title>Dispatcher</title>
+                                    <packages>org.nebulostore.dispatcher*</packages>
+                                </group>
+                                <group>
+                                    <title>Broker</title>
+                                    <packages>org.nebulostore.broker*</packages>
+                                </group>
+                                <group>
+                                    <title>Testing / System Management</title>
+                                    <packages>org.nebulostore.conductor*:org.nebulostore.systest*</packages>
+                                </group>
+                                <group>
+                                    <title>Utilities</title>
+                                    <packages>org.nebulostore.timer*:org.nebulostore.utils*</packages>
+                                </group>
+                            </groups>
                         </configuration>
                     </plugin>
                 </plugins>

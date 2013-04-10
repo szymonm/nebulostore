@@ -128,7 +128,7 @@ public final class RunPingPong extends Peer {
     try {
       peerId = Integer.parseInt(peerIdStr);
     } catch (NumberFormatException e) {
-      throw new IllegalArgumentException("PeerId needs to be an integer");
+      throw new IllegalArgumentException("PeerId needs to be an integer", e);
     }
 
     String myAddress = config_.getString(CONFIG_PREFIX + "peer-net-address", "");

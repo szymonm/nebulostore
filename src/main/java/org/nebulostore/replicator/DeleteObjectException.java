@@ -12,4 +12,7 @@ public class DeleteObjectException extends NebuloException {
     super(message);
   }
 
+  public DeleteObjectException(String message, Exception cause) {
+    super(message, cause);
+  }
 }

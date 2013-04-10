@@ -456,7 +456,7 @@ public class Replicator extends JobModule {
       }
     } catch (InterruptedException e) {
       logger_.warn("Interrupted while waiting for object lock in deleteObject()");
-      throw new DeleteObjectException("Interrupted while waiting for object lock.");
+      throw new DeleteObjectException("Interrupted while waiting for object lock.", e);
     }
 
     filesLocations_.remove(objectId);

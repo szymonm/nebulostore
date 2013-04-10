@@ -57,7 +57,7 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
       try {
         config = new XMLConfiguration(CONFIGURATION_PATH);
       } catch (ConfigurationException cex) {
-        throw new NebuloException("Configuration read error in: " + CONFIGURATION_PATH);
+        throw new NebuloException("Configuration read error in: " + CONFIGURATION_PATH, cex);
       }
 
       CommAddress commAddress = new CommAddress(config.getString("communication.comm-address", ""));

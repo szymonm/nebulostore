@@ -48,8 +48,6 @@ public class KeyDHT implements Serializable {
    * To differentiate between objects in communication layer and higher module
    * objects this function combines firstKey identifying layer and secondKey
    * identifying the object itself.
-   *
-   * @author Grzegorz Milka
    */
   public static Number160 combine(Number160 firstKey, Number160 secondKey) {
     int firstKeyMaxLength = 32;
