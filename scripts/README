@@ -7,19 +7,24 @@ Tests available:
     2. Planet-lab tests (ssh key required):
         ./scripts/run-planet-lab-test.sh
 
+    Note:
+        For run-planet-lab-test.sh make sure that you have uploaded necessary
+        libraries by running:
+            scripts/upload-libs-to-planet.sh
+
+        If you want to re-generate the list of working peers use
+            bash scripts/select-sane-planet-lab-peers.sh > scripts/hosts.txt
+
     3. Interactive terminal
         ./scripts/console-test.sh
 
 
-How to run Network ping-pong test (this will change soon)
+How to run Network ping-pong test (this should change soon):
 
-1. Go to build_scripts/testing and run 'runpingpong.sh' to build the test.
-2. Go to src/test/scripts/communicationtest.
-3. Edit build-location.txt and insert your build directory there.
-4. Copy 3-5 random hosts from slice-hosts.all to slice-hosts.txt.
-5. Set 'primary-slice-host.txt' and 'bootstrap-server.txt' to your favourite hosts (or leave them as they are).
-6. In trunk/resources/conf/comunication/ edit 'CommunicationPeerServer.xml' and 'CommunicationPeer.xml' to what is set in 'bootstrap-server.txt'.
-7. Run 'perform-all.sh 300' (5 mins of delay).
-8. Download 'testing.log' file from any of the hosts you used, (e.g. planetlab1.montefiore.ulg.ac.be):
+1. Run communication/perform-test.sh DELAY where DELAY is the number of seconds
+the test will be run.
+2. Hosts on planetlab will now perform a pingpong test for at most DELAY number
+of seconds.
+3. Download 'testing.log' file from any of the hosts you used, (e.g. planetlab1.montefiore.ulg.ac.be):
       scp mimuw_nebulostore@planetlab1.montefiore.ulg.ac.be:~/grzesiek/testing.log .
-9. Check if the file contains 'Found new peer' and 'Received msg' messages and no errors.
+4. Check if the file contains 'Found new peer' and 'Received msg' messages and no errors.

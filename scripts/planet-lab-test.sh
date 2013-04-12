@@ -2,6 +2,10 @@
 
 # Automatic local N-peer test.
 # Please run from trunk level (./scripts/local-ping-ping-test.sh)
+#
+# Make sure that you have uploaded necessary libraries to the host
+# Use scripts/upload-libs-to-planet-lab.sh for that purpose.
+#
 # Optional parameters: peer_class_name test_server_class_name number_of_peers number_of_test_clients number_of_iterations
 # Prints "SUCCESS" or "FAILURE"
 
