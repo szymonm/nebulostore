@@ -79,19 +79,28 @@ public final class BootstrapClient extends BootstrapService {
 
     /* Now that we know our local address setup UPNP */
     /* True iff upnp was successful */
-    boolean upnpResult = false;
+    boolean natResult = false;
     try {
-      upnpResult = setUpUpnpPortMapping();
+      natResult = setUpUpnpPortMapping();
       logger_.info("Upnp port mapping set up.");
     } catch (IOException e) {
       logger_.warn("Error when setting UPNP port mapping: " + e);
     }
 
+    /* Now try nat-pmp */
+    boolean pmpResult = setUpNatPMPPortMapping();
+    if (!pmpResult) {
+      /* INFO, because PMP uses POSIX netstat and failure is an option and not a
+       * sign of something begin wrong */
+      logger_.info("Error when setting up PMP port mapping");
+    }
+    natResult = natResult || pmpResult;
+
     try {
       boolean foundAddress = false;
       /* iff upnp wasn't succesful check whether our internet address is bound
        * to some interface. If not throw exception */
-      if (!upnpResult) {
+      if (!natResult) {
         for (String localAddress : NATUtils.getLocalAddresses()) {
           if (pAPeer_.getCurrentInetSocketAddress().getAddress().
               getHostAddress().equals(localAddress)) {
@@ -126,8 +135,6 @@ public final class BootstrapClient extends BootstrapService {
 
   @Override
   //NOTE(grzegorzmilka) Do nothing for now.
-  //TODO(grzegorzmilka) Ask whether it is better to start up as separate
-  //function even though the object is useless otherwise
   public void startUpService() {
     return;
   }
@@ -160,6 +167,12 @@ public final class BootstrapClient extends BootstrapService {
         localInetAddress_.getHostAddress());
     return NATUtils.mapUPNP(localInetAddress_.getHostAddress(), commCliPort_,
         commCliPort_);
+  }
+
+  /* Returns true if setting up NAT-PMP was successful */
+  private boolean setUpNatPMPPortMapping() {
+    logger_.debug("Setting up natPMP.");
+    return NATUtils.mapPMP(commCliPort_, commCliPort_);
   }
 
   /* Gets address of bootstrap gossiping server and get local InetAddress used

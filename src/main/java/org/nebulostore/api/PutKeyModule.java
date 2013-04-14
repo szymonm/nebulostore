@@ -16,9 +16,9 @@ import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.ValueDHT;
-import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
-import org.nebulostore.communication.messages.dht.OkDHTMessage;
-import org.nebulostore.communication.messages.dht.PutDHTMessage;
+import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
+import org.nebulostore.communication.dht.messages.OkDHTMessage;
+import org.nebulostore.communication.dht.messages.PutDHTMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
 import static com.google.common.base.Preconditions.checkNotNull;

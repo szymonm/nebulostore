@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.kademlia;
+package org.nebulostore.communication.dht.messages;
 
 import java.util.Arrays;
 

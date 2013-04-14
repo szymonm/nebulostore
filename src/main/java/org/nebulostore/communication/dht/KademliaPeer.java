@@ -21,13 +21,13 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.messages.dht.DelDHTMessage;
-import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
-import org.nebulostore.communication.messages.dht.GetDHTMessage;
-import org.nebulostore.communication.messages.dht.OkDHTMessage;
-import org.nebulostore.communication.messages.dht.OutDHTMessage;
-import org.nebulostore.communication.messages.dht.PutDHTMessage;
-import org.nebulostore.communication.messages.dht.ValueDHTMessage;
+import org.nebulostore.communication.dht.messages.DelDHTMessage;
+import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
+import org.nebulostore.communication.dht.messages.GetDHTMessage;
+import org.nebulostore.communication.dht.messages.OkDHTMessage;
+import org.nebulostore.communication.dht.messages.OutDHTMessage;
+import org.nebulostore.communication.dht.messages.PutDHTMessage;
+import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

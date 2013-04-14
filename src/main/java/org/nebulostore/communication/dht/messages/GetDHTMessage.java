@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.dht;
+package org.nebulostore.communication.dht.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -7,11 +7,11 @@ import org.nebulostore.communication.dht.KeyDHT;
 /**
  * @author marcin
  */
-public class DelDHTMessage extends InDHTMessage {
-  private static final long serialVersionUID = -3611478669143150333L;
+public class GetDHTMessage extends InDHTMessage {
+  private static final long serialVersionUID = -6134658511663501107L;
   private final KeyDHT key_;
 
-  public DelDHTMessage(String jobId, KeyDHT key) {
+  public GetDHTMessage(String jobId, KeyDHT key) {
     super(jobId);
     key_ = key;
   }
@@ -20,7 +20,13 @@ public class DelDHTMessage extends InDHTMessage {
     return key_;
   }
 
+  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
+  }
+
+  @Override
+  public String toString() {
+    return "GetDHTMessage for key: " + getKey();
   }
 }

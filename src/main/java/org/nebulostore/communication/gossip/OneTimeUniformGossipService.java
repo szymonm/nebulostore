@@ -11,8 +11,8 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

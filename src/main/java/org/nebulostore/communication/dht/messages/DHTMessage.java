@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.dht;
+package org.nebulostore.communication.dht.messages;
 
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;

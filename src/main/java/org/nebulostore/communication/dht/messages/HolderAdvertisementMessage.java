@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.bdbdht;
+package org.nebulostore.communication.dht.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;

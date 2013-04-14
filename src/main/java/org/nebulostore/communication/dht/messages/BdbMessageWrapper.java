@@ -1,10 +1,9 @@
-package org.nebulostore.communication.messages.bdbdht;
+package org.nebulostore.communication.dht.messages;
 
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.communication.messages.dht.DHTMessage;
 
 /**
  * @author  Marcin Walas

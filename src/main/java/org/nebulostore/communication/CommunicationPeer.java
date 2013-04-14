@@ -23,24 +23,23 @@ import org.nebulostore.communication.bootstrap.BootstrapServer;
 import org.nebulostore.communication.bootstrap.BootstrapService;
 import org.nebulostore.communication.dht.BdbPeer;
 import org.nebulostore.communication.dht.KademliaPeer;
+import org.nebulostore.communication.dht.messages.BdbMessageWrapper;
+import org.nebulostore.communication.dht.messages.DHTMessage;
+import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
+import org.nebulostore.communication.dht.messages.InDHTMessage;
+import org.nebulostore.communication.dht.messages.OutDHTMessage;
 import org.nebulostore.communication.gossip.GossipService;
+import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
-import org.nebulostore.communication.messages.bdbdht.BdbMessageWrapper;
-import org.nebulostore.communication.messages.bdbdht.HolderAdvertisementMessage;
-import org.nebulostore.communication.messages.dht.DHTMessage;
-import org.nebulostore.communication.messages.dht.InDHTMessage;
-import org.nebulostore.communication.messages.dht.OutDHTMessage;
-import org.nebulostore.communication.messages.gossip.PeerGossipMessage;
 import org.nebulostore.communication.socket.ListenerService;
 import org.nebulostore.communication.socket.MessengerService;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-//TODO(grzegorzmilka) apply Visitor pattern to message communication
 /**
  * Main module for communication with outside world.
  *

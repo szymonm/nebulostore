@@ -62,23 +62,11 @@ public final class TomP2PClient extends TomP2PPeer {
       bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO,
           new InetSocketAddress(bootstrapServerAddress_, bootstrapTomP2PPort_));
 
-      try {
-        /* HOT-FIX(grzegorzmilka) quick fix to find NPE source */
-        myPeer_.getConfiguration().setBehindFirewall(true);
-      } catch (NullPointerException e) {
-        logger_.error("NullPointerException when setting peer to be behind firewall");
-        throw e;
-      }
+      myPeer_.getConfiguration().setBehindFirewall(true);
 
       FutureDiscover discovery;
-      try {
-        /* HOT-FIX(grzegorzmilka) quick fix to find NPE source */
-        discovery = myPeer_.discover().setPeerAddress(bootstrapServerPeerAddress_).start();
-        discovery.awaitUninterruptibly();
-      } catch (NullPointerException e) {
-        logger_.error("NullPointerException when starting discovery");
-        throw e;
-      }
+      discovery = myPeer_.discover().setPeerAddress(bootstrapServerPeerAddress_).start();
+      discovery.awaitUninterruptibly();
       if (!discovery.isSuccess()) {
         String errMsg = "Couldn't perform tomp2p discovery: " +
             discovery.getFailedReason();
@@ -96,14 +84,8 @@ public final class TomP2PClient extends TomP2PPeer {
 
       FutureBootstrap bootstrap;
 
-      try {
-        /* HOT-FIX(grzegorzmilka) quick fix to find NPE source */
-        bootstrap = myPeer_.bootstrap().setPeerAddress(bootstrapServerPeerAddress_).start();
-        bootstrap.awaitUninterruptibly();
-      } catch (NullPointerException e) {
-        logger_.error("NullPointerException when bootstrapping peer");
-        throw e;
-      }
+      bootstrap = myPeer_.bootstrap().setPeerAddress(bootstrapServerPeerAddress_).start();
+      bootstrap.awaitUninterruptibly();
       if (!bootstrap.isSuccess()) {
         logger_.debug("Couldn't perform tomp2p bootstrap in iteration " + i + ": " +
             bootstrap.getFailedReason());

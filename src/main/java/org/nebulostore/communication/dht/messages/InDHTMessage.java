@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.dht;
+package org.nebulostore.communication.dht.messages;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.MessageVisitor;

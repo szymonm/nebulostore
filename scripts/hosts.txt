@@ -1,5 +1,3 @@
-roti.mimuw.edu.pl
-prata.mimuw.edu.pl
 inriarennes2.irisa.fr
 planetlab1.cesnet.cz
 planetlab04.mpi-sws.mpg.de

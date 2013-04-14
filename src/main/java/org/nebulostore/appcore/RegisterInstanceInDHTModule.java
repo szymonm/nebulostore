@@ -9,11 +9,11 @@ import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.ValueDHT;
-import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
-import org.nebulostore.communication.messages.dht.GetDHTMessage;
-import org.nebulostore.communication.messages.dht.OkDHTMessage;
-import org.nebulostore.communication.messages.dht.PutDHTMessage;
-import org.nebulostore.communication.messages.dht.ValueDHTMessage;
+import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
+import org.nebulostore.communication.dht.messages.GetDHTMessage;
+import org.nebulostore.communication.dht.messages.OkDHTMessage;
+import org.nebulostore.communication.dht.messages.PutDHTMessage;
+import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
 

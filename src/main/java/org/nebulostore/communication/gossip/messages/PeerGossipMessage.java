@@ -1,4 +1,4 @@
-package org.nebulostore.communication.messages.gossip;
+package org.nebulostore.communication.gossip.messages;
 
 import java.util.Collection;
 import java.util.EnumSet;

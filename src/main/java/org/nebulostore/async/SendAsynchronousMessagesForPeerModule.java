@@ -11,9 +11,9 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.StoreAsynchronousMessage;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.dht.ErrorDHTMessage;
-import org.nebulostore.communication.messages.dht.GetDHTMessage;
-import org.nebulostore.communication.messages.dht.ValueDHTMessage;
+import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
+import org.nebulostore.communication.dht.messages.GetDHTMessage;
+import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 
 /**
