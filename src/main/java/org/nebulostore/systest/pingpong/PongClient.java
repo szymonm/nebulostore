@@ -52,7 +52,8 @@ public final class PongClient extends ConductorClient {
   final class Visitor2 extends TestingModuleVisitor {
     @Override
     public Void visit(NewPhaseMessage message) {
-      networkQueue_.add(new UserCommMessage(jobId_, sender_, magicNumber_.add(BigInteger.ONE)));
+      networkQueue_.add(new UserCommMessage(jobId_, sender_, magicNumber_.add(BigInteger.ONE),
+          phase_));
       phaseFinished();
       return null;
     }

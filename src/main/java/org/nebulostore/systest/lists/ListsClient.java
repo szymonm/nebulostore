@@ -4,6 +4,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import com.google.inject.Inject;
 
@@ -30,13 +35,16 @@ public final class ListsClient extends ConductorClient {
   private static final long serialVersionUID = -7238750658102427676L;
   private static Logger logger_ = Logger.getLogger(ListsClient.class);
   private static final int MAX_ITER = 2;
-  private static final int INITIAL_SLEEP = 5000;
-  private static final int ITER_SLEEP = 500;
+  private static final int INITIAL_SLEEP_MILLIS = 8000;
+  private static final int ADDRESS_EXCHANGE_TIMEOUT_MILLIS = 60 * 1000;
+  private static final int ITER_SLEEP = 2000;
   private static final int N_CASES = 3;
+  private static final int THREAD_POOL_SIZE = 5;
 
-  private List<CommAddress> clients_;
-  private Vector<NebuloAddress> addresses_;
-  private int clientId_;
+  private final List<CommAddress> clients_;
+  private final Vector<NebuloAddress> addresses_;
+  private final int clientId_;
+  private final ListsStats stats_;
   private NebuloList myList_;
   private transient NebuloObjectFactory objectFactory_;
 
@@ -45,6 +53,7 @@ public final class ListsClient extends ConductorClient {
     super(serverJobId, numPhases, serverAddress);
     clients_ = new ArrayList<CommAddress>(clients);
     clientId_ = clientId;
+    stats_ = new ListsStats();
     addresses_ = new Vector<NebuloAddress>();
   }
 
@@ -56,14 +65,15 @@ public final class ListsClient extends ConductorClient {
   @Override
   protected void initVisitors() {
     visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
-    sleep(INITIAL_SLEEP);
+    sleep(INITIAL_SLEEP_MILLIS);
     visitors_[0] = new EmptyInitializationVisitor();
     myList_ = createList();
     visitors_[1] = new AddressExchangeVisitor(clients_, addresses_, clientId_, myList_.getAddress(),
-        INITIAL_SLEEP);
+        INITIAL_SLEEP_MILLIS, ADDRESS_EXCHANGE_TIMEOUT_MILLIS);
     visitors_[2] = new ReadFilesVisitor();
     visitors_[3] = new DeleteFileVisitor();
     visitors_[4] = new IgnoreNewPhaseVisitor();
+    visitors_[4] = new LastPhaseVisitor(stats_);
   }
 
   private NebuloList createList() {
@@ -89,32 +99,75 @@ public final class ListsClient extends ConductorClient {
    * Phase 2 - read all the files and verify.
    */
   final class ReadFilesVisitor extends TestingModuleVisitor {
+
     @Override
     public Void visit(NewPhaseMessage message) {
-      for (NebuloAddress address : addresses_) {
-        // Try to fetch each file at most MAX_ITER times.
-        for (int iter = 1; iter <= MAX_ITER; ++iter) {
-          try {
-            NebuloList list = (NebuloList) objectFactory_.fetchExistingNebuloObject(address);
-            ListIterator iterator = list.iterator();
-            for (int i = 0; i < N_CASES; ++i) {
-              BigInteger elem = (BigInteger) CryptoUtils.decryptObject(iterator.next().getData());
-              BigInteger good = list.getAddress().getObjectId().getKey().add(BigInteger.valueOf(i));
-              if (!good.equals(elem)) {
-                endWithError("List content is incorrect (" + elem + " != " + good + ")");
-                return null;
-              }
+      /**
+       * Single file fetcher.
+       * @author Bolek Kulbabinski
+       */
+      class FileFetchTask implements Callable<NebuloList> {
+        NebuloAddress address_;
+        public FileFetchTask(NebuloAddress address) {
+          address_ = address;
+        }
+        @Override
+        public NebuloList call() {
+          for (int iter = 1; iter <= MAX_ITER; ++iter) {
+            try {
+              return (NebuloList) objectFactory_.fetchExistingNebuloObject(address_);
+            } catch (NebuloException e) {
+              logger_.debug("Unable to fetch list " + address_ + " in iteration " + iter);
+              sleep(ITER_SLEEP);
             }
-            logger_.debug("Received correct list from address " + address);
-            break;
-          } catch (NebuloException e) {
-            logger_.debug("Unable to fetch list with address " + address + " in iteration " + iter);
           }
-          sleep(ITER_SLEEP);
+          return null;
         }
       }
+
+      ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+      List<Future<NebuloList>> futures = new ArrayList<Future<NebuloList>>();
+
+      for (NebuloAddress address : addresses_) {
+        stats_.incTriedFiles();
+        futures.add(threadPool.submit(new FileFetchTask(address)));
+      }
+
+      for (int i = 0; i < addresses_.size(); i++) {
+        NebuloAddress address = addresses_.get(i);
+        try {
+          NebuloList list = futures.get(i).get();
+          if (list == null) {
+            unableToFetchList(address, "Got null from pool.");
+            continue;
+          }
+          ListIterator iterator = list.iterator();
+          for (int j = 0; j < N_CASES; ++j) {
+            BigInteger elem = (BigInteger) CryptoUtils.decryptObject(iterator.next().getData());
+            BigInteger good = list.getAddress().getObjectId().getKey().add(BigInteger.valueOf(j));
+            if (!good.equals(elem)) {
+              unableToFetchList(address, "Content is incorrect (" + elem + " != " + good + ")");
+              continue;
+            }
+          }
+          logger_.debug("Received correct list from address " + list.getAddress());
+        } catch (InterruptedException e) {
+          unableToFetchList(address, "InterruptedException");
+        } catch (ExecutionException e) {
+          unableToFetchList(address, "ExecutionException");
+        } catch (CryptoException e) {
+          unableToFetchList(address, "CryptoException");
+        }
+      }
+
+      threadPool.shutdown();
       phaseFinished();
       return null;
+    }
+
+    private void unableToFetchList(NebuloAddress address, String reason) {
+      logger_.debug("Unable to fetch list " + address + " (" + reason + ").");
+      stats_.addAddress(address);
     }
   }
 

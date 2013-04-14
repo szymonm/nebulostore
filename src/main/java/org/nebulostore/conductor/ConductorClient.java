@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
@@ -21,6 +24,8 @@ import org.nebulostore.conductor.messages.StatsMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.conductor.messages.UserCommMessage;
+import org.nebulostore.timer.TimeoutMessage;
+import org.nebulostore.timer.Timer;
 
 /**
  * Base class for all TestingModules(test cases run on peers).
@@ -43,12 +48,18 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   protected final String serverJobId_;
   protected final int numPhases_;
 
+  protected Provider<Timer> timers_;
   protected int phase_;
 
   public ConductorClient(String serverJobId, int numPhases, CommAddress serverCommAddress) {
     serverJobId_ = serverJobId;
     numPhases_ = numPhases;
     server_ = serverCommAddress;
+  }
+
+  @Inject
+  public void setTimerProvider(Provider<Timer> timers) {
+    timers_ = timers;
   }
 
   /**
@@ -134,6 +145,28 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     }
 
     @Override
+    public Void visit(UserCommMessage message) {
+      if (message.getPhase() != phase_) {
+        logger_.warn("Received UserCommMessage from phase " + message.getPhase() +
+            " while in phase " + phase_);
+      } else {
+        visitCorrectPhaseUserCommMessage(message);
+      }
+      return null;
+    }
+
+    protected void visitCorrectPhaseUserCommMessage(UserCommMessage message) {
+      // Override in subclass.
+    }
+
+    @Override
+    public Void visit(TimeoutMessage message) {
+      logger_.warn("Received TimeoutMessage from phase " + message.getMessageContent() +
+          " while in phase " + phase_);
+      return null;
+    }
+
+    @Override
     public Void visit(FinishMessage message) {
       logger_.info("Test finished by server.");
       endJobModule();
@@ -211,14 +244,18 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     private final Vector<NebuloAddress> addresses_;
     private final NebuloAddress myAddress_;
     private final int initialSleep_;
+    private final long timeoutMillis_;
+    private final Timer visitorTimer_;
 
     public AddressExchangeVisitor(List<CommAddress> clients, Vector<NebuloAddress> addresses,
-        int myClientId, NebuloAddress myAddress, int initialSleep) {
+        int myClientId, NebuloAddress myAddress, int initialSleep, long timeoutMillis) {
       clients_ = new ArrayList<CommAddress>(clients);
       addresses_ = addresses;
       currClientIndex_ = myClientId;
       myAddress_ = myAddress;
       initialSleep_ = initialSleep;
+      timeoutMillis_ = timeoutMillis;
+      visitorTimer_ = timers_.get();
     }
 
     @Override
@@ -227,23 +264,38 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       logger_.debug("Sending NebuloAddress to " + clients_.size() + " peers.");
       for (int i = 0; i < clients_.size(); ++i)
         if (i != currClientIndex_)
-          networkQueue_.add(new UserCommMessage(jobId_, clients_.get(i), myAddress_));
+          networkQueue_.add(new UserCommMessage(jobId_, clients_.get(i), myAddress_, phase_));
+      visitorTimer_.schedule(jobId_, timeoutMillis_, String.valueOf(phase_));
       tryFinishPhase();
       return null;
     }
 
     @Override
-    public Void visit(UserCommMessage message) {
+    protected void visitCorrectPhaseUserCommMessage(UserCommMessage message) {
       NebuloAddress receivedAddr = (NebuloAddress) message.getContent();
       logger_.debug("Received NebuloAddress: " + receivedAddr);
       addresses_.add(receivedAddr);
       tryFinishPhase();
+    }
+
+    @Override
+    public Void visit(TimeoutMessage message) {
+      if (message.getMessageContent().equals(String.valueOf(phase_))) {
+        logger_.debug("Finishing AddressExchangeVisitor in phase " + phase_ + " due to timeout." +
+            "Received " + addresses_.size() + " addresses, expected " + (clients_.size() - 1));
+        phaseFinished();
+      } else {
+        logger_.warn("Received TimeoutMessage from phase " + message.getMessageContent() +
+            " while in phase " + phase_);
+      }
       return null;
     }
 
     private void tryFinishPhase() {
-      if (addresses_.size() == clients_.size() - 1)
+      if (addresses_.size() == clients_.size() - 1) {
+        visitorTimer_.cancelTimer();
         phaseFinished();
+      }
     }
   }
 }

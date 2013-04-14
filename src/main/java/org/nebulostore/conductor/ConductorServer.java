@@ -217,13 +217,12 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   }
 
   private boolean trySetClients() {
-    int needed = peersNeeded_ + (useServerAsClient_ ? 0 : 1);
-    if (NetworkContext.getInstance().getKnownPeers().size() >= needed) {
+    clients_ = new HashSet<CommAddress>(NetworkContext.getInstance().getKnownPeers());
+    if (!useServerAsClient_) {
+      clients_.remove(commAddress_);
+    }
+    if (clients_.size() >= peersNeeded_) {
       logger_.debug("Enough peers in NetworkContext. Initializing clients...");
-      clients_ = new HashSet<CommAddress>(NetworkContext.getInstance().getKnownPeers());
-      if (!useServerAsClient_) {
-        clients_.remove(commAddress_);
-      }
       return true;
     } else {
       return false;
@@ -327,8 +326,8 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
     @Override
     public Void visit(StatsMessage message) {
-      logger_.debug("Received StatsMessage.");
       if (!clients_.contains(message.getSourceAddress())) {
+        logger_.warn("Received StatsMessage with no source address.");
         return null;
       }
       tocs_++;

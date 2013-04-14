@@ -3,7 +3,10 @@ package org.nebulostore.systest.lists;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
+import org.apache.log4j.Logger;
+import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.CaseStatistics;
 import org.nebulostore.conductor.ConductorServer;
@@ -16,14 +19,16 @@ import org.nebulostore.crypto.CryptoUtils;
  * @author Bolek Kulbabinski
  */
 public final class ListsServer extends ConductorServer {
+  private static Logger logger_ = Logger.getLogger(ListsServer.class);
+
   private static final int NUM_PHASES = 3;
   private static final int TIMEOUT_SEC = 600;
-  private static final int INITIAL_SLEEP = 5000;
+  private static final int INITIAL_SLEEP = 8000;
 
   public ListsServer() {
     super(NUM_PHASES, TIMEOUT_SEC, "ListsClient_" + CryptoUtils.getRandomString(),
         "Lists server");
-    gatherStats_ = false;
+    gatherStats_ = true;
   }
 
   @Override
@@ -39,7 +44,15 @@ public final class ListsServer extends ConductorServer {
   }
 
   @Override
-  public void feedStats(CommAddress sender, CaseStatistics stats) { }
+  public void feedStats(CommAddress sender, CaseStatistics stats) {
+    ListsStats lstStats = (ListsStats) stats;
+    StringBuffer result = new StringBuffer();
+    Vector<NebuloAddress> addresses = lstStats.getAddresses();
+    for (NebuloAddress addr : addresses)
+      result.append(" " + addr + ",");
+    logger_.debug("Attempted " + lstStats.getNTriedFiles() + " downloads. " +
+      "Found " + addresses.size() + " unavailable files:" + result);
+  }
 
   @Override
   protected String getAdditionalStats() {

@@ -30,6 +30,7 @@ public final class ReadWriteClient extends ConductorClient {
   private static Logger logger_ = Logger.getLogger(ReadWriteClient.class);
   private static final int MAX_ITER = 10;
   private static final int INITIAL_SLEEP = 5000;
+  private static final int ADDRESS_EXCHANGE_TIMEOUT_MILLIS = 60 * 1000;
   private static final int ITER_SLEEP = 500;
 
   private List<CommAddress> clients_;
@@ -65,7 +66,7 @@ public final class ReadWriteClient extends ConductorClient {
     visitors_[0] = new EmptyInitializationVisitor();
     myFile_ = createFile();
     visitors_[1] = new AddressExchangeVisitor(clients_, files_, clientId_, myFile_.getAddress(),
-        INITIAL_SLEEP);
+        INITIAL_SLEEP, ADDRESS_EXCHANGE_TIMEOUT_MILLIS);
     visitors_[2] = new ReadFilesVisitor();
     visitors_[3] = new DeleteFileVisitor();
     visitors_[4] = new LastPhaseVisitor(stats_);

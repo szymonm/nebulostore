@@ -9,24 +9,25 @@ import org.nebulostore.communication.messages.CommMessage;
 
 /**
  * Message class used to send test-specific messages.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
 public class UserCommMessage extends CommMessage {
   private static final long serialVersionUID = -2865092973190890821L;
   protected final Serializable content_;
+  protected final int phase_;
 
-  public UserCommMessage(CommAddress sourceAddress, CommAddress destAddress) {
-    super(sourceAddress, destAddress);
-    content_ = null;
-  }
-
-  public UserCommMessage(String jobId, CommAddress destAddress, Serializable content) {
+  public UserCommMessage(String jobId, CommAddress destAddress, Serializable content, int phase) {
     super(jobId, null, destAddress);
     content_ = content;
+    phase_ = phase;
   }
 
   public Serializable getContent() {
     return content_;
+  }
+
+  public int getPhase() {
+    return phase_;
   }
 
   @Override
