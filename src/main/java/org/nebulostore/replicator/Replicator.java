@@ -393,12 +393,12 @@ public class Replicator extends JobModule {
   }
 
   /**
-   * Returns true only if the latest version of the file stored in this replicator belongs to the
+   * Returns true only if all versions of the file stored in this replica belong to the
    * set of versions known by the peer requesting update.
    */
   private static boolean previousVersionsMatch(ObjectId objectId, String current,
       Set<String> previousVersions) {
-    return previousVersions.contains(current);
+    return previousVersions.containsAll(previousVersions_.get(objectId));
   }
 
   /**
