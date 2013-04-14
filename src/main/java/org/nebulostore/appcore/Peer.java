@@ -193,7 +193,7 @@ public class Peer implements Runnable {
 
   protected void runAsyncModules() {
     // Periodically checking asynchronous messages starting from now.
-    peerTimer_.scheduleRepeated(new JobInitMessage(new RetrieveAsynchronousMessagesModule()),
+    peerTimer_.scheduleRepeatedJob(injector_.getProvider(RetrieveAsynchronousMessagesModule.class),
         0L, RetrieveAsynchronousMessagesModule.EXECUTION_PERIOD);
 
     // Add found peer to synchro peers.

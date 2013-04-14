@@ -4,9 +4,12 @@ import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
+import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.dispatcher.messages.JobInitMessage;
 
 /**
  * Wrapper for java.util.Timer.
@@ -45,6 +48,13 @@ public class TimerImpl implements Timer {
   }
 
   @Override
+  public void scheduleRepeatedJob(Provider<? extends JobModule> provider, long delayMillis,
+      long periodMillis) {
+    javaTimer_.scheduleAtFixedRate(new DispatcherGeneratingTimerTask(provider), delayMillis,
+        periodMillis);
+  }
+
+  @Override
   public void cancelTimer() {
     javaTimer_.cancel();
   }
@@ -66,6 +76,22 @@ public class TimerImpl implements Timer {
     @Override
     public void run() {
       dispatcherQueue_.add(message_);
+    }
+  }
+
+  /**
+   * @author Bolek Kulbabinski
+   */
+  private class DispatcherGeneratingTimerTask extends TimerTask {
+    private final Provider<? extends JobModule> provider_;
+
+    public DispatcherGeneratingTimerTask(Provider<? extends JobModule> provider) {
+      provider_ = provider;
+    }
+
+    @Override
+    public void run() {
+      dispatcherQueue_.add(new JobInitMessage(provider_.get()));
     }
   }
 }
