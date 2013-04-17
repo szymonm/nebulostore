@@ -11,6 +11,7 @@ else
     echo "    5) performance lists test (25 peers / 20 test clients)"
     echo "    6) performance lists test (35 peers / 30 test clients)"
     echo "    7) performance lists test (60 peers / 50 test clients)"
+    echo "    8) performance lists test (104 peers / 90 test clients)"
     read N
 fi
 
@@ -48,7 +49,12 @@ case $N in
     7) ./scripts/planet-lab-test.sh\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
-           50 40 1\
+           60 50 1\
+           scripts/hosts.txt;;
+    8) ./scripts/planet-lab-test.sh\
+           org.nebulostore.systest.performance.PerfTestingPeer\
+           org.nebulostore.systest.lists.ListsServer\
+           104 90 1\
            scripts/hosts.txt;;
 esac
 
