@@ -160,7 +160,7 @@
   </logger>
 
   <logger name="net.tomp2p">
-    <level value="DEBUG" />
+    <level value="OFF" />
     <appender-ref ref="FA-tomp2p" />
   </logger>
 
