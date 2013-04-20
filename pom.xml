@@ -68,7 +68,7 @@
                                 <manifest>
                                     <addClasspath>true</addClasspath>
                                     <classpathPrefix>lib</classpathPrefix>
-                                    <mainClass>org.nebulostore.appcore.EntryPoint</mainClass>
+                                    <mainClass>org.nebulostore.peers.EntryPoint</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

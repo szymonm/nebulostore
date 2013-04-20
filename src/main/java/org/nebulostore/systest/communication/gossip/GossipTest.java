@@ -22,12 +22,12 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
 import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.Peer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.gossip.PeerDescriptor;
 import org.nebulostore.communication.gossip.PeerSamplingGossipService;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
+import org.nebulostore.peers.Peer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

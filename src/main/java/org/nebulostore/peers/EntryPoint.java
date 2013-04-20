@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.peers;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +10,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.nebulostore.appcore.AbstractPeer;
+import org.nebulostore.appcore.GenericConfiguration;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**

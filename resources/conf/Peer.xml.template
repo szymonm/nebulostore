@@ -8,7 +8,7 @@
          'org.nebulostore.appcore.Peer' is the full, standard instance,
          'org.nebulostore.conductor.TestingPeer' is the test execution environment. -->
     <class-name>
-        @CLASS_NAME=org.nebulostore.appcore.Peer@
+        @CLASS_NAME=org.nebulostore.peers.Peer@
     </class-name>
     <replicator>
         <storage-path>

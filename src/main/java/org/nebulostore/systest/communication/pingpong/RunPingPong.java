@@ -15,8 +15,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.peers.Peer;
 
 /*TODO(grzegorzmilka) Add proper shutdown. Right now it's only a make-shift for
  * testing proper shutdown of CommunicationPeer. That is it only shutdowns

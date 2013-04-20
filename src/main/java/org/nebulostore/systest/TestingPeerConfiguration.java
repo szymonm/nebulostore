@@ -1,7 +1,7 @@
 package org.nebulostore.systest;
 
 import org.nebulostore.appcore.AbstractPeer;
-import org.nebulostore.appcore.PeerConfiguration;
+import org.nebulostore.peers.PeerConfiguration;
 
 /**
  * Configuration for Testing Peer.

@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.peers;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -11,6 +11,9 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.nebulostore.api.DeleteNebuloObjectModule;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.api.WriteNebuloObjectModule;
+import org.nebulostore.appcore.AbstractPeer;
+import org.nebulostore.appcore.GenericConfiguration;
+import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.model.ObjectDeleter;
 import org.nebulostore.appcore.model.ObjectGetter;

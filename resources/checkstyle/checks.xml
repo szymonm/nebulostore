@@ -353,7 +353,7 @@
 
     <!-- Flag uncommented main() methods. -->
     <module name="UncommentedMain">
-        <property name="excludedClasses" value="org.nebulostore.appcore.EntryPoint"/>
+        <property name="excludedClasses" value="org.nebulostore.peers.EntryPoint"/>
     </module>
 
     <!-- Require long constants to be defined by uppercase L -->

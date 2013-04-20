@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.peers;
 
 import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
@@ -10,6 +10,9 @@ import com.google.inject.name.Named;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.api.PutKeyModule;
+import org.nebulostore.appcore.AbstractPeer;
+import org.nebulostore.appcore.EndModuleMessage;
+import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
