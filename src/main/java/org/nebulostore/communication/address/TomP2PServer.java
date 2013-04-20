@@ -43,7 +43,8 @@ public final class TomP2PServer extends TomP2PPeer {
       logger_.warn(e.getMessage() + e.getCause().toString());
     }
 
-    resolver_ = new HashAddressResolver(myCommAddress_, myPeer_);
+    resolver_ = new CachedAddressResolver(
+        new HashAddressResolver(myCommAddress_, myPeer_));
 
     logger_.info("TomP2PServer initialization finished. My address is: " +
         bootstrapServerAddress_ + ".");

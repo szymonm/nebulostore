@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import net.tomp2p.futures.FutureDHT;
 import net.tomp2p.p2p.Peer;
 import net.tomp2p.peers.Number160;
@@ -14,11 +17,10 @@ import org.apache.log4j.Logger;
 import org.nebulostore.communication.dht.KeyDHT;
 
 /**
- * TomP2P's kademlia based implementation of persistent addressing service.
+ * TomP2P's kademlia-like implementation of persistent addressing service.
  *
  * @author Grzegorz Milka
  */
-//NOTE-GM Perhaps add TomP2PBuilder (Builder pattern)
 public abstract class TomP2PPeer implements PersistentAddressingPeer {
   protected Logger logger_;
 
@@ -41,30 +43,36 @@ public abstract class TomP2PPeer implements PersistentAddressingPeer {
     logger_ = Logger.getLogger(this.getClass());
   }
 
+  @Inject
   @Override
-  public void setBootstrapDHTPort(int port) {
+  public void setBootstrapDHTPort(@Named("BootstrapAddressingPort") int port) {
     bootstrapTomP2PPort_ = port;
   }
 
+  @Inject
   @Override
-  public void setDHTPort(int port) {
+  public void setDHTPort(@Named("LocalAddressingPort") int port) {
     tomP2PPort_ = port;
   }
 
+  @Inject
   @Override
-  public void setCommPort(int port) {
+  public void setCommPort(@Named("LocalCommPort") int port) {
     commCliPort_ = port;
   }
 
+  @Inject
   @Override
-  public void setBootstrapServerAddress(String bootstrapServerAddress) {
+  public void setBootstrapServerAddress(@Named("BootstrapServerAddress")
+      String bootstrapServerAddress) {
     if (bootstrapServerAddress == null)
       throw new IllegalArgumentException("Bootstrap address can not be null");
     bootstrapServerAddress_ = bootstrapServerAddress;
   }
 
+  @Inject
   @Override
-  public void setMyCommAddress(CommAddress myCommAddress) {
+  public void setMyCommAddress(@Named("LocalCommAddress") CommAddress myCommAddress) {
     if (myCommAddress == null)
       throw new IllegalArgumentException("myCommAddress can not be null");
     myCommAddress_ = myCommAddress;

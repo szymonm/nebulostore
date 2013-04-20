@@ -7,6 +7,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import net.tomp2p.p2p.Peer;
 
 import org.apache.log4j.Logger;
@@ -40,17 +43,18 @@ public final class BootstrapClient extends BootstrapService {
   //NOTE-GM TomP2P communication
   PersistentAddressingPeer pAPeer_;
 
-  //TODO(grzegorzmilka) Collision handling
   /**
    * commAddress - iff not equal to null then myCommAddress is set to it.
    * Otherwise it is random
    */
-  public BootstrapClient(String bootstrapServerAddress,
-      int commCliPort,
-      int bootstrapPort,
-      int tomP2PPort,
-      int bootstrapTomP2PPort,
-      CommAddress commAddress) throws NebuloException {
+  @Inject
+  public BootstrapClient(
+      @Named("BootstrapServerAddress") String bootstrapServerAddress,
+      @Named("LocalCommPort") int commCliPort,
+      @Named("BootstrapCommPort") int bootstrapPort,
+      @Named("LocalAddressingPort") int tomP2PPort,
+      @Named("BootstrapAddressingPort") int bootstrapTomP2PPort,
+      @Named("LocalCommAddress") CommAddress commAddress) throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, bootstrapTomP2PPort);
     bootstrapServerAddress_ = bootstrapServerAddress;
 

@@ -74,6 +74,10 @@ class HashAddressResolver implements CommAddressResolver {
     }
   }
 
+  public void reportFailure(CommAddress commAddress) {
+      /* Do nothing */
+  }
+
   public CommAddress getMyCommAddress() {
     return myCommAddress_;
   }

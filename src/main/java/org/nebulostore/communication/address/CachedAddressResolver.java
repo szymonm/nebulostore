@@ -17,7 +17,7 @@ import org.nebulostore.communication.exceptions.AddressNotPresentException;
  */
 class CachedAddressResolver implements CommAddressResolver {
   // 60 seconds
-  private static final long CACHE_TIMEOUT = 60000;
+  private static final long CACHE_TIMEOUT = 6000000;
   private static Logger logger_ = Logger.getLogger(CommAddressResolver.class);
   private Map<CommAddress, InetSocketAddress> cache_ =
     Collections.synchronizedMap(new HashMap<CommAddress, InetSocketAddress>());
@@ -40,6 +40,10 @@ class CachedAddressResolver implements CommAddressResolver {
       timer_.schedule(new CacheCleaner(commAddress), CACHE_TIMEOUT);
     }
     return inetSocketAddress;
+  }
+
+  public void reportFailure(CommAddress commAddress) {
+    clearCache(commAddress);
   }
 
   @Override

@@ -117,7 +117,8 @@ public final class TomP2PClient extends TomP2PPeer {
     currentAddressDiscoverer_.schedule(new CurrentAddressDiscoverer(),
         ADDRESS_DISCOVERY_PERIOD, ADDRESS_DISCOVERY_PERIOD);
 
-    resolver_ = new HashAddressResolver(myCommAddress_, myPeer_);
+    resolver_ = new CachedAddressResolver(
+        new HashAddressResolver(myCommAddress_, myPeer_));
 
     logger_.info("TomP2P initialization finished. My address is: " +
         myInetSocketAddress_ + ".");

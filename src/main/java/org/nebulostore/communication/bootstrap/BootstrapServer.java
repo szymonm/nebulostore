@@ -12,6 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import net.tomp2p.p2p.Peer;
 
 import org.apache.log4j.Logger;
@@ -45,7 +48,6 @@ public class BootstrapServer extends BootstrapService implements Runnable {
 
   private final CommAddress myCommAddress_;
   private final BootstrapMessage myWelcomeMessage_;
-  // TODO(grzegorzmilka) make some ip address discovery here like in client
   private final InetSocketAddress myInetSocketAddress_;
   private PersistentAddressingPeer pAPeer_;
   private ExecutorService service_ = Executors.newCachedThreadPool();
@@ -55,8 +57,13 @@ public class BootstrapServer extends BootstrapService implements Runnable {
    * commAddress - iff not equal to null then myCommAddress is set to it.
    * Otherwise it is random
    */
-  public BootstrapServer(String bootstrapServerAddress,
-      int commCliPort, int bootstrapPort, int tomP2PPort, CommAddress commAddress)
+  @Inject
+  public BootstrapServer(
+      @Named("BootstrapServerAddress") String bootstrapServerAddress,
+      @Named("LocalCommPort") int commCliPort,
+      @Named("BootstrapCommPort") int bootstrapPort,
+      @Named("LocalAddressingPort") int tomP2PPort,
+      @Named("LocalCommAddress") CommAddress commAddress)
     throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, tomP2PPort);
     myInetSocketAddress_ = new InetSocketAddress(bootstrapServerAddress, commCliPort_);

@@ -53,6 +53,8 @@ public class KademliaPeer extends Module {
   }
 
   /**
+   * Remember to set configuration after initialization.
+   *
    * @param inQueue
    * @param outQueue
    */
