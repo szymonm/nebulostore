@@ -521,8 +521,8 @@ public final class GossipTest extends Peer {
     int smallestLargestCluster = -1;
 
     /* Set testing intervals */
-    String[] intervalsStr = config_.getStringArray(
-        CONFIG_PREFIX + "cohesiveness-test-intervals");
+    String[] intervalsStr = config_.getString(CONFIG_PREFIX + "cohesiveness-test-intervals")
+        .split(";");
     List<Integer> intervals = new LinkedList<Integer>();
     for (String interval : intervalsStr) {
       intervals.add(Integer.parseInt(interval));

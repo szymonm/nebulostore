@@ -28,25 +28,28 @@
             @COMM_ADDRESS=@
         </comm-address>
         <!-- Time in miliseconds inidicating interval between sent gossips-->
-        <gossip-period>
+        <gossip-period type="Integer">
             @GOSSIP_PERIOD=20000@
         </gossip-period>
+        <one-time-uniform-gossip-n-replicators type="Integer">
+            @N_REPLICATORS=3@
+        </one-time-uniform-gossip-n-replicators>
         <ports>
             <!-- Main port used by local instance for communication. -->
-            <comm-cli-port>
+            <comm-cli-port type="Integer">
                 @CLI_PORT=10101@
             </comm-cli-port>
             <!-- Port used by bootstrap server for listening to welcome messages. -->
-            <bootstrap-port>
+            <bootstrap-port type="Integer">
                 @BOOTSTRAP_PORT=10201@
             </bootstrap-port>
             <!--Port used by local instance for listening to tomP2P communication. -->
-            <tomp2p-port>
+            <tomp2p-port type="Integer">
                 @TOMP2P_PORT=10301@
             </tomp2p-port>
             <!--Information which port is used by bootstrap server for tomP22 communication.
                 Should be equal to tomp2p-port for bootstrap server. -->
-            <bootstrap-server-tomp2p-port>
+            <bootstrap-server-tomp2p-port type="Integer">
                 @BOOTSTRAP_TOMP2P_PORT=10301@
             </bootstrap-server-tomp2p-port>
         </ports>
@@ -86,12 +89,12 @@
         <is-server>
             @IS_SERVER=false@
         </is-server>
-        <num-test-participants>
+        <num-test-participants type="Integer">
             @NUM_TEST_PARTICIPANTS=3@
         </num-test-participants>
         <!-- TestingPeer executes the following list of test cases. -->
         <testing-peer-class-list>
-            @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer,org.nebulostore.conductor.readwrite.ReadWriteServer@
+            @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer;org.nebulostore.conductor.readwrite.ReadWriteServer@
         </testing-peer-class-list>
         <communication>
             <pingpong>
@@ -110,25 +113,25 @@
                     @SERVER_NET_ADDRESS=localhost@
                 </server-net-address>
                 <!-- PeerID used for identifying hosts in the set -->
-                <peer-id>
+                <peer-id type="Integer">
                     @PEER_ID=1@
                 </peer-id>
             </pingpong>
             <gossip>
-                <num-gossipers>
+                <num-gossipers type="Integer">
                     @NUM_GOSSIPERS=10@
                 </num-gossipers>
-                <max-peers-size>
+                <max-peers-size type="Integer">
                     @MAX_PEERS_SIZE=20@
                 </max-peers-size>
-                <healing-factor>
+                <healing-factor type="Integer">
                     @HEALING_FACTOR=1@
                 </healing-factor>
-                <swapping-factor>
+                <swapping-factor type="Integer">
                     @SWAPPING_FACTOR=1@
                 </swapping-factor>
                 <cohesiveness-test-intervals>
-                    @COHESIVENESS_TEST_INTERVALS=8000,16000,24000@
+                    @COHESIVENESS_TEST_INTERVALS=8000;16000;24000@
                 </cohesiveness-test-intervals>
             </gossip>
         </communication>

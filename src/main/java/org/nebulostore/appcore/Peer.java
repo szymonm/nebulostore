@@ -2,54 +2,36 @@ package org.nebulostore.appcore;
 
 import java.math.BigInteger;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Scopes;
-import com.google.inject.TypeLiteral;
 import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.nebulostore.api.DeleteNebuloObjectModule;
-import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.api.PutKeyModule;
-import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.model.ObjectDeleter;
-import org.nebulostore.appcore.model.ObjectGetter;
-import org.nebulostore.appcore.model.ObjectWriter;
 import org.nebulostore.async.AddSynchroPeerModule;
 import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
-import org.nebulostore.broker.AlwaysAcceptingBroker;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.gossip.GossipService;
-import org.nebulostore.communication.gossip.PeerSamplingGossipService;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.messages.JobInitMessage;
 import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.replicator.Replicator;
-import org.nebulostore.subscription.api.SimpleSubscriptionNotificationHandler;
-import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
 import org.nebulostore.timer.MessageGenerator;
 import org.nebulostore.timer.Timer;
-import org.nebulostore.timer.TimerImpl;
 
 /**
  * This is a regular peer with full functionality. It creates, connects and runs all modules.
  * To create a different peer, subclass Peer and set its class name in configuration.
  * @author Bolek Kulbabinski
  */
-public class Peer implements Runnable {
+public class Peer extends AbstractPeer {
   private static Logger logger_ = Logger.getLogger(Peer.class);
 
   protected Thread dispatcherThread_;
@@ -64,6 +46,7 @@ public class Peer implements Runnable {
   protected CommAddress commAddress_;
   protected Timer peerTimer_;
 
+  @Inject
   public void setConfiguration(XMLConfiguration config) {
     config_ = config;
   }
@@ -74,19 +57,19 @@ public class Peer implements Runnable {
                               Broker broker,
                               AppKey appKey,
                               CommAddress commAddress,
-                              Timer timer) {
+                              Timer timer,
+                              Injector injector) {
     dispatcherInQueue_ = dispatcherQueue;
     networkInQueue_ = networkQueue;
     broker_ = broker;
     appKey_ = appKey;
     commAddress_ = commAddress;
     peerTimer_ = timer;
+    injector_ = injector;
   }
 
   @Override
   public final void run() {
-    injector_ = createInjector();
-    injector_.injectMembers(this);
     runPeer();
   }
 
@@ -95,50 +78,6 @@ public class Peer implements Runnable {
       networkInQueue_.add(new EndModuleMessage());
     if (dispatcherInQueue_ != null)
       dispatcherInQueue_.add(new KillDispatcherMessage());
-  }
-
-  protected Injector createInjector() {
-    return Guice.createInjector(new PeerGuiceModule());
-  }
-
-  /**
-   * Standard dependency configuration.
-   * @author Bolek Kulbabinski
-   */
-  protected class PeerGuiceModule extends AbstractModule {
-    @Override
-    protected void configure() {
-      bind(XMLConfiguration.class).toInstance(config_);
-
-      bind(AppKey.class).toInstance(new AppKey(config_.getString("app-key", "")));
-      bind(CommAddress.class).toInstance(
-          new CommAddress(config_.getString("communication.comm-address", "")));
-
-      bind(new TypeLiteral<BlockingQueue<Message>>() { })
-        .annotatedWith(Names.named("NetworkQueue")).toInstance(new LinkedBlockingQueue<Message>());
-      bind(new TypeLiteral<BlockingQueue<Message>>() { })
-        .annotatedWith(Names.named("DispatcherQueue")).toInstance(
-            new LinkedBlockingQueue<Message>());
-
-      bind(ObjectGetter.class).to(GetNebuloObjectModule.class);
-      bind(ObjectWriter.class).to(WriteNebuloObjectModule.class);
-      bind(ObjectDeleter.class).to(DeleteNebuloObjectModule.class);
-
-      bind(SubscriptionNotificationHandler.class).to(SimpleSubscriptionNotificationHandler.class);
-
-      bind(Timer.class).to(TimerImpl.class);
-
-      configureCommunicationPeer();
-      configureBroker();
-    }
-
-    protected void configureCommunicationPeer() {
-      bind(GossipService.class).to(PeerSamplingGossipService.class);
-    }
-
-    protected void configureBroker() {
-      bind(Broker.class).to(AlwaysAcceptingBroker.class).in(Scopes.SINGLETON);
-    }
   }
 
   protected void runPeer() {

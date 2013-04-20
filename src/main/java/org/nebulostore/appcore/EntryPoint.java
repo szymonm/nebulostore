@@ -1,5 +1,11 @@
 package org.nebulostore.appcore;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
@@ -22,7 +28,7 @@ public final class EntryPoint {
       DOMConfigurator.configure(LOG4J_CONFIG_PATH);
       XMLConfiguration config = initConfig();
       setDefaultThreadUncaughtExceptionHandler();
-      Peer peer = createPeer(config);
+      AbstractPeer peer = createPeer(config);
       Thread peerThread = new Thread(peer, "Peer Main Thread");
       peerThread.start();
       peerThread.join();
@@ -44,7 +50,7 @@ public final class EntryPoint {
     @Override
     public void uncaughtException(Thread t, Throwable e) {
       logger_.fatal("Thread: " + t + " has caught an irrecoverable " +
-          "exception: " + e + ". Shutting down Nebulostore.");
+          "exception: " + e + ". Shutting down Nebulostore.", e);
       System.exit(1);
     }
   }
@@ -67,18 +73,30 @@ public final class EntryPoint {
     }
   }
 
-  private static Peer createPeer(XMLConfiguration config) throws NebuloException {
-    String className = config.getString("class-name", DEFAULT_PEER_CLASS);
+  private static AbstractPeer createPeer(XMLConfiguration xmlConfig) throws NebuloException {
+    String className = xmlConfig.getString("class-name", DEFAULT_PEER_CLASS) + "Configuration";
     try {
-      Peer peer = (Peer) Class.forName(className).newInstance();
-      peer.setConfiguration(config);
-      return peer;
+      Class<?> configurationClass = Class.forName(className);
+      Constructor<?> ctor = configurationClass.getConstructor();
+      GenericConfiguration genericConfig = (GenericConfiguration) ctor.newInstance();
+      genericConfig.setXMLConfig(xmlConfig);
+      Injector injector = Guice.createInjector(genericConfig);
+      return injector.getInstance(AbstractPeer.class);
     } catch (InstantiationException e) {
       throw new NebuloException("Could not instantiate class " + className + ".", e);
     } catch (IllegalAccessException e) {
       throw new NebuloException("Constructor for class " + className + " is not accessible.", e);
     } catch (ClassNotFoundException e) {
       throw new NebuloException("Class " + className + " not found.", e);
+    } catch (SecurityException e) {
+      throw new NebuloException("Could not access constructor of class " + className +
+          " due to SecurityException.", e);
+    } catch (NoSuchMethodException e) {
+      throw new NebuloException("Constructor for class " + className + " is not accessible.", e);
+    } catch (IllegalArgumentException e) {
+      throw new NebuloException("Incorrect parameters for constructor for " + className + ".", e);
+    } catch (InvocationTargetException e) {
+      throw new NebuloException("Unable to invoke constructor for " + className + ".", e);
     }
   }
 

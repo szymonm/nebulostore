@@ -27,7 +27,7 @@ for i in `seq 1 $TEST_ITER`
 do
     if [ $i -ne 1 ]
     then
-        CONCAT=$CONCAT,
+        CONCAT=$CONCAT;
     fi
     CONCAT=$CONCAT$TESTNAME
 done

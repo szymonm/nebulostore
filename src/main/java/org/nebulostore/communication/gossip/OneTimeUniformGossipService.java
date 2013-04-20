@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
@@ -93,7 +96,9 @@ public class OneTimeUniformGossipService extends GossipService {
    * @param nPeers Number of peers server is waiting for.
    * @param nReplicators Number of other peers' addresses that every peer will receive.
    */
-  public OneTimeUniformGossipService(int nPeers, int nReplicators) {
+  @Inject
+  public OneTimeUniformGossipService(@Named("systest.num-test-participants") int nPeers,
+      @Named("communication.one-time-uniform-gossip-n-replicators") int nReplicators) {
     nPeers_ = nPeers;
     nReplicators_ = nReplicators;
   }

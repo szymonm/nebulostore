@@ -1,5 +1,8 @@
 package org.nebulostore.systest;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Peer;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -21,6 +24,11 @@ public class TestingPeer extends Peer {
   protected int nTestParticipants_;
   protected boolean isTestServer_;
 
+  @Inject
+  public void setNTestParticipants(@Named(N_TEST_PARTICIPANTS_CONFIG) int nTestParticipants) {
+    nTestParticipants_ = nTestParticipants;
+  }
+
   @Override
   protected void runPeer() {
     logger_.info("Starting testing peer with appKey = " + appKey_);
@@ -37,7 +45,7 @@ public class TestingPeer extends Peer {
   }
 
   protected void readConfig() {
-    testClasses_ = config_.getStringArray(CLASS_LIST_CONFIG);
+    testClasses_ = config_.getString(CLASS_LIST_CONFIG).split(";");
     if (testClasses_.length == 0)
       throw new RuntimeException("Cannot read test classes list!");
     nTestParticipants_ = config_.getInt(N_TEST_PARTICIPANTS_CONFIG, -1);
