@@ -68,7 +68,7 @@ class FirewallTestServer {
     try {
       serverSocket = new ServerSocket(serverPort);
     } catch (IOException e) {
-      System.err.println("Could not listen on port: " + serverPort);
+      System.err.println("Could not listen on port: " + serverPort + ". Due to: " + e); 
       System.exit(1);
     }
 
