@@ -84,9 +84,10 @@ public class Peer extends AbstractPeer {
   }
 
   protected void runPeer() {
-    startPeer();
+    initPeer();
     runBroker();
     runAsyncModules();
+    startPeer();
     putKey(appKey_);
     finishPeer();
   }
@@ -105,7 +106,7 @@ public class Peer extends AbstractPeer {
   /**
    * Method that creates, connects and runs Dispatcher and Communication modules.
    */
-  protected void startPeer() {
+  protected void initPeer() {
     Dispatcher dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
     dispatcherThread_ = new Thread(dispatcher, "Dispatcher");
 
@@ -123,8 +124,9 @@ public class Peer extends AbstractPeer {
     // Initialize Replicator.
     Replicator.setConfig(config_);
     Replicator.setAppKey(appKey_);
+  }
 
-    // Run everything.
+  protected void startPeer() {
     networkThread_.start();
     dispatcherThread_.start();
   }

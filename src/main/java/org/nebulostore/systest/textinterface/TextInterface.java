@@ -60,11 +60,13 @@ public final class TextInterface extends Peer {
     objectFactory_ = objectFactory;
   }
 
+  @Override
   protected void runPeer() {
     System.out.print("Starting NebuloStore ...\n");
+    initPeer();
+    runBroker();
     startPeer();
     putKey(appKey_);
-    runBroker();
     try {
       inputLoop();
     } catch (IOException e) {
