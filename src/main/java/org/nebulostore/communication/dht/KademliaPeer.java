@@ -39,6 +39,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Grzegorz Milka
  */
 public class KademliaPeer extends Module {
+  private static final Random RANDOM = new Random();
   private static Logger logger_ = Logger.getLogger(KademliaPeer.class);
   private static final String CONFIG_PREFIX = "communication.dht.kademlia-peer.";
   private net.tomp2p.p2p.Peer peer_;
@@ -83,7 +84,7 @@ public class KademliaPeer extends Module {
     /* Using random here, it should be sufficient against collision.
      * Findbugs generates a warning, but I ignore it, since we use the random
      * number generator only once */
-    peer_ = new PeerMaker(new Number160((new Random()).nextLong())).
+    peer_ = new PeerMaker(new Number160(RANDOM.nextLong())).
       setMasterPeer(masterPeer_).makeAndListen();
 
     FutureDiscover futDiscovery = peer_.discover().setPeerAddress(

@@ -56,6 +56,43 @@ public class ReplicationGroup implements Serializable, Comparable<ObjectId>, Ite
     }
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((lowerBound_ == null) ? 0 : lowerBound_.hashCode());
+    result = prime * result + ((replicators_ == null) ? 0 : replicators_.hashCode());
+    result = prime * result + ((upperBound_ == null) ? 0 : upperBound_.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ReplicationGroup other = (ReplicationGroup) obj;
+    if (lowerBound_ == null) {
+      if (other.lowerBound_ != null)
+        return false;
+    } else if (!lowerBound_.equals(other.lowerBound_))
+      return false;
+    if (replicators_ == null) {
+      if (other.replicators_ != null)
+        return false;
+    } else if (!replicators_.equals(other.replicators_))
+      return false;
+    if (upperBound_ == null) {
+      if (other.upperBound_ != null)
+        return false;
+    } else if (!upperBound_.equals(other.upperBound_))
+      return false;
+    return true;
+  }
+
   /**
    * Interval comparator. Return 0 for overlapping intervals.
    */
@@ -79,6 +116,5 @@ public class ReplicationGroup implements Serializable, Comparable<ObjectId>, Ite
     return " ReplicationGroup [ lowerBoud_: " + lowerBound_ +
         ", upperBound_: " + upperBound_ + ", replicators_: " + replicators_ +
         " ] ";
-
   }
 }

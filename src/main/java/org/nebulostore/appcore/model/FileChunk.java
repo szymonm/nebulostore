@@ -1,5 +1,7 @@
 package org.nebulostore.appcore.model;
 
+import java.util.Arrays;
+
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
@@ -22,7 +24,7 @@ public class FileChunk extends NebuloObject {
   }
 
   public void setData(byte[] data) {
-    data_ = data;
+    data_ = Arrays.copyOf(data, data.length);
   }
 
   @Override

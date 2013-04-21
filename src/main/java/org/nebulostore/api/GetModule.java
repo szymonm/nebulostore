@@ -12,6 +12,7 @@ import org.nebulostore.appcore.Metadata;
 import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.addressing.ContractList;
 import org.nebulostore.appcore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
@@ -63,7 +64,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
    */
   protected abstract class GetModuleVisitor extends MessageVisitor<Void> {
     protected STATE state_;
-    protected SortedSet<CommAddress> replicationGroup_;
+    protected SortedSet<CommAddress> replicationGroupSet_;
 
     public GetModuleVisitor() {
       state_ = STATE.INIT;
@@ -84,8 +85,8 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
             new KeyDHT(address_.getAppKey().getKey())));
       } else if (state_ == STATE.ADDRESS_GIVEN) {
         state_ = STATE.REPLICA_FETCH;
-        replicationGroup_ = new TreeSet<CommAddress>();
-        replicationGroup_.add(replicaAddress_);
+        replicationGroupSet_ = new TreeSet<CommAddress>();
+        replicationGroupSet_.add(replicaAddress_);
         queryNextReplica();
       } else {
         incorrectState(state_.name(), message);
@@ -104,10 +105,11 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
         // TODO(bolek): How to avoid casting here? Make ValueDHTMessage generic?
         Metadata metadata = (Metadata) message.getValue().getValue();
         ContractList contractList = metadata.getContractList();
-        replicationGroup_ = contractList.getGroup(address_.getObjectId()).getReplicatorSet();
-        if (replicationGroup_ == null) {
+        ReplicationGroup replicationGroup = contractList.getGroup(address_.getObjectId());
+        if (replicationGroup == null) {
           endWithError(new NebuloException("No peers replicating this object."));
         } else {
+          replicationGroupSet_ = replicationGroup.getReplicatorSet();
           queryNextReplica();
         }
       } else {
@@ -129,11 +131,11 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
     }
 
     public void queryNextReplica() {
-      if (replicationGroup_.size() == 0) {
+      if (replicationGroupSet_.size() == 0) {
         endWithError(new NebuloException("No replica responded in time."));
       } else {
-        CommAddress replicator = replicationGroup_.first();
-        replicationGroup_.remove(replicator);
+        CommAddress replicator = replicationGroupSet_.first();
+        replicationGroupSet_.remove(replicator);
         logger_.debug("Querying replica (" + replicator + ")");
         networkQueue_.add(new GetObjectMessage(CryptoUtils.getRandomId().toString(), null,
             replicator, address_.getObjectId(), jobId_));

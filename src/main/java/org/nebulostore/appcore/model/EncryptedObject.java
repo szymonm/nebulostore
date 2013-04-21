@@ -1,6 +1,7 @@
 package org.nebulostore.appcore.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 /**
  * Wrapper for encrypted data. EncryptedObjects are stored in Replicator.
  * @author bolek
@@ -11,7 +12,7 @@ public class EncryptedObject implements Serializable {
   private byte[] encryptedData_;
 
   public EncryptedObject(byte[] encryptedData) {
-    encryptedData_ = encryptedData;
+    encryptedData_ = Arrays.copyOf(encryptedData, encryptedData.length);
   }
 
   public byte[] getEncryptedData() {

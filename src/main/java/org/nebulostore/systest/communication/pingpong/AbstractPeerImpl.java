@@ -25,6 +25,7 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
   protected BlockingQueue<Message> outQueue_;
   protected CommunicationPeer communicationPeer_;
   protected Thread communicationPeerThread_;
+  protected Thread listenerThread_;
   protected int peerId_;
   protected CommAddress commAddress_;
 
@@ -40,10 +41,9 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
       throw new NebuloException("RemoteException in constructor. Unthinkable happened", e);
     }
 
-    Thread listener = new Thread(
+    listenerThread_ = new Thread(
         new Listener(), "Nebulostore.Testing.AbstractPeer$Listener");
-    listener.setDaemon(true);
-    listener.start();
+    listenerThread_.setDaemon(true);
   }
 
   public int getId() throws RemoteException {
@@ -51,6 +51,7 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
   }
 
   public void startCommPeer() throws NebuloException, RemoteException {
+    listenerThread_.start();
     if (communicationPeer_ == null) {
       XMLConfiguration config = null;
 
