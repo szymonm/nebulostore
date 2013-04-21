@@ -9,7 +9,7 @@ import com.google.inject.name.Named;
 
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 
 /**
  * Wrapper for java.util.Timer.

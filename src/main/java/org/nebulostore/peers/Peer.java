@@ -21,8 +21,7 @@ import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.Dispatcher;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
-import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.replicator.Replicator;
 import org.nebulostore.timer.MessageGenerator;
@@ -79,7 +78,7 @@ public class Peer extends AbstractPeer {
     if (networkInQueue_ != null)
       networkInQueue_.add(new EndModuleMessage());
     if (dispatcherInQueue_ != null)
-      dispatcherInQueue_.add(new KillDispatcherMessage());
+      dispatcherInQueue_.add(new EndModuleMessage());
   }
 
   protected void runPeer() {

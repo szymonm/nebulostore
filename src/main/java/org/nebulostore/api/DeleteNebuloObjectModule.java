@@ -20,7 +20,7 @@ import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.crypto.CryptoUtils;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.DeleteObjectMessage;
 

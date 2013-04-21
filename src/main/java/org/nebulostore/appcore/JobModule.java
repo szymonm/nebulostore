@@ -7,8 +7,8 @@ import com.google.inject.name.Named;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.crypto.CryptoUtils;
-import org.nebulostore.dispatcher.messages.JobEndedMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobEndedMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 
 /**
  * Base class for all job handlers - modules that are managed by dispatcher.

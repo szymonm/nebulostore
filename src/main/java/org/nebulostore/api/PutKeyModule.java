@@ -19,7 +19,7 @@ import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.OkDHTMessage;
 import org.nebulostore.communication.dht.messages.PutDHTMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

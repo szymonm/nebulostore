@@ -14,7 +14,7 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 
 /**
  * Sends asynchronous message to all peers' sycnhro-peers.

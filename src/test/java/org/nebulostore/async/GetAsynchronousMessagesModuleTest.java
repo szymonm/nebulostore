@@ -15,8 +15,8 @@ import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
 import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.dispatcher.messages.JobEndedMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobEndedMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -17,7 +17,7 @@ import org.nebulostore.broker.messages.OfferReplyMessage;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.crypto.CryptoUtils;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 
 /**

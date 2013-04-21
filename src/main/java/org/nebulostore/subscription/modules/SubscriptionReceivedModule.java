@@ -5,7 +5,7 @@ import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
 import org.nebulostore.subscription.messages.NotifySubscriberMessage;
 

@@ -20,7 +20,7 @@ import org.nebulostore.conductor.messages.GatherStatsMessage;
 import org.nebulostore.conductor.messages.StatsMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.timer.MessageGenerator;
 

@@ -15,7 +15,7 @@ import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.messages.RandomPeersSampleMessage;
 import org.nebulostore.timer.TimeoutMessage;
 import org.nebulostore.timer.Timer;

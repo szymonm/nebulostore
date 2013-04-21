@@ -14,7 +14,7 @@ import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.OkDHTMessage;
 import org.nebulostore.communication.dht.messages.PutDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 
 
 //TODO(szm): Maybe it should be a ReturningJobModule??

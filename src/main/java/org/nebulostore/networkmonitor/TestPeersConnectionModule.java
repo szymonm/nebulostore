@@ -16,7 +16,7 @@ import org.nebulostore.communication.dht.ValueDHT;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.PutDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.messages.ConnectionTestMessage;
 import org.nebulostore.networkmonitor.messages.ConnectionTestResponseMessage;
 import org.nebulostore.timer.TimeoutMessage;

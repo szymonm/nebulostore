@@ -10,13 +10,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.JobModule;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.context.DefaultTestContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.dispatcher.messages.JobEndedMessage;
-import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
 
 import static org.junit.Assert.assertTrue;
 
@@ -68,6 +67,7 @@ public class DispatcherTest {
         nMsgs_ = 0;
       }
 
+      @Override
       public void processMessage(Message message) {
         staticCounter_++;
         nMsgs_++;
@@ -86,6 +86,7 @@ public class DispatcherTest {
         }
       }
     }
+
     /**
      * Dummy message.
      */
@@ -111,7 +112,7 @@ public class DispatcherTest {
     inQueue_.add(new DummyMessage());
     inQueue_.add(new DummyMessage());
     inQueue_.add(new JobEndedMessage("1"));
-    inQueue_.add(new KillDispatcherMessage());
+    inQueue_.add(new EndModuleMessage());
     thread_.join();
 
     // Verify that only two messages were handled by a worker thread.

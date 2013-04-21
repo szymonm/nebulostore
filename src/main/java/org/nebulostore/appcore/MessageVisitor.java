@@ -46,9 +46,8 @@ import org.nebulostore.conductor.messages.StatsMessage;
 import org.nebulostore.conductor.messages.TicMessage;
 import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.conductor.messages.UserCommMessage;
-import org.nebulostore.dispatcher.messages.JobEndedMessage;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
-import org.nebulostore.dispatcher.messages.KillDispatcherMessage;
+import org.nebulostore.dispatcher.JobEndedMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.messages.ConnectionTestMessage;
 import org.nebulostore.networkmonitor.messages.ConnectionTestResponseMessage;
 import org.nebulostore.networkmonitor.messages.RandomPeersSampleMessage;
@@ -91,10 +90,6 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(JobInitMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(KillDispatcherMessage message) throws NebuloException {
     return visit((Message) message);
   }
 

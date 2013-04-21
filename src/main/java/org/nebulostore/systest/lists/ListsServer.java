@@ -22,7 +22,7 @@ public final class ListsServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(ListsServer.class);
 
   private static final int NUM_PHASES = 3;
-  private static final int TIMEOUT_SEC = 450;
+  private static final int TIMEOUT_SEC = 300;
   private static final int INITIAL_SLEEP = 8000;
 
   public ListsServer() {

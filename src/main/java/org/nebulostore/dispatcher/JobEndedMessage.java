@@ -1,4 +1,4 @@
-package org.nebulostore.dispatcher.messages;
+package org.nebulostore.dispatcher;
 
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.MessageVisitor;

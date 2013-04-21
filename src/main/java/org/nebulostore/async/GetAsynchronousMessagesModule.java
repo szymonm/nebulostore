@@ -14,7 +14,7 @@ import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
 import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.dispatcher.messages.JobInitMessage;
+import org.nebulostore.dispatcher.JobInitMessage;
 
 /**
  * Module that downloads asynchronous messages from a synchro peer and sends them to
