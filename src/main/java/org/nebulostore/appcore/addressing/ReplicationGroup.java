@@ -113,8 +113,8 @@ public class ReplicationGroup implements Serializable, Comparable<ObjectId>, Ite
 
   @Override
   public String toString() {
-    return " ReplicationGroup [ lowerBoud_: " + lowerBound_ +
-        ", upperBound_: " + upperBound_ + ", replicators_: " + replicators_ +
+    return " ReplicationGroup [ lowerBound: " + lowerBound_ +
+        ", upperBound: " + upperBound_ + ", replicators: " + replicators_ +
         " ] ";
   }
 }

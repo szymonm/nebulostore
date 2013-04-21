@@ -33,7 +33,7 @@ public final class NetworkContext {
       new HashSet<MessageGenerator>();
   private BlockingQueue<Message> dispatcherQueue_;
 
-  public static NetworkContext getInstance() {
+  public static synchronized NetworkContext getInstance() {
     if (instance_ == null)
       instance_ = new NetworkContext();
     return instance_;

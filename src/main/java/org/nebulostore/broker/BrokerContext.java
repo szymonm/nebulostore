@@ -74,7 +74,7 @@ public final class BrokerContext {
    */
   public Set<String> waitingForMessages_ = new HashSet<String>();
 
-  public static BrokerContext getInstance() {
+  public static synchronized BrokerContext getInstance() {
     if (instance_ == null) {
       instance_ = new BrokerContext();
     }
