@@ -21,10 +21,10 @@ fi
 
 # Build peers.
 echo "BUILDING ..."
-./scripts/build-and-deploy.sh $PEER_NUM peer > /dev/null
+./scripts/_build-and-deploy.sh $PEER_NUM peer > /dev/null
 
 # Generate and copy config files.
-./scripts/generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $((PEER_NUM-1)) $TEST_ITER localhost
+./scripts/_generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $((PEER_NUM-1)) $TEST_ITER localhost
 for i in `seq 1 $PEER_NUM`
 do
     mv Peer.xml.$i ./build/jar/$i/resources/conf/Peer.xml

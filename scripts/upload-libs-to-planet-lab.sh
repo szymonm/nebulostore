@@ -12,7 +12,7 @@ REMOTE_DIR="nebulostore_autodeploy/"
 SSH_OPTIONS="StrictHostKeyChecking=no"
 
 echo "BUILDING ..."
-./scripts/build-and-deploy.sh 1 peer > /dev/null
+./scripts/_build-and-deploy.sh 1 peer > /dev/null
 
 echo "COPYING ..."
 i=1

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+SCRIPT_NAME=./scripts/_planet-lab-test.sh
+HOSTS_FILE=scripts/hosts.txt
+
 if [ $1 ]; then
     N=$1
 else
@@ -16,45 +19,45 @@ else
 fi
 
 case $N in
-    1) ./scripts/planet-lab-test.sh\
+    1) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.pingpong.PingPongServer\
            3 2 1\
-           scripts/hosts.txt;;
-    2) ./scripts/planet-lab-test.sh\
+           $HOSTS_FILE;;
+    2) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.readwrite.ReadWriteServer\
            7 5 1\
-           scripts/hosts.txt;;
-    3) ./scripts/planet-lab-test.sh\
+           $HOSTS_FILE;;
+    3) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            7 5 1\
-           scripts/hosts.txt;;
-    4) ./scripts/planet-lab-test.sh\
+           $HOSTS_FILE;;
+    4) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            11 8 1\
-           scripts/hosts.txt;;
-    5) ./scripts/planet-lab-test.sh\
+           $HOSTS_FILE;;
+    5) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            25 20 1\
-           scripts/hosts.txt;;
-    6) ./scripts/planet-lab-test.sh\
+           $HOSTS_FILE;;
+    6) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            35 30 1\
-           scripts/hosts.txt;;
-    7) ./scripts/planet-lab-test.sh\
+           $HOSTS_FILE;;
+    7) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            60 50 1\
-           scripts/hosts.txt;;
-    8) ./scripts/planet-lab-test.sh\
+           $HOSTS_FILE;;
+    8) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            120 100 1\
-           scripts/hosts.txt;;
+           $HOSTS_FILE;;
 esac
 

@@ -37,8 +37,8 @@ BOOTSTRAP_PEER=`cat $HOST_LIST | head -n 1`
 
 
 echo "["`date +"%T"`"] BUILDING ..."
-./scripts/build-and-deploy.sh 1 peer > /dev/null
-./scripts/generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $TEST_CLIENTS_NUM $TEST_ITER $BOOTSTRAP_PEER
+./scripts/_build-and-deploy.sh 1 peer > /dev/null
+./scripts/_generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $TEST_CLIENTS_NUM $TEST_ITER $BOOTSTRAP_PEER
 
 
 

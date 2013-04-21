@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_NAME=./scripts/_local-test.sh
+
 if [ $1 ]; then
     N=$1
 else
@@ -13,23 +15,23 @@ else
 fi
 
 case $N in
-    1) ./scripts/local-test.sh\
+    1) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.pingpong.PingPongServer\
            3 1;;
-    2) ./scripts/local-test.sh\
+    2) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.readwrite.ReadWriteServer\
            6 1;;
-    3) ./scripts/local-test.sh\
+    3) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            6 1;;
-    4) ./scripts/local-test.sh\
+    4) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            8 1;;
-    5) ./scripts/local-test.sh\
+    5) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
            14 1;;

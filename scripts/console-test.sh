@@ -22,7 +22,7 @@ JAR_DIR="build/jar"
 PEERS_NUM=4
 COMMON_ARGS="--CLASS_NAME=org.nebulostore.systest.textinterface.TextInterface --BOOTSTRAP_ADDRESS=localhost --BOOTSTRAP_TOMP2P_PORT=10301 --BOOTSTRAP_PORT=10201"
 
-./scripts/build-and-deploy.sh $PEERS_NUM
+./scripts/_build-and-deploy.sh $PEERS_NUM
 
 platform='unknown'
 unamestr=`uname`

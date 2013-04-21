@@ -5,7 +5,6 @@ planetlab-um10.di.uminho.pt
 planetlab2.rd.tut.fi
 planetlab2.cnis.nyit.edu
 planetlab1.cnis.nyit.edu
-plab3.cs.msu.ru
 planetlab02.tkn.tu-berlin.de
 planetlab1.upc.es
 planetlab3.mini.pw.edu.pl
@@ -126,7 +125,6 @@ planetlab2.u-strasbg.fr
 planetlab1.tlm.unavarra.es
 planet2.servers.ua.pt
 planetlab-1.imag.fr
-planetlab-node3.it-sudparis.eu
 planet2.inf.tu-dresden.de
 peeramidion.irisa.fr
 planetlab-2.man.poznan.pl
