@@ -22,13 +22,15 @@ public final class ListsServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(ListsServer.class);
 
   private static final int NUM_PHASES = 3;
-  private static final int TIMEOUT_SEC = 300;
+  private static final int TIMEOUT_SEC = 400;
   private static final int INITIAL_SLEEP = 8000;
+  private static final int PHASE_TIMEOUT = 90;
 
   public ListsServer() {
     super(NUM_PHASES, TIMEOUT_SEC, "ListsClient_" + CryptoUtils.getRandomString(),
         "Lists server");
     gatherStats_ = true;
+    phaseTimeout_ = PHASE_TIMEOUT;
   }
 
   @Override

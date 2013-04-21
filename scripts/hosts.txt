@@ -116,7 +116,6 @@ planetlab-1.research.netlab.hut.fi
 planetlab2.pjwstk.edu.pl
 planetlab4.inf.ethz.ch
 miranda.planetlab.cs.umd.edu
-mercury.silicon-valley.ru
 pl2.planetlab.ics.tut.ac.jp
 planetlab1.sics.se
 planetlab1.s3.kth.se

@@ -1,8 +1,6 @@
 package org.nebulostore.conductor;
 
 import java.util.HashSet;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.google.inject.Inject;
 
@@ -23,6 +21,8 @@ import org.nebulostore.conductor.messages.TocMessage;
 import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.timer.MessageGenerator;
+import org.nebulostore.timer.TimeoutMessage;
+import org.nebulostore.timer.Timer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,14 +33,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author szymonmatejczyk
  */
 public abstract class ConductorServer extends ReturningJobModule<Boolean> {
+  private static final String PHASE_TIMEOUT_MSG = "phase_timeout";
   private static Logger logger_ = Logger.getLogger(ConductorServer.class);
   private static final String N_PEERS_CONFIG = "systest.num-test-participants";
 
   /**
    * Time(in secs) after which, if not successful, test is failed.
    */
-  public final int timeout_;
-  public final int phaseTimeout_;
+  protected int timeout_;
+  protected int phaseTimeout_;
 
   /**
    * Current phase.
@@ -116,18 +117,18 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   /**
    * Timer for watching maximum stage time.
    */
-  private final Timer internalCheckTimer_;
+  private Timer internalCheckTimer_;
   protected CommAddress commAddress_;
   protected XMLConfiguration config_;
 
   protected ConductorServer(int lastPhase, int timeout, String clientsJobId,
       String testDescription) {
-    this(lastPhase, 0, timeout, timeout, clientsJobId, testDescription);
+    this(lastPhase, 0, timeout, 0, clientsJobId, testDescription);
   }
 
   protected ConductorServer(int lastPhase, int peersNeeded, int timeout,
       String clientsJobId, String testDescription) {
-    this(lastPhase, peersNeeded, timeout, timeout, clientsJobId, testDescription);
+    this(lastPhase, peersNeeded, timeout, 0, clientsJobId, testDescription);
   }
 
   protected ConductorServer(int lastPhase, int peersNeeded, int timeout, int phaseTimeout,
@@ -139,7 +140,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     peersNeeded_ = peersNeeded;
     testDescription_ = testDescription;
     visitor_ = new ServerTestingModuleVisitor();
-    internalCheckTimer_ = new Timer();
   }
 
   @Inject
@@ -152,15 +152,20 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     config_ = config;
   }
 
+  @Inject
+  public void setTimer(Timer timer) {
+    internalCheckTimer_ = timer;
+  }
+
   public void initialize() {
-    schedulePhaseTimer();
     if (peersNeeded_ == 0)
       initializeFromConfig();
   }
 
-  protected void schedulePhaseTimer() {
-    internalCheckTimer_.schedule(new PhaseTimeoutTimer(),
-        3L * 1000L * phaseTimeout_, 1000L * phaseTimeout_);
+  protected void schedulePhaseTimer(int phase) {
+    if (phaseTimeout_ > 0) {
+      internalCheckTimer_.schedule(jobId_, 1000L * phaseTimeout_, PHASE_TIMEOUT_MSG + phase);
+    }
   }
 
   protected void initializeFromConfig() {
@@ -168,23 +173,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     peersNeeded_ = config_.getInteger(N_PEERS_CONFIG, 0);
     if (peersNeeded_ == 0)
       throw new RuntimeException("Unable to initilize number of test participants from config!");
-  }
-
-  /**
-   * Timer.
-   */
-  class PhaseTimeoutTimer extends TimerTask {
-    private int lastSeenPhase_ = -1;
-
-    @Override
-    public void run() {
-      if (lastSeenPhase_ == phase_) {
-        logger_.warn("Phase stalled too long. Finishing test server.");
-        successful_ = false;
-        finishTest();
-      }
-      lastSeenPhase_ = phase_;
-    }
   }
 
   /**
@@ -232,7 +220,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   // Send FinishMessage to everyone and die.
   private void finishTest() {
     logger_.info("Sending finish test messages.");
-    internalCheckTimer_.cancel();
+    internalCheckTimer_.cancelTimer();
     if (clients_ != null) {
       for (CommAddress address : clients_) {
         networkQueue_.add(new FinishMessage(clientsJobId_, null, address));
@@ -342,6 +330,25 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     }
 
     @Override
+    public Void visit(TimeoutMessage message) {
+      if (testingState_ == TestingState.Running) {
+        if ((PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
+          logger_.warn("Phase timeout in phase " + phase_ + ". " + tocs_ + " tocs out of " +
+              peersNeeded_ + " received");
+          tocs_ = peersNeeded_;
+          processTocsChange();
+        }
+      } else if (testingState_ == TestingState.GatheringStats) {
+        if ((PHASE_TIMEOUT_MSG + (lastPhase_ + 1)).equals(message.getMessageContent())) {
+          logger_.warn("Phase timeout in gathering stats phase. " + tocs_ + " tocs out of " +
+              peersNeeded_ + " received");
+          finishTest();
+        }
+      }
+      return null;
+    }
+
+    @Override
     public Void visit(ErrorMessage message) {
       logger_.warn("Received ErrorMessage, test failed: " + message.getMessage());
       successful_ = false;
@@ -354,6 +361,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     tocs_ = 0;
     tocsAddresses_ = new HashSet<CommAddress>();
     sendTics();
+    schedulePhaseTimer(phase_);
   }
 
   private void processTocsChange() {
@@ -398,6 +406,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     logger_.debug("Getting stats from test clients...");
     for (CommAddress address : clients_)
       networkQueue_.add(new GatherStatsMessage(clientsJobId_, null, address));
+    schedulePhaseTimer(lastPhase_ + 1);
   }
 
   @Override

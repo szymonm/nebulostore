@@ -11,9 +11,9 @@ else
     echo "    2) read-write test (7 peers / 5 test clients)"
     echo "    3) lists test (7 peers / 5 test clients)"
     echo "    4) performance lists test (11 peers / 8 test clients)"
-    echo "    5) performance lists test (25 peers / 20 test clients)"
-    echo "    6) performance lists test (35 peers / 30 test clients)"
-    echo "    7) performance lists test (60 peers / 50 test clients)"
+    echo "    5) performance lists test (30 peers / 25 test clients)"
+    echo "    6) performance lists test (60 peers / 50 test clients)"
+    echo "    7) performance lists test (95 peers / 80 test clients)"
     echo "    8) performance lists test (120 peers / 100 test clients)"
     read N
 fi
@@ -42,17 +42,17 @@ case $N in
     5) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
-           25 20 1\
+           30 25 1\
            $HOSTS_FILE;;
     6) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
-           35 30 1\
+           60 50 1\
            $HOSTS_FILE;;
     7) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
-           60 50 1\
+           95 80 1\
            $HOSTS_FILE;;
     8) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
