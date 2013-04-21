@@ -248,9 +248,13 @@ public final class RunPingPong extends Peer {
     public void run() {
       try {
         lock_.lock();
-        while (!wasNotified_)
-          notified_.await();
-        lock_.unlock();
+        try {
+          while (!wasNotified_) {
+            notified_.await();
+          }
+        } finally {
+          lock_.unlock();
+        }
         while (!Thread.interrupted() && pingPongPeer_.isActive()) {
           /* pingPongPeer_ is shutting down. Wait till it is finished. */
           logger_.debug("PeerObserver sleeping waiting for shutdown of peer.");

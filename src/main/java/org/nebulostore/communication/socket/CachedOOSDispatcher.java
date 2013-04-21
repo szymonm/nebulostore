@@ -142,8 +142,8 @@ public class CachedOOSDispatcher implements OOSDispatcher {
     try {
       logger_.trace("Trying to lock socketsLock_");
       socketsLock_.lock();
-      logger_.trace("socketsLock_ locked");
       try {
+        logger_.trace("socketsLock_ locked");
         Map<CommAddress, SocketOOSPair> containMap = null;
         if (oldSockets_.containsKey(commAddress)) {
           containMap = oldSockets_;
