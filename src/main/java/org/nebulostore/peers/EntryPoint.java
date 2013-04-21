@@ -74,11 +74,20 @@ public final class EntryPoint {
   }
 
   private static AbstractPeer createPeer(XMLConfiguration xmlConfig) throws NebuloException {
-    String className = xmlConfig.getString("class-name", DEFAULT_PEER_CLASS) + "Configuration";
+    String className = xmlConfig.getString("class-name", DEFAULT_PEER_CLASS);
+    String confClassName = className + "Configuration";
+    Class<?> configurationClass = loadConfigurationClass(confClassName, className);
     try {
-      Class<?> configurationClass = Class.forName(className);
-      Constructor<?> ctor = configurationClass.getConstructor();
-      GenericConfiguration genericConfig = (GenericConfiguration) ctor.newInstance();
+      GenericConfiguration genericConfig = null;
+      if (configurationClass == null) {
+        logger_.warn("Configuration class not found, using default.");
+        Class<? extends AbstractPeer> peerClass =
+            (Class<? extends AbstractPeer>) Class.forName(className);
+        genericConfig = new DefaultConfiguration(peerClass);
+      } else {
+        Constructor<?> ctor = configurationClass.getConstructor();
+        genericConfig = (GenericConfiguration) ctor.newInstance();
+      }
       genericConfig.setXMLConfig(xmlConfig);
       Injector injector = Guice.createInjector(genericConfig);
       return injector.getInstance(AbstractPeer.class);
@@ -97,6 +106,31 @@ public final class EntryPoint {
       throw new NebuloException("Incorrect parameters for constructor for " + className + ".", e);
     } catch (InvocationTargetException e) {
       throw new NebuloException("Unable to invoke constructor for " + className + ".", e);
+    }
+  }
+
+  private static Class<?> loadConfigurationClass(String confClassName, String className) {
+    try {
+      return Class.forName(confClassName);
+    } catch (ClassNotFoundException e1) {
+      return null;
+    }
+  }
+
+  /**
+   * Default configuration using given peer name.
+   * @author Bolek Kulbabinski
+   */
+  private static class DefaultConfiguration extends PeerConfiguration {
+    Class<? extends AbstractPeer> peerClass_;
+
+    protected DefaultConfiguration(Class<? extends AbstractPeer> peerClass) {
+      peerClass_ = peerClass;
+    }
+
+    @Override
+    protected void configurePeer() {
+      bind(AbstractPeer.class).to(peerClass_);
     }
   }
 

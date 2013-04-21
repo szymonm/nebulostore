@@ -22,7 +22,6 @@
   </appender>
   -->
 
-
   <appender name="FA-api" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/api.log" />
     <param name="Threshold" value="DEBUG" />
@@ -111,6 +110,14 @@
     </layout>
   </appender>
 
+  <appender name="FA-peers" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/peers.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="&pattern;" />
+    </layout>
+  </appender>
+
   <appender name="FA-replicator" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/replicator.log" />
     <param name="Threshold" value="DEBUG" />
@@ -187,6 +194,11 @@
   <logger name="org.nebulostore.networkmonitor">
     <level value="DEBUG" />
     <appender-ref ref="FA-networkmonitor"/>
+  </logger>
+
+  <logger name="org.nebulostore.peers">
+    <level value="DEBUG" />
+    <appender-ref ref="FA-peers"/>
   </logger>
 
   <logger name="org.nebulostore.replicator">
