@@ -10,7 +10,6 @@ import com.google.inject.name.Named;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.api.PutKeyModule;
-import org.nebulostore.appcore.AbstractPeer;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.addressing.AppKey;

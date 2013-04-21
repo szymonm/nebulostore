@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.peers;
 
 import java.util.List;
 

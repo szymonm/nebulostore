@@ -11,8 +11,6 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.nebulostore.api.DeleteNebuloObjectModule;
 import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.api.WriteNebuloObjectModule;
-import org.nebulostore.appcore.AbstractPeer;
-import org.nebulostore.appcore.GenericConfiguration;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.model.ObjectDeleter;

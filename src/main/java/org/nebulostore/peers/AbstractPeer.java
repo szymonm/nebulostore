@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.peers;
 
 /**
  * Base class for all peers.

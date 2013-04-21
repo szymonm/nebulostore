@@ -1,8 +1,8 @@
 package org.nebulostore.systest.performance;
 
-import org.nebulostore.appcore.AbstractPeer;
 import org.nebulostore.communication.gossip.GossipService;
 import org.nebulostore.communication.gossip.OneTimeUniformGossipService;
+import org.nebulostore.peers.AbstractPeer;
 import org.nebulostore.systest.TestingPeer;
 import org.nebulostore.systest.TestingPeerConfiguration;
 
