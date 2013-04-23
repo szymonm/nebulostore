@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.LogManager;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
-import org.apache.commons.configuration.ConversionException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
@@ -18,7 +18,6 @@ import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.bootstrap.BootstrapClient;
 import org.nebulostore.communication.bootstrap.BootstrapServer;
 import org.nebulostore.communication.bootstrap.BootstrapService;
 import org.nebulostore.communication.dht.BdbPeer;
@@ -29,6 +28,7 @@ import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
 import org.nebulostore.communication.dht.messages.InDHTMessage;
 import org.nebulostore.communication.dht.messages.OutDHTMessage;
 import org.nebulostore.communication.gossip.GossipService;
+import org.nebulostore.communication.gossip.GossipServiceFactory;
 import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
@@ -37,6 +37,7 @@ import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.socket.ListenerService;
 import org.nebulostore.communication.socket.MessengerService;
+import org.nebulostore.communication.socket.MessengerServiceFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -60,6 +61,7 @@ public final class CommunicationPeer extends Module {
    * It can be either server or client, depending on configuration
    */
   private BootstrapService bootstrapService_;
+  private boolean isServer_;
 
   /**
    * DHT module available to higher layers.
@@ -83,6 +85,7 @@ public final class CommunicationPeer extends Module {
    * Main module for sending messages across the network.
    */
   private MessengerService messengerService_;
+  private MessengerServiceFactory messengerServiceFactory_;
   private BlockingQueue<Message> messengerServiceInQueue_;
   private Thread messengerThread_;
 
@@ -92,27 +95,39 @@ public final class CommunicationPeer extends Module {
    * Once every x seconds gossiper gossips to get updated view on the network.
    */
   private BlockingQueue<Message> gossipServiceInQueue_;
+  private GossipServiceFactory gossipServiceFactory_;
   private GossipService gossipService_;
   private Thread gossipThread_;
 
-
-  private boolean isServer_;
   // Is the server shutting down.
   private AtomicBoolean isEnding_ = new AtomicBoolean(false);
 
   private int commCliPort_;
 
-  public CommunicationPeer(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
-    super(inQueue, outQueue);
-    msgVisitor_ = new CommPeerMsgVisitor();
-  }
-
   @Inject
-  public void setDependencies(XMLConfiguration config, CommAddress commAddress,
-      GossipService gossipService) {
+  public CommunicationPeer(
+          @Named("CommunicationPeerInQueue") BlockingQueue<Message> inQueue,
+          @Named("CommunicationPeerOutQueue") BlockingQueue<Message> outQueue,
+          XMLConfiguration config,
+          CommAddress commAddress,
+          BootstrapService bootstrapService,
+          @Named("IsServer") boolean isServer,
+          GossipServiceFactory gossipServiceFactory,
+          ListenerService listenerService,
+          MessengerServiceFactory messengerServiceFactory) {
+    super(inQueue, outQueue);
     config_ = config;
     commAddress_ = commAddress;
-    gossipService_ = gossipService;
+    bootstrapService_ = bootstrapService;
+    isServer_ = isServer;
+    gossipServiceInQueue_ = new LinkedBlockingQueue<Message>();
+    gossipServiceFactory_ = gossipServiceFactory;
+    listenerService_ = listenerService;
+    messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
+    messengerServiceFactory_ = messengerServiceFactory;
+    msgVisitor_ = new CommPeerMsgVisitor();
+
+    dhtPeerInQueue_ = new LinkedBlockingQueue<Message>();
   }
 
   @Override
@@ -129,66 +144,12 @@ public final class CommunicationPeer extends Module {
     checkNotNull(config_);
 
     String clingConfPath = config_.getString(CONFIG_PREFIX + "cling-config");
-    if (clingConfPath != null)
+    if (clingConfPath != null) {
       readClingConfig(clingConfPath);
-
-    /* Load port numbers from config file */
-    int bootstrapPort;
-    int bootstrapTP2PPort;
-    int tP2PPort;
-
-    try {
-      String commCliPortConf = "ports.comm-cli-port";
-      String bPortConf = "ports.bootstrap-port";
-      String bServTP2PPortConf = "ports.bootstrap-server-tomp2p-port";
-      String tP2PPortConf = "ports.tomp2p-port";
-
-      commCliPort_ = config_.getInt(CONFIG_PREFIX + commCliPortConf, -1);
-      bootstrapPort = config_.getInt(CONFIG_PREFIX + bPortConf, -1);
-      bootstrapTP2PPort = config_.getInt(CONFIG_PREFIX + bServTP2PPortConf, -1);
-      tP2PPort = config_.getInt(CONFIG_PREFIX + tP2PPortConf, -1);
-
-      if (commCliPort_ == -1 || bootstrapPort == -1 ||
-          bootstrapTP2PPort == -1 || tP2PPort == -1) {
-        logger_.error(
-            "One of port numbers is not specified in configuration file.");
-        throw new NebuloException(
-            "One of port numbers is not specified in configuration file.");
-      }
-    } catch (ConversionException e) {
-      logger_.error("One of port numbers or comm-address is not correctly " +
-          "specified in configuration file: " + e);
-      throw new NebuloException("One of port numbers or comm-address is not " +
-          "correctly specified in configuration file.", e);
     }
-
-    messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
-    gossipServiceInQueue_ = new LinkedBlockingQueue<Message>();
-    dhtPeerInQueue_ = new LinkedBlockingQueue<Message>();
-
-    try {
-      listenerService_ = new ListenerService(inQueue_, commCliPort_);
-    } catch (IOException e) {
-      throw new NebuloException("Couldn't initialize listener.", e);
-    }
-
-    isServer_ = config_.getString(CONFIG_PREFIX + "bootstrap.mode", "client").equals("server");
 
     /* Initialize bootstrap service */
-
-    /* Get bootstrap server's address */
-    String bootstrapServerAddress = config_.getString(CONFIG_PREFIX + "bootstrap.address", "none");
-    if (bootstrapServerAddress.equals("none")) {
-      throw new IllegalArgumentException("Bootstrap client address is not set.");
-    }
-
-    if (!isServer_) {
-      bootstrapService_ = new BootstrapClient(bootstrapServerAddress,
-          commCliPort_, bootstrapPort, tP2PPort, bootstrapTP2PPort, commAddress_);
-      logger_.info("Created BootstrapClient.");
-    } else {
-      bootstrapService_ = new BootstrapServer(bootstrapServerAddress,
-          commCliPort_, bootstrapPort, bootstrapTP2PPort, commAddress_);
+    if (isServer_) {
       try {
         bootstrapService_.startUpService();
       } catch (IOException e) {
@@ -203,13 +164,16 @@ public final class CommunicationPeer extends Module {
       logger_.info("Created BootstrapServer.");
     }
 
-    messengerService_ = new MessengerService(messengerServiceInQueue_,
-        inQueue_, bootstrapService_.getResolver());
+    /* Add current resolver to context */
+    messengerService_ = messengerServiceFactory_.newMessengerService(
+            messengerServiceInQueue_,
+            inQueue_,
+            bootstrapService_.getResolver());
 
-    gossipService_.setInQueue(gossipServiceInQueue_);
-    gossipService_.setOutQueue(inQueue_);
-    gossipService_.setDependencies(config_, commAddress_);
-    gossipService_.setBootstrapCommAddress(bootstrapService_.getBootstrapCommAddress());
+    gossipService_ = gossipServiceFactory_.newGossipService(
+        gossipServiceInQueue_,
+        inQueue_,
+        bootstrapService_.getBootstrapCommAddress());
 
     /* Start submodule's threads */
     listenerThread_ = new Thread(
@@ -246,7 +210,7 @@ public final class CommunicationPeer extends Module {
       logger_.warn("IOException: " + e + " was thrown when trying to read " +
           "cling configuration");
     } finally {
-      if (fileIS != null)
+      if (fileIS != null) {
         try {
           fileIS.close();
         } catch (IOException e) {
@@ -255,6 +219,7 @@ public final class CommunicationPeer extends Module {
         } finally {
           fileIS = null;
         }
+      }
     }
   }
 
@@ -417,10 +382,11 @@ public final class CommunicationPeer extends Module {
     @Override
     public Void visit(PeerGossipMessage msg) {
       if (((CommMessage) msg).getDestinationAddress().equals(
-            bootstrapService_.getResolver().getMyCommAddress()))
+            bootstrapService_.getResolver().getMyCommAddress())) {
         gossipServiceInQueue_.add(msg);
-      else
+      } else {
         messengerServiceInQueue_.add(msg);
+      }
       return null;
     }
 
@@ -448,6 +414,7 @@ public final class CommunicationPeer extends Module {
    * Starts up and configures DHTPeer.
    *
    * @author Marcin Walas
+   * @author Grzegorz Milka
    */
   private void reconfigureDHT(String dhtProvider,
       ReconfigureDHTMessage reconfigureRequest) throws NebuloException {

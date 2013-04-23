@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 
-import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.google.inject.name.Named;
+
+import org.apache.commons.configuration.XMLConfiguration;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
@@ -96,9 +100,16 @@ public class OneTimeUniformGossipService extends GossipService {
    * @param nPeers Number of peers server is waiting for.
    * @param nReplicators Number of other peers' addresses that every peer will receive.
    */
-  @Inject
-  public OneTimeUniformGossipService(@Named("systest.num-test-participants") int nPeers,
+  @AssistedInject
+  public OneTimeUniformGossipService(
+      XMLConfiguration config,
+      @Assisted("GossipServiceInQueue") BlockingQueue<Message> inQueue,
+      @Assisted("GossipServiceOutQueue") BlockingQueue<Message> outQueue,
+      @Named("LocalCommAddress") CommAddress commAddress,
+      @Assisted("BootstrapCommAddress") CommAddress bootstrapCommAddress,
+      @Named("systest.num-test-participants") int nPeers,
       @Named("communication.one-time-uniform-gossip-n-replicators") int nReplicators) {
+    super(config, inQueue, outQueue, commAddress, bootstrapCommAddress);
     nPeers_ = nPeers;
     nReplicators_ = nReplicators;
   }

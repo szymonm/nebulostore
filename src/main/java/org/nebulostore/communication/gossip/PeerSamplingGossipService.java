@@ -13,10 +13,19 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.BlockingQueue;
+
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import com.google.inject.name.Named;
+
+import org.apache.commons.configuration.XMLConfiguration;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.MessageVisitor;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
 import org.nebulostore.communication.messages.CommMessage;
@@ -63,8 +72,17 @@ public final class PeerSamplingGossipService extends GossipService {
    * true argument stands for running as a deamon thread
    */
   private final Timer gossipSender_ = new Timer(true);
+  private final MessageVisitor msgVisitor_ = new GossipMsgVisitor();
 
-  public PeerSamplingGossipService() { }
+  @AssistedInject
+  public PeerSamplingGossipService(
+      XMLConfiguration config,
+      @Assisted("GossipServiceInQueue") BlockingQueue<Message> inQueue,
+      @Assisted("GossipServiceOutQueue") BlockingQueue<Message> outQueue,
+      @Named("LocalCommAddress") CommAddress commAddress,
+      @Assisted("BootstrapCommAddress") CommAddress bootstrapCommAddress) {
+    super(config, inQueue, outQueue, commAddress, bootstrapCommAddress);
+  }
 
   @Override
   protected void initModule() {
@@ -82,28 +100,11 @@ public final class PeerSamplingGossipService extends GossipService {
   @Override
   public void processMessage(Message msg) {
     logger_.debug("Received message: " + msg + ".");
-    if (msg instanceof EndModuleMessage) {
-      logger_.info("Received EndModule message");
-      shutdown();
-    } else if (msg instanceof ErrorCommMessage) {
-      //Couldn't reach a peer so delete him from peers_
-      CommMessage commMsg = ((ErrorCommMessage) msg).getMessage();
-      synchronized (peers_) {
-        if (peers_.remove(new PeerDescriptor(commMsg.getDestinationAddress())))
-          logger_.debug("Removed: " + commMsg.getDestinationAddress() +
-              " from peer pool.");
-      }
-    } else if (msg instanceof PeerGossipMessage) {
-      PeerGossipMessage peerGossipMsg = (PeerGossipMessage) msg;
-      if (peerGossipMsg.getMsgType().contains(PeerGossipMessage.MessageType.PULL)) {
-        outQueue_.add(prepareMsgToSend(peerGossipMsg.getSourceAddress(),
-              EnumSet.of(PeerGossipMessage.MessageType.PUSH)));
-      }
-      if (peerGossipMsg.getMsgType().contains(PeerGossipMessage.MessageType.PUSH)) {
-        select(peerGossipMsg.getBuffer());
-      }
-
-      increaseAge();
+    try {
+      msg.accept(msgVisitor_);
+    } catch (NebuloException e) {
+      logger_.warn("NebuloException: " + e + " occured when accepting msg: " +
+          msg);
     }
   }
 
@@ -114,10 +115,11 @@ public final class PeerSamplingGossipService extends GossipService {
    */
   public CommAddress getPeer() {
     PeerDescriptor peer = selectPeer();
-    if (peer != null)
+    if (peer != null) {
       return peer.getPeerAddress();
-    else
+    } else {
       return null;
+    }
   }
 
   /**
@@ -176,8 +178,9 @@ public final class PeerSamplingGossipService extends GossipService {
   //NOTE(grzegorzmilka): tail(oldest peer) strategy also works
   private PeerDescriptor selectPeer() {
     synchronized (peers_) {
-      if (peers_.size() == 0)
+      if (peers_.size() == 0) {
         return null;
+      }
       int index = RANDOMIZER.nextInt(peers_.size());
       return peers_.get(index);
     }
@@ -230,8 +233,9 @@ public final class PeerSamplingGossipService extends GossipService {
       bufferToSend.addAll(hOldest);
     }
 
-    if (bufferToSend.size() > (maxPeersSize_ / 2 - 1))
+    if (bufferToSend.size() > (maxPeersSize_ / 2 - 1)) {
       bufferToSend.subList(maxPeersSize_ / 2 - 1, bufferToSend.size() - 1).clear();
+    }
 
     bufferToSend.add(0, new PeerDescriptor(commAddress_));
 
@@ -302,16 +306,51 @@ public final class PeerSamplingGossipService extends GossipService {
     }
   }
 
-  /*private void restartGossipSender() {
-    stopGossipSender();
-    startGossipSender();
-  }*/
-
   private void startGossipSender() {
     gossipSender_.schedule(new GossipSender(), gossipPeriod_, gossipPeriod_);
   }
 
   private void stopGossipSender() {
     gossipSender_.cancel();
+  }
+
+  /**
+   * Message Visitor for PeerSamplingGossipService.
+   *
+   * @author Grzegorz Milka
+   */
+  private class GossipMsgVisitor extends MessageVisitor<Void> {
+    public Void visit(EndModuleMessage msg) {
+      logger_.info("Received EndModule message");
+      shutdown();
+      return null;
+    }
+
+    @Override
+    public Void visit(ErrorCommMessage msg) {
+      CommMessage commMsg = msg.getMessage();
+      synchronized (peers_) {
+        if (peers_.remove(new PeerDescriptor(commMsg.getDestinationAddress()))) {
+          logger_.debug("Removed: " + commMsg.getDestinationAddress() +
+              " from peer pool.");
+        }
+      }
+      return null;
+    }
+
+    @Override
+    public Void visit(PeerGossipMessage msg) {
+      PeerGossipMessage peerGossipMsg = (PeerGossipMessage) msg;
+      if (peerGossipMsg.getMsgType().contains(PeerGossipMessage.MessageType.PULL)) {
+        outQueue_.add(prepareMsgToSend(peerGossipMsg.getSourceAddress(),
+              EnumSet.of(PeerGossipMessage.MessageType.PUSH)));
+      }
+      if (peerGossipMsg.getMsgType().contains(PeerGossipMessage.MessageType.PUSH)) {
+        select(peerGossipMsg.getBuffer());
+      }
+
+      increaseAge();
+      return null;
+    }
   }
 }

@@ -18,9 +18,8 @@ import org.nebulostore.appcore.model.ObjectGetter;
 import org.nebulostore.appcore.model.ObjectWriter;
 import org.nebulostore.broker.AlwaysAcceptingBroker;
 import org.nebulostore.broker.Broker;
+import org.nebulostore.communication.CommunicationPeerConfiguration;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.gossip.GossipService;
-import org.nebulostore.communication.gossip.PeerSamplingGossipService;
 import org.nebulostore.subscription.api.SimpleSubscriptionNotificationHandler;
 import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
 import org.nebulostore.timer.Timer;
@@ -40,10 +39,17 @@ public class PeerConfiguration extends GenericConfiguration {
     bind(CommAddress.class).toInstance(
         new CommAddress(config_.getString("communication.comm-address", "")));
 
+    BlockingQueue<Message> networkQueue = new LinkedBlockingQueue<Message>();
+    BlockingQueue<Message> dispatcherQueue = new LinkedBlockingQueue<Message>();
+
     bind(new TypeLiteral<BlockingQueue<Message>>() { })
-      .annotatedWith(Names.named("NetworkQueue")).toInstance(new LinkedBlockingQueue<Message>());
+      .annotatedWith(Names.named("NetworkQueue")).toInstance(networkQueue);
     bind(new TypeLiteral<BlockingQueue<Message>>() { })
-      .annotatedWith(Names.named("DispatcherQueue")).toInstance(new LinkedBlockingQueue<Message>());
+      .annotatedWith(Names.named("CommunicationPeerInQueue")).toInstance(networkQueue);
+    bind(new TypeLiteral<BlockingQueue<Message>>() { })
+      .annotatedWith(Names.named("DispatcherQueue")).toInstance(dispatcherQueue);
+    bind(new TypeLiteral<BlockingQueue<Message>>() { })
+      .annotatedWith(Names.named("CommunicationPeerOutQueue")).toInstance(dispatcherQueue);
 
     bind(ObjectGetter.class).to(GetNebuloObjectModule.class);
     bind(ObjectWriter.class).to(WriteNebuloObjectModule.class);
@@ -63,8 +69,9 @@ public class PeerConfiguration extends GenericConfiguration {
   }
 
   protected void configureCommunicationPeer() {
-    //TODO(bolek): Move it to CommunicationPeer's config module.
-    bind(GossipService.class).to(PeerSamplingGossipService.class);
+    GenericConfiguration genConf = new CommunicationPeerConfiguration();
+    genConf.setXMLConfig(config_);
+    install(genConf);
   }
 
   protected void configureBroker() {

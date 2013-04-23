@@ -138,8 +138,8 @@ public class CachedOOSDispatcher implements OOSDispatcher {
     Lock lock = getLock(commAddress);
     logger_.trace("Trying to lock commAddress's lock for: " + commAddress);
     lock.lock();
-    logger_.trace("commAddress's lock for: " + commAddress + " locked");
     try {
+      logger_.trace("commAddress's lock for: " + commAddress + " locked");
       logger_.trace("Trying to lock socketsLock_");
       socketsLock_.lock();
       try {
@@ -180,13 +180,16 @@ public class CachedOOSDispatcher implements OOSDispatcher {
   }
 
   public void put(CommAddress commAddress, ObjectOutputStream oos) {
-    assert activeSockets_.containsKey(commAddress);
-    /* No need for socketsLock_ */
-    ruSockets_.put(commAddress, activeSockets_.get(commAddress));
-    activeSockets_.remove(commAddress);
-    Lock lock = socketLocksMap_.get(commAddress);
-    releaseLock(commAddress);
-    lock.unlock();
+    socketsLock_.lock();
+    try {
+      ruSockets_.put(commAddress, activeSockets_.get(commAddress));
+      activeSockets_.remove(commAddress);
+    } finally {
+      socketsLock_.unlock();
+      Lock lock = socketLocksMap_.get(commAddress);
+      releaseLock(commAddress);
+      lock.unlock();
+    }
   }
 
   /**

@@ -1,16 +1,21 @@
 package org.nebulostore.communication.gossip;
 
-import com.google.inject.Inject;
+import java.util.concurrent.BlockingQueue;
+
+import com.google.inject.name.Named;
 
 import org.apache.commons.configuration.XMLConfiguration;
+
+import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
- * GossipService is responsible for exchanging peer information. Bootstrap's CommAddress might be
- * needed for first enquiry.
+ * GossipService is responsible for exchanging peer information.
+ * Bootstrap's CommAddress might be needed for first enquiry.
  *
  * @author Bolek Kulbabinski
+ * @author Grzegorz Milka
  */
 public abstract class GossipService extends Module {
   protected static final String CONFIG_PREFIX = "communication.";
@@ -19,15 +24,16 @@ public abstract class GossipService extends Module {
   protected CommAddress commAddress_;
   protected CommAddress bootstrapCommAddress_;
 
-  public GossipService() { }
-
-  @Inject
-  public void setDependencies(XMLConfiguration config, CommAddress commAddress) {
+  public GossipService(
+      XMLConfiguration config,
+      @Named("GossipQueue") BlockingQueue<Message> inQueue,
+      @Named("CommunicationPeerInQueue") BlockingQueue<Message> outQueue,
+      @Named("LocalCommAddress") CommAddress commAddress,
+      @Named("BootstrapCommAddress") CommAddress bootstrapCommAddress) {
     config_ = config;
+    inQueue_ = inQueue;
+    outQueue_ = outQueue;
     commAddress_ = commAddress;
-  }
-
-  public void setBootstrapCommAddress(CommAddress bootstrapCommAddress) {
     bootstrapCommAddress_ = bootstrapCommAddress;
   }
 }

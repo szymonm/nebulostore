@@ -49,11 +49,11 @@ public final class BootstrapClient extends BootstrapService {
    */
   @Inject
   public BootstrapClient(
-      @Named("BootstrapServerAddress") String bootstrapServerAddress,
-      @Named("LocalCommPort") int commCliPort,
-      @Named("BootstrapCommPort") int bootstrapPort,
-      @Named("LocalAddressingPort") int tomP2PPort,
-      @Named("BootstrapAddressingPort") int bootstrapTomP2PPort,
+      @Named("communication.bootstrap.address") String bootstrapServerAddress,
+      @Named("communication.ports.comm-cli-port") int commCliPort,
+      @Named("communication.ports.bootstrap-port") int bootstrapPort,
+      @Named("communication.ports.tomp2p-port") int tomP2PPort,
+      @Named("communication.ports.bootstrap-server-tomp2p-port") int bootstrapTomP2PPort,
       @Named("LocalCommAddress") CommAddress commAddress) throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, bootstrapTomP2PPort);
     bootstrapServerAddress_ = bootstrapServerAddress;

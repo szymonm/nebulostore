@@ -8,7 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
@@ -35,11 +36,11 @@ public class MessengerService extends Module {
   private AtomicBoolean isEnding_ = new AtomicBoolean(false);
   private MessageVisitor msgVisitor_;
 
-  @Inject
+  @AssistedInject
   public MessengerService(
-      @Named("MessengerServiceQueue") BlockingQueue<Message> inQueue,
-      @Named("CommPeerQueue") BlockingQueue<Message> outQueue,
-      CommAddressResolver resolver) {
+      @Assisted("MessengerServiceInQueue") BlockingQueue<Message> inQueue,
+      @Assisted("MessengerServiceOutQueue") BlockingQueue<Message> outQueue,
+      @Assisted CommAddressResolver resolver) {
     super(inQueue, outQueue);
     msgVisitor_ = new MessengerMsgVisitor();
     resolver_ = resolver;

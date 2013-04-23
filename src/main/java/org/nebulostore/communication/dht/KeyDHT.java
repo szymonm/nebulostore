@@ -54,9 +54,9 @@ public class KeyDHT implements Serializable {
     int secondKeyMaxLength = 128;
 
     if (firstKey.bitLength() > firstKeyMaxLength ||
-        secondKey.bitLength() > secondKeyMaxLength)
+        secondKey.bitLength() > secondKeyMaxLength) {
       throw new IllegalArgumentException("Keys have to adhere to length constraints.");
-
+    }
 
     int[] val1 = firstKey.toIntArray();
     int[] val2 = secondKey.toIntArray();
@@ -99,18 +99,21 @@ public class KeyDHT implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    } else if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    } else if (getClass() != obj.getClass()) {
       return false;
+    }
     KeyDHT other = (KeyDHT) obj;
     if (key_ == null) {
-      if (other.key_ != null)
+      if (other.key_ != null) {
         return false;
-    } else if (!key_.equals(other.key_))
+      }
+    } else if (!key_.equals(other.key_)) {
       return false;
+    }
     return true;
   }
 

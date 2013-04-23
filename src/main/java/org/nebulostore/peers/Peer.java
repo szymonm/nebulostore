@@ -47,6 +47,8 @@ public class Peer extends AbstractPeer {
   protected CommAddress commAddress_;
   protected Timer peerTimer_;
 
+  private CommunicationPeer commPeer_;
+
   @Inject
   public void setConfiguration(XMLConfiguration config) {
     config_ = config;
@@ -58,6 +60,7 @@ public class Peer extends AbstractPeer {
                               Broker broker,
                               AppKey appKey,
                               CommAddress commAddress,
+                              CommunicationPeer commPeer,
                               Timer timer,
                               Injector injector) {
     dispatcherInQueue_ = dispatcherQueue;
@@ -65,6 +68,7 @@ public class Peer extends AbstractPeer {
     broker_ = broker;
     appKey_ = appKey;
     commAddress_ = commAddress;
+    commPeer_ = commPeer;
     peerTimer_ = timer;
     injector_ = injector;
   }
@@ -108,9 +112,7 @@ public class Peer extends AbstractPeer {
     Dispatcher dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
     dispatcherThread_ = new Thread(dispatcher, "Dispatcher");
 
-    CommunicationPeer peer = new CommunicationPeer(networkInQueue_, dispatcherInQueue_);
-    injector_.injectMembers(peer);
-    networkThread_ = new Thread(peer, "CommunicationPeer");
+    networkThread_ = new Thread(commPeer_, "CommunicationPeer");
 
     NetworkContext.getInstance().setCommAddress(commAddress_);
     NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);

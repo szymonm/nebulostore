@@ -59,10 +59,10 @@ public class BootstrapServer extends BootstrapService implements Runnable {
    */
   @Inject
   public BootstrapServer(
-      @Named("BootstrapServerAddress") String bootstrapServerAddress,
-      @Named("LocalCommPort") int commCliPort,
-      @Named("BootstrapCommPort") int bootstrapPort,
-      @Named("LocalAddressingPort") int tomP2PPort,
+      @Named("communication.bootstrap.address") String bootstrapServerAddress,
+      @Named("communication.ports.comm-cli-port") int commCliPort,
+      @Named("communication.ports.bootstrap-port") int bootstrapPort,
+      @Named("communication.ports.tomp2p-port") int tomP2PPort,
       @Named("LocalCommAddress") CommAddress commAddress)
     throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, tomP2PPort);

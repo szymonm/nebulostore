@@ -3,18 +3,15 @@ package org.nebulostore.systest.communication.pingpong;
 import java.rmi.RemoteException;
 import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.gossip.PeerSamplingGossipService;
 
+/* TODO(grzegorzmilka) This test is outdated and will be removed with future issue */
 /**
  * @author grzegorzmilka
  */
@@ -51,6 +48,9 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
   }
 
   public void startCommPeer() throws NebuloException, RemoteException {
+    throw new UnsupportedOperationException("This test is outdated and will " +
+        "be + removed with future issue");
+    /*
     listenerThread_.start();
     if (communicationPeer_ == null) {
       XMLConfiguration config = null;
@@ -64,16 +64,14 @@ public abstract class AbstractPeerImpl extends Observable implements AbstractPee
       CommAddress commAddress = new CommAddress(config.getString("communication.comm-address", ""));
       inQueue_ = new LinkedBlockingQueue<Message>();
       outQueue_ = new LinkedBlockingQueue<Message>();
-      PeerSamplingGossipService gossipService = new PeerSamplingGossipService();
-      gossipService.setDependencies(config, commAddress);
-      communicationPeer_ = new CommunicationPeer(inQueue_, outQueue_);
-      communicationPeer_.setDependencies(config, commAddress, gossipService);
+      //communicationPeer_ = new CommunicationPeer(inQueue_, outQueue_);
+
       communicationPeerThread_ = new Thread(communicationPeer_,
           "Nebulostore.Communication.CommunicationPeer");
       communicationPeerThread_.setDaemon(true);
       communicationPeerThread_.start();
       logger_.info("CommunicationPeer started.");
-    }
+    } */
   }
 
   public void stopCommPeer() throws RemoteException {

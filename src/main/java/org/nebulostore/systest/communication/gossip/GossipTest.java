@@ -31,6 +31,7 @@ import org.nebulostore.peers.Peer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/* TODO(grzegorzmilka) This test is outdated */
 /**
  * @author grzegorzmilka
  */
@@ -140,6 +141,8 @@ final class ChurnFactory {
   }
 
   private void createGossiper(CommAddress commAddr) {
+    throw new UnsupportedOperationException("This test is outdated");
+    /*
     synchronized (gossipModules_) {
       if (gossipModules_.containsKey(commAddr)) {
         logger_.warn("Trying to add gossiper with address already present " +
@@ -165,6 +168,7 @@ final class ChurnFactory {
     gossipThread.start();
 
     gossipThreads_.put(commAddr, gossipThread);
+    */
   }
 
   private void deleteGossiper(CommAddress gossiperAddr) {

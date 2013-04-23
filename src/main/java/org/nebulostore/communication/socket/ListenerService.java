@@ -12,6 +12,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.Module;
@@ -73,28 +76,34 @@ public class ListenerService extends Module {
     }
   }
 
-  public ListenerService(BlockingQueue<Message> outQueue, int commCliPort)
-    throws IOException {
+  @Inject
+  public ListenerService(
+      @Named("CommunicationPeerInQueue") BlockingQueue<Message> outQueue,
+      @Named("communication.ports.comm-cli-port") int commCliPort)
+    /* throws IOException */ {
     super(null, outQueue);
     commCliPort_ = commCliPort;
+  }
+
+  @Override
+  public void run() {
     try {
       serverSocket_ = new ServerSocket(commCliPort_);
     } catch (IOException e) {
       logger_.error("Could not initialize listening socket on port: " +
               commCliPort_ + ", due to IOException: " + e);
-      throw new IOException("Could not initialize listening socket " +
+      /* Throwing runtime exception since run can not throw checked exception */
+      throw new RuntimeException("Could not initialize listening socket " +
           "due to IOException.", e);
     }
     logger_.info("Created listenerService's socket on port: " + commCliPort_);
+
     try {
       serverSocket_.setReuseAddress(true);
     } catch (SocketException e) {
       logger_.warn("Couldn't set serverSocket to reuse address: " + e);
     }
-  }
 
-  @Override
-  public void run() {
     while (!isEnding_.get()) {
       Socket clientSocket = null;
       try {
