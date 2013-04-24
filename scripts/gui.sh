@@ -15,23 +15,9 @@ COMMON_ARGS="--CLASS_NAME=org.nebulostore.gui.GUIController --BOOTSTRAP_ADDRESS=
 
 ./scripts/_build-and-deploy.sh $PEERS_NUM
 
-platform='unknown'
-unamestr=`uname`
-if [[ "$unamestr" == 'Darwin' ]]; then
-  platform='mac'
-else
-  platform='linux'
-fi
-
-sequence='unknown'
-if [[ $platform == 'mac' ]]; then
-  sequence=`jot $PEERS_NUM`
-else
-  sequence=`seq 1 $PEERS_NUM`
-fi
 
 cd $JAR_DIR
-for i in $sequence
+for ((i=1; i<=$PEERS_NUM; i++))
 do
     cd $i/resources/conf
     ./generate_config.py $COMMON_ARGS --APP_KEY=$i$i --BOOTSTRAP_MODE=client --CLI_PORT=1010$i --TOMP2P_PORT=1030$i --BDB_TYPE=proxy < Peer.xml.template > Peer.xml

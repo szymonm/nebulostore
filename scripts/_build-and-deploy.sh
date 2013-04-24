@@ -27,7 +27,7 @@ echo "Building done. Copying..."
 rm -rf $JAR_DIR
 mkdir -p $JAR_DIR
 rsync -r $MAVEN_LIB $JAR_DIR/
-for i in `seq 1 $PEERS_NUM`
+for ((i=1; i<=$PEERS_NUM; i++))
 do
     echo $i
     CURR_PATH="./$JAR_DIR/$i"

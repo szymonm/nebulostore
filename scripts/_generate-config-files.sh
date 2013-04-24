@@ -23,7 +23,7 @@ if [ $1 ]; then
 fi
 
 # Generate test list.
-for i in `seq 1 $TEST_ITER`
+for ((i=1; i<=$TEST_ITER; i++))
 do
     if [ $i -ne 1 ]
     then
@@ -33,7 +33,7 @@ do
 done
 
 # Configure peers.
-for i in `seq 1 $PEER_NUM`
+for ((i=1; i<=$PEER_NUM; i++))
 do
     # Make first peer bootstrap server, storage holder and test server.
     if [ $i -eq 1 ]

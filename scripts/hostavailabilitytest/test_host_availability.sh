@@ -180,7 +180,7 @@ function TEST_HOST() {
 export -f TEST_HOST
 
 ALL_HOSTS=""
-for i in $(seq 0 $((${#TESTED_HOSTS[@]} - 1)))
+for ((i=0; i<=$((${#TESTED_HOSTS[@]} - 1)); i++))
 do
     ALL_HOSTS+=${TESTED_HOSTS[$i]}$'\n'
 done

@@ -25,7 +25,7 @@ echo "BUILDING ..."
 
 # Generate and copy config files.
 ./scripts/_generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $((PEER_NUM-1)) $TEST_ITER localhost
-for i in `seq 1 $PEER_NUM`
+for ((i=1; i<=$PEER_NUM; i++))
 do
     mv Peer.xml.$i ./build/jar/$i/resources/conf/Peer.xml
 done
@@ -36,7 +36,7 @@ cd build/jar
 
 run_clients() {
     sleep $BOOTSTRAP_DELAY
-    for i in `seq 2 $PEER_NUM`
+    for ((i=2; i<=$PEER_NUM; i++))
     do
         cd $i
         java -jar Nebulostore.jar &
@@ -57,7 +57,7 @@ cd ../../..
 rm -rf $LOG_DIR
 mkdir $LOG_DIR
 echo "COPYING LOGS ..."
-for i in `seq 1 $PEER_NUM`
+for ((i=1; i<=$PEER_NUM; i++))
 do
     cp -r build/jar/$i/logs $LOG_DIR/logs_$i
 done
