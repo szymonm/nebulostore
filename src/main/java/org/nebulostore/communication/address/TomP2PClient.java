@@ -92,7 +92,7 @@ public final class TomP2PClient extends TomP2PPeer {
         try {
           Thread.sleep(300);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          logger_.warn("InterruptedException during sleeping at bootstrap: " + e);
         }
       } else {
         success = true;

@@ -65,16 +65,18 @@ public abstract class TomP2PPeer implements PersistentAddressingPeer {
   @Override
   public void setBootstrapServerAddress(@Named("BootstrapServerAddress")
       String bootstrapServerAddress) {
-    if (bootstrapServerAddress == null)
+    if (bootstrapServerAddress == null) {
       throw new IllegalArgumentException("Bootstrap address can not be null");
+    }
     bootstrapServerAddress_ = bootstrapServerAddress;
   }
 
   @Inject
   @Override
   public void setMyCommAddress(@Named("LocalCommAddress") CommAddress myCommAddress) {
-    if (myCommAddress == null)
+    if (myCommAddress == null) {
       throw new IllegalArgumentException("myCommAddress can not be null");
+    }
     myCommAddress_ = myCommAddress;
   }
 

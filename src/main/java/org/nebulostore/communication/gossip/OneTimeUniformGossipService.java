@@ -60,8 +60,9 @@ public class OneTimeUniformGossipService extends GossipService {
         int nReplicators = Math.min(nReplicators_, nPeers_ - 1);
         for (int i = 0; i < nPeers_; i++) {
           List<PeerDescriptor> group = new ArrayList<PeerDescriptor>();
-          for (int j = 1; j < nReplicators; j++)
+          for (int j = 1; j < nReplicators; j++) {
             group.add(new PeerDescriptor(received_.get((i + j) % nPeers_)));
+          }
           outQueue_.add(new PeerGossipMessage(null, received_.get(i),
               Collections.singleton(PeerGossipMessage.MessageType.PUSH), group));
         }
@@ -81,8 +82,9 @@ public class OneTimeUniformGossipService extends GossipService {
    */
   private class ClientVisitor extends MessageVisitor<Void> {
     public Void visit(PeerGossipMessage message) throws NebuloException {
-      for (PeerDescriptor peer : message.getBuffer())
+      for (PeerDescriptor peer : message.getBuffer()) {
         outQueue_.add(new CommPeerFoundMessage(peer.getPeerAddress(), commAddress_));
+      }
       return null;
     }
 

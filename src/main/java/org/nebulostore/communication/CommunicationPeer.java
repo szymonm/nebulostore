@@ -7,7 +7,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.LogManager;
 
-import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.google.inject.name.Named;
 
 import org.apache.commons.configuration.XMLConfiguration;
@@ -102,12 +103,10 @@ public final class CommunicationPeer extends Module {
   // Is the server shutting down.
   private AtomicBoolean isEnding_ = new AtomicBoolean(false);
 
-  private int commCliPort_;
-
-  @Inject
+  @AssistedInject
   public CommunicationPeer(
-          @Named("CommunicationPeerInQueue") BlockingQueue<Message> inQueue,
-          @Named("CommunicationPeerOutQueue") BlockingQueue<Message> outQueue,
+          @Assisted("CommunicationPeerInQueue") BlockingQueue<Message> inQueue,
+          @Assisted("CommunicationPeerOutQueue") BlockingQueue<Message> outQueue,
           XMLConfiguration config,
           CommAddress commAddress,
           BootstrapService bootstrapService,

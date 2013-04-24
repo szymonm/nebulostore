@@ -49,14 +49,15 @@ class HashAddressResolver implements CommAddressResolver {
           try {
             Thread.sleep(300);
           } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger_.warn("InterruptedException during sleeping at resolve: " + e);
           }
         } else {
           break;
         }
       }
-      if (data == null)
+      if (data == null) {
         throw new AddressNotPresentException("Address not available in DHT.");
+      }
       logger_.trace("Returned Data: " + data + " " + futureDHT.isCompleted() +
           " " + futureDHT.isSuccess());
       InetSocketAddress inetSocketAddress = (InetSocketAddress) data.getObject();

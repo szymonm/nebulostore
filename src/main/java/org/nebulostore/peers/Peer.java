@@ -19,6 +19,7 @@ import org.nebulostore.async.AddSynchroPeerModule;
 import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeer;
+import org.nebulostore.communication.CommunicationPeerFactory;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.JobInitMessage;
@@ -48,6 +49,7 @@ public class Peer extends AbstractPeer {
   protected Timer peerTimer_;
 
   private CommunicationPeer commPeer_;
+  private CommunicationPeerFactory commPeerFactory_;
 
   @Inject
   public void setConfiguration(XMLConfiguration config) {
@@ -60,7 +62,7 @@ public class Peer extends AbstractPeer {
                               Broker broker,
                               AppKey appKey,
                               CommAddress commAddress,
-                              CommunicationPeer commPeer,
+                              CommunicationPeerFactory commPeerFactory,
                               Timer timer,
                               Injector injector) {
     dispatcherInQueue_ = dispatcherQueue;
@@ -68,7 +70,7 @@ public class Peer extends AbstractPeer {
     broker_ = broker;
     appKey_ = appKey;
     commAddress_ = commAddress;
-    commPeer_ = commPeer;
+    commPeerFactory_ = commPeerFactory;
     peerTimer_ = timer;
     injector_ = injector;
   }
@@ -112,6 +114,7 @@ public class Peer extends AbstractPeer {
     Dispatcher dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
     dispatcherThread_ = new Thread(dispatcher, "Dispatcher");
 
+    commPeer_ = commPeerFactory_.newCommunicationPeer(networkInQueue_, dispatcherInQueue_);
     networkThread_ = new Thread(commPeer_, "CommunicationPeer");
 
     NetworkContext.getInstance().setCommAddress(commAddress_);

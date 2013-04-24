@@ -112,9 +112,10 @@ public final class BootstrapClient extends BootstrapService {
             break;
           }
         }
-        if (!foundAddress)
+        if (!foundAddress) {
           throw new NebuloException("Discovered being behind NAT but port " +
               "forwarding has failed");
+        }
       }
     } catch (IOException e) {
       throw new NebuloException(e);

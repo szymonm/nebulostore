@@ -1,13 +1,8 @@
 package org.nebulostore.communication;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
-import org.nebulostore.appcore.Message;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.bootstrap.BootstrapClient;
 import org.nebulostore.communication.bootstrap.BootstrapServer;
@@ -28,10 +23,6 @@ import org.nebulostore.peers.GenericConfiguration;
 public class CommunicationPeerConfiguration extends GenericConfiguration {
   @Override
   protected final void configureAll() {
-    bind(new TypeLiteral<BlockingQueue<Message>>() { })
-      .annotatedWith(Names.named("BootstrapServerQueue")).
-      toInstance(new LinkedBlockingQueue<Message>());
-
     configureLocalCommAddress();
 
     configureBootstrap();
@@ -39,6 +30,9 @@ public class CommunicationPeerConfiguration extends GenericConfiguration {
     configureGossip();
     configureListenerService();
     configureMessengerService();
+
+    install(new FactoryModuleBuilder().implement(CommunicationPeer.class,
+          CommunicationPeer.class).build(CommunicationPeerFactory.class));
   }
 
   protected void configureBootstrap() {
