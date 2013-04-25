@@ -108,7 +108,7 @@ public final class CommunicationPeer extends Module {
           @Assisted("CommunicationPeerInQueue") BlockingQueue<Message> inQueue,
           @Assisted("CommunicationPeerOutQueue") BlockingQueue<Message> outQueue,
           XMLConfiguration config,
-          CommAddress commAddress,
+          @Named("LocalCommAddress") CommAddress commAddress,
           BootstrapService bootstrapService,
           @Named("IsServer") boolean isServer,
           GossipServiceFactory gossipServiceFactory,

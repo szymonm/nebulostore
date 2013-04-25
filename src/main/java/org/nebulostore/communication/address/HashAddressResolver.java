@@ -43,7 +43,9 @@ class HashAddressResolver implements CommAddressResolver {
         futureDHT = myPeer_.get(addressKey).start();
         logger_.trace("Returned FutureDHT: " + futureDHT);
         futureDHT.awaitUninterruptibly();
-        data = futureDHT.getData();
+        if (futureDHT.isSuccess()) {
+            data = futureDHT.getData();
+        }
         if (data == null) {
           logger_.debug("NULL in HashAddressResolver in iteration " + i);
           try {

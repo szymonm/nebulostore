@@ -161,16 +161,25 @@ public class CachedOOSDispatcher implements OOSDispatcher {
         socketsLock_.unlock();
       }
 
+      Socket socket = null;
       if (!activeSockets_.containsKey(commAddress)) {
-        /* It's safe because activeSockets is synchronized map unused by
-         * SocketCleaner and we have lock for this commAddress */
-        Socket socket = createSocket(commAddress);
-        activeSockets_.put(commAddress, new SocketOOSPair(socket,
+        socket = createSocket(commAddress);
+      }
+
+      ObjectOutputStream commOos;
+      socketsLock_.lock();
+      try {
+        if (socket != null) {
+          activeSockets_.put(commAddress, new SocketOOSPair(socket,
               new ObjectOutputStream(socket.getOutputStream())));
+        }
+        commOos = activeSockets_.get(commAddress).oos_;
+      } finally {
+        socketsLock_.unlock();
       }
 
       isSuccessful = true;
-      return activeSockets_.get(commAddress).oos_;
+      return commOos;
     } finally {
       if (!isSuccessful) {
         lock.unlock();
@@ -257,6 +266,7 @@ public class CachedOOSDispatcher implements OOSDispatcher {
     Socket socket = null;
     try {
       InetSocketAddress socketAddress = resolver_.resolve(commAddress);
+      logger_.trace("Creating socket to: " + socketAddress);
       socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());
     } catch (IOException e) {
       /* Socket is null so no need to close it */
@@ -284,12 +294,14 @@ public class CachedOOSDispatcher implements OOSDispatcher {
   private void clearAndCloseSocketMap(Map<CommAddress, SocketOOSPair> sockMap) {
     for (SocketOOSPair pair : sockMap.values()) {
       Socket socket = pair.socket_;
+      ObjectOutputStream oos = pair.oos_;
       try {
+        oos.close();
         socket.close();
         logger_.debug("Socket to: " + socket.getRemoteSocketAddress() +
             " closed.");
       } catch (IOException e) {
-        logger_.debug("Error when closing socket");
+        logger_.debug("Error when closing socket: " + e);
       }
     }
     sockMap.clear();

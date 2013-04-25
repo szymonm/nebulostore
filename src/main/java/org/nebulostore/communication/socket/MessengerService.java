@@ -110,6 +110,9 @@ public class MessengerService extends Module {
 
       try {
         oos.writeObject(commMsg_);
+        /* Flush in case ObjectOutputStream buffer's data to ensure that the
+         * message has been sent */
+        oos.flush();
         logger_.debug("Message: " + commMsg_ + " sent to: " +
             commMsg_.getDestinationAddress());
       } catch (IOException e) {

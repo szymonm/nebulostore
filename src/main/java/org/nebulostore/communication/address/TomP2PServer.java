@@ -2,6 +2,11 @@ package org.nebulostore.communication.address;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import net.tomp2p.p2p.PeerMaker;
 import net.tomp2p.peers.Number160;
@@ -11,9 +16,14 @@ import net.tomp2p.peers.Number160;
  *
  * @author Grzegorz Milka
  */
-//NOTE-GM Perhaps add TomP2PBuilder (Builder pattern)
 public final class TomP2PServer extends TomP2PPeer {
-  //private InetSocketAddress myInetSocketAddress_;
+  /**
+   * Time for timer task to wait between interrupts to end a long shutdown of
+   * TP2P object.
+   *
+   * @see TP2PInterrupter
+   */
+  private static final int INTERRUPT_WAIT = 10000;
 
   public TomP2PServer() {
     super();
@@ -55,15 +65,71 @@ public final class TomP2PServer extends TomP2PPeer {
     checkSetUp();
     isTearingDown_.set(true);
     logger_.info("Starting tearDown procedure.");
+
+    Timer interrupterTimer = new Timer(true);
+    AtomicBoolean hasShutdown = new AtomicBoolean(false);
+    Lock opLock = new ReentrantLock();
+    TimerTask interrupter = new TP2PInterrupter(Thread.currentThread(),
+        hasShutdown,
+        opLock);
+    interrupterTimer.schedule(interrupter, INTERRUPT_WAIT, INTERRUPT_WAIT);
+
     myPeer_.shutdown();
+
+    logger_.info("TomP2P peer has been shut down.");
+
+    opLock.lock();
+    try {
+      hasShutdown.set(true);
+      interrupterTimer.cancel();
+    } finally {
+      opLock.unlock();
+    }
+
     resolver_ = null;
     myPeer_ = null;
-    logger_.info("TomP2P peer has been shut down.");
   }
 
   @Override
   public InetSocketAddress getCurrentInetSocketAddress() throws IOException {
     checkSetUp();
     return new InetSocketAddress(bootstrapServerAddress_, commCliPort_);
+  }
+
+  /**
+   * TimerTask which interrupts shutting down TP2P's object.
+   * A bug where the server hangs on shutdown of TP2P has been reported. Since
+   * we have been unable to determine the root cause the choice of action is to
+   * periodically interrupt the shutdown hoping it will unblock.
+   *
+   * Note that if TP2P's shutdown ignores interrupts or blocks due to malignant
+   * reasons this timertask may accomplish nothing.
+   *
+   * @author Grzegorz Milka
+   */
+  private class TP2PInterrupter extends TimerTask {
+    private Thread serverThread_;
+    private AtomicBoolean hasShutdown_;
+    private Lock opLock_;
+
+    public TP2PInterrupter(Thread serverThread, AtomicBoolean hasShutdown,
+        Lock opLock) {
+      serverThread_ = serverThread;
+      hasShutdown_ = hasShutdown;
+      opLock_ = opLock;
+    }
+
+    @Override
+    public void run() {
+      opLock_.lock();
+      try {
+        if (!hasShutdown_.get()) {
+          logger_.error("TomP2PServer is forced to use TP2PInterrupter");
+          serverThread_.interrupt();
+        }
+      } finally {
+        opLock_.unlock();
+      }
+    }
   }
 }

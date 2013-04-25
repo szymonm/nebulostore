@@ -42,13 +42,15 @@ public class ListenerService extends Module {
   private class ListenerProtocol implements Runnable {
     Socket clientSocket_;
     public ListenerProtocol(Socket clientSocket) {
-      if (clientSocket == null)
+      if (clientSocket == null) {
         throw new NullPointerException();
+      }
       clientSocket_ = clientSocket;
     }
 
-    //TODO(grzegorzmilka) Add Interrupt handler.
     public void run() {
+      logger_.trace("Running ListenerProtocol accepting connection from: " +
+          clientSocket_.getRemoteSocketAddress());
       Message msg = null;
       try {
         InputStream sis = clientSocket_.getInputStream();
@@ -67,6 +69,8 @@ public class ListenerService extends Module {
         logger_.warn("IOException in connection with: " +
             clientSocket_.getRemoteSocketAddress() + " " + e);
       } finally {
+        logger_.trace("Closing ListenerProtocol connection with host: " +
+            clientSocket_.getRemoteSocketAddress());
         try {
           clientSocket_.close();
         } catch (IOException e) {
