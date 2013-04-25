@@ -18,20 +18,19 @@
 # 5. Details about commands and file names can be found in
 #    TextInterface.java - feel free to experiment!
 
+source scripts/_utils.sh
+
 JAR_DIR="build/jar"
 PEERS_NUM=4
 COMMON_ARGS="--CLASS_NAME=org.nebulostore.systest.textinterface.TextInterface --BOOTSTRAP_ADDRESS=localhost --BOOTSTRAP_TOMP2P_PORT=10301 --BOOTSTRAP_PORT=10201"
 
 ./scripts/_build-and-deploy.sh $PEERS_NUM
 
-cd $JAR_DIR
 for ((i=1; i<=$PEERS_NUM; i++))
 do
-    cd $i/resources/conf
-    ./generate_config.py $COMMON_ARGS --APP_KEY=$i$i --BOOTSTRAP_MODE=client --CLI_PORT=1010$i --TOMP2P_PORT=1030$i --BDB_TYPE=proxy < Peer.xml.template > Peer.xml
-    cd ../../../
+    PARAMS="$COMMON_ARGS --APP_KEY=$i$i --BOOTSTRAP_MODE=client --CLI_PORT=1010$i --TOMP2P_PORT=1030$i --BDB_TYPE=proxy"
+    generateConfigFile "$PARAMS" $JAR_DIR/$i/resources/conf
 done
 
-cd 1/resources/conf
-./generate_config.py $COMMON_ARGS --APP_KEY=11 --BOOTSTRAP_MODE=server --CLI_PORT=10101 --TOMP2P_PORT=10301 --BDB_TYPE=storage-holder < Peer.xml.template > Peer.xml
-
+PARAMS="$COMMON_ARGS --APP_KEY=11 --BOOTSTRAP_MODE=server --CLI_PORT=10101 --TOMP2P_PORT=10301 --BDB_TYPE=storage-holder"
+generateConfigFile "$PARAMS" $JAR_DIR/1/resources/conf

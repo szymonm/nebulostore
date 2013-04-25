@@ -2,8 +2,6 @@ package org.nebulostore.appcore.model;
 
 import java.util.Arrays;
 
-import org.apache.log4j.xml.DOMConfigurator;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
@@ -16,11 +14,6 @@ import static org.junit.Assert.assertTrue;
 public final class NebuloFileTest {
   private static final String APP_KEY = "1";
   private static final String OBJECT_ID = "3";
-
-  @BeforeClass
-  public static void init() {
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-  }
 
   @Test
   public void testWriteMultipleChunks() throws NebuloException {

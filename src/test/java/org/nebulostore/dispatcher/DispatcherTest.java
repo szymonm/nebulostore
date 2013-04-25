@@ -5,10 +5,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nebulostore.appcore.EndModuleMessage;
 import org.nebulostore.appcore.JobModule;
@@ -30,11 +28,6 @@ public class DispatcherTest {
   private Injector injector_ = Guice.createInjector(new DefaultTestContext());
 
   public static int staticCounter_;
-
-  @BeforeClass
-  public static void init() {
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-  }
 
   @Before
   public void setUp() throws Exception {

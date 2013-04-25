@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.xml.DOMConfigurator;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nebulostore.appcore.Message;
@@ -36,12 +34,6 @@ public class ReplicatorTest {
   private final Replicator replicator1_ = new Replicator(null, inQueue1_, deadDispatcherQueue_);
 
   private Thread replicatorThread_;
-
-  @BeforeClass
-  public static void init() {
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-    // TODO(bolek): Set mock configuration.
-  }
 
   // TODO(bolek): Refactor this test with fake disk writes.
   /**

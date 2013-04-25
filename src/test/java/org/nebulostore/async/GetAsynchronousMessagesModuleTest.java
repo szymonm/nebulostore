@@ -4,8 +4,6 @@ import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.log4j.xml.DOMConfigurator;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nebulostore.appcore.Message;
@@ -26,11 +24,6 @@ import static org.junit.Assert.assertTrue;
  * @author szymonmatejczyk
  */
 public final class GetAsynchronousMessagesModuleTest {
-
-  @Before
-  public void setUp() {
-    DOMConfigurator.configure("resources/conf/log4j.xml");
-  }
 
   @Test
   @Ignore
