@@ -111,7 +111,7 @@ public class Replicator extends JobModule {
       jobId_ = message.getId();
 
       QueryToStoreResult result = queryToUpdateObject(message.getObjectId(),
-          message.getEncryptedEntity(), message.getPreviousVersionSHAs());
+          message.getEncryptedEntity(), message.getPreviousVersionSHAs(), message.getId());
       switch (result) {
         case OK:
           networkQueue_.add(new ConfirmationMessage(message.getSourceJobId(), message
@@ -121,17 +121,17 @@ public class Replicator extends JobModule {
             TransactionResultMessage m = (TransactionResultMessage) inQueue_.poll(LOCK_TIMEOUT_SEC,
                 TimeUnit.SECONDS);
             if (m == null) {
-              abortUpdateObject(message.getObjectId());
+              abortUpdateObject(message.getObjectId(), message.getId());
               logger_.warn("Transaction aborted - timeout.");
             } else {
               processMessage(m);
             }
           } catch (InterruptedException exception) {
-            abortUpdateObject(message.getObjectId());
+            abortUpdateObject(message.getObjectId(), message.getId());
             throw new NebuloException("Timeout while handling QueryToStoreObjectMessage",
                 exception);
           } catch (ClassCastException exception) {
-            abortUpdateObject(message.getObjectId());
+            abortUpdateObject(message.getObjectId(), message.getId());
             throw new NebuloException("Wrong message type received.", exception);
           }
           endJobModule();
@@ -174,9 +174,10 @@ public class Replicator extends JobModule {
       if (message.getResult() == TransactionAnswer.COMMIT) {
         commitUpdateObject(storeWaitingForCommit_.getObjectId(),
                            storeWaitingForCommit_.getPreviousVersionSHAs(),
-                           CryptoUtils.sha(storeWaitingForCommit_.getEncryptedEntity()));
+                           CryptoUtils.sha(storeWaitingForCommit_.getEncryptedEntity()),
+                           message.getId());
       } else {
-        abortUpdateObject(storeWaitingForCommit_.getObjectId());
+        abortUpdateObject(storeWaitingForCommit_.getObjectId(), message.getId());
       }
       endJobModule();
       return null;
@@ -242,10 +243,10 @@ public class Replicator extends JobModule {
         }
 
         QueryToStoreResult query = queryToUpdateObject(message.getAddress().getObjectId(),
-            encryptedObject, res.getSecond());
+            encryptedObject, res.getSecond(), message.getId());
         if (query == QueryToStoreResult.OK || query == QueryToStoreResult.OBJECT_OUT_OF_DATE) {
           commitUpdateObject(message.getAddress().getObjectId(), res.getSecond(),
-              CryptoUtils.sha(encryptedObject));
+              CryptoUtils.sha(encryptedObject), message.getId());
           freshnessMap_.put(message.getAddress().getObjectId(), true);
         } else
           throw new NebuloException("Unable to fetch new version of file.");
@@ -277,7 +278,7 @@ public class Replicator extends JobModule {
    * Begins transaction: tries to store object to temporal location.
    */
   public static QueryToStoreResult queryToUpdateObject(ObjectId objectId,
-      EncryptedObject encryptedObject, Set<String> previousVersions) {
+      EncryptedObject encryptedObject, Set<String> previousVersions, String transactionToken) {
     logger_.debug("Checking store consistency");
 
     String currentObjectVersion = null;
@@ -298,7 +299,10 @@ public class Replicator extends JobModule {
     } else {
       logger_.debug("storing new file");
       location = getLocationPrefix() + objectId.toString();
-      locksMap_.put(objectId, new Semaphore(1));
+      // TODO(szm, bolek): addtional synchronization for locksMap_?
+      if (locksMap_.get(objectId) == null) {
+        locksMap_.put(objectId, new Semaphore(1));
+      }
     }
 
     try {
@@ -311,7 +315,7 @@ public class Replicator extends JobModule {
       return QueryToStoreResult.TIMEOUT;
     }
 
-    String tmpLocation = location + ".tmp";
+    String tmpLocation = location + ".tmp." + transactionToken;
     File f = new File(tmpLocation);
     f.getParentFile().mkdirs();
     FileOutputStream fos;
@@ -341,7 +345,7 @@ public class Replicator extends JobModule {
   }
 
   public static void commitUpdateObject(ObjectId objectId, Set<String> previousVersions,
-      String currentVersion) {
+      String currentVersion, String transactionToken) {
     logger_.debug("Commit storing object " + objectId.toString());
 
     String location = filesLocations_.get(objectId);
@@ -354,7 +358,7 @@ public class Replicator extends JobModule {
     File previous = new File(location);
     previous.delete();
 
-    File tmp = new File(location + ".tmp");
+    File tmp = new File(location + ".tmp." + transactionToken);
 
     tmp.renameTo(previous);
 
@@ -374,7 +378,7 @@ public class Replicator extends JobModule {
     logger_.debug("Commit successful");
   }
 
-  public static void abortUpdateObject(ObjectId objectId) {
+  public static void abortUpdateObject(ObjectId objectId, String transactionToken) {
     logger_.debug("Aborting transaction " + objectId.toString());
     String location = filesLocations_.get(objectId);
     boolean newObjectTransaction = false;
@@ -383,7 +387,7 @@ public class Replicator extends JobModule {
       location = getLocationPrefix() + objectId.toString();
     }
 
-    File file = new File(location + ".tmp");
+    File file = new File(location + ".tmp." + transactionToken);
     file.delete();
     locksMap_.get(objectId).release();
     if (newObjectTransaction) {
@@ -423,7 +427,7 @@ public class Replicator extends JobModule {
     try {
       fis = new FileInputStream(file);
     } catch (FileNotFoundException exception) {
-      logger_.warn("Object file not found.");
+      logger_.warn("Object file not found (" + location + ").");
       return null;
     }
 
