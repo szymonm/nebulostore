@@ -18,7 +18,7 @@ echo "COPYING ..."
 i=1
 for host in `cat $HOST_LIST`
 do
-    echo "  "$i":" $host
+    echo "  "$i": ["`date +"%T"`"]" $host
     rsync -ru ./build/jar/lib $USER@$host:~/$REMOTE_DIR/
     sleep 0.1
     if [ $i -eq $N ]

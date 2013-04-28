@@ -8,4 +8,5 @@ ssh -o $SSH_OPTIONS -l $USER $2 "cd $REMOTE_DIR; killall java &> /dev/null; mv l
 rsync $USER@$2:~/$REMOTE_DIR/logs.tar.gz $LOG_DIR/logs_${1}_${2}.tar.gz
 cd $LOG_DIR
 tar -xzf logs_${1}_${2}.tar.gz
+exit 0
 
