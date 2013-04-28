@@ -255,6 +255,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       if (trySetClients()) {
         testingState_ = TestingState.Initializing;
         initClients();
+        schedulePhaseTimer(phase_);
       } else {
         /*
          * wait for enough peers to perform the test - start to listen for
@@ -279,6 +280,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       if (testingState_ == TestingState.CollectingPeers && trySetClients()) {
         testingState_ = TestingState.Initializing;
         initClients();
+        schedulePhaseTimer(phase_);
       }
       return null;
     }
@@ -332,6 +334,13 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     @Override
     public Void visit(TimeoutMessage message) {
       if (testingState_ == TestingState.Running) {
+        if ((PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
+          logger_.warn("Phase timeout in initializing phase. " + tocs_ + " tocs out of " +
+              peersNeeded_ + " received");
+          tocs_ = peersNeeded_;
+          processTocsChange();
+        }
+      } else if (testingState_ == TestingState.Running) {
         if ((PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
           logger_.warn("Phase timeout in phase " + phase_ + ". " + tocs_ + " tocs out of " +
               peersNeeded_ + " received");
