@@ -8,7 +8,7 @@ source scripts/_utils.sh
 
 ARTIFACT_DIRECTORY=target/nebulostore
 PACKED_ARTIFACT_PATH=nebulostore
-JAR=Nebulstore.jar
+JAR=Nebulostore.jar
 
 
 echo "BUILD NEBULOSTORE"
