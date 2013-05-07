@@ -71,8 +71,14 @@ public final class TomP2PServer extends TomP2PPeer {
     Lock opLock = new ReentrantLock();
     TimerTask interrupter = new TP2PInterrupter(Thread.currentThread(),
         hasShutdown,
-        opLock);
-    interrupterTimer.schedule(interrupter, INTERRUPT_WAIT, INTERRUPT_WAIT);
+        opLock,
+        false);
+    TimerTask shutdowner = new TP2PInterrupter(Thread.currentThread(),
+        hasShutdown,
+        opLock,
+        true);
+    interrupterTimer.schedule(interrupter, INTERRUPT_WAIT);
+    interrupterTimer.schedule(shutdowner, 2 * INTERRUPT_WAIT);
 
     myPeer_.shutdown();
 
@@ -111,12 +117,14 @@ public final class TomP2PServer extends TomP2PPeer {
     private Thread serverThread_;
     private AtomicBoolean hasShutdown_;
     private Lock opLock_;
+    private boolean shouldShutdown_;
 
     public TP2PInterrupter(Thread serverThread, AtomicBoolean hasShutdown,
-        Lock opLock) {
+        Lock opLock, boolean shouldShutdown) {
       serverThread_ = serverThread;
       hasShutdown_ = hasShutdown;
       opLock_ = opLock;
+      shouldShutdown_ = true;
     }
 
     @Override
@@ -125,7 +133,11 @@ public final class TomP2PServer extends TomP2PPeer {
       try {
         if (!hasShutdown_.get()) {
           logger_.error("TomP2PServer is forced to use TP2PInterrupter");
-          serverThread_.interrupt();
+          if (shouldShutdown_) {
+              serverThread_.stop();
+          } else {
+              serverThread_.interrupt();
+          }
         }
       } finally {
         opLock_.unlock();
