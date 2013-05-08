@@ -69,7 +69,9 @@ public class GUIController extends Peer {
     putKey(appKey_);
 
     try {
-      createInitialList();
+      initializeRootAddress();
+      if (appKey_.equals(rootAddress_.getAppKey()))
+        createInitialList();
 
       EventQueue.invokeLater(new Runnable() {
         public void run() {
@@ -108,12 +110,17 @@ public class GUIController extends Peer {
     finishPeer();
   }
 
-  private void createInitialList() throws NebuloException, UnsupportedEncodingException {
-
-    // Create all needed addresses.
+  private void initializeRootAddress() {
     BigInteger objectId = new BigInteger(DEFAULT_OBJECT_ID);
     AppKey appKey = new AppKey(DEFAULT_APPKEY);
     rootAddress_ = new NebuloAddress(appKey, new ObjectId(objectId));
+  }
+
+  private void createInitialList() throws NebuloException, UnsupportedEncodingException {
+
+    // Create all needed addresses.
+    AppKey appKey = rootAddress_.getAppKey();
+    BigInteger objectId = rootAddress_.getObjectId().getKey();
     objectId = objectId.add(BigInteger.ONE);
     NebuloAddress firstChildAddress = new NebuloAddress(appKey, new ObjectId(objectId));
     objectId = objectId.add(BigInteger.ONE);
