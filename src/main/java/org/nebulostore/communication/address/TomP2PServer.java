@@ -109,7 +109,7 @@ public final class TomP2PServer extends TomP2PPeer {
    * periodically interrupt the shutdown hoping it will unblock.
    *
    * Note that if TP2P's shutdown ignores interrupts or blocks due to malignant
-   * reasons this timertask may accomplish nothing.
+   * reasons this timer task may accomplish nothing.
    *
    * @author Grzegorz Milka
    */
@@ -134,9 +134,9 @@ public final class TomP2PServer extends TomP2PPeer {
         if (!hasShutdown_.get()) {
           logger_.error("TomP2PServer is forced to use TP2PInterrupter");
           if (shouldShutdown_) {
-              serverThread_.stop();
+            serverThread_.stop();
           } else {
-              serverThread_.interrupt();
+            serverThread_.interrupt();
           }
         }
       } finally {

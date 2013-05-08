@@ -5,7 +5,7 @@
         @APP_KEY=11@
     </app-key>
     <!-- Main class that is created and executed when Nebulostore starts,
-         'org.nebulostore.appcore.Peer' is the full, standard instance,
+         'org.nebulostore.peers.Peer' is the full, standard instance,
          'org.nebulostore.conductor.TestingPeer' is the test execution environment. -->
     <class-name>
         @CLASS_NAME=org.nebulostore.peers.Peer@
