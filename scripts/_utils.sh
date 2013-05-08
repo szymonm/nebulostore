@@ -36,7 +36,11 @@ function buildNebulostore() {
 }
 
 function generateReadMe() {
-    ./scripts/_generate-readme.sh $1
+    cp README $1/README
+}
+
+function addLicenceFile() {
+    cp LICENSE $1/LICENSE
 }
 
 #param1 path to destination directory
@@ -48,6 +52,7 @@ function createNebuloProductionArtifact() {
     _copyNebuloJar $1 $2 $3
     _copyConfig $1
     generateReadMe $1
+    addLicenceFile $1
 }
 
 #param1 path to destination directory
@@ -57,6 +62,7 @@ function createNebuloLocalArtifact() {
     _copyNebuloJar $1 $2 $3
     _copyConfig $1
     generateReadMe $1
+    addLicenceFile $1
 }
 
 function compressDistributionDir() {
