@@ -40,6 +40,7 @@ import org.nebulostore.peers.Peer;
 public class GUIController extends Peer {
   private static Logger logger_ = Logger.getLogger(GUIController.class);
 
+  private static final String DEFAULT_APPKEY = "11";
   private static final String DEFAULT_OBJECT_ID = "123";
 
   private NebuloObjectFactory objectFactory_;
@@ -111,7 +112,8 @@ public class GUIController extends Peer {
 
   private void initializeRootAddress() {
     BigInteger objectId = new BigInteger(DEFAULT_OBJECT_ID);
-    rootAddress_ = new NebuloAddress(appKey_, new ObjectId(objectId));
+    AppKey appKey = new AppKey(DEFAULT_APPKEY);
+    rootAddress_ = new NebuloAddress(appKey, new ObjectId(objectId));
   }
 
   private void createInitialList() throws NebuloException, UnsupportedEncodingException {
@@ -120,13 +122,13 @@ public class GUIController extends Peer {
     AppKey appKey = rootAddress_.getAppKey();
     BigInteger objectId = rootAddress_.getObjectId().getKey();
     objectId = objectId.add(BigInteger.ONE);
-    NebuloAddress firstChildAddress = new NebuloAddress(appKey_, new ObjectId(objectId));
+    NebuloAddress firstChildAddress = new NebuloAddress(appKey, new ObjectId(objectId));
     objectId = objectId.add(BigInteger.ONE);
-    NebuloAddress secondChildAddress = new NebuloAddress(appKey_, new ObjectId(objectId));
+    NebuloAddress secondChildAddress = new NebuloAddress(appKey, new ObjectId(objectId));
     objectId = objectId.add(BigInteger.ONE);
-    NebuloAddress grandChildAddress = new NebuloAddress(appKey_, new ObjectId(objectId));
+    NebuloAddress grandChildAddress = new NebuloAddress(appKey, new ObjectId(objectId));
     objectId = objectId.add(BigInteger.ONE);
-    NebuloAddress fileAddress = new NebuloAddress(appKey_, new ObjectId(objectId));
+    NebuloAddress fileAddress = new NebuloAddress(appKey, new ObjectId(objectId));
 
     int exampleNumberOfChildren = 4;
 
