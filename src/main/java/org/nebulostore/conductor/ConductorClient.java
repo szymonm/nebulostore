@@ -91,12 +91,14 @@ public abstract class ConductorClient extends JobModule implements Serializable 
    * the test has ended for that peer).
    */
   private TestingModuleVisitor getVisitor() {
-    if (visitors_ == null)
+    if (visitors_ == null) {
       initVisitors();
-    if (visitors_ != null && phase_ < visitors_.length)
+    }
+    if (visitors_ != null && phase_ < visitors_.length) {
       return visitors_[phase_];
-    else
+    } else {
       return null;
+    }
   }
 
   protected abstract void initVisitors();
@@ -112,10 +114,11 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   @Override
   protected void processMessage(Message message) throws NebuloException {
     TestingModuleVisitor visitor = getVisitor();
-    if (visitor != null)
+    if (visitor != null) {
       message.accept(visitor);
-    else
+    } else {
       logger_.debug("ignoring " + message.getClass().getSimpleName() + " in last phase.");
+    }
   }
 
   protected void assertTrue(Boolean b, String message) {
@@ -263,8 +266,9 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       sleep(initialSleep_);
       logger_.debug("Sending NebuloAddress to " + clients_.size() + " peers.");
       for (int i = 0; i < clients_.size(); ++i)
-        if (i != currClientIndex_)
+        if (i != currClientIndex_) {
           networkQueue_.add(new UserCommMessage(jobId_, clients_.get(i), myAddress_, phase_));
+        }
       visitorTimer_.schedule(jobId_, timeoutMillis_, String.valueOf(phase_));
       tryFinishPhase();
       return null;

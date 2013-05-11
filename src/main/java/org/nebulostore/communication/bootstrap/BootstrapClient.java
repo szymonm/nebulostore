@@ -101,17 +101,10 @@ public final class BootstrapClient extends BootstrapService {
     natResult = natResult || pmpResult;
 
     try {
-      boolean foundAddress = false;
       /* iff upnp wasn't succesful check whether our internet address is bound
        * to some interface. If not throw exception */
       if (!natResult) {
-        for (String localAddress : NATUtils.getLocalAddresses()) {
-          if (pAPeer_.getCurrentInetSocketAddress().getAddress().
-              getHostAddress().equals(localAddress)) {
-            foundAddress = true;
-            break;
-          }
-        }
+        boolean foundAddress = isBehindNat();
         if (!foundAddress) {
           throw new NebuloException("Discovered being behind NAT but port " +
               "forwarding has failed");
@@ -166,6 +159,21 @@ public final class BootstrapClient extends BootstrapService {
       pAPeer_;
   }
 
+
+  /**
+   * Checks whether our internet address is bound to interface port.
+   */
+  private boolean isBehindNat() throws IOException {
+    for (String localAddress : NATUtils.getLocalAddresses()) {
+      if (pAPeer_.getCurrentInetSocketAddress().getAddress().
+          getHostAddress().equals(localAddress)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+
   /* Returns true if setting up UPNP was successful */
   private boolean setUpUpnpPortMapping() throws IOException {
     logger_.debug("Setting up upnp at address: " +
@@ -197,6 +205,7 @@ public final class BootstrapClient extends BootstrapService {
       localInetAddress_ =
         ((InetSocketAddress) socket.getLocalSocketAddress()).getAddress();
     } catch (IOException e) {
+      logger_.warn("Caught IOException when sending hello to bootstrap: " + e);
       throw e;
     } catch (ClassNotFoundException e) {
       String errMsg = "Read object is not BootstrapMessage.";

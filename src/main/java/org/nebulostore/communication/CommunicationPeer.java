@@ -85,7 +85,6 @@ public final class CommunicationPeer extends Module {
   /**
    * Main module for sending messages across the network.
    */
-  private MessengerService messengerService_;
   private MessengerServiceFactory messengerServiceFactory_;
   private BlockingQueue<Message> messengerServiceInQueue_;
   private Thread messengerThread_;
@@ -97,7 +96,6 @@ public final class CommunicationPeer extends Module {
    */
   private BlockingQueue<Message> gossipServiceInQueue_;
   private GossipServiceFactory gossipServiceFactory_;
-  private GossipService gossipService_;
   private Thread gossipThread_;
 
   // Is the server shutting down.
@@ -164,12 +162,12 @@ public final class CommunicationPeer extends Module {
     }
 
     /* Add current resolver to context */
-    messengerService_ = messengerServiceFactory_.newMessengerService(
+    MessengerService messengerService = messengerServiceFactory_.newMessengerService(
             messengerServiceInQueue_,
             inQueue_,
             bootstrapService_.getResolver());
 
-    gossipService_ = gossipServiceFactory_.newGossipService(
+    GossipService gossipService = gossipServiceFactory_.newGossipService(
         gossipServiceInQueue_,
         inQueue_,
         bootstrapService_.getBootstrapCommAddress());
@@ -180,11 +178,11 @@ public final class CommunicationPeer extends Module {
     listenerThread_.setDaemon(true);
     listenerThread_.start();
     gossipThread_ =
-      new Thread(gossipService_, "Nebulostore.Communication.GossipService");
+      new Thread(gossipService, "Nebulostore.Communication.GossipService");
     gossipThread_.setDaemon(true);
     gossipThread_.start();
     messengerThread_ = new Thread(
-        messengerService_, "Nebulostore.Communication.MessengerService");
+        messengerService, "Nebulostore.Communication.MessengerService");
     messengerThread_.setDaemon(true);
     messengerThread_.start();
 

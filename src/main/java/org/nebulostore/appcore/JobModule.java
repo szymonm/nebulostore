@@ -74,7 +74,8 @@ public abstract class JobModule extends Module {
     endModule();
 
     // Inform dispatcher that we are going to die.
-    if (!isQuickNonBlockingTask())
+    if (!isQuickNonBlockingTask()) {
       outQueue_.add(new JobEndedMessage(jobId_));
+    }
   }
 }

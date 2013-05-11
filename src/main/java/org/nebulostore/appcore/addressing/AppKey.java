@@ -20,8 +20,9 @@ public final class AppKey implements Serializable {
   public AppKey(BigInteger key) {
     checkNotNull(key);
     if (key.compareTo(new BigInteger("0")) == -1 ||
-        key.bitLength() > MAX_BIT_SIZE)
+        key.bitLength() > MAX_BIT_SIZE) {
       throw new IllegalArgumentException("key has to be positive and smaller than 1<<128");
+    }
     key_ = key;
   }
 

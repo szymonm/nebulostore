@@ -43,7 +43,7 @@ public class ListenerService extends Module {
     Socket clientSocket_;
     public ListenerProtocol(Socket clientSocket) {
       if (clientSocket == null) {
-        throw new NullPointerException();
+        throw new IllegalArgumentException("Client Socket can not be null");
       }
       clientSocket_ = clientSocket;
     }

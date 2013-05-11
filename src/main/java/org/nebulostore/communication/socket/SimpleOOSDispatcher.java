@@ -23,17 +23,42 @@ import org.nebulostore.communication.exceptions.AddressNotPresentException;
  */
 public class SimpleOOSDispatcher implements OOSDispatcher {
   private static Logger logger_ = Logger.getLogger(SimpleOOSDispatcher.class);
+  private static final String SOCKET_TO = "Socket to: ";
   /**
    * @author Grzegorz Milka
    */
   protected static class SocketOOSPair {
-    public Socket socket_;
-    public ObjectOutputStream oos_;
-    public int counter_;
+    private Socket socket_;
+    private ObjectOutputStream oos_;
+    private int counter_;
     public SocketOOSPair(Socket newSocket, ObjectOutputStream newOos) {
       socket_ = newSocket;
       oos_ = newOos;
       counter_ = 0;
+    }
+
+    public int getCounter() {
+      return counter_;
+    }
+
+    public ObjectOutputStream getOos() {
+      return oos_;
+    }
+
+    public Socket getSocket() {
+      return socket_;
+    }
+
+    public void setCounter(int counter) {
+      counter_ = counter;
+    }
+
+    public void setOos(ObjectOutputStream oos) {
+      oos_ = oos;
+    }
+
+    public void setSocket(Socket socket) {
+      socket_ = socket;
     }
   }
 
@@ -51,7 +76,7 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
         CommAddress unAddr = null;
         SocketOOSPair unPair = null;
         for (Entry<CommAddress, SocketOOSPair> entry : sockets_.entrySet()) {
-          if (entry.getValue().counter_ == 0) {
+          if (entry.getValue().getCounter() == 0) {
             unAddr = entry.getKey();
             unPair = entry.getValue();
             break;
@@ -59,7 +84,7 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
         }
         if (unPair != null) {
           unused = true;
-          closeSocket(unPair.socket_);
+          closeSocket(unPair.getSocket());
           sockets_.remove(unAddr);
         }
         socketsLock_.release();
@@ -70,9 +95,8 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
   private final Semaphore socketsLock_ = new Semaphore(1, true);
   private final Map<CommAddress, Semaphore> socketSems_ = new HashMap<CommAddress, Semaphore>();
   private final Map<CommAddress, SocketOOSPair> sockets_ =
-      new HashMap<CommAddress, SocketOOSPair>();
+    new HashMap<CommAddress, SocketOOSPair>();
 
-  private static final int CLEAN_TIMER = 5 * 1000;
   private Timer socketCleaner_;
   private final CommAddressResolver resolver_;
 
@@ -81,7 +105,6 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
     resolver_ = resolver;
     /* Set Timer to use a daemon thread */
     socketCleaner_ = new Timer(true);
-    //socketCleaner_.schedule(new SocketCleaner(), CLEAN_TIMER, CLEAN_TIMER);
   }
 
   public ObjectOutputStream get(CommAddress commAddress)
@@ -96,19 +119,19 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
     } else {
       pair = new SocketOOSPair(null, null);
       sockets_.put(commAddress, pair);
-      ++pair.counter_;
+      pair.setCounter(pair.getCounter() + 1);
       sem = new Semaphore(1);
       socketSems_.put(commAddress, sem);
     }
     socketsLock_.release();
 
     sem.acquireUninterruptibly();
-    if (pair.socket_ == null) {
-      pair.socket_ = createSocket(commAddress);
-      pair.oos_ = new ObjectOutputStream(pair.socket_.getOutputStream());
+    if (pair.getSocket() == null) {
+      pair.setSocket(createSocket(commAddress));
+      pair.setOos(new ObjectOutputStream(pair.getSocket().getOutputStream()));
     }
 
-    return pair.oos_;
+    return pair.getOos();
   }
 
   public void put(CommAddress commAddress, ObjectOutputStream oos) {
@@ -116,7 +139,7 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
     Semaphore sem = null;
     socketsLock_.acquireUninterruptibly();
     pair = sockets_.get(commAddress);
-    --pair.counter_;
+    pair.setCounter(pair.getCounter() - 1);
     sem = socketSems_.get(commAddress);
     socketsLock_.release();
     sem.release();
@@ -139,21 +162,19 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
       socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());
     } catch (IOException e) {
       /* Socket is null so no need to close it */
-      logger_.warn("Socket to: " + commAddress +
+      logger_.warn(SOCKET_TO + commAddress +
           " could not be created. " + e);
-      //throw new IOException("Socket to: " + commAddress +
-        //  " could not be created.", e);
     } catch (AddressNotPresentException e) {
-      logger_.warn("Socket to: " + commAddress +
+      logger_.warn(SOCKET_TO + commAddress +
           " could not be created. " + e);
     }
-    logger_.debug("Socket to: " + commAddress + " created.");
+    logger_.debug(SOCKET_TO + commAddress + " created.");
     return socket;
   }
 
   private void clearAndCloseSocketMap(Map<CommAddress, SocketOOSPair> sockMap) {
     for (SocketOOSPair pair : sockMap.values()) {
-      Socket socket = pair.socket_;
+      Socket socket = pair.getSocket();
       closeSocket(socket);
     }
     sockMap.clear();
@@ -162,7 +183,7 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
   private void closeSocket(Socket socket) {
     try {
       socket.close();
-      logger_.debug("Socket to: " + socket.getRemoteSocketAddress() +
+      logger_.debug(SOCKET_TO + socket.getRemoteSocketAddress() +
           " closed.");
     } catch (IOException e) {
       logger_.debug("Error when closing socket");

@@ -41,7 +41,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class KademliaPeer extends Module {
   private static final Random RANDOM = new Random();
   private static Logger logger_ = Logger.getLogger(KademliaPeer.class);
-  private static final String CONFIG_PREFIX = "communication.dht.kademlia-peer.";
   private net.tomp2p.p2p.Peer peer_;
   private net.tomp2p.p2p.Peer masterPeer_;
 

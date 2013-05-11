@@ -29,8 +29,9 @@ public final class CryptoUtils {
    */
   public static BigInteger getRandomId() {
     BigInteger id =  new BigInteger(128, RANDOM);
-    if (id.compareTo(new BigInteger("0")) == -1)
-        id = id.negate().subtract(new BigInteger("-1"));
+    if (id.compareTo(new BigInteger("0")) == -1) {
+      id = id.negate().subtract(new BigInteger("-1"));
+    }
     return id;
   }
 

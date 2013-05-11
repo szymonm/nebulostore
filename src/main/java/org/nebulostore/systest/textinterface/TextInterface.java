@@ -106,7 +106,9 @@ public final class TextInterface extends Peer {
   }
 
   private void removeSubscription(String[] tokens) {
-    if (!validateParametersNumber(tokens, 3)) return;
+    if (!validateParametersNumber(tokens, 3)) {
+      return;
+    }
     NebuloFile file = getNebuloFile(tokens[1], tokens[2]);
     if (file != null) {
       try {
@@ -164,8 +166,9 @@ public final class TextInterface extends Peer {
     } catch (IOException exception) {
       System.out.println("Cannot write file!");
     } finally {
-      if (fos != null)
+      if (fos != null) {
         fos.close();
+      }
     }
   }
 
@@ -194,7 +197,7 @@ public final class TextInterface extends Peer {
     }
     try {
       int bytesWritten = file.write(tokens[3].getBytes("UTF-8"), 0);
-      System.out.println("Successfully written " + String.valueOf(bytesWritten) + " bytes.");
+      System.out.println("Successfully written " + bytesWritten + " bytes.");
     } catch (NebuloException exception) {
       System.out.println("Got exception from 'write()': " + exception.getMessage());
       return;
@@ -234,7 +237,9 @@ public final class TextInterface extends Peer {
    * subscribe (appkey) (objectId).
    */
   private void subscribe(String[] tokens) {
-    if (!validateParametersNumber(tokens, 3)) return;
+    if (!validateParametersNumber(tokens, 3)) {
+      return;
+    }
     NebuloFile file = getNebuloFile(tokens[1], tokens[2]);
     if (file != null) {
       subscribeWithExceptionHandling(file);

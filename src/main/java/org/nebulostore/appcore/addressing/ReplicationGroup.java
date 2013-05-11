@@ -68,28 +68,37 @@ public class ReplicationGroup implements Serializable, Comparable<ObjectId>, Ite
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     ReplicationGroup other = (ReplicationGroup) obj;
     if (lowerBound_ == null) {
-      if (other.lowerBound_ != null)
+      if (other.lowerBound_ != null) {
         return false;
-    } else if (!lowerBound_.equals(other.lowerBound_))
+      }
+    } else if (!lowerBound_.equals(other.lowerBound_)) {
       return false;
+    }
     if (replicators_ == null) {
-      if (other.replicators_ != null)
+      if (other.replicators_ != null) {
         return false;
-    } else if (!replicators_.equals(other.replicators_))
+      }
+    } else if (!replicators_.equals(other.replicators_)) {
       return false;
+    }
     if (upperBound_ == null) {
-      if (other.upperBound_ != null)
+      if (other.upperBound_ != null) {
         return false;
-    } else if (!upperBound_.equals(other.upperBound_))
+      }
+    } else if (!upperBound_.equals(other.upperBound_)) {
       return false;
+    }
     return true;
   }
 

@@ -20,6 +20,7 @@ import org.nebulostore.communication.exceptions.AddressNotPresentException;
 class HashAddressResolver implements CommAddressResolver {
   private static Logger logger_ = Logger.getLogger(HashAddressResolver.class);
   private static final int MAX_RETRIES = 50;
+  private static final int RETRY_SLEEP_LEN = 300;
   private final Peer myPeer_;
   private final CommAddress myCommAddress_;
 
@@ -49,7 +50,7 @@ class HashAddressResolver implements CommAddressResolver {
         if (data == null) {
           logger_.debug("NULL in HashAddressResolver in iteration " + i);
           try {
-            Thread.sleep(300);
+            Thread.sleep(RETRY_SLEEP_LEN);
           } catch (InterruptedException e) {
             logger_.warn("InterruptedException during sleeping at resolve: " + e);
           }

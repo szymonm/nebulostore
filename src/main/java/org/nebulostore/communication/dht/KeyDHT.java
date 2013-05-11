@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
  * @author Grzegorz Milka
  */
 public class KeyDHT implements Serializable {
+  private static Logger logger_ = Logger.getLogger(KeyDHT.class);
   private static final long serialVersionUID = 3261126809266422452L;
   /* Key prefixes to avoid collision with naming rows.
    *
@@ -33,7 +34,9 @@ public class KeyDHT implements Serializable {
   public static final Number160 COMMUNICATION_KEY = new Number160(0);
   public static final Number160 NONADDRESSING_KEY = new Number160(1);
 
-  private static Logger logger_ = Logger.getLogger(KeyDHT.class);
+  private static final int FIRST_KEY_LEN = 32;
+  private static final int SECOND_KEY_LEN = 128;
+  private static final int HASH_MULTIPLICATOR = 37;
   private final BigInteger key_;
 
   public KeyDHT(BigInteger key) {
@@ -50,8 +53,8 @@ public class KeyDHT implements Serializable {
    * identifying the object itself.
    */
   public static Number160 combine(Number160 firstKey, Number160 secondKey) {
-    int firstKeyMaxLength = 32;
-    int secondKeyMaxLength = 128;
+    int firstKeyMaxLength = FIRST_KEY_LEN;
+    int secondKeyMaxLength = SECOND_KEY_LEN;
 
     if (firstKey.bitLength() > firstKeyMaxLength ||
         secondKey.bitLength() > secondKeyMaxLength) {
@@ -60,10 +63,6 @@ public class KeyDHT implements Serializable {
 
     int[] val1 = firstKey.toIntArray();
     int[] val2 = secondKey.toIntArray();
-    assert val1[0] == 0;
-    assert val1[1] == 0;
-    assert val1[2] == 0;
-    assert val1[3] == 0;
 
     val2[0] = val1[4];
     val2[1] = val2[1];
@@ -93,7 +92,7 @@ public class KeyDHT implements Serializable {
   @Override
   public int hashCode() {
     int result = 1;
-    result = 37 * result + ((key_ == null) ? 0 : key_.hashCode());
+    result = HASH_MULTIPLICATOR * result + ((key_ == null) ? 0 : key_.hashCode());
     return result;
   }
 
@@ -126,7 +125,7 @@ public class KeyDHT implements Serializable {
       oos = new ObjectOutputStream(baos);
       oos.writeObject(object);
     } catch (IOException e1) {
-      e1.printStackTrace();
+      logger_.warn("IOException when deserializing object: " + e1);
     }
 
     byte[] val = baos.toByteArray();

@@ -47,6 +47,7 @@ import org.nebulostore.communication.exceptions.AddressNotPresentException;
  */
 public class CachedOOSDispatcher implements OOSDispatcher {
   private static Logger logger_ = Logger.getLogger(CachedOOSDispatcher.class);
+  private static final String SOCKET_TO = "Socket to: ";
   /**
    * Structure for combining socket and ObjectOutputStream with it.
    * ObjectOutputStream follows a semantics of sending some kind of
@@ -56,11 +57,20 @@ public class CachedOOSDispatcher implements OOSDispatcher {
    * @author Grzegorz Milka
    */
   private static class SocketOOSPair {
-    public Socket socket_;
-    public ObjectOutputStream oos_;
+    private Socket socket_;
+    private ObjectOutputStream oos_;
+
     public SocketOOSPair(Socket newSocket, ObjectOutputStream newOos) {
       socket_ = newSocket;
       oos_ = newOos;
+    }
+
+    public ObjectOutputStream getOos() {
+      return oos_;
+    }
+
+    public Socket getSocket() {
+      return socket_;
     }
   }
 
@@ -173,7 +183,7 @@ public class CachedOOSDispatcher implements OOSDispatcher {
           activeSockets_.put(commAddress, new SocketOOSPair(socket,
               new ObjectOutputStream(socket.getOutputStream())));
         }
-        commOos = activeSockets_.get(commAddress).oos_;
+        commOos = activeSockets_.get(commAddress).getOos();
       } finally {
         socketsLock_.unlock();
       }
@@ -231,7 +241,6 @@ public class CachedOOSDispatcher implements OOSDispatcher {
   private void releaseLock(CommAddress commAddress) {
     socketsLock_.lock();
     try {
-      Lock lock = socketLocksMap_.get(commAddress);
       int waiters = socketLocksWaiters_.get(commAddress);
       if (waiters == 1) {
         socketLocksMap_.remove(commAddress);
@@ -270,17 +279,17 @@ public class CachedOOSDispatcher implements OOSDispatcher {
       socket = new Socket(socketAddress.getAddress(), socketAddress.getPort());
     } catch (IOException e) {
       /* Socket is null so no need to close it */
-      logger_.warn("Socket to: " + commAddress +
+      logger_.warn(SOCKET_TO + commAddress +
           " could not be created. " + e);
-      throw new IOException("Socket to: " + commAddress +
+      throw new IOException(SOCKET_TO + commAddress +
           " could not be created.", e);
     } catch (AddressNotPresentException e) {
-      logger_.warn("Socket to: " + commAddress +
+      logger_.warn(SOCKET_TO + commAddress +
           " could not be created. " + e);
-      throw new IOException("Socket to: " + commAddress +
+      throw new IOException(SOCKET_TO + commAddress +
           " could not be created.", e);
     }
-    logger_.debug("Socket to: " + commAddress + " created.");
+    logger_.debug(SOCKET_TO + commAddress + " created.");
     return socket;
   }
 
@@ -293,12 +302,12 @@ public class CachedOOSDispatcher implements OOSDispatcher {
    */
   private void clearAndCloseSocketMap(Map<CommAddress, SocketOOSPair> sockMap) {
     for (SocketOOSPair pair : sockMap.values()) {
-      Socket socket = pair.socket_;
-      ObjectOutputStream oos = pair.oos_;
+      Socket socket = pair.getSocket();
+      ObjectOutputStream oos = pair.getOos();
       try {
         oos.close();
         socket.close();
-        logger_.debug("Socket to: " + socket.getRemoteSocketAddress() +
+        logger_.debug(SOCKET_TO + socket.getRemoteSocketAddress() +
             " closed.");
       } catch (IOException e) {
         logger_.debug("Error when closing socket: " + e);

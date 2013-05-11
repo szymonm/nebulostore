@@ -70,8 +70,9 @@ public class GUIController extends Peer {
 
     try {
       initializeRootAddress();
-      if (appKey_.equals(rootAddress_.getAppKey()))
+      if (appKey_.equals(rootAddress_.getAppKey())) {
         createInitialList();
+      }
 
       EventQueue.invokeLater(new Runnable() {
         public void run() {
@@ -192,8 +193,9 @@ public class GUIController extends Peer {
 
       String addressString = view_.getInputRootAddress();
       NebuloAddress rootAddress = parseNebuloAddress(addressString);
-      if (rootAddress == null)
+      if (rootAddress == null) {
         return;
+      }
 
       try {
         NebuloObject link = fetchNebuloObject(rootAddress);
@@ -227,8 +229,9 @@ public class GUIController extends Peer {
       clearInfoMessage();
 
       NebuloElement selectedElement = view_.getSelectedElement();
-      if (selectedElement == null)
+      if (selectedElement == null) {
         return;
+      }
 
       if (selectedElement.isLink()) {
 
@@ -315,8 +318,9 @@ public class GUIController extends Peer {
 
       String addressString = view_.getInputCurrentAddress();
       NebuloAddress fileAddress = parseNebuloAddress(addressString);
-      if (fileAddress == null)
+      if (fileAddress == null) {
         return;
+      }
 
       try {
         if (isList(fileAddress)) {
@@ -422,8 +426,9 @@ public class GUIController extends Peer {
 
         String addressString = view_.getInputCurrentAddress();
         NebuloAddress address = parseNebuloAddress(addressString);
-        if (address == null)
+        if (address == null) {
           return;
+        }
 
         try {
           setCurrentParentList();
@@ -675,12 +680,12 @@ public class GUIController extends Peer {
     NebuloFile file = fetchOrCreateNebuloFile(address);
 
     int bytesWritten = file.write(content, 0);
-    appendInfoMessage("Successfully written " +
-        String.valueOf(bytesWritten) + " bytes to file with address: " + formatAddress(address) +
-        ".");
+    appendInfoMessage("Successfully written " + bytesWritten +
+        " bytes to file with address: " + formatAddress(address) + ".");
 
-    if (!hasFileExisted_)
+    if (!hasFileExisted_) {
       appendLinkToList(address);
+    }
 
     return file;
   }

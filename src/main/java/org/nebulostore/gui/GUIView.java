@@ -406,8 +406,9 @@ public class GUIView extends JFrame {
   protected void resetListTree(NebuloElement root, boolean isList) {
     rootTreeNode_ = new DefaultMutableTreeNode(root);
     listTreeModel_.setRoot(rootTreeNode_);
-    if (isList)
+    if (isList) {
       listTreeModel_.insertNodeInto(new DefaultMutableTreeNode("dummy"), rootTreeNode_, 0);
+    }
 
   }
 
@@ -494,8 +495,9 @@ public class GUIView extends JFrame {
   protected NebuloElement getSelectedElement() {
     DefaultMutableTreeNode selectedNode = getSelectedTreeNode();
 
-    if (selectedNode == null)
+    if (selectedNode == null) {
       return null;
+    }
 
     return (NebuloElement) selectedNode.getUserObject();
   }
@@ -526,8 +528,9 @@ public class GUIView extends JFrame {
   protected void addChildToSelectedNode(NebuloElement newElement, boolean isList) {
     DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newElement);
     DefaultMutableTreeNode selectedNode = getSelectedTreeNode();
-    if (isList)
+    if (isList) {
       listTreeModel_.insertNodeInto(new DefaultMutableTreeNode("dummy"), newNode, 0);
+    }
     listTreeModel_.insertNodeInto(newNode, selectedNode, selectedNode.getChildCount());
   }
 

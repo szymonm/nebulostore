@@ -248,8 +248,9 @@ public class Replicator extends JobModule {
           commitUpdateObject(message.getAddress().getObjectId(), res.getSecond(),
               CryptoUtils.sha(encryptedObject), message.getId());
           freshnessMap_.put(message.getAddress().getObjectId(), true);
-        } else
+        } else {
           throw new NebuloException("Unable to fetch new version of file.");
+        }
       } catch (NebuloException exception) {
         logger_.warn(exception);
       }
@@ -419,8 +420,9 @@ public class Replicator extends JobModule {
       return null;
     }
 
-    if (!freshnessMap_.get(objectId))
+    if (!freshnessMap_.get(objectId)) {
       throw new OutOfDateFileException();
+    }
 
     File file = new File(location);
     FileInputStream fis = null;
@@ -450,8 +452,9 @@ public class Replicator extends JobModule {
 
   public static void deleteObject(ObjectId objectId) throws DeleteObjectException {
     String location = filesLocations_.get(objectId);
-    if (location == null)
+    if (location == null) {
       return;
+    }
     Semaphore mutex = locksMap_.get(objectId);
     try {
       if (!mutex.tryAcquire(UPDATE_TIMEOUT_SEC, TimeUnit.SECONDS)) {
@@ -470,11 +473,13 @@ public class Replicator extends JobModule {
     mutex.release();
 
     File f = new File(location);
-    if (!f.exists())
+    if (!f.exists()) {
       throw new DeleteObjectException("File does not exist.");
+    }
     boolean success = f.delete();
-    if (!success)
+    if (!success) {
       throw new DeleteObjectException("Unable to delete file.");
+    }
   }
 
   private static String getLocationPrefix() {

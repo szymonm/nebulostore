@@ -124,7 +124,7 @@ public final class TomP2PServer extends TomP2PPeer {
       serverThread_ = serverThread;
       hasShutdown_ = hasShutdown;
       opLock_ = opLock;
-      shouldShutdown_ = true;
+      shouldShutdown_ = shouldShutdown;
     }
 
     @Override

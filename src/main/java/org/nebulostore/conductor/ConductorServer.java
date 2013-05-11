@@ -158,8 +158,9 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   }
 
   public void initialize() {
-    if (peersNeeded_ == 0)
+    if (peersNeeded_ == 0) {
       initializeFromConfig();
+    }
   }
 
   protected void schedulePhaseTimer(int phase) {
@@ -171,8 +172,9 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   protected void initializeFromConfig() {
     checkNotNull(config_);
     peersNeeded_ = config_.getInteger(N_PEERS_CONFIG, 0);
-    if (peersNeeded_ == 0)
+    if (peersNeeded_ == 0) {
       throw new RuntimeException("Unable to initilize number of test participants from config!");
+    }
   }
 
   /**

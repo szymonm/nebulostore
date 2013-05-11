@@ -81,10 +81,12 @@ public class Peer extends AbstractPeer {
   }
 
   public void quitNebuloStore() {
-    if (networkInQueue_ != null)
+    if (networkInQueue_ != null) {
       networkInQueue_.add(new EndModuleMessage());
-    if (dispatcherInQueue_ != null)
+    }
+    if (dispatcherInQueue_ != null) {
       dispatcherInQueue_.add(new EndModuleMessage());
+    }
   }
 
   protected void runPeer() {

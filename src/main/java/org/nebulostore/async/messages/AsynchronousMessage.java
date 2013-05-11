@@ -36,18 +36,23 @@ public abstract class AsynchronousMessage extends Message {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     AsynchronousMessage other = (AsynchronousMessage) obj;
     if (id_ == null) {
-      if (other.id_ != null)
+      if (other.id_ != null) {
         return false;
-    } else if (!id_.equals(other.id_))
+      }
+    } else if (!id_.equals(other.id_)) {
       return false;
+    }
     return true;
   }
 

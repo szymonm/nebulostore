@@ -51,6 +51,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BdbPeer extends Module {
   private static Logger logger_ = Logger.getLogger(BdbPeer.class);
   private static final String CONFIG_PREFIX = "communication.dht.bdb-peer.";
+  private static final String UTF8 = "UTF-8";
+  private static final int ADVERTISEMENT_INTERVAL = 500;
 
   private String storagePath_;
   private String storeName_;
@@ -59,7 +61,6 @@ public class BdbPeer extends Module {
 
   private boolean isProxy_;
   private CommAddress holderCommAddress_;
-  private final CommAddress bdbHolderCommAddress_ = null;
 
   private final BlockingQueue<Message> senderInQueue_;
   private final ReconfigureDHTMessage reconfigureRequest_;
@@ -122,7 +123,8 @@ public class BdbPeer extends Module {
       database_ = env_.openDatabase(null, storeName_, dbConfig);
 
       advertisementsTimer_ = new Timer(true);
-      advertisementsTimer_.schedule(new SendAdvertisement(), 500, 500);
+      advertisementsTimer_.schedule(new SendAdvertisement(),
+          ADVERTISEMENT_INTERVAL, ADVERTISEMENT_INTERVAL);
 
       if (reconfigureRequest_ != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
@@ -134,7 +136,7 @@ public class BdbPeer extends Module {
 
       msgVisitor_ = new BDBProxyMessageVisitor();
       isProxy_ = true;
-      holderCommAddress_ = bdbHolderCommAddress_;
+      holderCommAddress_ = null;
     }
     logger_.info("fully initialized");
   }
@@ -191,8 +193,7 @@ public class BdbPeer extends Module {
     config.setTransactional(true);
     config.setTxnSerializableIsolation(true);
 
-    Environment env = new Environment(dir, config);
-    return env;
+    return new Environment(dir, config);
   }
 
   private void put(PutDHTMessage putMsg, boolean fromNetwork,
@@ -210,20 +211,20 @@ public class BdbPeer extends Module {
 
     DatabaseEntry data = new DatabaseEntry();
     OperationStatus operationStatus = database_.get(t,
-            new DatabaseEntry(key.toString().getBytes(Charset.forName("UTF-8"))),
+            new DatabaseEntry(key.toString().getBytes(Charset.forName(UTF8))),
             data,
             LockMode.DEFAULT);
 
     if (operationStatus == OperationStatus.SUCCESS) {
       logger_.info("Performing merge on object from DHT");
       ValueDHT oldValue = ValueDHT.build(new String(data.getData(),
-            Charset.forName("UTF-8")));
+            Charset.forName(UTF8)));
       valueDHT = new ValueDHT(valueDHT.getValue().merge(oldValue.getValue()));
     }
 
     String value = valueDHT.serializeValue();
-    database_.put(t, new DatabaseEntry(key.toString().getBytes(Charset.forName("UTF-8"))),
-        new DatabaseEntry(value.getBytes(Charset.forName("UTF-8"))));
+    database_.put(t, new DatabaseEntry(key.toString().getBytes(Charset.forName(UTF8))),
+        new DatabaseEntry(value.getBytes(Charset.forName(UTF8))));
 
     t.commit();
     if (fromNetwork) {
@@ -240,13 +241,13 @@ public class BdbPeer extends Module {
     KeyDHT key = getMsg.getKey();
     DatabaseEntry data = new DatabaseEntry();
     OperationStatus operationStatus = database_.get(null,
-        new DatabaseEntry(key.toString().getBytes(Charset.forName("UTF-8"))),
+        new DatabaseEntry(key.toString().getBytes(Charset.forName(UTF8))),
         data, LockMode.DEFAULT);
 
     OutDHTMessage outMessage;
     if (operationStatus == OperationStatus.SUCCESS) {
       ValueDHT value = ValueDHT.build(new String(data.getData(),
-            Charset.forName("UTF-8")));
+            Charset.forName(UTF8)));
       outMessage = new ValueDHTMessage(getMsg, key, value);
     } else {
       logger_.debug("Unable to read from database. Sending ErrorDHTMessage.");
@@ -270,8 +271,9 @@ public class BdbPeer extends Module {
 
   private void cleanCache() throws NebuloException {
     logger_.debug("Cleaning cache.");
-    while (!messageCache_.isEmpty())
+    while (!messageCache_.isEmpty()) {
       processMessage(messageCache_.remove());
+    }
     logger_.debug("Finished cleaning cache.");
   }
 

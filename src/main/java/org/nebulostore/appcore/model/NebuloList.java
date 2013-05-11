@@ -179,18 +179,23 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     NebuloList other = (NebuloList) obj;
     if (elements_ == null) {
-      if (other.elements_ != null)
+      if (other.elements_ != null) {
         return false;
-    } else if (!elements_.equals(other.elements_))
+      }
+    } else if (!elements_.equals(other.elements_)) {
       return false;
+    }
     return true;
   }
 

@@ -21,6 +21,7 @@ public final class TomP2PClient extends TomP2PPeer {
   // 4 seconds
   private static final int ADDRESS_DISCOVERY_PERIOD = 4000;
   private static final int MAX_RETRIES = 10;
+  private static final int RETRY_SLEEP_LEN = 1000;
 
   private Timer currentAddressDiscoverer_;
 
@@ -30,75 +31,14 @@ public final class TomP2PClient extends TomP2PPeer {
 
   @Override
   public void setUpAndRun() throws IOException {
-    // TODO(grzegorzmilka): Fix this workaround.
-    boolean success = false;
-    for (int i = 1; i <= MAX_RETRIES; ++i) {
-      if (bootstrapServerAddress_ == null) {
-        throw new IllegalStateException("Bootstrap address has to be set.");
-      }
-      if (myCommAddress_ == null) {
-        throw new IllegalStateException("CommAddress has to be set.");
-      }
-
-      try {
-        /* Shutdown peer if it exists, before running new peer */
-        if (myPeer_ != null) {
-          myPeer_.shutdown();
-          try {
-            Thread.sleep(1000);
-          } catch (InterruptedException e) {
-            /* Ignore */
-            logger_.debug("Received interrupt while waiting for peer " +
-                "to shutdown.");
-          }
-        }
-        myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).
-            setPorts(tomP2PPort_).makeAndListen();
-      } catch (IOException e) {
-        logger_.error("Error when making peer: " + e);
-        throw e;
-      }
-
-      bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO,
-          new InetSocketAddress(bootstrapServerAddress_, bootstrapTomP2PPort_));
-
-      myPeer_.getConfiguration().setBehindFirewall(true);
-
-      FutureDiscover discovery;
-      discovery = myPeer_.discover().setPeerAddress(bootstrapServerPeerAddress_).start();
-      discovery.awaitUninterruptibly();
-      if (!discovery.isSuccess()) {
-        String errMsg = "Couldn't perform tomp2p discovery: " +
-            discovery.getFailedReason();
-        logger_.error(errMsg);
-        myPeer_ = null;
-        throw new IOException(errMsg);
-      }
-
-      logger_.debug("Peer: " + discovery.getReporter() +
-          " told us about our address.");
-      myInetSocketAddress_ = new InetSocketAddress(
-          myPeer_.getPeerAddress().getInetAddress(), commCliPort_);
-
-      bootstrapServerPeerAddress_ = discovery.getReporter();
-
-      FutureBootstrap bootstrap;
-
-      bootstrap = myPeer_.bootstrap().setPeerAddress(bootstrapServerPeerAddress_).start();
-      bootstrap.awaitUninterruptibly();
-      if (!bootstrap.isSuccess()) {
-        logger_.debug("Couldn't perform tomp2p bootstrap in iteration " + i + ": " +
-            bootstrap.getFailedReason());
-        try {
-          Thread.sleep(300);
-        } catch (InterruptedException e) {
-          logger_.warn("InterruptedException during sleeping at bootstrap: " + e);
-        }
-      } else {
-        success = true;
-        break;
-      }
+    if (bootstrapServerAddress_ == null) {
+      throw new IllegalStateException("Bootstrap address has to be set.");
     }
+    if (myCommAddress_ == null) {
+      throw new IllegalStateException("CommAddress has to be set.");
+    }
+
+    boolean success = setUpTP2PPeer();
     if (!success) {
       String errMsg = "Couldn't perform tomp2p bootstrap!";
       logger_.error(errMsg);
@@ -123,6 +63,8 @@ public final class TomP2PClient extends TomP2PPeer {
     logger_.info("TomP2P initialization finished. My address is: " +
         myInetSocketAddress_ + ".");
   }
+
+
 
   @Override
   public void destroy() {
@@ -166,6 +108,79 @@ public final class TomP2PClient extends TomP2PPeer {
     InetSocketAddress myInetSocketAddress = new InetSocketAddress(
         myPeer_.getPeerAddress().getInetAddress(), commCliPort_);
     return myInetSocketAddress;
+  }
+
+  private void performTP2PPeerDiscovery() throws IOException {
+    FutureDiscover discovery;
+    discovery = myPeer_.discover().setPeerAddress(bootstrapServerPeerAddress_).start();
+    discovery.awaitUninterruptibly();
+    if (!discovery.isSuccess()) {
+      String errMsg = "Couldn't perform tomp2p discovery: " +
+        discovery.getFailedReason();
+      logger_.error(errMsg);
+      myPeer_ = null;
+      throw new IOException(errMsg);
+    }
+
+    logger_.debug("Peer: " + discovery.getReporter() +
+        " told us about our address.");
+    myInetSocketAddress_ = new InetSocketAddress(
+        myPeer_.getPeerAddress().getInetAddress(), commCliPort_);
+
+    bootstrapServerPeerAddress_ = discovery.getReporter();
+  }
+
+  /**
+   * Performs discovery and bootstrap of TP2P Peer.
+   * It retries this process up to MAX_RETRIES times.
+   * Returns iff successful.
+   */
+  private boolean setUpTP2PPeer() throws IOException {
+    // TODO(grzegorzmilka): Fix this workaround.
+    for (int i = 1; i <= MAX_RETRIES; ++i) {
+      try {
+        /* Shutdown peer if it exists, before running new peer */
+        if (myPeer_ != null) {
+          myPeer_.shutdown();
+          try {
+            Thread.sleep(RETRY_SLEEP_LEN);
+          } catch (InterruptedException e) {
+            /* Ignore */
+            logger_.debug("Received interrupt while waiting for peer " +
+                "to shutdown.");
+          }
+        }
+        myPeer_ = new PeerMaker(new Number160(myCommAddress_.hashCode())).
+            setPorts(tomP2PPort_).makeAndListen();
+      } catch (IOException e) {
+        logger_.error("Error when making peer: " + e);
+        throw e;
+      }
+
+      bootstrapServerPeerAddress_ = new PeerAddress(Number160.ZERO,
+          new InetSocketAddress(bootstrapServerAddress_, bootstrapTomP2PPort_));
+
+      myPeer_.getConfiguration().setBehindFirewall(true);
+
+      performTP2PPeerDiscovery();
+
+      FutureBootstrap bootstrap;
+
+      bootstrap = myPeer_.bootstrap().setPeerAddress(bootstrapServerPeerAddress_).start();
+      bootstrap.awaitUninterruptibly();
+      if (!bootstrap.isSuccess()) {
+        logger_.debug("Couldn't perform tomp2p bootstrap in iteration " + i + ": " +
+            bootstrap.getFailedReason());
+        try {
+          Thread.sleep(RETRY_SLEEP_LEN);
+        } catch (InterruptedException e) {
+          logger_.warn("InterruptedException during sleeping at bootstrap: " + e);
+        }
+      } else {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

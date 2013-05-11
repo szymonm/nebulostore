@@ -372,5 +372,10 @@
     <!-- Avoid trailing comments -->
     <module name="TrailingComment"/>
 
+    <!-- Braces around code blocks -->
+    <module name="NeedBraces">
+        <property name="tokens" value="LITERAL_IF, LITERAL_ELSE"/>
+    </module>
+
   </module>
 </module>

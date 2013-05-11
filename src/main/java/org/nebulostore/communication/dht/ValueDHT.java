@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 
+import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
 
 /**
@@ -15,6 +16,7 @@ import org.bouncycastle.util.encoders.Base64;
  */
 
 public class ValueDHT implements Serializable {
+  private static Logger logger_ = Logger.getLogger(ValueDHT.class);
   private static final long serialVersionUID = 8747517245988476609L;
   private final Mergeable value_;
 
@@ -34,7 +36,7 @@ public class ValueDHT implements Serializable {
       oos = new ObjectOutputStream(baos);
       oos.writeObject(value_);
     } catch (IOException e) {
-      e.printStackTrace();
+      logger_.warn("IOException when serializing value: " + e);
     }
 
     String serialized = new String(Base64.encode(baos.toByteArray()),
@@ -50,9 +52,9 @@ public class ValueDHT implements Serializable {
       ois = new ObjectInputStream(baos);
       return new ValueDHT((Mergeable) ois.readObject());
     } catch (IOException e) {
-      e.printStackTrace();
+      logger_.warn("IOException when serializing value: " + e);
     } catch (ClassNotFoundException e) {
-      e.printStackTrace();
+      logger_.warn("ClassNotFoundException when serializing value: " + e);
     }
 
     return null;

@@ -31,8 +31,6 @@ import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.communication.messages.CommSendDataMessage;
-import org.nebulostore.communication.messages.DiscoveryMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
@@ -124,14 +122,6 @@ public abstract class MessageVisitor<R> {
   }
 
   public R visit(CommPeerFoundMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(CommSendDataMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(DiscoveryMessage message) throws NebuloException {
     return visit((CommMessage) message);
   }
 

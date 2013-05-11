@@ -13,7 +13,8 @@ public class PerfTestingPeer extends TestingPeer {
   @Override
   protected void runBroker() {
     // No broker needed for server.
-    if (!isTestServer_)
+    if (!isTestServer_) {
       super.runBroker();
+    }
   }
 }

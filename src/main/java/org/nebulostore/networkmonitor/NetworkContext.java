@@ -34,8 +34,9 @@ public final class NetworkContext {
   private BlockingQueue<Message> dispatcherQueue_;
 
   public static synchronized NetworkContext getInstance() {
-    if (instance_ == null)
+    if (instance_ == null) {
       instance_ = new NetworkContext();
+    }
     return instance_;
   }
 

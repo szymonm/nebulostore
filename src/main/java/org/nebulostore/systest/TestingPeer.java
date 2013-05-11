@@ -38,8 +38,9 @@ public class TestingPeer extends Peer {
     startPeer();
     putKey(appKey_);
 
-    if (isTestServer_)
+    if (isTestServer_) {
       runTestingServer();
+    }
 
     finishPeer();
     System.exit(0);
@@ -47,11 +48,13 @@ public class TestingPeer extends Peer {
 
   protected void readConfig() {
     testClasses_ = config_.getString(CLASS_LIST_CONFIG).split(";");
-    if (testClasses_.length == 0)
+    if (testClasses_.length == 0) {
       throw new RuntimeException("Cannot read test classes list!");
+    }
     nTestParticipants_ = config_.getInt(N_TEST_PARTICIPANTS_CONFIG, -1);
-    if (nTestParticipants_ == -1)
+    if (nTestParticipants_ == -1) {
       throw new RuntimeException("Cannot read number of test participants!");
+    }
     isTestServer_ = config_.getBoolean(IS_SERVER_CONFIG, false);
   }
 
