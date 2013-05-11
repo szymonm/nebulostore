@@ -1,3 +1,3 @@
 #!/bin/bash
 
-JAR_NAME=nebulostore-0.5-SNAPSHOT.jar
+JAR_NAME=nebulostore-0.6-SNAPSHOT.jar
