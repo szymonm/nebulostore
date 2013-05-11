@@ -1,6 +1,8 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.modules;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 
 /**
  * Command to end (terminate) module.

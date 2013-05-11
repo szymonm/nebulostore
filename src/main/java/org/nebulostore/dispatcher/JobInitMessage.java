@@ -1,9 +1,9 @@
 package org.nebulostore.dispatcher;
 
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.JobModule;
 
 /**
  * This is a generic message to start a job via dispatcher.

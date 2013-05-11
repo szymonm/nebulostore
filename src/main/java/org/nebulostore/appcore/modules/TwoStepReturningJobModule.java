@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.modules;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;

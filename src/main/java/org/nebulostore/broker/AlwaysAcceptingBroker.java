@@ -8,10 +8,10 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.api.PutKeyModule;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.broker.messages.ContractOfferMessage;
 import org.nebulostore.broker.messages.OfferReplyMessage;
 import org.nebulostore.communication.address.CommAddress;

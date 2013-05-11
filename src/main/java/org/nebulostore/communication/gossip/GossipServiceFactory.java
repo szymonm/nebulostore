@@ -4,7 +4,7 @@ import java.util.concurrent.BlockingQueue;
 
 import com.google.inject.assistedinject.Assisted;
 
-import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.communication.address.CommAddress;
 
 /**

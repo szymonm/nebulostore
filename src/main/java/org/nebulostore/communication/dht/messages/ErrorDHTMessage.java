@@ -1,7 +1,7 @@
 package org.nebulostore.communication.dht.messages;
 
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 
 /**
  * @author marcin

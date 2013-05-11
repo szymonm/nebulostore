@@ -2,9 +2,9 @@ package org.nebulostore.communication.nat;
 
 import java.net.InetAddress;
 
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.modules.Module;
 
 /**
  * Interface to NAT-PMP functionality on the network.

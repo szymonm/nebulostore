@@ -16,8 +16,8 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.Module;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.modules.Module;
 
 /**
  * Module responsible for receiving CommMessages through TCP.

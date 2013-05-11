@@ -1,7 +1,7 @@
 package org.nebulostore.conductor.messages;
 
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 

@@ -6,7 +6,7 @@ import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.timer.MessageGenerator;
 

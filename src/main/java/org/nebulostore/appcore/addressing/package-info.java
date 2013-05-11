@@ -11,8 +11,8 @@
  * Note that with such addressing we are able to communicate with NebuloStore instance using
  * CommAddress not knowing the identity of its owner (AppKey).
  *
- * @see org.nebulostore.appcore.Module
- * @see org.nebulostore.appcore.Message
- * @see org.nebulostore.appcore.MessageVisitor
+ * @see org.nebulostore.appcore.modules.Module
+ * @see org.nebulostore.appcore.messaging.Message
+ * @see org.nebulostore.appcore.messaging.MessageVisitor
  */
 package org.nebulostore.appcore.addressing;

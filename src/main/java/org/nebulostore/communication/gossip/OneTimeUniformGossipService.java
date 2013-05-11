@@ -13,10 +13,10 @@ import com.google.inject.name.Named;
 import org.apache.commons.configuration.XMLConfiguration;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.EndModuleMessage;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;

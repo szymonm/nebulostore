@@ -1,4 +1,4 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.modules;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.JobEndedMessage;
 import org.nebulostore.dispatcher.JobInitMessage;

@@ -1,7 +1,6 @@
 package org.nebulostore.appcore.model;
 
 import org.junit.Test;
-import org.nebulostore.appcore.exceptions.ListMergeException;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.NebuloList.ListIterator;
 

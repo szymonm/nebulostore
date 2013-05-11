@@ -1,8 +1,8 @@
 package org.nebulostore.async.messages;
 
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 
 /**
  * Message sent to peer when a NebuloObject with @objectId_ was deleted.

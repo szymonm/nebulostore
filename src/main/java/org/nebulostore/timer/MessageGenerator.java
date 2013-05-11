@@ -1,6 +1,6 @@
 package org.nebulostore.timer;
 
-import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.messaging.Message;
 
 /**
  * Generates a message.

@@ -1,14 +1,15 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.modules;
 
 import org.junit.Test;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
  * Tests for ReturningJobModule class.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
 public final class ReturningJobModuleTest extends ReturningJobModuleBase {
   private static final int SLEEP_TIME_MILLIS = 50;

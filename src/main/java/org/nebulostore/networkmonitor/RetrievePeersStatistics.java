@@ -3,10 +3,10 @@ package org.nebulostore.networkmonitor;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.nebulostore.appcore.InstanceMetadata;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.ReturningJobModule;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;

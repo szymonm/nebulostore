@@ -12,11 +12,11 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.EndModuleMessage;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.EndModuleMessage;
+import org.nebulostore.appcore.modules.Module;
 import org.nebulostore.communication.address.CommAddressResolver;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;

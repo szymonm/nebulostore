@@ -1,9 +1,9 @@
 package org.nebulostore.broker;
 
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
 

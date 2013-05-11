@@ -1,10 +1,10 @@
 package org.nebulostore.subscription.modules;
 
 import com.google.inject.Inject;
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
 import org.nebulostore.subscription.messages.NotifySubscriberMessage;

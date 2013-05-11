@@ -1,8 +1,8 @@
 package org.nebulostore.conductor.messages;
 
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 
 /**
  * Message send by TestModule to itself when test advances to next phase.

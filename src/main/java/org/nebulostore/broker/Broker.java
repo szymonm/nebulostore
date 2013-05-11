@@ -2,8 +2,8 @@ package org.nebulostore.broker;
 
 import com.google.inject.Inject;
 
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.networkmonitor.NetworkContext;

@@ -6,14 +6,14 @@ import java.util.TreeSet;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.Metadata;
-import org.nebulostore.appcore.ReturningJobModule;
 import org.nebulostore.appcore.addressing.ContractList;
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.ReturningJobModule;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.KeyDHT;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;

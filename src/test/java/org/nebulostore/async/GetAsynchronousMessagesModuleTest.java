@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;

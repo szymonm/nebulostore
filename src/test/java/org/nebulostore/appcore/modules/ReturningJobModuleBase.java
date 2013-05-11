@@ -1,16 +1,18 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.modules;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Before;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 
 import static org.junit.Assert.fail;
 
 /**
  * Base class for ReturningJobModuleTest and TwoStepReturningJobModuleTest.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
 public abstract class ReturningJobModuleBase {
   /**

@@ -6,8 +6,8 @@ import com.google.inject.name.Named;
 
 import org.apache.commons.configuration.XMLConfiguration;
 
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.Module;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.modules.Module;
 import org.nebulostore.communication.address.CommAddress;
 
 /**

@@ -7,12 +7,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.inject.Injector;
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.EndModuleMessage;
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.EndModuleMessage;
+import org.nebulostore.appcore.modules.JobModule;
+import org.nebulostore.appcore.modules.Module;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

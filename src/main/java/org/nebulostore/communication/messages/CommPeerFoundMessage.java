@@ -1,8 +1,8 @@
 package org.nebulostore.communication.messages;
 
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.broker.PeerFoundHandler;
 import org.nebulostore.communication.address.CommAddress;
 

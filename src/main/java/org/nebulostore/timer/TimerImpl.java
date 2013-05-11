@@ -7,8 +7,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.dispatcher.JobInitMessage;
 
 /**

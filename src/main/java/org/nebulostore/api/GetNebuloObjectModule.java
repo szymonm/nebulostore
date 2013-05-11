@@ -1,8 +1,8 @@
 package org.nebulostore.api;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.model.NebuloObject;
 import org.nebulostore.appcore.model.ObjectGetter;
 import org.nebulostore.crypto.CryptoException;

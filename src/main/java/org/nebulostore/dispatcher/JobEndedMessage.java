@@ -1,8 +1,8 @@
 package org.nebulostore.dispatcher;
 
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 
 /**
  * Worker thread sends this message to dispatcher before it dies to

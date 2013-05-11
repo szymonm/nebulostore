@@ -8,12 +8,12 @@ import com.google.inject.Injector;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nebulostore.appcore.EndModuleMessage;
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.context.DefaultTestContext;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.EndModuleMessage;
+import org.nebulostore.appcore.modules.JobModule;
 
 import static org.junit.Assert.assertTrue;
 

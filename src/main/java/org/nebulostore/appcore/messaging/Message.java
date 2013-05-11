@@ -1,8 +1,9 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.messaging;
 
 import java.io.Serializable;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.crypto.CryptoUtils;
 
 /**

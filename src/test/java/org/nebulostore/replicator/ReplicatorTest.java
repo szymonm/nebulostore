@@ -8,9 +8,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;

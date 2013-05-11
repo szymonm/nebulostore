@@ -1,14 +1,15 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.modules;
 
 import org.junit.Test;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
  * Tests for TwoStepReturningJobModule class.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
 public final class TwoStepReturningJobModuleTest extends ReturningJobModuleBase {
   private static final int SHORT_TIMEOUT_SEC = 1;

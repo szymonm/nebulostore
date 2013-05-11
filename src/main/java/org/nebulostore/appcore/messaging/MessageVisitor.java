@@ -1,10 +1,9 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.messaging;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
 
 /**
  * Generic Message visitor class. Subclasses should define "visit" methods with one parameter that

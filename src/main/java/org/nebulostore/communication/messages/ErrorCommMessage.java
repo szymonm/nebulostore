@@ -1,8 +1,8 @@
 package org.nebulostore.communication.messages;
 
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 
 /**
  * Message returned by the communication layer to Dispatcher if for some reason

@@ -1,4 +1,6 @@
-package org.nebulostore.appcore.exceptions;
+package org.nebulostore.appcore.messaging;
+
+import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
  * @author bolek

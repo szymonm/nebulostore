@@ -1,8 +1,8 @@
 package org.nebulostore.async.messages;
 
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.crypto.CryptoUtils;
 
 /**

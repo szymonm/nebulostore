@@ -3,9 +3,9 @@ package org.nebulostore.broker;
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.modules.JobModule;
 
 /**
  * Module that forwards broker messages to broker singleton job.

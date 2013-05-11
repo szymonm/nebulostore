@@ -2,8 +2,8 @@ package org.nebulostore.timer;
 
 import com.google.inject.Provider;
 
-import org.nebulostore.appcore.JobModule;
-import org.nebulostore.appcore.Message;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.modules.JobModule;
 
 /**
  * Timer that is able to send timeout messages via Dispatcher queue.

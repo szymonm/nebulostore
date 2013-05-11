@@ -1,10 +1,11 @@
-package org.nebulostore.appcore;
+package org.nebulostore.appcore.modules;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

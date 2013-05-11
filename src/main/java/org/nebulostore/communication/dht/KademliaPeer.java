@@ -16,11 +16,11 @@ import net.tomp2p.storage.Data;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.EndModuleMessage;
-import org.nebulostore.appcore.Message;
-import org.nebulostore.appcore.MessageVisitor;
-import org.nebulostore.appcore.Module;
 import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.messaging.MessageVisitor;
+import org.nebulostore.appcore.modules.EndModuleMessage;
+import org.nebulostore.appcore.modules.Module;
 import org.nebulostore.communication.dht.messages.DelDHTMessage;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;

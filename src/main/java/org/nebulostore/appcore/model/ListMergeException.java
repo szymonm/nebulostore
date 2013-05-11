@@ -1,4 +1,6 @@
-package org.nebulostore.appcore.exceptions;
+package org.nebulostore.appcore.model;
+
+import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**
  * Exception thrown by merge() method in NebuloList when it is unable to merge two lists.
