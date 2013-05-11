@@ -133,10 +133,8 @@ public abstract class ConductorClient extends JobModule implements Serializable 
    * @author szymonmatejczyk
    */
   protected abstract class TestingModuleVisitor extends MessageVisitor<Void> {
-    @Override
     public abstract Void visit(NewPhaseMessage message);
 
-    @Override
     public Void visit(TicMessage message) {
       logger_.debug("TicMessage received. Current phase: " + phase_ + "; Server phase: " +
           message.getPhase());
@@ -147,7 +145,6 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       return null;
     }
 
-    @Override
     public Void visit(UserCommMessage message) {
       if (message.getPhase() != phase_) {
         logger_.warn("Received UserCommMessage from phase " + message.getPhase() +
@@ -162,14 +159,12 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       // Override in subclass.
     }
 
-    @Override
     public Void visit(TimeoutMessage message) {
       logger_.warn("Received TimeoutMessage from phase " + message.getMessageContent() +
           " while in phase " + phase_);
       return null;
     }
 
-    @Override
     public Void visit(FinishMessage message) {
       logger_.info("Test finished by server.");
       endJobModule();
@@ -184,7 +179,6 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   protected class EmptyInitializationVisitor extends TestingModuleVisitor {
     public EmptyInitializationVisitor() { }
 
-    @Override
     public Void visit(InitMessage message) {
       jobId_ = message.getId();
       logger_.debug("Test client initialized: " + message.getHandler().getClass().getSimpleName());
@@ -192,7 +186,6 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       return null;
     }
 
-    @Override
     public Void visit(NewPhaseMessage message) {
       return null;
     }
@@ -222,14 +215,12 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       stats_ = stats;
     }
 
-    @Override
     public Void visit(GatherStatsMessage message) {
       logger_.debug("Sending statistics to server.");
       networkQueue_.add(new StatsMessage(serverJobId_, null, server_, stats_));
       return null;
     }
 
-    @Override
     public Void visit(NewPhaseMessage message) {
       logger_.debug("Received NewPhaseMessage in GatherStats state.");
       return null;

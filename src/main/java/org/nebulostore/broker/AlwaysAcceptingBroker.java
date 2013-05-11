@@ -35,14 +35,12 @@ public class AlwaysAcceptingBroker extends Broker {
   /**
    * Visitor.
    */
-  private class BrokerVisitor extends MessageVisitor<Void> {
-    @Override
+  protected class BrokerVisitor extends MessageVisitor<Void> {
     public Void visit(JobInitMessage message) {
       logger_.debug("Initialized");
       return null;
     }
 
-    @Override
     public Void visit(ContractOfferMessage message) {
       // Accept every offer!
       logger_.debug("Accepting offer from: " + message.getSourceAddress());
@@ -54,7 +52,6 @@ public class AlwaysAcceptingBroker extends Broker {
       return null;
     }
 
-    @Override
     public Void visit(OfferReplyMessage message) {
       if (message.getResult()) {
         // Offer was accepted, add new replica to our DHT entry.
@@ -76,7 +73,6 @@ public class AlwaysAcceptingBroker extends Broker {
       return null;
     }
 
-    @Override
     public Void visit(CommPeerFoundMessage message) {
       logger_.debug("Found new peer.");
       if (BrokerContext.getInstance().getReplicas().length < MAX_CONTRACTS) {

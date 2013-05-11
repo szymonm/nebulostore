@@ -70,7 +70,6 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
       state_ = STATE.INIT;
     }
 
-    @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       logger_.debug("Retrieving file " + address_);
@@ -94,7 +93,6 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
       return null;
     }
 
-    @Override
     public Void visit(ValueDHTMessage message) {
       if (state_ == STATE.DHT_QUERY) {
         logger_.debug("Received ValueDHTMessage");
@@ -118,7 +116,6 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       if (state_ == STATE.DHT_QUERY) {
         logger_.debug("Received ErrorDHTMessage");
@@ -143,7 +140,6 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
       }
     }
 
-    @Override
     public Void visit(TimeoutMessage message) {
       if (state_ == STATE.REPLICA_FETCH && state_.name().equals(message.getMessageContent())) {
         logger_.debug("Timeout - replica didn't respond in time. Trying another one.");
@@ -152,10 +148,8 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
       return null;
     }
 
-    @Override
     public abstract Void visit(SendObjectMessage message);
 
-    @Override
     public Void visit(ReplicatorErrorMessage message) {
       if (state_ == STATE.REPLICA_FETCH) {
         // TODO(bolek): ReplicatorErrorMessage should contain exception instead of string.

@@ -35,7 +35,7 @@ public final class PongClient extends ConductorClient {
   /**
    * Phase 1 - receive Ping.
    */
-  final class Visitor1 extends IgnoreNewPhaseVisitor {
+  protected final class Visitor1 extends IgnoreNewPhaseVisitor {
     @Override
     public Void visit(UserCommMessage message) {
       logger_.debug("Received PingMessage.");
@@ -49,7 +49,7 @@ public final class PongClient extends ConductorClient {
   /**
    * Phase 2 - send Pong.
    */
-  final class Visitor2 extends TestingModuleVisitor {
+  protected final class Visitor2 extends TestingModuleVisitor {
     @Override
     public Void visit(NewPhaseMessage message) {
       networkQueue_.add(new UserCommMessage(jobId_, sender_, magicNumber_.add(BigInteger.ONE),

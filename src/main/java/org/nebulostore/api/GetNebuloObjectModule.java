@@ -25,7 +25,7 @@ public class GetNebuloObjectModule extends GetModule<NebuloObject> implements Ob
   /**
    * Visitor.
    */
-  private class StateMachineVisitor extends GetModuleVisitor {
+  protected class StateMachineVisitor extends GetModuleVisitor {
 
     @Override
     public Void visit(SendObjectMessage message) {

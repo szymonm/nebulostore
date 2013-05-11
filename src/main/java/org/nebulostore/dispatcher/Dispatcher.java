@@ -40,7 +40,6 @@ public class Dispatcher extends Module {
      * Special handling for JobEndedMessage.
      * Remove MSG_ID from Dispatcher's map.
      */
-    @Override
     public Void visit(JobEndedMessage message) {
       if (message.getId() != null) {
         String jobId = message.getId();
@@ -66,7 +65,6 @@ public class Dispatcher extends Module {
     /*
      * End dispatcher.
      */
-    @Override
     public Void visit(EndModuleMessage message) throws NebuloException {
       Thread[] threads =
           workersThreads_.values().toArray(new Thread[workersThreads_.values().size()]);
@@ -85,7 +83,6 @@ public class Dispatcher extends Module {
     /*
      * General behavior - forwarding messages.
      */
-    @Override
     public Void visitDefault(Message message) throws NebuloException {
       if (message.getId() != null) {
         String jobId = message.getId();

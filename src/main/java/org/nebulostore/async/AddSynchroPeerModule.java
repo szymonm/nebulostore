@@ -57,10 +57,9 @@ public class AddSynchroPeerModule extends JobModule {
   /**
    * Visitor.
    */
-  private class Visitor extends MessageVisitor<Void> {
+  protected class Visitor extends MessageVisitor<Void> {
     BrokerContext context_ = BrokerContext.getInstance();
 
-    @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       // If synchroPeer_ is not set we use the last one found by the NetworkContext.
@@ -77,14 +76,12 @@ public class AddSynchroPeerModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       error("Unable to get synchro peers from DHT.");
       endJobModule();
       return null;
     }
 
-    @Override
     public Void visit(ValueDHTMessage message) {
       if (message.getKey().equals(myAddress_.toKeyDHT())) {
         if (message.getValue().getValue() instanceof InstanceMetadata) {
@@ -106,7 +103,6 @@ public class AddSynchroPeerModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(OkDHTMessage message) {
       logger_.debug("Successfully added synchro peer: " + synchroPeer_.toString() + " to DHT.");
       endJobModule();

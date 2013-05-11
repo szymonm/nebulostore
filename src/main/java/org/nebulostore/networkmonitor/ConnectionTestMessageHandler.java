@@ -17,8 +17,7 @@ public class ConnectionTestMessageHandler extends JobModule {
   /**
    * Visitor.
    */
-  private class CTMVisitor extends MessageVisitor<Void> {
-    @Override
+  protected class CTMVisitor extends MessageVisitor<Void> {
     public Void visit(ConnectionTestMessage message) {
       networkQueue_.add(new ConnectionTestResponseMessage(message.getId(), null,
           message.getSourceAddress()));

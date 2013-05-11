@@ -82,7 +82,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
   /**
    * Visitor class that acts as a state machine realizing the procedure of fetching the file.
    */
-  private class StateMachineVisitor extends MessageVisitor<Void> {
+  protected class StateMachineVisitor extends MessageVisitor<Void> {
     private STATE state_;
     /* Recipients we are waiting answer from. */
     private final Set<CommAddress> recipientsSet_ = new HashSet<CommAddress>();
@@ -101,7 +101,6 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       state_ = STATE.INIT;
     }
 
-    @Override
     public Void visit(JobInitMessage message) {
       if (state_ == STATE.INIT) {
         logger_.debug("Initializing...");
@@ -118,7 +117,6 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       return null;
     }
 
-    @Override
     public Void visit(ValueDHTMessage message) {
       logger_.debug("Got ValueDHTMessage " + message.toString());
       if (state_ == STATE.DHT_QUERY) {
@@ -163,7 +161,6 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       if (state_ == STATE.DHT_QUERY) {
         logger_.debug("Received ErrorDHTMessage");
@@ -175,7 +172,6 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       return null;
     }
 
-    @Override
     public Void visit(ConfirmationMessage message) {
       logger_.debug("received confirmation");
       if (state_ == STATE.REPLICA_UPDATE || state_ == STATE.RETURNED_WAITING_FOR_REST) {
@@ -188,7 +184,6 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       return null;
     }
 
-    @Override
     public Void visit(UpdateRejectMessage message) {
       logger_.debug("received updateRejectMessage");
       switch (state_) {
@@ -209,7 +204,6 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       return null;
     }
 
-    @Override
     public Void visit(UpdateWithholdMessage message) {
       logger_.debug("reject UpdateWithholdMessage");
       if (state_ == STATE.REPLICA_UPDATE || state_ == STATE.RETURNED_WAITING_FOR_REST) {
@@ -223,7 +217,6 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       return null;
     }
 
-    @Override
     public Void visit(ErrorCommMessage message) {
       logger_.debug("received ErrorCommMessage");
       if (state_ == STATE.REPLICA_UPDATE || state_ == STATE.RETURNED_WAITING_FOR_REST) {
@@ -263,7 +256,6 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       }
     }
 
-    @Override
     public Void visit(TransactionAnswerInMessage message) {
       logger_.debug("received TransactionResult from parent");
       sendTransactionAnswer(message.answer_);

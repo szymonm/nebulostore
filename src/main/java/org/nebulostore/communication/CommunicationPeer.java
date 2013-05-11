@@ -299,8 +299,7 @@ public final class CommunicationPeer extends Module {
    *
    * @author Grzegorz Milka
    */
-  private final class CommPeerMsgVisitor extends MessageVisitor<Void> {
-    @Override
+  protected final class CommPeerMsgVisitor extends MessageVisitor<Void> {
     public Void visit(EndModuleMessage msg) {
       logger_.info("Received EndModule message");
       isEnding_.set(true);
@@ -309,7 +308,6 @@ public final class CommunicationPeer extends Module {
       return null;
     }
 
-    @Override
     public Void visit(ErrorCommMessage msg) {
       logger_.info("Error comm message. Returning it to Dispatcher");
       gossipServiceInQueue_.add(msg);
@@ -318,7 +316,6 @@ public final class CommunicationPeer extends Module {
       return null;
     }
 
-    @Override
     public Void visit(ReconfigureDHTMessage msg) {
       try {
         logger_.info("Got reconfigure request with jobId: " + msg.getId());
@@ -336,7 +333,6 @@ public final class CommunicationPeer extends Module {
       return null;
     }
 
-    @Override
     public Void visit(CommPeerFoundMessage msg) {
       logger_.debug("CommPeerFound message forwarded to Dispatcher");
       outQueue_.add(msg);
@@ -344,7 +340,6 @@ public final class CommunicationPeer extends Module {
       return null;
     }
 
-    @Override
     public Void visit(DHTMessage msg) {
       if (msg instanceof InDHTMessage) {
         logger_.debug("InDHTMessage forwarded to DHT" + msg.getClass().getSimpleName());
@@ -359,7 +354,6 @@ public final class CommunicationPeer extends Module {
       return null;
     }
 
-    @Override
     public Void visit(BdbMessageWrapper msg) {
       logger_.debug("BDB DHT message received");
       BdbMessageWrapper casted = (BdbMessageWrapper) msg;
@@ -376,7 +370,6 @@ public final class CommunicationPeer extends Module {
 
     }
 
-    @Override
     public Void visit(PeerGossipMessage msg) {
       if (((CommMessage) msg).getDestinationAddress().equals(
             bootstrapService_.getResolver().getMyCommAddress())) {
@@ -387,7 +380,6 @@ public final class CommunicationPeer extends Module {
       return null;
     }
 
-    @Override
     public Void visit(CommMessage msg) {
       if (((CommMessage) msg).getSourceAddress() == null) {
         ((CommMessage) msg).setSourceAddress(commAddress_);

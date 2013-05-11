@@ -36,8 +36,7 @@ public class ResponseWithAsynchronousMessagesModule extends JobModule {
    * Visitor.
    * @author szymonmatejczyk
    */
-  private class Visitor extends MessageVisitor<Void> {
-    @Override
+  protected class Visitor extends MessageVisitor<Void> {
     public Void visit(GetAsynchronousMessagesMessage message) {
       jobId_ = message.getId();
       // TODO(szm): prevent message flooding
@@ -51,7 +50,6 @@ public class ResponseWithAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(GotAsynchronousMessagesMessage message) {
       // We assume that if Peer asks for AM to him, there won't be new messages
       // for him.

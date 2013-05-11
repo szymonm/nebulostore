@@ -131,14 +131,13 @@ public class MessengerService extends Module {
    *
    * @author Grzegorz Milka
    */
-  private class MessengerMsgVisitor extends MessageVisitor<Void> {
+  protected class MessengerMsgVisitor extends MessageVisitor<Void> {
     public Void visit(EndModuleMessage msg) {
       logger_.info("Received EndModule message");
       shutdown();
       return null;
     }
 
-    @Override
     public Void visit(CommMessage commMsg) {
       if (commMsg.getSourceAddress() == null) {
         logger_.debug("Source address set to null, changing to my address.");

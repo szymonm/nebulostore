@@ -102,10 +102,9 @@ public class Replicator extends JobModule {
    * results via queues.
    * @author szymonmatejczyk
    */
-  private class ReplicatorVisitor extends MessageVisitor<Void> {
+  protected class ReplicatorVisitor extends MessageVisitor<Void> {
     private QueryToStoreObjectMessage storeWaitingForCommit_;
 
-    @Override
     public Void visit(QueryToStoreObjectMessage message) throws NebuloException {
       logger_.debug("StoreObjectMessage received");
       jobId_ = message.getId();
@@ -162,7 +161,6 @@ public class Replicator extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(TransactionResultMessage message) {
       logger_.debug("TransactionResultMessage received: " + message.getResult());
       if (storeWaitingForCommit_ == null) {
@@ -183,7 +181,6 @@ public class Replicator extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(GetObjectMessage message) {
       logger_.debug("GetObjectMessage with objectID = " + message.getObjectId());
       jobId_ = message.getId();
@@ -211,7 +208,6 @@ public class Replicator extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(DeleteObjectMessage message) {
       jobId_ = message.getId();
       try {
@@ -227,7 +223,6 @@ public class Replicator extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(ObjectOutdatedMessage message) {
       jobId_ = message.getId();
       freshnessMap_.put(message.getAddress().getObjectId(), false);

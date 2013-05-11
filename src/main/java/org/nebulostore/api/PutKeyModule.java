@@ -58,14 +58,13 @@ public class PutKeyModule extends ReturningJobModule<Void> {
    * Visitor class that acts as a state machine realizing the procedure of creating new top-level
    * directory for a user.
    */
-  private class StateMachineVisitor extends MessageVisitor<Void> {
+  protected class StateMachineVisitor extends MessageVisitor<Void> {
     private STATE state_;
 
     public StateMachineVisitor() {
       state_ = STATE.INIT;
     }
 
-    @Override
     public Void visit(JobInitMessage message) {
       checkNotNull(appKey_);
       if (state_ == STATE.INIT) {
@@ -91,7 +90,6 @@ public class PutKeyModule extends ReturningJobModule<Void> {
       return null;
     }
 
-    @Override
     public Void visit(OkDHTMessage message) {
       if (state_ == STATE.DHT_INSERT) {
         logger_.debug("Successfully updated top dir in DHT");
@@ -102,7 +100,6 @@ public class PutKeyModule extends ReturningJobModule<Void> {
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       if (state_ == STATE.DHT_INSERT) {
         endWithError(new NebuloException("DHT write returned with error", message.getException()));

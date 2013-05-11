@@ -52,7 +52,7 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
   /**
    * Visitor class that acts as a state machine realizing the procedure of deleting the file.
    */
-  private class StateMachineVisitor extends MessageVisitor<Void> {
+  protected class StateMachineVisitor extends MessageVisitor<Void> {
     private final Set<CommAddress> recipientsSet_;
     // private int confirmations_;
     private STATE state_;
@@ -63,7 +63,6 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
       state_ = STATE.INIT;
     }
 
-    @Override
     public Void visit(JobInitMessage message) {
       if (state_ == STATE.INIT) {
         // State 1 - Send groupId to DHT and wait for reply.
@@ -79,7 +78,6 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
       return null;
     }
 
-    @Override
     public Void visit(ValueDHTMessage message) {
       logger_.debug("Got ValueDHTMessage " + message.toString());
       if (state_ == STATE.DHT_QUERY) {
@@ -109,7 +107,6 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       if (state_ == STATE.DHT_QUERY) {
         logger_.debug("Received ErrorDHTMessage");
@@ -121,7 +118,6 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
       return null;
     }
 
-    @Override
     public Void visit(ConfirmationMessage message) {
       if (state_ == STATE.REPLICA_UPDATE) {
         logger_.debug("Confirmation message, removing: " + message.getSourceAddress());
@@ -139,7 +135,6 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
       return null;
     }
 
-    @Override
     public Void visit(ErrorCommMessage message) {
       incorrectState(state_.name(), message);
       // TODO(bolek): Can we safely ignore it here and just wait for timeout and async messages?
@@ -152,7 +147,6 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
     }
   }
 
-  @Override
   protected void processMessage(Message message) throws NebuloException {
     // Handling logic lies inside our visitor class.
     message.accept(visitor_);

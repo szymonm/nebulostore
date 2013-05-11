@@ -46,12 +46,11 @@ public class TestPeersConnectionModule extends JobModule {
   /**
    * Visitor.
    */
-  private class TPCVisitor extends MessageVisitor<Void> {
+  protected class TPCVisitor extends MessageVisitor<Void> {
     long sendTime_;
     ValueDHTMessage valueDHTMessage_;
     List<PeerConnectionSurvey> stats_ = new LinkedList<PeerConnectionSurvey>();
 
-    @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       networkQueue_.add(new GetDHTMessage(message.getId(), myAddress_.toKeyDHT()));
@@ -61,7 +60,6 @@ public class TestPeersConnectionModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(ConnectionTestResponseMessage message) {
       // TODO(szm): other statistics
       // TODO(szm): bandwidth??
@@ -77,7 +75,6 @@ public class TestPeersConnectionModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(ValueDHTMessage message) {
       if (!stats_.isEmpty()) {
         appendStatisticsAndFinish(stats_, message);
@@ -87,8 +84,6 @@ public class TestPeersConnectionModule extends JobModule {
       return null;
     }
 
-
-    @Override
     public Void visit(TimeoutMessage message) {
       logger_.warn("Timeout.");
       endJobModule();

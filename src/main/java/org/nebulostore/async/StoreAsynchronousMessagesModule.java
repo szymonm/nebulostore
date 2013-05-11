@@ -27,7 +27,7 @@ public class StoreAsynchronousMessagesModule extends JobModule {
    * Visitor.
    * @author szymonmatejczyk
    */
-  private static class SAMVisitor extends MessageVisitor<Void> {
+  protected static class SAMVisitor extends MessageVisitor<Void> {
     public Void visit(StoreAsynchronousMessage message) {
       BrokerContext context = BrokerContext.getInstance();
       // TODO(szm): Check if I should store this message.

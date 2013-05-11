@@ -249,7 +249,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     private MessageGenerator notificationGenerator_;
     private final NetworkContext context_ = NetworkContext.getInstance();
 
-    @Override
     public Void visit(JobInitMessage message) {
       logger_.debug("Received JobInitMessage.");
       jobId_ = message.getId();
@@ -275,7 +274,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       return null;
     }
 
-    @Override
     public Void visit(NetworkContextChangedMessage message) {
       logger_.debug("Received NetworkContextChangedMessage (we know " +
           NetworkContext.getInstance().getKnownPeers().size() + " peers).");
@@ -287,7 +285,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       return null;
     }
 
-    @Override
     public Void visit(TocMessage message) {
       if (!clients_.contains(message.getSourceAddress()) || message.getPhase() != phase_) {
         return null;
@@ -316,7 +313,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       return null;
     }
 
-    @Override
     public Void visit(StatsMessage message) {
       if (!clients_.contains(message.getSourceAddress())) {
         logger_.warn("Received StatsMessage with no source address.");
@@ -333,7 +329,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       return null;
     }
 
-    @Override
     public Void visit(TimeoutMessage message) {
       if (testingState_ == TestingState.Running) {
         if ((PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
@@ -359,7 +354,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
       return null;
     }
 
-    @Override
     public Void visit(ErrorMessage message) {
       logger_.warn("Received ErrorMessage, test failed: " + message.getMessage());
       successful_ = false;

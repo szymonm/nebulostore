@@ -59,11 +59,10 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
    * Visitor.
    * @author szymonmatejczyk
    */
-  private class RAMVisitor extends MessageVisitor<Void> {
+  protected class RAMVisitor extends MessageVisitor<Void> {
     BrokerContext context_ = BrokerContext.getInstance();
 
     /** Start of download of AM. Requests for Metadata containing inboxHolders. */
-    @Override
     public Void visit(JobInitMessage message) {
       logger_.debug("Started asynchronous-messages retrieval.");
       jobId_ = message.getId();
@@ -73,13 +72,11 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       error(jobId_, new NebuloException("Unable to get synchro peers from DHT."));
       return null;
     }
 
-    @Override
     public Void visit(ValueDHTMessage message) {
       if (message.getKey().equals(myAddress_.toKeyDHT())) {
         if (message.getValue().getValue() instanceof InstanceMetadata) {
@@ -101,7 +98,6 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(AsynchronousMessagesMessage message) {
       if (!context_.waitingForMessages_.remove(message.getId())) {
         logger_.warn("Received not expected message.");
@@ -135,7 +131,6 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(TimeoutMessage message) {
       logger_.debug("Timeout in RetrieveAsynchronousMessagesModule.");
       endJobModule();

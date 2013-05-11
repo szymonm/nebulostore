@@ -319,14 +319,13 @@ public final class PeerSamplingGossipService extends GossipService {
    *
    * @author Grzegorz Milka
    */
-  private class GossipMsgVisitor extends MessageVisitor<Void> {
+  protected class GossipMsgVisitor extends MessageVisitor<Void> {
     public Void visit(EndModuleMessage msg) {
       logger_.info("Received EndModule message");
       shutdown();
       return null;
     }
 
-    @Override
     public Void visit(ErrorCommMessage msg) {
       CommMessage commMsg = msg.getMessage();
       synchronized (peers_) {
@@ -338,7 +337,6 @@ public final class PeerSamplingGossipService extends GossipService {
       return null;
     }
 
-    @Override
     public Void visit(PeerGossipMessage msg) {
       PeerGossipMessage peerGossipMsg = (PeerGossipMessage) msg;
       if (peerGossipMsg.getMsgType().contains(PeerGossipMessage.MessageType.PULL)) {

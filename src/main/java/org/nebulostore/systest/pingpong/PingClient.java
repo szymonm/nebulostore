@@ -40,7 +40,7 @@ public final class PingClient extends ConductorClient {
    * Phase 1 - send Ping.
    * @author szymonmatejczyk
    */
-  final class Visitor1 extends TestingModuleVisitor {
+  protected final class Visitor1 extends TestingModuleVisitor {
     public Void visit(NewPhaseMessage message) {
       networkQueue_.add(new UserCommMessage(jobId_, pongAddress_, magicNumber_, phase_));
       phaseFinished();
@@ -52,7 +52,7 @@ public final class PingClient extends ConductorClient {
    * Phase 2 - receive Pong.
    * @author szymonmatejczyk
    */
-  final class Visitor2 extends IgnoreNewPhaseVisitor {
+  protected final class Visitor2 extends IgnoreNewPhaseVisitor {
     @Override
     public Void visit(UserCommMessage message) {
       BigInteger received = (BigInteger) message.getContent();

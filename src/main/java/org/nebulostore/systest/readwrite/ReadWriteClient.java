@@ -90,7 +90,7 @@ public final class ReadWriteClient extends ConductorClient {
   /**
    * Phase 2 - read all the files and verify.
    */
-  final class ReadFilesVisitor extends TestingModuleVisitor {
+  protected final class ReadFilesVisitor extends TestingModuleVisitor {
     @Override
     public Void visit(NewPhaseMessage message) {
       for (NebuloAddress address : files_) {
@@ -128,7 +128,7 @@ public final class ReadWriteClient extends ConductorClient {
   /**
    * Phase 3 - delete my file.
    */
-  final class DeleteFileVisitor extends TestingModuleVisitor {
+  protected final class DeleteFileVisitor extends TestingModuleVisitor {
     @Override
     public Void visit(NewPhaseMessage message) {
       try {

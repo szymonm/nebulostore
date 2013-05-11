@@ -55,7 +55,6 @@ public class RegisterInstanceInDHTModule extends ReturningJobModule<Boolean> {
    */
   public class RIIDHTVisitor extends MessageVisitor<Void> {
     State state_ = State.QUERY_DHT;
-    @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       logger_.debug("Trying to retrive InstanceMetadata from DHT taskId: " + jobId_);
@@ -65,7 +64,6 @@ public class RegisterInstanceInDHTModule extends ReturningJobModule<Boolean> {
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       if (state_ == State.WAITING_FOR_RESPONSE) {
         logger_.debug("Unable to retrive InstanceMetadata from DHT, putting new.");
@@ -82,7 +80,7 @@ public class RegisterInstanceInDHTModule extends ReturningJobModule<Boolean> {
       }
       return null;
     }
-    @Override
+
     public Void visit(ValueDHTMessage message) {
       if (state_ == State.WAITING_FOR_RESPONSE) {
         logger_.debug("InstanceMetadata already in DHT, nothing to do.");
@@ -93,7 +91,6 @@ public class RegisterInstanceInDHTModule extends ReturningJobModule<Boolean> {
       return null;
     }
 
-    @Override
     public Void visit(OkDHTMessage message) {
       if (state_ == State.PUT_DHT) {
         logger_.debug("Successfuly put InstanceMetadata into DHT.");

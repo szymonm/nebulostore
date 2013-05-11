@@ -48,7 +48,6 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
    * Visitor.
    */
   public class SendAsynchronousMessagesForPeerModuleVisitor extends MessageVisitor<Void> {
-    @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       GetDHTMessage m = new GetDHTMessage(jobId_, recipient_.toKeyDHT());
@@ -56,7 +55,6 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(ValueDHTMessage message) {
       if (message.getKey().equals(recipient_.toKeyDHT())) {
         if (message.getValue().getValue() instanceof InstanceMetadata) {
@@ -70,7 +68,6 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       logger_.error("Sending asynchronous messages for " + recipient_.toString() + " failed...");
       return null;

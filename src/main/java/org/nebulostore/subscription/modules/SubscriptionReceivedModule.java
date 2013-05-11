@@ -38,13 +38,11 @@ public class SubscriptionReceivedModule extends JobModule {
   /**
    * Message handler for received subscription notification.
    */
-  private class SubscriptionReceivedMessageVisitor extends MessageVisitor<Void> {
-    @Override
+  protected class SubscriptionReceivedMessageVisitor extends MessageVisitor<Void> {
     public Void visit(JobInitMessage message) throws NebuloException {
       return null;
     }
 
-    @Override
     public Void visit(NotifySubscriberMessage message) throws NebuloException {
       notificationHandler_.handleSubscriptionNotification(message.getSubscriptionNotification());
       endJobModule();

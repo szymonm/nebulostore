@@ -47,9 +47,8 @@ public class NotifySubscribersModule extends JobModule {
   /**
    * Message handler for notifying subscribers about file change.
    */
-  private class SubscriptionVisitor extends MessageVisitor<Void> {
+  protected class SubscriptionVisitor extends MessageVisitor<Void> {
 
-    @Override
     public Void visit(JobInitMessage message) throws NebuloException {
       for (CommAddress subscriber : subscribersAddresses_) {
         if (!subscriber.equals(sourceAddress_)) {

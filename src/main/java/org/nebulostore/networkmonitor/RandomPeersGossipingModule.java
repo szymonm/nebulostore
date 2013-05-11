@@ -50,9 +50,8 @@ public class RandomPeersGossipingModule extends JobModule {
   /**
    * Visitor.
    */
-  private class RPGVisitor extends MessageVisitor<Void> {
+  protected class RPGVisitor extends MessageVisitor<Void> {
     private boolean activeMode_;
-    @Override
     public Void visit(JobInitMessage message) {
       logger_.debug("Gossiping...");
       jobId_ = message.getId();
@@ -83,7 +82,6 @@ public class RandomPeersGossipingModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(RandomPeersSampleMessage message) {
       TreeSet<CommAddress> view = getView();
       if (activeMode_) {
@@ -104,7 +102,6 @@ public class RandomPeersGossipingModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(TimeoutMessage message) {
       logger_.warn("Timeout.");
       return null;

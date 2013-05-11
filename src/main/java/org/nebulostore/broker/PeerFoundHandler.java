@@ -24,8 +24,7 @@ public class PeerFoundHandler extends JobModule {
    * Visitor.
    * @author szymonmatejczyk
    */
-  private class PeerFoundHandlerVisitor extends MessageVisitor<Void> {
-    @Override
+  protected class PeerFoundHandlerVisitor extends MessageVisitor<Void> {
     public Void visit(CommPeerFoundMessage message) {
       jobId_ = message.getId();
       NetworkContext context = NetworkContext.getInstance();

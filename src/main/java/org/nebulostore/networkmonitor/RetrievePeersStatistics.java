@@ -30,29 +30,24 @@ public class RetrievePeersStatistics extends ReturningJobModule<ConcurrentLinked
   /**
    * Visitor.
    */
-  private class RPSVisitor extends MessageVisitor<Void> {
-    @Override
+  protected class RPSVisitor extends MessageVisitor<Void> {
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       networkQueue_.add(new GetDHTMessage(message.getId(), peer_.toKeyDHT()));
       return null;
     }
 
-    @Override
     public Void visit(ValueDHTMessage message) {
       InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
       endWithSuccess(metadata.getStatistics());
       return null;
     }
 
-    @Override
     public Void visit(ErrorDHTMessage message) {
       endWithError(new NebuloException("DHT Error"));
       return null;
     }
-
   }
-
 
   @Override
   protected void processMessage(Message message) throws NebuloException {

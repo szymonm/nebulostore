@@ -47,7 +47,7 @@ public class OneTimeUniformGossipService extends GossipService {
    * Server.
    * @author Bolek Kulbabinski
    */
-  private class ServerVisitor extends MessageVisitor<Void> {
+  protected class ServerVisitor extends MessageVisitor<Void> {
     private List<CommAddress> received_ = new ArrayList<CommAddress>();
 
     public Void visit(PeerGossipMessage message) throws NebuloException {
@@ -80,7 +80,7 @@ public class OneTimeUniformGossipService extends GossipService {
    * Client waits for a single message from server containing peer's view.
    * @author Bolek Kulbabinski
    */
-  private class ClientVisitor extends MessageVisitor<Void> {
+  protected class ClientVisitor extends MessageVisitor<Void> {
     public Void visit(PeerGossipMessage message) throws NebuloException {
       for (PeerDescriptor peer : message.getBuffer()) {
         outQueue_.add(new CommPeerFoundMessage(peer.getPeerAddress(), commAddress_));

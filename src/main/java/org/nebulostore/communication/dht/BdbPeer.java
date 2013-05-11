@@ -286,8 +286,7 @@ public class BdbPeer extends Module {
    *
    * @author Grzegorz Milka
    */
-  private final class BDBProxyMessageVisitor extends MessageVisitor<Void> {
-    @Override
+  protected final class BDBProxyMessageVisitor extends MessageVisitor<Void> {
     public Void visit(DHTMessage msg) {
       if (holderCommAddress_ == null) {
         logger_.debug("Holder not set up, waiting for HolderAdvertisementMessage");
@@ -303,13 +302,11 @@ public class BdbPeer extends Module {
       return null;
     }
 
-    @Override
     public Void visit(EndModuleMessage msg) {
       shutdown();
       return null;
     }
 
-    @Override
     public Void visit(HolderAdvertisementMessage msg) throws NebuloException {
       logger_.info("Message accepted: " + msg);
 
@@ -329,14 +326,12 @@ public class BdbPeer extends Module {
    *
    * @author Grzegorz Milka
    */
-  private final class BDBServerMessageVisitor extends MessageVisitor<Void> {
-    @Override
+  protected final class BDBServerMessageVisitor extends MessageVisitor<Void> {
     public Void visit(EndModuleMessage msg) {
       shutdown();
       return null;
     }
 
-    @Override
     public Void visit(BdbMessageWrapper msg) throws NebuloException {
       boolean fromNetwork = true;
       CommAddress sourceAddress = msg.getSourceAddress();
@@ -352,7 +347,6 @@ public class BdbPeer extends Module {
       return null;
     }
 
-    @Override
     public Void visit(HolderAdvertisementMessage msg) throws NebuloException {
       logger_.info("Message accepted: " + msg);
 
@@ -366,14 +360,11 @@ public class BdbPeer extends Module {
       return null;
     }
 
-
-    @Override
     public Void visit(PutDHTMessage msg) {
       put(msg, false, null);
       return null;
     }
 
-    @Override
     public Void visit(GetDHTMessage msg) {
       get(msg, false, null);
       return null;

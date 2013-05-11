@@ -1,330 +1,39 @@
 package org.nebulostore.appcore;
 
-import org.nebulostore.api.WriteNebuloObjectModule;
+import java.lang.reflect.Method;
+
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.exceptions.UnsupportedMessageException;
-import org.nebulostore.async.messages.AsynchronousMessage;
-import org.nebulostore.async.messages.AsynchronousMessagesMessage;
-import org.nebulostore.async.messages.BrokerErrorMessage;
-import org.nebulostore.async.messages.DeleteNebuloObjectMessage;
-import org.nebulostore.async.messages.GetAsynchronousMessagesIn;
-import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
-import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
-import org.nebulostore.async.messages.NetworkContextChangedMessage;
-import org.nebulostore.async.messages.StoreAsynchronousMessage;
-import org.nebulostore.async.messages.UpdateFileMessage;
-import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
-import org.nebulostore.async.messages.UpdateSmallNebuloObjectMessage;
-import org.nebulostore.broker.messages.ContractOfferMessage;
-import org.nebulostore.broker.messages.OfferReplyMessage;
-import org.nebulostore.communication.dht.messages.BdbMessageWrapper;
-import org.nebulostore.communication.dht.messages.DHTMessage;
-import org.nebulostore.communication.dht.messages.DelDHTMessage;
-import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
-import org.nebulostore.communication.dht.messages.GetDHTMessage;
-import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
-import org.nebulostore.communication.dht.messages.InDHTMessage;
-import org.nebulostore.communication.dht.messages.OkDHTMessage;
-import org.nebulostore.communication.dht.messages.OutDHTMessage;
-import org.nebulostore.communication.dht.messages.PutDHTMessage;
-import org.nebulostore.communication.dht.messages.ValueDHTMessage;
-import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
-import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.communication.messages.ErrorCommMessage;
-import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
-import org.nebulostore.communication.messages.ReconfigureDHTMessage;
-import org.nebulostore.conductor.messages.ErrorMessage;
-import org.nebulostore.conductor.messages.FinishMessage;
-import org.nebulostore.conductor.messages.GatherStatsMessage;
-import org.nebulostore.conductor.messages.InitMessage;
-import org.nebulostore.conductor.messages.NewPhaseMessage;
-import org.nebulostore.conductor.messages.ReconfigurationMessage;
-import org.nebulostore.conductor.messages.StatsMessage;
-import org.nebulostore.conductor.messages.TicMessage;
-import org.nebulostore.conductor.messages.TocMessage;
-import org.nebulostore.conductor.messages.UserCommMessage;
-import org.nebulostore.dispatcher.JobEndedMessage;
-import org.nebulostore.dispatcher.JobInitMessage;
-import org.nebulostore.networkmonitor.messages.ConnectionTestMessage;
-import org.nebulostore.networkmonitor.messages.ConnectionTestResponseMessage;
-import org.nebulostore.networkmonitor.messages.RandomPeersSampleMessage;
-import org.nebulostore.replicator.messages.ConfirmationMessage;
-import org.nebulostore.replicator.messages.DeleteObjectMessage;
-import org.nebulostore.replicator.messages.GetObjectMessage;
-import org.nebulostore.replicator.messages.ObjectOutdatedMessage;
-import org.nebulostore.replicator.messages.QueryToStoreObjectMessage;
-import org.nebulostore.replicator.messages.ReplicatorErrorMessage;
-import org.nebulostore.replicator.messages.SendObjectMessage;
-import org.nebulostore.replicator.messages.TransactionResultMessage;
-import org.nebulostore.replicator.messages.UpdateRejectMessage;
-import org.nebulostore.replicator.messages.UpdateWithholdMessage;
-import org.nebulostore.subscription.messages.NotifySubscriberMessage;
-import org.nebulostore.timer.TimeoutMessage;
 
 /**
- * Generic Message visitor class. All 'visit' methods should call handlers for base classes.
+ * Generic Message visitor class. Subclasses should define "visit" methods with one parameter that
+ * is a subclass of Message. Visitor will go up the class hierarchy and call the first suitable
+ * method it finds.
  * @param <R>
  *          return type.
  */
 public abstract class MessageVisitor<R> {
-  /* Common action for all messages that are not handled. */
+  private static final String METHOD_NAME = "visit";
+
+/* Common action for all messages that are not handled. */
   protected R visitDefault(Message message) throws NebuloException {
     throw new UnsupportedMessageException(message.getClass().getName());
   }
 
-  /* Base class. */
-  public R visit(Message message) throws NebuloException {
-    return visitDefault(message);
-  }
-
-  public R visit(EndModuleMessage message) throws NebuloException {
-    return visitDefault((Message) message);
-  }
-
-  /* Dispatcher messages. */
-  public R visit(JobEndedMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(JobInitMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  /* Replicator messages. */
-  public R visit(GetObjectMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(DeleteObjectMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(SendObjectMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(QueryToStoreObjectMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(ConfirmationMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(ReplicatorErrorMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  /* Network messages. */
-  public R visit(CommMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(CommPeerFoundMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(PeerGossipMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  /* DHT messages. */
-  public R visit(BdbMessageWrapper message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(DHTMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(DelDHTMessage message) throws NebuloException {
-    return visit((InDHTMessage) message);
-  }
-
-  public R visit(ErrorDHTMessage message) throws NebuloException {
-    return visit((OutDHTMessage) message);
-  }
-
-  public R visit(GetDHTMessage message) throws NebuloException {
-    return visit((InDHTMessage) message);
-  }
-
-  public R visit(HolderAdvertisementMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(InDHTMessage message) throws NebuloException {
-    return visit((DHTMessage) message);
-  }
-
-  public R visit(OkDHTMessage message) throws NebuloException {
-    return visit((OutDHTMessage) message);
-  }
-
-  public R visit(OutDHTMessage message) throws NebuloException {
-    return visit((DHTMessage) message);
-  }
-
-  public R visit(PutDHTMessage message) throws NebuloException {
-    return visit((InDHTMessage) message);
-  }
-
-  public R visit(ValueDHTMessage message) throws NebuloException {
-    return visit((OutDHTMessage) message);
-  }
-
-  /* Broker messages. */
-  public R visit(ContractOfferMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(OfferReplyMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  /* Broker Asynchronous Messaging messages. */
-  public R visit(AsynchronousMessagesMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(AsynchronousMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(BrokerErrorMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(DeleteNebuloObjectMessage message) throws NebuloException {
-    return visit((AsynchronousMessage) message);
-  }
-
-  public R visit(GetAsynchronousMessagesIn message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(GetAsynchronousMessagesMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(GotAsynchronousMessagesMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(NetworkContextChangedMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(StoreAsynchronousMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(UpdateFileMessage message) throws NebuloException {
-    return visit((AsynchronousMessage) message);
-  }
-
-  public R visit(UpdateNebuloObjectMessage message) throws NebuloException {
-    return visit((AsynchronousMessage) message);
-  }
-
-  public R visit(UpdateSmallNebuloObjectMessage message) throws NebuloException {
-    return visit((AsynchronousMessage) message);
-  }
-
-  /* TestingModule. */
-  public R visit(FinishMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(NewPhaseMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(TicMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(TocMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(InitMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(ReconfigurationMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(ErrorMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(StatsMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(GatherStatsMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(UserCommMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(ReconfigureDHTAckMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(ReconfigureDHTMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  // Timer module tests.
-  public R visit(ErrorCommMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(UpdateRejectMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(UpdateWithholdMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(WriteNebuloObjectModule.TransactionAnswerInMessage message)
-    throws NebuloException {
-    return visit((Message) message);
-  }
-
-  public R visit(TransactionResultMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(ObjectOutdatedMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(RandomPeersSampleMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(ConnectionTestMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(ConnectionTestResponseMessage message) throws NebuloException {
-    return visit((CommMessage) message);
-  }
-
-  public R visit(TimeoutMessage message) throws NebuloException {
-    return visit((Message) message);
-  }
-
-  //Subscriptions
-  public R visit(NotifySubscriberMessage message) throws NebuloException {
-    return visit((CommMessage) message);
+  public R visit(Object message) throws NebuloException {
+    if (message instanceof Message) {
+      Class<?> currClass = message.getClass();
+      while (currClass != Object.class) {
+        try {
+          Method method = this.getClass().getMethod(METHOD_NAME, currClass);
+          return (R) method.invoke(this, message);
+        } catch (Exception e) {
+          currClass = currClass.getSuperclass();
+        }
+      }
+      return visitDefault((Message) message);
+    } else {
+      throw new UnsupportedMessageException(message.getClass().getName());
+    }
   }
 }

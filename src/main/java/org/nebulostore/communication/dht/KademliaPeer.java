@@ -258,26 +258,22 @@ public class KademliaPeer extends Module {
    *
    * @author Grzegorz Milka
    */
-  private final class KademliaPeerMessageVisitor extends MessageVisitor<Void> {
-    @Override
+  protected final class KademliaPeerMessageVisitor extends MessageVisitor<Void> {
     public Void visit(EndModuleMessage msg) {
       shutdown();
       return null;
     }
 
-    @Override
     public Void visit(PutDHTMessage msg) {
       put(msg);
       return null;
     }
 
-    @Override
     public Void visit(GetDHTMessage msg) {
       get(msg);
       return null;
     }
 
-    @Override
     public Void visit(DelDHTMessage msg) {
       remove(msg);
       return null;

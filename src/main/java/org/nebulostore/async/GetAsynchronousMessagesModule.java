@@ -63,10 +63,9 @@ public class GetAsynchronousMessagesModule extends JobModule {
    * Visitor handling this module messages.
    * @author szymonmatejczyk
    */
-  private class GetAsynchronousMessagesVisitor extends MessageVisitor<Void> {
+  protected class GetAsynchronousMessagesVisitor extends MessageVisitor<Void> {
     private STATE state_ = STATE.NONE;
 
-    @Override
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       GetAsynchronousMessagesMessage m = new GetAsynchronousMessagesMessage(message.getId(),
@@ -76,7 +75,6 @@ public class GetAsynchronousMessagesModule extends JobModule {
       return null;
     }
 
-    @Override
     public Void visit(AsynchronousMessagesMessage message) {
       if (state_ != STATE.WAITING_FOR_MESSAGES) {
         logger_.warn("AsynchronousMessages(" + message.getId() + ") unexpected in this state.");
