@@ -49,8 +49,8 @@ public class AlwaysAcceptingBroker extends Broker {
       //TODO(bolek): Do we want it here?
       //NetworkContext.getInstance().addFoundPeer(message.getSourceAddress());
       //TODO(bolek): Should we accept same offer twice?
-      networkQueue_.add(new OfferReplyMessage(message.getId(), message.getDestinationAddress(),
-          message.getSourceAddress(), message.getContract(), true));
+      networkQueue_.add(new OfferReplyMessage(message.getId(), message.getSourceAddress(),
+          message.getContract(), true));
       return null;
     }
 
@@ -86,7 +86,7 @@ public class AlwaysAcceptingBroker extends Broker {
               !address.equals(myAddress_) && !offerRecipients_.contains(address)) {
             // Send offer to new peer (10MB by default).
             logger_.debug("Sending offer to " + address);
-            networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), null, address,
+            networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), address,
                 new Contract("contract", myAddress_, address, DEFAULT_OFFER)));
             offerRecipients_.add(address);
             break;

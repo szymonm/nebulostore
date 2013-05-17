@@ -89,12 +89,15 @@ public class Dispatcher extends Module {
         logger_.debug("Received message with jobID: " + jobId + " and class name: " +
             message.getClass().getSimpleName());
 
+        // TODO(bolek): Maybe move injection to deserialization process?
+        injector_.injectMembers(message);
         if (!workersQueues_.containsKey(jobId)) {
           // Spawn a new thread to handle the message.
           try {
             JobModule handler = message.getHandler();
             BlockingQueue<Message> newInQueue = new LinkedBlockingQueue<Message>();
             handler.setInQueue(newInQueue);
+            // TODO(bolek): Remove this. Message injection should be sufficient.
             injector_.injectMembers(handler);
             if (handler.isQuickNonBlockingTask()) {
               logger_.debug("Executing in current thread with handler of type " +

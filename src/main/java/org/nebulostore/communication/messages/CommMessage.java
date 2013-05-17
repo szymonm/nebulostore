@@ -1,8 +1,6 @@
 package org.nebulostore.communication.messages;
 
-import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
-import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.communication.address.CommAddress;
 
 /**
@@ -41,7 +39,4 @@ public abstract class CommMessage extends Message {
   public void setDestinationAddress(CommAddress destAddress) {
     commDestAddress_ = destAddress;
   }
-
-  @Override
-  public abstract <R> R accept(MessageVisitor<R> visitor) throws NebuloException;
 }

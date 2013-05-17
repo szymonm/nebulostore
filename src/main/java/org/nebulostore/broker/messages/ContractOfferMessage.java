@@ -1,37 +1,22 @@
 package org.nebulostore.broker.messages;
 
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.messaging.MessageVisitor;
-import org.nebulostore.appcore.modules.JobModule;
-import org.nebulostore.broker.BrokerMessageForwarder;
 import org.nebulostore.broker.Contract;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.CommMessage;
 
 /**
  * Broker's contract offer.
- * @author bolek
+ * @author Bolek Kulbabinski
  */
-public class ContractOfferMessage extends CommMessage {
+public class ContractOfferMessage extends BrokerMessage {
   private static final long serialVersionUID = -578571854606199914L;
   private Contract contract_;
 
-  public ContractOfferMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress, Contract contract) {
-    super(jobId, sourceAddress, destAddress);
+  public ContractOfferMessage(String jobId, CommAddress destAddress, Contract contract) {
+    super(jobId, destAddress);
     contract_ = contract;
   }
 
   public Contract getContract() {
     return contract_;
-  }
-
-  @Override
-  public JobModule getHandler() throws NebuloException {
-    return new BrokerMessageForwarder(this);
-  }
-
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
   }
 }
