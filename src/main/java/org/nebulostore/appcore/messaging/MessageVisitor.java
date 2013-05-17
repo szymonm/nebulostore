@@ -9,8 +9,11 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  * Generic Message visitor class. Subclasses should define "visit" methods with one parameter that
  * is a subclass of Message. Visitor will go up the class hierarchy and call the first suitable
  * method it finds.
+ *
  * @param <R>
  *          return type.
+ *
+ * @author Bolek Kulbabinski
  */
 public abstract class MessageVisitor<R> {
   private static final String METHOD_NAME = "visit";
@@ -40,7 +43,7 @@ public abstract class MessageVisitor<R> {
         } catch (IllegalAccessException e) {
           throw new RuntimeException("IllegalAccessException in visitor.", e);
         } catch (InvocationTargetException e) {
-          throw new NebuloException("Exception from visit method.", e);
+          throw new NebuloException("Exception from visit method.", e.getCause());
         }
       }
       return visitDefault((Message) message);

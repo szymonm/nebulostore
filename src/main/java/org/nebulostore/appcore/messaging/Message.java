@@ -28,10 +28,11 @@ public abstract class Message implements Serializable {
   }
 
   /**
-   * Accept method required by the visitor pattern. Use the following body in implementations.
-   *     { return visitor.visit(this); }
+   * Accept method required by the visitor pattern.
    */
-  public abstract <R> R accept(MessageVisitor<R> visitor) throws NebuloException;
+  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
+    return visitor.visit(this);
+  }
 
   public JobModule getHandler() throws NebuloException {
     // TODO(bolek): Change it into a more specific exception type.
