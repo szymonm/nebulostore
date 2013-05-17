@@ -34,7 +34,7 @@ public final class ReadWriteClient extends ConductorClient {
   private static final int ITER_SLEEP = 500;
 
   private List<CommAddress> clients_;
-  private Vector<NebuloAddress> files_;
+  private List<NebuloAddress> files_;
   private AppKey myAppKey_;
   private int clientId_;
   private NebuloFile myFile_;

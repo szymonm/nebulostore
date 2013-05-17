@@ -2,9 +2,9 @@ package org.nebulostore.broker;
 
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.api.PutKeyModule;
@@ -29,6 +29,8 @@ public class AlwaysAcceptingBroker extends Broker {
 
   private static final int TIMEOUT_SEC = 10;
   private static final int MAX_CONTRACTS = 3;
+  /* Default offer of 10 MB */
+  private static final int DEFAULT_OFFER = 10 * 1024;
   private final BrokerVisitor visitor_ = new BrokerVisitor();
   private Set<CommAddress> offerRecipients_ = new TreeSet<CommAddress>();
 
@@ -59,7 +61,7 @@ public class AlwaysAcceptingBroker extends Broker {
         BrokerContext.getInstance().addContract(message.getContract());
 
         ReplicationGroup currGroup = new ReplicationGroup(BrokerContext.getInstance().getReplicas(),
-            new BigInteger("0"), new BigInteger("1000000"));
+            BigInteger.ZERO, new BigInteger("1000000"));
         PutKeyModule module = new PutKeyModule(currGroup, outQueue_);
 
         try {
@@ -76,7 +78,7 @@ public class AlwaysAcceptingBroker extends Broker {
     public Void visit(CommPeerFoundMessage message) {
       logger_.debug("Found new peer.");
       if (BrokerContext.getInstance().getReplicas().length < MAX_CONTRACTS) {
-        Vector<CommAddress> knownPeers = NetworkContext.getInstance().getKnownPeers();
+        List<CommAddress> knownPeers = NetworkContext.getInstance().getKnownPeers();
         Iterator<CommAddress> iterator = knownPeers.iterator();
         while (iterator.hasNext()) {
           CommAddress address = iterator.next();
@@ -85,7 +87,7 @@ public class AlwaysAcceptingBroker extends Broker {
             // Send offer to new peer (10MB by default).
             logger_.debug("Sending offer to " + address);
             networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), null, address,
-                new Contract("contract", myAddress_, address, 10 * 1024)));
+                new Contract("contract", myAddress_, address, DEFAULT_OFFER)));
             offerRecipients_.add(address);
             break;
           }

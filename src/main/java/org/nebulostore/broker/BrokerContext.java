@@ -29,8 +29,8 @@ public final class BrokerContext {
   // TODO(szm,bolek): make fields private and create synchronized methods for accessing them.
 
   private final ContractsSet contracts_ = new ContractsSet();
-  private final Map<CommAddress, Vector<Contract>> contractMap_ =
-      new TreeMap<CommAddress, Vector<Contract>>();
+  private final Map<CommAddress, List<Contract>> contractMap_ =
+      new TreeMap<CommAddress, List<Contract>>();
 
   private final ReadWriteLock readWriteLock_ = new ReentrantReadWriteLock();
   private final Lock readLock_ = readWriteLock_.readLock();
@@ -39,25 +39,25 @@ public final class BrokerContext {
   /**
    * Available space for contract.
    */
-  public HashMap<Contract, Integer> freeSpaceMap_ = new HashMap<Contract, Integer>();
+  public Map<Contract, Integer> freeSpaceMap_ = new HashMap<Contract, Integer>();
 
   /**
    * Contract offers send to peers, waiting for response.
    */
-  public HashMap<CommAddress, Contract> contractOffers_ = new HashMap<CommAddress, Contract>();
+  public Map<CommAddress, Contract> contractOffers_ = new HashMap<CommAddress, Contract>();
 
   /**
    * Peers already discovered by this instance.
    */
-  public HashSet<CommAddress> knownPeers_ = new HashSet<CommAddress>();
+  public Set<CommAddress> knownPeers_ = new HashSet<CommAddress>();
 
   /* Asynchronous messages */
 
   /**
    * Messages waiting to be retrieved by peers.
    */
-  public Map<CommAddress, LinkedList<AsynchronousMessage>> waitingAsynchronousMessagesMap_ =
-      new HashMap<CommAddress, LinkedList<AsynchronousMessage>>();
+  public Map<CommAddress, List<AsynchronousMessage>> waitingAsynchronousMessagesMap_ =
+      new HashMap<CommAddress, List<AsynchronousMessage>>();
 
   /**
    * InstanceId's of peers, that retrieved AM, but haven't sent response yet.
@@ -89,7 +89,7 @@ public final class BrokerContext {
       if (contractMap_.containsKey(contract.getPeer())) {
         contractMap_.get(contract.getPeer()).add(contract);
       } else {
-        Vector<Contract> vector = new Vector<Contract>();
+        List<Contract> vector = new Vector<Contract>();
         vector.add(contract);
         contractMap_.put(contract.getPeer(), vector);
       }
@@ -123,7 +123,7 @@ public final class BrokerContext {
     readLock_.unlock();
   }
 
-  public Vector<Contract> getUserContracts(CommAddress id) {
+  public List<Contract> getUserContracts(CommAddress id) {
     readLock_.lock();
     try {
       return contractMap_.get(id);

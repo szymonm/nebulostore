@@ -3,7 +3,6 @@ package org.nebulostore.systest.lists;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.addressing.NebuloAddress;
@@ -49,7 +48,7 @@ public final class ListsServer extends ConductorServer {
   public void feedStats(CommAddress sender, CaseStatistics stats) {
     ListsStats lstStats = (ListsStats) stats;
     StringBuffer result = new StringBuffer();
-    Vector<NebuloAddress> addresses = lstStats.getAddresses();
+    List<NebuloAddress> addresses = lstStats.getAddresses();
     for (NebuloAddress addr : addresses)
       result.append(" " + addr + ",");
     logger_.debug("Attempted " + lstStats.getNTriedFiles() + " downloads. " +

@@ -1,6 +1,7 @@
 package org.nebulostore.async;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -68,7 +69,7 @@ public final class GetAsynchronousMessagesModuleTest {
     assertTrue(gam.getDestinationAddress() == synchroPeerAddress);
     //assertTrue(gam.getRecipient() == BrokerContext.getInstance().instanceID_);
 
-    LinkedList<AsynchronousMessage> list = new LinkedList<AsynchronousMessage>();
+    List<AsynchronousMessage> list = new LinkedList<AsynchronousMessage>();
     AsynchronousMessagesMessage messages = new AsynchronousMessagesMessage(jobId, null, null,
         list);
     inQueue.add(messages);

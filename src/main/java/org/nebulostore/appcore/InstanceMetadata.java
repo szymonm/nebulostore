@@ -2,6 +2,7 @@ package org.nebulostore.appcore;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.nebulostore.appcore.addressing.AppKey;
@@ -21,7 +22,7 @@ public class InstanceMetadata implements Serializable, Mergeable {
 
   CommAddress currentAddress_;
   /* Communication addresses of peers that store messages for @instance.*/
-  LinkedList<CommAddress> inboxHolders_;
+  List<CommAddress> inboxHolders_;
 
   private final ConcurrentLinkedQueue<PeerConnectionSurvey> statistics_ =
       new ConcurrentLinkedQueue<PeerConnectionSurvey>();
@@ -38,7 +39,7 @@ public class InstanceMetadata implements Serializable, Mergeable {
     inboxHolders_ = inboxHolders;
   }
 
-  public LinkedList<CommAddress> getInboxHolders() {
+  public List<CommAddress> getInboxHolders() {
     return inboxHolders_;
   }
 

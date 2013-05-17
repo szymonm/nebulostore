@@ -1,6 +1,7 @@
 package org.nebulostore.async;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
@@ -31,10 +32,10 @@ public class StoreAsynchronousMessagesModule extends JobModule {
     public Void visit(StoreAsynchronousMessage message) {
       BrokerContext context = BrokerContext.getInstance();
       // TODO(szm): Check if I should store this message.
-      LinkedList<AsynchronousMessage> v = context.waitingAsynchronousMessagesMap_.get(
+      List<AsynchronousMessage> v = context.waitingAsynchronousMessagesMap_.get(
           message.getRecipient());
       if (v == null) {
-        LinkedList<AsynchronousMessage> list = new LinkedList<AsynchronousMessage>();
+        List<AsynchronousMessage> list = new LinkedList<AsynchronousMessage>();
         list.add(message.getMessage());
         context.waitingAsynchronousMessagesMap_.put(message.getRecipient(), list);
       } else {

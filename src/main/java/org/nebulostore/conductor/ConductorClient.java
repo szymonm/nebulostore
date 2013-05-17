@@ -3,7 +3,6 @@ package org.nebulostore.conductor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -235,13 +234,13 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   protected final class AddressExchangeVisitor extends TestingModuleVisitor {
     private final List<CommAddress> clients_;
     private final int currClientIndex_;
-    private final Vector<NebuloAddress> addresses_;
+    private final List<NebuloAddress> addresses_;
     private final NebuloAddress myAddress_;
     private final int initialSleep_;
     private final long timeoutMillis_;
     private final Timer visitorTimer_;
 
-    public AddressExchangeVisitor(List<CommAddress> clients, Vector<NebuloAddress> addresses,
+    public AddressExchangeVisitor(List<CommAddress> clients, List<NebuloAddress> addresses,
         int myClientId, NebuloAddress myAddress, int initialSleep, long timeoutMillis) {
       clients_ = new ArrayList<CommAddress>(clients);
       addresses_ = addresses;

@@ -1,6 +1,7 @@
 package org.nebulostore.conductor;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.inject.Inject;
 
@@ -57,14 +58,14 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   /**
    * CommAddresses of the received Tocs.
    */
-  HashSet<CommAddress> tocsAddresses_ = new HashSet<CommAddress>();
+  Set<CommAddress> tocsAddresses_ = new HashSet<CommAddress>();
 
   private boolean successful_ = true;
 
   /**
    * CommAdresses of peers performing this test.
    */
-  protected HashSet<CommAddress> clients_;
+  protected Set<CommAddress> clients_;
 
   /**
    * JobId that clients use on their side.
@@ -303,7 +304,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
         logger_.debug("Tocs incremented to: " + tocs_);
 
         if (tocs_ < peersNeeded_) {
-          HashSet<CommAddress> tmp = new HashSet<CommAddress>(clients_);
+          Set<CommAddress> tmp = new HashSet<CommAddress>(clients_);
           tmp.removeAll(tocsAddresses_);
           logger_.debug("Still waiting for " + (peersNeeded_ - tocs_) + " peers from: " +
               tmp.toString());

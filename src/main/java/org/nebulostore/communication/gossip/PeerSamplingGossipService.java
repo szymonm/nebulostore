@@ -217,7 +217,7 @@ public final class PeerSamplingGossipService extends GossipService {
           new LinkedList<PeerDescriptor>());
     }
 
-    ArrayList<PeerDescriptor> bufferToSend;
+    List<PeerDescriptor> bufferToSend;
     synchronized (peers_) {
       bufferToSend = new ArrayList<PeerDescriptor>(peers_);
     }
@@ -225,7 +225,7 @@ public final class PeerSamplingGossipService extends GossipService {
 
     // Finding H oldest address and moving them to the end of list
     if (healingFactor_ < bufferToSend.size()) {
-      ArrayList<PeerDescriptor> hOldest =
+      List<PeerDescriptor> hOldest =
         new ArrayList<PeerDescriptor>(bufferToSend);
       Collections.sort(hOldest, new AgeComparator());
       hOldest.subList(0, hOldest.size() - healingFactor_ - 1).clear();
@@ -270,7 +270,7 @@ public final class PeerSamplingGossipService extends GossipService {
       }
 
       //Delete old items
-      ArrayList<PeerDescriptor> peerList = new ArrayList<PeerDescriptor>(peers_);
+      List<PeerDescriptor> peerList = new ArrayList<PeerDescriptor>(peers_);
       if (peers_.size() > maxPeersSize_) {
         Collections.sort(peerList, new AgeComparator());
         peerList.subList(0, peerList.size() -

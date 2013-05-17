@@ -1,6 +1,7 @@
 package org.nebulostore.networkmonitor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
@@ -20,8 +21,8 @@ public final class NetworkContext {
   private static Logger logger_ = Logger.getLogger(NetworkContext.class);
   private static NetworkContext instance_;
 
-  private final HashSet<CommAddress> knownPeers_;
-  private final Vector<CommAddress> knownPeersVector_;
+  private final Set<CommAddress> knownPeers_;
+  private final List<CommAddress> knownPeersVector_;
 
   private Set<CommAddress> randomPeersSample_ = new HashSet<CommAddress>();
   private CommAddress commAddress_;
@@ -29,7 +30,7 @@ public final class NetworkContext {
   /**
    * Messages to be send to dispatcher when context changes.
    */
-  private final HashSet<MessageGenerator> contextChangeMessageGenerators_ =
+  private final Set<MessageGenerator> contextChangeMessageGenerators_ =
       new HashSet<MessageGenerator>();
   private BlockingQueue<Message> dispatcherQueue_;
 
@@ -82,7 +83,7 @@ public final class NetworkContext {
     contextChangeMessageGenerators_.remove(generator);
   }
 
-  public Vector<CommAddress> getKnownPeers() {
+  public List<CommAddress> getKnownPeers() {
     return new Vector<CommAddress>(knownPeersVector_);
   }
 

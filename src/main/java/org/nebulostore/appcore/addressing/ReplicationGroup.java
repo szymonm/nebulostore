@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -17,7 +18,7 @@ import org.nebulostore.communication.address.CommAddress;
 public class ReplicationGroup implements Serializable, Comparable<ObjectId>, Iterable<CommAddress> {
   private static final long serialVersionUID = -2519006213860783596L;
 
-  private final ArrayList<CommAddress> replicators_;
+  private final List<CommAddress> replicators_;
 
   // This group replicates objects with keys in [lowerBound_, upperBound_).
   private final BigInteger lowerBound_;

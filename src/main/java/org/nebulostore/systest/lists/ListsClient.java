@@ -42,7 +42,7 @@ public final class ListsClient extends ConductorClient {
   private static final int THREAD_POOL_SIZE = 5;
 
   private final List<CommAddress> clients_;
-  private final Vector<NebuloAddress> addresses_;
+  private final List<NebuloAddress> addresses_;
   private final int clientId_;
   private final ListsStats stats_;
   private NebuloList myList_;

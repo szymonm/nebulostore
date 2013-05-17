@@ -300,6 +300,11 @@
         <property name="illegalClassNames" value="java.lang.Error, java.lang.RuntimeException"/>
     </module>
 
+    <!-- Disallows not loosely coupled type definitions like HashSet -->
+    <module name="IllegalType">
+        <property name="format" value="^$"/>
+    </module>
+
     <!-- Ensures correct layout of JUnit test cases -->
     <module name="JUnitTestCase"/>
 

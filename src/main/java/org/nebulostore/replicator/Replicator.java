@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -61,12 +62,12 @@ public class Replicator extends JobModule {
 
   // Hashtable is synchronized.
   //TODO(szm): filesLocations and previousVersions should be stored on disk!!
-  private static Hashtable<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
+  private static Map<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
   // NOTE: Including current version.
-  private static Hashtable<ObjectId, Set<String>> previousVersions_ = new Hashtable<ObjectId,
+  private static Map<ObjectId, Set<String>> previousVersions_ = new Hashtable<ObjectId,
       Set<String>>();
-  private static Hashtable<ObjectId, Boolean> freshnessMap_ = new Hashtable<ObjectId, Boolean>(256);
-  private static Hashtable<ObjectId, Semaphore> locksMap_ = new Hashtable<ObjectId, Semaphore>();
+  private static Map<ObjectId, Boolean> freshnessMap_ = new Hashtable<ObjectId, Boolean>(256);
+  private static Map<ObjectId, Semaphore> locksMap_ = new Hashtable<ObjectId, Semaphore>();
   private static AppKey appKey_;
 
   private final MessageVisitor<Void> visitor_;

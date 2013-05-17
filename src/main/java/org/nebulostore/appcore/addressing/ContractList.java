@@ -3,13 +3,14 @@ package org.nebulostore.appcore.addressing;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * List of replication groups.
  */
 public class ContractList implements Serializable {
   private static final long serialVersionUID = 8829107129515732846L;
-  private final ArrayList<ReplicationGroup> groups_;
+  private final List<ReplicationGroup> groups_;
 
   public ContractList() {
     groups_ = new ArrayList<ReplicationGroup>();

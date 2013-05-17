@@ -1,5 +1,6 @@
 package org.nebulostore.systest.lists;
 
+import java.util.List;
 import java.util.Vector;
 
 import org.nebulostore.appcore.addressing.NebuloAddress;
@@ -13,7 +14,7 @@ import org.nebulostore.conductor.CaseStatistics;
 public final class ListsStats extends CaseStatistics {
   private static final long serialVersionUID = -2676033693308257318L;
   private int nTriedFiles_;
-  private Vector<NebuloAddress> unavailableFiles_ = new Vector<NebuloAddress>();
+  private List<NebuloAddress> unavailableFiles_ = new Vector<NebuloAddress>();
 
   public void incTriedFiles() {
     ++nTriedFiles_;
@@ -27,7 +28,7 @@ public final class ListsStats extends CaseStatistics {
     unavailableFiles_.add(address);
   }
 
-  public Vector<NebuloAddress> getAddresses() {
+  public List<NebuloAddress> getAddresses() {
     return unavailableFiles_;
   }
 }

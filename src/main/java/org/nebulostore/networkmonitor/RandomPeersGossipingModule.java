@@ -3,6 +3,7 @@ package org.nebulostore.networkmonitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -57,7 +58,7 @@ public class RandomPeersGossipingModule extends JobModule {
       jobId_ = message.getId();
       // starting in active mode
       activeMode_ = true;
-      TreeSet<CommAddress> view = getView();
+      Set<CommAddress> view = getView();
       if (view.isEmpty()) {
         logger_.debug("Empty view");
         endJobModule();
@@ -83,7 +84,7 @@ public class RandomPeersGossipingModule extends JobModule {
     }
 
     public Void visit(RandomPeersSampleMessage message) {
-      TreeSet<CommAddress> view = getView();
+      Set<CommAddress> view = getView();
       if (activeMode_) {
         view.addAll(message.getPeersSet());
         view = selectView(view);
@@ -130,9 +131,9 @@ public class RandomPeersGossipingModule extends JobModule {
    * Filters elements of view so that result is a representative group of peers not larger
    * than RANDOM_PEERS_SAMPLE_SIZE.
    */
-  public TreeSet<CommAddress> selectView(TreeSet<CommAddress> view) {
+  public Set<CommAddress> selectView(Set<CommAddress> view) {
     // For now only taking random peers from view.
-    ArrayList<CommAddress> v = new ArrayList<CommAddress>(view);
+    List<CommAddress> v = new ArrayList<CommAddress>(view);
     Collections.shuffle(v);
     return new TreeSet<CommAddress>(v.subList(0, Math.min(RANDOM_PEERS_SAMPLE_SIZE, v.size() - 1)));
   }
@@ -141,8 +142,8 @@ public class RandomPeersGossipingModule extends JobModule {
    * Returns a clone of random peers TreeSet from NetworkContext.
    * If no peers are stored in NetworkContext waits for them.
    */
-  protected TreeSet<CommAddress> getView() {
-    TreeSet<CommAddress> set =
+  protected Set<CommAddress> getView() {
+    Set<CommAddress> set =
         new TreeSet<CommAddress>(NetworkContext.getInstance().getRandomPeersSample());
     return set;
   }

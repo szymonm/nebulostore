@@ -1,5 +1,7 @@
 package org.nebulostore.async;
 
+import java.util.List;
+
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -64,7 +66,8 @@ public class AddSynchroPeerModule extends JobModule {
       jobId_ = message.getId();
       // If synchroPeer_ is not set we use the last one found by the NetworkContext.
       if (synchroPeer_ == null) {
-        synchroPeer_ = NetworkContext.getInstance().getKnownPeers().lastElement();
+        List<CommAddress> synchroPeers = NetworkContext.getInstance().getKnownPeers();
+        synchroPeer_ = synchroPeers.get(synchroPeers.size() - 1);
       }
       if (synchroPeer_ == null) {
         logger_.warn("Empy synchro peer got as the last from NetworkContext.");

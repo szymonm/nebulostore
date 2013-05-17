@@ -3,6 +3,7 @@ package org.nebulostore.appcore.model;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -19,7 +20,7 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
   private static Logger logger_ = Logger.getLogger(NebuloList.class);
   private static final long serialVersionUID = 8346982029337955123L;
 
-  ArrayList<NebuloElement> elements_;
+  List<NebuloElement> elements_;
   Set<BigInteger> removedIds_;
 
   /**
@@ -88,13 +89,13 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
    * @param other  the other list to merge with
    */
   public void mergeWith(NebuloList other) throws ListMergeException {
-    ArrayList<NebuloElement> newList = new ArrayList<NebuloElement>();
-    TreeSet<BigInteger> allRemoved = new TreeSet<BigInteger>();
+    List<NebuloElement> newList = new ArrayList<NebuloElement>();
+    Set<BigInteger> allRemoved = new TreeSet<BigInteger>();
     allRemoved.addAll(removedIds_);
     allRemoved.addAll(other.removedIds_);
 
-    TreeSet<BigInteger> myElements = new TreeSet<BigInteger>();
-    TreeSet<BigInteger> myAdded = new TreeSet<BigInteger>();
+    Set<BigInteger> myElements = new TreeSet<BigInteger>();
+    Set<BigInteger> myAdded = new TreeSet<BigInteger>();
     Iterator<NebuloElement> myIter = elements_.iterator();
     while (myIter.hasNext()) {
       myElements.add(myIter.next().elementId_);
@@ -198,7 +199,7 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
     return true;
   }
 
-  private void addIfNotRemoved(ArrayList<NebuloElement> list, NebuloElement elem,
+  private void addIfNotRemoved(List<NebuloElement> list, NebuloElement elem,
       Set<BigInteger> removed) {
     if (!removed.contains(elem.elementId_)) {
       list.add(elem);
