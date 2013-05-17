@@ -5,7 +5,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 /**
  * @author szymonmatejczyk
  */
-public class GetObjectError extends NebuloException {
+public class GetObjectException extends NebuloException {
   private static final long serialVersionUID = -5577241173591330754L;
 
   final String message_;
@@ -14,7 +14,7 @@ public class GetObjectError extends NebuloException {
     return message_;
   }
 
-  public GetObjectError(String message) {
+  public GetObjectException(String message) {
     super();
     message_ = message;
   }

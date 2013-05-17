@@ -6,7 +6,7 @@ import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.replicator.Replicator;
+import org.nebulostore.replicator.ReplicatorImpl;
 
 /**
  * Message send to replicator by owner of an object, when he stores outdated version of object.
@@ -30,7 +30,7 @@ public class ObjectOutdatedMessage extends CommMessage {
 
   @Override
   public JobModule getHandler() throws NebuloException {
-    return new Replicator(jobId_, null, null);
+    return new ReplicatorImpl(jobId_, null, null);
   }
 
   @Override

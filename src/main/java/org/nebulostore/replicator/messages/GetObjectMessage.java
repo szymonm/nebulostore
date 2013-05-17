@@ -6,7 +6,7 @@ import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.replicator.Replicator;
+import org.nebulostore.replicator.ReplicatorImpl;
 
 /**
  * @author bolek This is a request for a particular object sent to peer that
@@ -49,6 +49,6 @@ public class GetObjectMessage extends CommMessage {
 
   @Override
   public JobModule getHandler() {
-    return new Replicator(jobId_, null, null);
+    return new ReplicatorImpl(jobId_, null, null);
   }
 }

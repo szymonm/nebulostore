@@ -24,7 +24,7 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.replicator.Replicator;
+import org.nebulostore.replicator.ReplicatorImpl;
 import org.nebulostore.timer.MessageGenerator;
 import org.nebulostore.timer.Timer;
 
@@ -127,8 +127,8 @@ public class Peer extends AbstractPeer {
     dispatcherInQueue_.add(new JobInitMessage(new RegisterInstanceInDHTModule()));*/
 
     // Initialize Replicator.
-    Replicator.setConfig(config_);
-    Replicator.setAppKey(appKey_);
+    ReplicatorImpl.setConfig(config_);
+    ReplicatorImpl.setAppKey(appKey_);
   }
 
   protected void startPeer() {

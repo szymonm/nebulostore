@@ -49,8 +49,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Replicator - disk interface.
  * @author szymonmatejczyk
  */
-public class Replicator extends JobModule {
-  private static Logger logger_ = Logger.getLogger(Replicator.class);
+public class ReplicatorImpl extends JobModule {
+  private static Logger logger_ = Logger.getLogger(ReplicatorImpl.class);
   private static final String CONFIG_PREFIX = "replicator.";
 
   private static final int UPDATE_TIMEOUT_SEC = 10;
@@ -83,7 +83,8 @@ public class Replicator extends JobModule {
     appKey_ = appKey;
   }
 
-  public Replicator(String jobId, BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue) {
+  public ReplicatorImpl(String jobId, BlockingQueue<Message> inQueue,
+      BlockingQueue<Message> outQueue) {
     super(jobId);
     checkNotNull(config_);
     checkNotNull(pathPrefix_);

@@ -11,7 +11,7 @@ import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.replicator.Replicator;
+import org.nebulostore.replicator.ReplicatorImpl;
 
 
 /**
@@ -65,6 +65,6 @@ public class QueryToStoreObjectMessage extends CommMessage {
 
   @Override
   public JobModule getHandler() {
-    return new Replicator(jobId_, null, null);
+    return new ReplicatorImpl(jobId_, null, null);
   }
 }

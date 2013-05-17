@@ -20,7 +20,7 @@ import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.replicator.DeleteObjectException;
-import org.nebulostore.replicator.Replicator;
+import org.nebulostore.replicator.ReplicatorImpl;
 import org.nebulostore.timer.TimeoutMessage;
 import org.nebulostore.timer.Timer;
 
@@ -116,7 +116,7 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
             NebuloAddress address = ((DeleteNebuloObjectMessage) m).getObjectId();
             logger_.debug("Received delete asynchronous message " + address);
             try {
-              Replicator.deleteObject(address.getObjectId());
+              ReplicatorImpl.deleteObject(address.getObjectId());
             } catch (DeleteObjectException e) {
               logger_.error("Unable to delete object after receiving asynchronous message.");
             }

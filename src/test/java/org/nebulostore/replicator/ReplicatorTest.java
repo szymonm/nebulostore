@@ -30,8 +30,10 @@ public class ReplicatorTest {
   private final BlockingQueue<Message> inQueue1_ = new LinkedBlockingQueue<Message>();
   private final BlockingQueue<Message> networkQueue_ = new LinkedBlockingQueue<Message>();
   private final BlockingQueue<Message> deadDispatcherQueue_ = new LinkedBlockingQueue<Message>();
-  private final Replicator replicator_ = new Replicator(null, inQueue_, deadDispatcherQueue_);
-  private final Replicator replicator1_ = new Replicator(null, inQueue1_, deadDispatcherQueue_);
+  private final ReplicatorImpl replicator_ =
+      new ReplicatorImpl(null, inQueue_, deadDispatcherQueue_);
+  private final ReplicatorImpl replicator1_ =
+      new ReplicatorImpl(null, inQueue1_, deadDispatcherQueue_);
 
   private Thread replicatorThread_;
 
