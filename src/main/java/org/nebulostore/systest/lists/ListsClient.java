@@ -3,7 +3,6 @@ package org.nebulostore.systest.lists;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -54,7 +53,7 @@ public final class ListsClient extends ConductorClient {
     clients_ = new ArrayList<CommAddress>(clients);
     clientId_ = clientId;
     stats_ = new ListsStats();
-    addresses_ = new Vector<NebuloAddress>();
+    addresses_ = new ArrayList<NebuloAddress>();
   }
 
   @Inject

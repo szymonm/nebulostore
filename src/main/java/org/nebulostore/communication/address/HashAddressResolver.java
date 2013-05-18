@@ -9,7 +9,7 @@ import net.tomp2p.peers.Number160;
 import net.tomp2p.storage.Data;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.communication.dht.KeyDHT;
+import org.nebulostore.communication.dht.core.KeyDHT;
 import org.nebulostore.communication.exceptions.AddressNotPresentException;
 
 /**

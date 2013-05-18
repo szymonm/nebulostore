@@ -46,8 +46,6 @@ public class AlwaysAcceptingBroker extends Broker {
     public Void visit(ContractOfferMessage message) {
       // Accept every offer!
       logger_.debug("Accepting offer from: " + message.getSourceAddress());
-      //TODO(bolek): Do we want it here?
-      //NetworkContext.getInstance().addFoundPeer(message.getSourceAddress());
       //TODO(bolek): Should we accept same offer twice?
       networkQueue_.add(new OfferReplyMessage(message.getId(), message.getSourceAddress(),
           message.getContract(), true));

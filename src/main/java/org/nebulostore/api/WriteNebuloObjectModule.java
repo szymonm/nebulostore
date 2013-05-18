@@ -22,7 +22,7 @@ import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
 import org.nebulostore.async.messages.UpdateSmallNebuloObjectMessage;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.KeyDHT;
+import org.nebulostore.communication.dht.core.KeyDHT;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;

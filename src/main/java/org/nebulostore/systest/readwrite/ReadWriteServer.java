@@ -34,11 +34,13 @@ public final class ReadWriteServer extends ConductorServer {
     sleep(INITIAL_SLEEP);
     Iterator<CommAddress> it = clients_.iterator();
     List<CommAddress> clients = new ArrayList<CommAddress>(peersNeeded_);
-    for (int i = 0; i < peersNeeded_; ++i)
+    for (int i = 0; i < peersNeeded_; ++i) {
       clients.add(it.next());
-    for (int i = 0; i < peersNeeded_; ++i)
+    }
+    for (int i = 0; i < peersNeeded_; ++i) {
       networkQueue_.add(new InitMessage(clientsJobId_, null, clients.get(i),
           new ReadWriteClient(jobId_, commAddress_, NUM_PHASES, clients, i)));
+    }
   }
 
   @Override
@@ -46,8 +48,10 @@ public final class ReadWriteServer extends ConductorServer {
     logger_.debug("Received statistics from " + sender);
     ReadWriteStats rwStats = (ReadWriteStats) stats;
     StringBuffer result = new StringBuffer();
-    for (NebuloAddress addr : rwStats.getAddresses())
-      result.append(addr + ", ");
+    for (NebuloAddress addr : rwStats.getAddresses()) {
+      result.append(addr);
+      result.append(", ");
+    }
     logger_.debug("Unavailable files: " + result);
   }
 

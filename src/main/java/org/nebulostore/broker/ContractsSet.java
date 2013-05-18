@@ -6,7 +6,7 @@ import java.util.Iterator;
 /**
  * Set of contracts.
  */
-public class ContractsSet extends HashSet<Contract> {
+public class ContractsSet extends HashSet<Contract> implements Cloneable {
   private static final long serialVersionUID = 112351L;
 
   public ContractsSet() {

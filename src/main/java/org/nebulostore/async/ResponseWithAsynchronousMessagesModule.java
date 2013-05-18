@@ -42,10 +42,10 @@ public class ResponseWithAsynchronousMessagesModule extends JobModule {
       // TODO(szm): prevent message flooding
       AsynchronousMessagesMessage reply = new AsynchronousMessagesMessage(message.getId(),
           message.getDestinationAddress(), message.getSourceAddress(),
-          context_.waitingAsynchronousMessagesMap_.get(message.getRecipient()));
+          context_.getWaitingAsynchronousMessages().get(message.getRecipient()));
       networkQueue_.add(reply);
 
-      context_.waitingForAck_.add(message.getRecipient());
+      context_.getWaitingForAck().add(message.getRecipient());
       // TODO(szm): Timeout
       return null;
     }
@@ -53,7 +53,7 @@ public class ResponseWithAsynchronousMessagesModule extends JobModule {
     public Void visit(GotAsynchronousMessagesMessage message) {
       // We assume that if Peer asks for AM to him, there won't be new messages
       // for him.
-      if (context_.waitingForAck_.remove(message.getRecipient())) {
+      if (context_.getWaitingForAck().remove(message.getRecipient())) {
         logger_.debug(message.getRecipient().toString() +
             " successfully downloaded " + "asynchronous messages.");
       } else {

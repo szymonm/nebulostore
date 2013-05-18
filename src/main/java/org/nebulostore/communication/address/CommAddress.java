@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.nebulostore.communication.dht.KeyDHT;
+import org.nebulostore.communication.dht.core.KeyDHT;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

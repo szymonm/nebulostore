@@ -1,9 +1,9 @@
 package org.nebulostore.networkmonitor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.log4j.Logger;
@@ -22,10 +22,9 @@ public final class NetworkContext {
   private static NetworkContext instance_;
 
   private final Set<CommAddress> knownPeers_;
-  private final List<CommAddress> knownPeersVector_;
+  private final List<CommAddress> knownPeersList_;
 
   private Set<CommAddress> randomPeersSample_ = new HashSet<CommAddress>();
-  private CommAddress commAddress_;
 
   /**
    * Messages to be send to dispatcher when context changes.
@@ -43,18 +42,18 @@ public final class NetworkContext {
 
   private NetworkContext() {
     knownPeers_ = new HashSet<CommAddress>();
-    knownPeersVector_ = new Vector<CommAddress>();
+    knownPeersList_ = new ArrayList<CommAddress>();
   }
 
   public void setCommAddress(CommAddress commAddress) {
-    commAddress_ = commAddress;
-    knownPeers_.add(commAddress_);
-    knownPeersVector_.add(commAddress_);
+    knownPeers_.add(commAddress);
+    knownPeersList_.add(commAddress);
   }
 
   private void contextChanged() {
-    for (MessageGenerator m : contextChangeMessageGenerators_)
+    for (MessageGenerator m : contextChangeMessageGenerators_) {
       dispatcherQueue_.add(m.generate());
+    }
   }
 
   /**
@@ -70,11 +69,7 @@ public final class NetworkContext {
     };
     contextChangeMessageGenerators_.add(generator);
   }
-/*
-  public synchronized void removeContextChangeMessage(Message message) {
-    contextChangeMessagesGenerators_.remove(message);
-  }
-*/
+
   public synchronized void addContextChangeMessageGenerator(MessageGenerator generator) {
     contextChangeMessageGenerators_.add(generator);
   }
@@ -84,7 +79,7 @@ public final class NetworkContext {
   }
 
   public List<CommAddress> getKnownPeers() {
-    return new Vector<CommAddress>(knownPeersVector_);
+    return new ArrayList<CommAddress>(knownPeersList_);
   }
 
   public synchronized void addFoundPeer(CommAddress address) {
@@ -92,7 +87,7 @@ public final class NetworkContext {
     if (!knownPeers_.contains(address) && address != null) {
       logger_.debug("Adding a CommAddress: " + address);
       knownPeers_.add(address);
-      knownPeersVector_.add(address);
+      knownPeersList_.add(address);
 
       if (randomPeersSample_.size() < RandomPeersGossipingModule.RANDOM_PEERS_SAMPLE_SIZE) {
         randomPeersSample_.add(address);

@@ -1,4 +1,4 @@
-package org.nebulostore.communication.gossip;
+package org.nebulostore.communication.gossip.core;
 
 import java.io.Serializable;
 

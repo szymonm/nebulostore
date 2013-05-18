@@ -37,11 +37,13 @@ public final class ListsServer extends ConductorServer {
     sleep(INITIAL_SLEEP);
     Iterator<CommAddress> it = clients_.iterator();
     List<CommAddress> clients = new ArrayList<CommAddress>(peersNeeded_);
-    for (int i = 0; i < peersNeeded_; ++i)
+    for (int i = 0; i < peersNeeded_; ++i) {
       clients.add(it.next());
-    for (int i = 0; i < peersNeeded_; ++i)
+    }
+    for (int i = 0; i < peersNeeded_; ++i) {
       networkQueue_.add(new InitMessage(clientsJobId_, null, clients.get(i),
           new ListsClient(jobId_, commAddress_, NUM_PHASES, clients, i)));
+    }
   }
 
   @Override
@@ -49,8 +51,9 @@ public final class ListsServer extends ConductorServer {
     ListsStats lstStats = (ListsStats) stats;
     StringBuffer result = new StringBuffer();
     List<NebuloAddress> addresses = lstStats.getAddresses();
-    for (NebuloAddress addr : addresses)
+    for (NebuloAddress addr : addresses) {
       result.append(" " + addr + ",");
+    }
     logger_.debug("Attempted " + lstStats.getNTriedFiles() + " downloads. " +
       "Found " + addresses.size() + " unavailable files:" + result);
   }

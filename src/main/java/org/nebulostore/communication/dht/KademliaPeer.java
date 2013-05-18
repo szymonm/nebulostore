@@ -21,6 +21,8 @@ import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.appcore.modules.Module;
+import org.nebulostore.communication.dht.core.KeyDHT;
+import org.nebulostore.communication.dht.core.ValueDHT;
 import org.nebulostore.communication.dht.messages.DelDHTMessage;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;

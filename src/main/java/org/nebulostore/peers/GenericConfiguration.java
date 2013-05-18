@@ -49,8 +49,9 @@ public abstract class GenericConfiguration extends AbstractModule {
       }
       bindSingle(name, defaultType, val);
     } else {
-      for (ConfigurationNode child : children)
+      for (ConfigurationNode child : children) {
         bindRecursively(child, name);
+      }
     }
   }
 

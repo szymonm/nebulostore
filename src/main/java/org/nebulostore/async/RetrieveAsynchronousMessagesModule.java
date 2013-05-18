@@ -78,28 +78,27 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
     }
 
     public Void visit(ValueDHTMessage message) {
-      if (message.getKey().equals(myAddress_.toKeyDHT())) {
-        if (message.getValue().getValue() instanceof InstanceMetadata) {
-          InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
-          context_.myInboxHolders_ = metadata.getInboxHolders();
-          logger_.debug("Retrieving AM from " + context_.myInboxHolders_.size() + " peers.");
-          //TODO(szm): timeouts
-          for (CommAddress inboxHolder : context_.myInboxHolders_) {
-            GetAsynchronousMessagesModule messagesModule =
-                new GetAsynchronousMessagesModule(networkQueue_, inQueue_, context_, inboxHolder);
-            JobInitMessage initializingMessage = new JobInitMessage(messagesModule);
-            context_.waitingForMessages_.add(initializingMessage.getId());
-          }
-          if (context_.myInboxHolders_.size() == 0) {
-            endJobModule();
-          }
+      if (message.getKey().equals(myAddress_.toKeyDHT()) &&
+          (message.getValue().getValue() instanceof InstanceMetadata)) {
+        InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
+        context_.setMyInboxHolders(metadata.getInboxHolders());
+        logger_.debug("Retrieving AM from " + context_.getMyInboxHolders().size() + " peers.");
+        //TODO(szm): timeouts
+        for (CommAddress inboxHolder : context_.getMyInboxHolders()) {
+          GetAsynchronousMessagesModule messagesModule =
+              new GetAsynchronousMessagesModule(networkQueue_, inQueue_, context_, inboxHolder);
+          JobInitMessage initializingMessage = new JobInitMessage(messagesModule);
+          context_.getWaitingForMessages().add(initializingMessage.getId());
+        }
+        if (context_.getMyInboxHolders().size() == 0) {
+          endJobModule();
         }
       }
       return null;
     }
 
     public Void visit(AsynchronousMessagesMessage message) {
-      if (!context_.waitingForMessages_.remove(message.getId())) {
+      if (!context_.getWaitingForMessages().remove(message.getId())) {
         logger_.warn("Received not expected message.");
       }
 
@@ -125,7 +124,7 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
           }
         }
       }
-      if (context_.waitingForMessages_.isEmpty()) {
+      if (context_.getWaitingForMessages().isEmpty()) {
         endJobModule();
       }
       return null;

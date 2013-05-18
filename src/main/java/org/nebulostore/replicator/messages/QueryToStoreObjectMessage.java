@@ -25,12 +25,7 @@ public class QueryToStoreObjectMessage extends CommMessage {
   EncryptedObject encryptedEntity_;
   Set<String> previousVersionSHAs_;
   private final String sourceJobId_;
-  /*
-  public StoreObjectMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress) {
-    super(jobId, sourceAddress, destAddress);
-  }
-   */
+
   public QueryToStoreObjectMessage(String jobId, CommAddress sourceAddress,
       CommAddress destAddress, ObjectId objectId, EncryptedObject encryptedEntity,
       Set<String> previousVersionSHAs, String sourceJobId) {

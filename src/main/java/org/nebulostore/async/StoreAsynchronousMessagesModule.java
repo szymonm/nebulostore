@@ -32,12 +32,12 @@ public class StoreAsynchronousMessagesModule extends JobModule {
     public Void visit(StoreAsynchronousMessage message) {
       BrokerContext context = BrokerContext.getInstance();
       // TODO(szm): Check if I should store this message.
-      List<AsynchronousMessage> v = context.waitingAsynchronousMessagesMap_.get(
+      List<AsynchronousMessage> v = context.getWaitingAsynchronousMessages().get(
           message.getRecipient());
       if (v == null) {
         List<AsynchronousMessage> list = new LinkedList<AsynchronousMessage>();
         list.add(message.getMessage());
-        context.waitingAsynchronousMessagesMap_.put(message.getRecipient(), list);
+        context.getWaitingAsynchronousMessages().put(message.getRecipient(), list);
       } else {
         v.add(message.getMessage());
       }

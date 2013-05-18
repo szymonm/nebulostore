@@ -29,6 +29,8 @@ import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.appcore.modules.Module;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.dht.core.KeyDHT;
+import org.nebulostore.communication.dht.core.ValueDHT;
 import org.nebulostore.communication.dht.messages.BdbMessageWrapper;
 import org.nebulostore.communication.dht.messages.DHTMessage;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;

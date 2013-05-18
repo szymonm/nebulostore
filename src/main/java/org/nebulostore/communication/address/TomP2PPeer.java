@@ -14,7 +14,7 @@ import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.storage.Data;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.communication.dht.KeyDHT;
+import org.nebulostore.communication.dht.core.KeyDHT;
 
 /**
  * TomP2P's kademlia-like implementation of persistent addressing service.

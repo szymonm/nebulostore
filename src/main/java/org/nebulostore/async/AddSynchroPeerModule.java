@@ -12,7 +12,7 @@ import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.ValueDHT;
+import org.nebulostore.communication.dht.core.ValueDHT;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.OkDHTMessage;
@@ -91,7 +91,7 @@ public class AddSynchroPeerModule extends JobModule {
           InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
           // list merging -> on dht level
           metadata.getInboxHolders().add(synchroPeer_);
-          context_.myInboxHolders_ = metadata.getInboxHolders();
+          context_.setMyInboxHolders(metadata.getInboxHolders());
 
           PutDHTMessage m = new PutDHTMessage(jobId_, myAddress_.toKeyDHT(),
               new ValueDHT(metadata));

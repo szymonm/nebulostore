@@ -56,13 +56,12 @@ public class SendAsynchronousMessagesForPeerModule extends JobModule {
     }
 
     public Void visit(ValueDHTMessage message) {
-      if (message.getKey().equals(recipient_.toKeyDHT())) {
-        if (message.getValue().getValue() instanceof InstanceMetadata) {
-          InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
-          for (CommAddress inboxHolder : metadata.getInboxHolders()) {
-            networkQueue_.add(new StoreAsynchronousMessage(jobId_, null, inboxHolder,
-                recipient_, message_));
-          }
+      if (message.getKey().equals(recipient_.toKeyDHT()) &&
+          (message.getValue().getValue() instanceof InstanceMetadata)) {
+        InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
+        for (CommAddress inboxHolder : metadata.getInboxHolders()) {
+          networkQueue_.add(new StoreAsynchronousMessage(jobId_, null, inboxHolder,
+              recipient_, message_));
         }
       }
       return null;

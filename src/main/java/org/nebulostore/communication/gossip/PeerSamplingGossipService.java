@@ -27,6 +27,7 @@ import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.gossip.core.PeerDescriptor;
 import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
@@ -42,6 +43,7 @@ import org.nebulostore.communication.messages.ErrorCommMessage;
 public final class PeerSamplingGossipService extends GossipService {
   private final Logger logger_ = Logger.getLogger(PeerSamplingGossipService.class);
 
+  private static final int DEFAULT_GOSSIP_PERIOD = 20000;
   private static final Random RANDOMIZER = new Random();
   /**
    * Period at which GossipSender sends its advertisments. In milliseconds.
@@ -64,6 +66,7 @@ public final class PeerSamplingGossipService extends GossipService {
    */
   // Default: 5
   private final int swappingFactor_ = 5;
+
   private List<PeerDescriptor> peers_ =
     Collections.synchronizedList(new LinkedList<PeerDescriptor>());
 
@@ -86,7 +89,7 @@ public final class PeerSamplingGossipService extends GossipService {
 
   @Override
   protected void initModule() {
-    gossipPeriod_ = config_.getInt(CONFIG_PREFIX + "gossip-period", 20000);
+    gossipPeriod_ = config_.getInt(CONFIG_PREFIX + "gossip-period", DEFAULT_GOSSIP_PERIOD);
     // Bootstrap is already found.
     outQueue_.add(new CommPeerFoundMessage(bootstrapCommAddress_, commAddress_));
     startGossipSender();
@@ -183,17 +186,6 @@ public final class PeerSamplingGossipService extends GossipService {
       }
       int index = RANDOMIZER.nextInt(peers_.size());
       return peers_.get(index);
-    }
-  }
-
-  /**
-   * Returns list of all neighbouring peers.
-   *
-   * Creates new list to avoid Concurrent modification exceptions.
-   */
-  private Collection<PeerDescriptor> getPeers() {
-    synchronized (peers_) {
-      return new LinkedList<PeerDescriptor>(peers_);
     }
   }
 

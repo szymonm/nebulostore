@@ -5,8 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.addressing.NebuloAddress;
@@ -33,9 +33,9 @@ public class NebuloFile extends NebuloObject {
     private static final long serialVersionUID = -6723808968821818811L;
 
     // FileChunk stores (endByte_ - startByte_) bytes from interval [startByte_, endByte_).
-    public int startByte_;
-    public int endByte_;
-    public NebuloAddress address_;
+    private int startByte_;
+    private int endByte_;
+    private NebuloAddress address_;
 
     // These fields are set to null after deserializaton of NebuloFile.
     private transient FileChunk chunk_;
@@ -98,8 +98,6 @@ public class NebuloFile extends NebuloObject {
       fileSender_ = sender_;
     }
   }
-
-
 
   private static Logger logger_ = Logger.getLogger(NebuloFile.class);
   private static final long serialVersionUID = -1687075358113579488L;
@@ -243,7 +241,7 @@ public class NebuloFile extends NebuloObject {
 
   private void initNewFile() {
     isNew_ = true;
-    chunks_ = new Vector<FileChunkWrapper>();
+    chunks_ = new ArrayList<FileChunkWrapper>();
     // TODO(bolek): How to assign IDs for new chunks?
     ObjectId chunkId = new ObjectId(address_.getObjectId().getKey().add(BigInteger.ONE));
     chunks_.add(new FileChunkWrapper(0, 0, new NebuloAddress(address_.getAppKey(), chunkId),
@@ -253,7 +251,7 @@ public class NebuloFile extends NebuloObject {
   @Override
   protected void runSync() throws NebuloException {
     logger_.info("Running sync on file ");
-    List<ObjectWriter> updateModules = new Vector<ObjectWriter>();
+    List<ObjectWriter> updateModules = new ArrayList<ObjectWriter>();
     // Run sync for all chunks in parallel.
     for (int i = 0; i < chunks_.size(); ++i) {
       logger_.debug("Creating update module for chunk " + i);
@@ -303,7 +301,7 @@ public class NebuloFile extends NebuloObject {
   @Override
   public void delete() throws NebuloException {
     logger_.info("Running delete on file.");
-    List<ObjectDeleter> deleteModules = new Vector<ObjectDeleter>();
+    List<ObjectDeleter> deleteModules = new ArrayList<ObjectDeleter>();
     // Run delete for all chunks in parallel.
     for (int i = 0; i < chunks_.size(); ++i) {
       logger_.debug("Creating delete module for chunk " + i);

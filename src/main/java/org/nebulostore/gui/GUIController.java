@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
@@ -42,6 +43,7 @@ public class GUIController extends Peer {
 
   private static final String DEFAULT_APPKEY = "11";
   private static final String DEFAULT_OBJECT_ID = "123";
+  private static final Charset CHARSET = Charset.forName("UTF-8");
 
   private NebuloObjectFactory objectFactory_;
 
@@ -138,7 +140,7 @@ public class GUIController extends Peer {
     for (int i = 0; i < exampleNumberOfChildren; ++i) {
       String content = "Content of child (NebuloElement) nr " +
           i + ".";
-      rootList.append(new NebuloElement(new EncryptedObject(content.getBytes())));
+      rootList.append(new NebuloElement(new EncryptedObject(content.getBytes(CHARSET))));
     }
 
     // Create second level (root's children and grandchildren).
@@ -146,7 +148,7 @@ public class GUIController extends Peer {
     for (int i = 0; i < exampleNumberOfChildren; ++i) {
       String content = "Content of grandchild (NebuloElement) nr 1" +
           i + ".";
-      firstChildList.append(new NebuloElement(new EncryptedObject(content.getBytes())));
+      firstChildList.append(new NebuloElement(new EncryptedObject(content.getBytes(CHARSET))));
     }
     NebuloFile file = objectFactory_.createNewNebuloFile(fileAddress);
     file.write("Example file.".getBytes("UTF-8"), 0);
@@ -158,7 +160,7 @@ public class GUIController extends Peer {
     for (int i = 0; i < exampleNumberOfChildren; ++i) {
       String content = "Content of grandchild (NebuloElement) nr 2" +
           i + ".";
-      secondChildList.append(new NebuloElement(new EncryptedObject(content.getBytes())));
+      secondChildList.append(new NebuloElement(new EncryptedObject(content.getBytes(CHARSET))));
     }
 
     rootList.append(new NebuloElement(secondChildAddress));
@@ -168,7 +170,7 @@ public class GUIController extends Peer {
     for (int i = 0; i < exampleNumberOfChildren; ++i) {
       String content = "Content of grandgrandchild (NebuloElement) nr " +
           i + ".";
-      grandChildList.append(new NebuloElement(new EncryptedObject(content.getBytes())));
+      grandChildList.append(new NebuloElement(new EncryptedObject(content.getBytes(CHARSET))));
     }
 
     secondChildList.append(new NebuloElement(grandChildAddress));
@@ -256,7 +258,7 @@ public class GUIController extends Peer {
 
       } else {
         view_.setAddressAndFileContent(null, new String(selectedElement.getData()
-            .getEncryptedData()));
+            .getEncryptedData(), CHARSET));
       }
 
       view_.showMessage(infoMessage_);
@@ -362,7 +364,8 @@ public class GUIController extends Peer {
 
       try {
         String contentToSave = view_.getFileContent();
-        NebuloElement element = new NebuloElement(new EncryptedObject(contentToSave.getBytes()));
+        NebuloElement element = new NebuloElement(new
+            EncryptedObject(contentToSave.getBytes(CHARSET)));
 
         setCurrentParentList();
         appendLinkToList(element);
@@ -660,7 +663,7 @@ public class GUIController extends Peer {
     appendInfoMessage("Successfully received content of file with address: " +
         formatAddress(address) + ".");
 
-    return new String(data);
+    return new String(data, CHARSET);
   }
 
   private NebuloFile fetchNebuloFile(NebuloAddress address) throws NebuloException {

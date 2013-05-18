@@ -72,15 +72,11 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
 
   public void append(NebuloElement element) throws NebuloException {
     elements_.add(element);
-    //TODO(bolek): Should we commit immediately?
-    //runSync();
   }
 
   public void add(ListIterator iterator, NebuloElement element) throws NebuloException {
     int index = iterator.currIndex_ + 1;
     elements_.add(index, element);
-    //TODO(bolek): Should we commit immediately?
-    //runSync();
   }
 
   /**

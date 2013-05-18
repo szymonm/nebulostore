@@ -12,7 +12,7 @@ import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.ValueDHT;
+import org.nebulostore.communication.dht.core.ValueDHT;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.PutDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;

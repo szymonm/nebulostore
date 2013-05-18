@@ -15,7 +15,7 @@ import org.nebulostore.replicator.ReplicatorImpl;
 public class DeleteObjectMessage extends CommMessage {
   private static final long serialVersionUID = -587693375265935213L;
 
-  public ObjectId objectId_;
+  private ObjectId objectId_;
   private final String sourceJobId_;
 
   public DeleteObjectMessage(String jobId, CommAddress sourceAddress,

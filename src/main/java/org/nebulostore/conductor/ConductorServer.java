@@ -113,7 +113,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    * keeps start/stop time of the test.
    */
   private long startTime_ = -1;
-  private long stopTime_ = -1;
 
   /**
    * Timer for watching maximum stage time.
@@ -222,6 +221,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
   // Send FinishMessage to everyone and die.
   private void finishTest() {
+    long stopTime;
     logger_.info("Sending finish test messages.");
     internalCheckTimer_.cancelTimer();
     if (clients_ != null) {
@@ -229,14 +229,14 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
         networkQueue_.add(new FinishMessage(clientsJobId_, null, address));
       }
     }
-    stopTime_ = System.currentTimeMillis();
+    stopTime = System.currentTimeMillis();
     if (isSuccessful()) {
       logger_.info("Test " + testDescription_ + " successfull after: " +
-          (stopTime_ - startTime_) + " ms " + getAdditionalStats());
+          (stopTime - startTime_) + " ms " + getAdditionalStats());
       endWithSuccess(null);
     } else {
       logger_.info("Test " + testDescription_ + " failed. After: " +
-          (stopTime_ - startTime_) + " ms " + getAdditionalStats());
+          (stopTime - startTime_) + " ms " + getAdditionalStats());
       endWithError(new NebuloException("Unsuccessful test"));
     }
   }
@@ -331,26 +331,23 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     }
 
     public Void visit(TimeoutMessage message) {
-      if (testingState_ == TestingState.Running) {
-        if ((PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
-          logger_.warn("Phase timeout in initializing phase. " + tocs_ + " tocs out of " +
-              peersNeeded_ + " received");
-          tocs_ = peersNeeded_;
-          processTocsChange();
-        }
-      } else if (testingState_ == TestingState.Running) {
-        if ((PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
-          logger_.warn("Phase timeout in phase " + phase_ + ". " + tocs_ + " tocs out of " +
-              peersNeeded_ + " received");
-          tocs_ = peersNeeded_;
-          processTocsChange();
-        }
-      } else if (testingState_ == TestingState.GatheringStats) {
-        if ((PHASE_TIMEOUT_MSG + (lastPhase_ + 1)).equals(message.getMessageContent())) {
-          logger_.warn("Phase timeout in gathering stats phase. " + tocs_ + " tocs out of " +
-              peersNeeded_ + " received");
-          finishTest();
-        }
+      if ((testingState_ == TestingState.Running) &&
+          (PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
+        logger_.warn("Phase timeout in initializing phase. " + tocs_ + " tocs out of " +
+            peersNeeded_ + " received");
+        tocs_ = peersNeeded_;
+        processTocsChange();
+      } else if ((testingState_ == TestingState.Running) &&
+          (PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
+        logger_.warn("Phase timeout in phase " + phase_ + ". " + tocs_ + " tocs out of " +
+            peersNeeded_ + " received");
+        tocs_ = peersNeeded_;
+        processTocsChange();
+      } else if ((testingState_ == TestingState.GatheringStats) &&
+          (PHASE_TIMEOUT_MSG + (lastPhase_ + 1)).equals(message.getMessageContent())) {
+        logger_.warn("Phase timeout in gathering stats phase. " + tocs_ + " tocs out of " +
+            peersNeeded_ + " received");
+        finishTest();
       }
       return null;
     }
@@ -404,14 +401,16 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
 
   private void sendTics() {
     logger_.debug("Sending Tic messages...");
-    for (CommAddress address : clients_)
+    for (CommAddress address : clients_) {
       networkQueue_.add(new TicMessage(clientsJobId_, null, address, phase_));
+    }
   }
 
   private void sendGatherStats() {
     logger_.debug("Getting stats from test clients...");
-    for (CommAddress address : clients_)
+    for (CommAddress address : clients_) {
       networkQueue_.add(new GatherStatsMessage(clientsJobId_, null, address));
+    }
     schedulePhaseTimer(lastPhase_ + 1);
   }
 

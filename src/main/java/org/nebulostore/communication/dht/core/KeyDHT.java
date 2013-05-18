@@ -1,4 +1,4 @@
-package org.nebulostore.communication.dht;
+package org.nebulostore.communication.dht.core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

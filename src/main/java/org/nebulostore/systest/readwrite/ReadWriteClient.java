@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import com.google.inject.Inject;
 
@@ -46,7 +45,7 @@ public final class ReadWriteClient extends ConductorClient {
     super(serverJobId, numPhases, serverAddress);
     clients_ = new ArrayList<CommAddress>(clients);
     clientId_ = clientId;
-    files_ = new Vector<NebuloAddress>();
+    files_ = new ArrayList<NebuloAddress>();
     stats_ = new ReadWriteStats();
   }
 

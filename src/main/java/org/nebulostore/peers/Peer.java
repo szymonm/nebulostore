@@ -48,7 +48,6 @@ public class Peer extends AbstractPeer {
   protected CommAddress commAddress_;
   protected Timer peerTimer_;
 
-  private CommunicationPeer commPeer_;
   private CommunicationPeerFactory commPeerFactory_;
 
   @Inject
@@ -101,7 +100,7 @@ public class Peer extends AbstractPeer {
   protected void putKey(AppKey appKey) {
     // TODO(bolek): This should be part of broker.
     PutKeyModule module = new PutKeyModule(new ReplicationGroup(new CommAddress[]{commAddress_},
-        new BigInteger("0"), new BigInteger("1000000")), dispatcherInQueue_);
+        BigInteger.ZERO, new BigInteger("1000000")), dispatcherInQueue_);
     try {
       module.getResult(30);
     } catch (NebuloException exception) {
@@ -113,18 +112,15 @@ public class Peer extends AbstractPeer {
    * Method that creates, connects and runs Dispatcher and Communication modules.
    */
   protected void initPeer() {
+    CommunicationPeer commPeer;
     Dispatcher dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
     dispatcherThread_ = new Thread(dispatcher, "Dispatcher");
 
-    commPeer_ = commPeerFactory_.newCommunicationPeer(networkInQueue_, dispatcherInQueue_);
-    networkThread_ = new Thread(commPeer_, "CommunicationPeer");
+    commPeer = commPeerFactory_.newCommunicationPeer(networkInQueue_, dispatcherInQueue_);
+    networkThread_ = new Thread(commPeer, "CommunicationPeer");
 
     NetworkContext.getInstance().setCommAddress(commAddress_);
     NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
-
-    //Register instance in DHT
-    /*GlobalContext.getInstance().setInstanceID(new InstanceID(CommunicationPeer.getPeerAddress()));
-    dispatcherInQueue_.add(new JobInitMessage(new RegisterInstanceInDHTModule()));*/
 
     // Initialize Replicator.
     ReplicatorImpl.setConfig(config_);
@@ -153,19 +149,6 @@ public class Peer extends AbstractPeer {
       }
     };
     NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
-
-    // Turning on statistics gossiping module.
-    /*IMessageGenerator gossipingModuleGenerator = new IMessageGenerator() {
-      @Override
-      public Message generate() {
-        return new JobInitMessage(new RandomPeersGossipingModule());
-      }
-    };
-    PeriodicMessageSender gossiping = new PeriodicMessageSender(
-        gossipingModuleGenerator, RandomPeersGossipingModule.INTERVAL,
-        dispatcherQueue);
-    dispatcherQueue.add(new JobInitMessage(gossiping));
-    */
   }
 
   protected void finishPeer() {

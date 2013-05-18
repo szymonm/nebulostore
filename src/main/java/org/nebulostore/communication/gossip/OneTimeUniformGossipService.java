@@ -18,6 +18,7 @@ import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.gossip.core.PeerDescriptor;
 import org.nebulostore.communication.gossip.messages.PeerGossipMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 

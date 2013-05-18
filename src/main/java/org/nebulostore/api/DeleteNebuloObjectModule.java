@@ -14,7 +14,7 @@ import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.model.ObjectDeleter;
 import org.nebulostore.appcore.modules.ReturningJobModule;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.KeyDHT;
+import org.nebulostore.communication.dht.core.KeyDHT;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
@@ -54,12 +54,10 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
    */
   protected class StateMachineVisitor extends MessageVisitor<Void> {
     private final Set<CommAddress> recipientsSet_;
-    // private int confirmations_;
     private STATE state_;
 
     public StateMachineVisitor() {
       recipientsSet_ = new HashSet<CommAddress>();
-      // confirmations_ = 0;
       state_ = STATE.INIT;
     }
 

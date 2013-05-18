@@ -1,5 +1,6 @@
 package org.nebulostore.broker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Vector;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -39,40 +39,40 @@ public final class BrokerContext {
   /**
    * Available space for contract.
    */
-  public Map<Contract, Integer> freeSpaceMap_ = new HashMap<Contract, Integer>();
+  private Map<Contract, Integer> freeSpaceMap_ = new HashMap<Contract, Integer>();
 
   /**
    * Contract offers send to peers, waiting for response.
    */
-  public Map<CommAddress, Contract> contractOffers_ = new HashMap<CommAddress, Contract>();
+  private Map<CommAddress, Contract> contractOffers_ = new HashMap<CommAddress, Contract>();
 
   /**
    * Peers already discovered by this instance.
    */
-  public Set<CommAddress> knownPeers_ = new HashSet<CommAddress>();
+  private Set<CommAddress> knownPeers_ = new HashSet<CommAddress>();
 
   /* Asynchronous messages */
 
   /**
    * Messages waiting to be retrieved by peers.
    */
-  public Map<CommAddress, List<AsynchronousMessage>> waitingAsynchronousMessagesMap_ =
+  private Map<CommAddress, List<AsynchronousMessage>> waitingAsynchronousMessagesMap_ =
       new HashMap<CommAddress, List<AsynchronousMessage>>();
 
   /**
    * InstanceId's of peers, that retrieved AM, but haven't sent response yet.
    */
-  public Set<CommAddress> waitingForAck_ = new HashSet<CommAddress>();
+  private Set<CommAddress> waitingForAck_ = new HashSet<CommAddress>();
 
   /**
    * Synchro-peers of this instance. Cached from DHT.
    */
-  public List<CommAddress> myInboxHolders_ = new LinkedList<CommAddress>();
+  private List<CommAddress> myInboxHolders_ = new LinkedList<CommAddress>();
 
   /**
    * JobId of jobs we are waiting for response from.
    */
-  public Set<String> waitingForMessages_ = new HashSet<String>();
+  private Set<String> waitingForMessages_ = new HashSet<String>();
 
   public static synchronized BrokerContext getInstance() {
     if (instance_ == null) {
@@ -89,9 +89,9 @@ public final class BrokerContext {
       if (contractMap_.containsKey(contract.getPeer())) {
         contractMap_.get(contract.getPeer()).add(contract);
       } else {
-        List<Contract> vector = new Vector<Contract>();
-        vector.add(contract);
-        contractMap_.put(contract.getPeer(), vector);
+        List<Contract> contractList = new ArrayList<Contract>();
+        contractList.add(contract);
+        contractMap_.put(contract.getPeer(), contractList);
       }
     } finally {
       writeLock_.unlock();
@@ -123,6 +123,10 @@ public final class BrokerContext {
     readLock_.unlock();
   }
 
+  public List<CommAddress> getMyInboxHolders() {
+    return myInboxHolders_;
+  }
+
   public List<Contract> getUserContracts(CommAddress id) {
     readLock_.lock();
     try {
@@ -148,6 +152,21 @@ public final class BrokerContext {
     }
   }
 
+  public Map<CommAddress, List<AsynchronousMessage>> getWaitingAsynchronousMessages() {
+    return waitingAsynchronousMessagesMap_;
+  }
+
+  public Set<CommAddress> getWaitingForAck() {
+    return waitingForAck_;
+  }
+
+  public Set<String> getWaitingForMessages() {
+    return waitingForMessages_;
+  }
+
+  public void setMyInboxHolders(List<CommAddress> myInboxHolders) {
+    myInboxHolders_ = myInboxHolders;
+  }
 
   private BrokerContext() {
   }

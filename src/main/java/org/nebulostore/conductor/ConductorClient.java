@@ -255,10 +255,11 @@ public abstract class ConductorClient extends JobModule implements Serializable 
     public Void visit(NewPhaseMessage message) {
       sleep(initialSleep_);
       logger_.debug("Sending NebuloAddress to " + clients_.size() + " peers.");
-      for (int i = 0; i < clients_.size(); ++i)
+      for (int i = 0; i < clients_.size(); ++i) {
         if (i != currClientIndex_) {
           networkQueue_.add(new UserCommMessage(jobId_, clients_.get(i), myAddress_, phase_));
         }
+      }
       visitorTimer_.schedule(jobId_, timeoutMillis_, String.valueOf(phase_));
       tryFinishPhase();
       return null;

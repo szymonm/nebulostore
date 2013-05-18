@@ -517,8 +517,9 @@ public class GUIView extends JFrame {
     DefaultMutableTreeNode selectedNode = getSelectedTreeNode();
 
     int numberOfChildren = selectedNode.getChildCount();
-    for (int i = 0; i < numberOfChildren; ++i)
+    for (int i = 0; i < numberOfChildren; ++i) {
       listTreeModel_.removeNodeFromParent((MutableTreeNode) selectedNode.getFirstChild());
+    }
   }
 
   /**
