@@ -1,39 +1,50 @@
 #!/bin/bash
 
 SCRIPT_NAME=./scripts/_local-test.sh
+N_TESTS=5
+declare -a PEERS=(3 6 6 8 14)
+declare -a TITLES=(\
+    'ping-pong test'\
+    'read-write test'\
+    'lists test'\
+    'performance lists test'\
+    'performance lists test'\
+    )
+
 
 if [ $1 ]; then
     N=$1
 else
     echo "Please select local test to run (or provide the number as a parameter):"
-    echo "    1) ping-pong test (3 peers)"
-    echo "    2) read-write test (6 peers)"
-    echo "    3) lists test (6 peers)"
-    echo "    4) performance lists test (8 peers)"
-    echo "    5) performance lists test (14 peers)"
+    echo "    0) All"
+    for ((i=1; i<=N_TESTS; ++i))
+    do
+        echo "    $i) "${TITLES[$((i-1))]}" (${PEERS[$((i-1))]} peers)"
+    done
     read N
 fi
 
 case $N in
+    0) for ((i=1; i<=5; ++i)); do echo "*** Test $i - ${TITLES[$((i-1))]}"; $0 $i; done;;
     1) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.pingpong.PingPongServer\
-           3 1;;
+           ${PEERS[0]} 1;;
     2) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.readwrite.ReadWriteServer\
-           6 1;;
+           ${PEERS[1]} 1;;
     3) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.lists.ListsServer\
-           6 1;;
+           ${PEERS[2]} 1;;
     4) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
-           8 1;;
+           ${PEERS[3]} 1;;
     5) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
            org.nebulostore.systest.lists.ListsServer\
-           14 1;;
+           ${PEERS[4]} 1;;
 esac
 

@@ -1,14 +1,12 @@
+roti.mimuw.edu.pl
+prata.mimuw.edu.pl
 inriarennes2.irisa.fr
-planetlab1.cesnet.cz
 planetlab04.mpi-sws.mpg.de
 planetlab-um10.di.uminho.pt
 planetlab2.rd.tut.fi
-planetlab2.cnis.nyit.edu
-planetlab1.cnis.nyit.edu
 planetlab02.tkn.tu-berlin.de
 planetlab1.upc.es
 planetlab3.mini.pw.edu.pl
-planetlab6.csee.usf.edu
 rochefort.infonet.fundp.ac.be
 planetlab2.inf.ethz.ch
 ple2.tu.koszalin.pl
