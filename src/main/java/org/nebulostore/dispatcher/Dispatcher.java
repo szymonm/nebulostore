@@ -97,6 +97,7 @@ public class Dispatcher extends Module {
             JobModule handler = message.getHandler();
             BlockingQueue<Message> newInQueue = new LinkedBlockingQueue<Message>();
             handler.setInQueue(newInQueue);
+            handler.setJobId(message.getId());
             // TODO(bolek): Remove this. Message injection should be sufficient.
             injector_.injectMembers(handler);
             if (handler.isQuickNonBlockingTask()) {

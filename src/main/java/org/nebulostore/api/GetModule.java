@@ -134,7 +134,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
         CommAddress replicator = replicationGroupSet_.first();
         replicationGroupSet_.remove(replicator);
         logger_.debug("Querying replica (" + replicator + ")");
-        networkQueue_.add(new GetObjectMessage(CryptoUtils.getRandomId().toString(), null,
+        networkQueue_.add(new GetObjectMessage(CryptoUtils.getRandomId().toString(),
             replicator, address_.getObjectId(), jobId_));
         timer_.schedule(jobId_, REPLICA_WAIT_MILLIS, STATE.REPLICA_FETCH.name());
       }

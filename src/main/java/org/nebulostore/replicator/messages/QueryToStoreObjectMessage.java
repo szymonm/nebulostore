@@ -5,20 +5,14 @@ import java.util.Set;
 import com.rits.cloning.Cloner;
 
 import org.nebulostore.appcore.addressing.ObjectId;
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.model.EncryptedObject;
-import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.CommMessage;
-import org.nebulostore.replicator.ReplicatorImpl;
-
 
 /**
  * @author szymonmatejczyk
  * This is a query to store a particular object.
  */
-public class QueryToStoreObjectMessage extends CommMessage {
+public class QueryToStoreObjectMessage extends ReplicatorMessage {
   private static final long serialVersionUID = 3283983404037381657L;
 
   ObjectId objectId_;
@@ -26,20 +20,15 @@ public class QueryToStoreObjectMessage extends CommMessage {
   Set<String> previousVersionSHAs_;
   private final String sourceJobId_;
 
-  public QueryToStoreObjectMessage(String jobId, CommAddress sourceAddress,
+  public QueryToStoreObjectMessage(String jobId,
       CommAddress destAddress, ObjectId objectId, EncryptedObject encryptedEntity,
       Set<String> previousVersionSHAs, String sourceJobId) {
-    super(jobId, sourceAddress, destAddress);
+    super(jobId, destAddress);
     objectId_ = objectId;
     encryptedEntity_ = encryptedEntity;
     Cloner c = new Cloner();
     previousVersionSHAs_ = c.deepClone(previousVersionSHAs);
     sourceJobId_ = sourceJobId;
-  }
-
-  @Override
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
   }
 
   public EncryptedObject getEncryptedEntity() {
@@ -56,10 +45,5 @@ public class QueryToStoreObjectMessage extends CommMessage {
 
   public Set<String> getPreviousVersionSHAs() {
     return previousVersionSHAs_;
-  }
-
-  @Override
-  public JobModule getHandler() {
-    return new ReplicatorImpl(jobId_, null, null);
   }
 }

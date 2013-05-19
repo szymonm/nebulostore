@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.api.PutKeyModule;
 import org.nebulostore.appcore.addressing.AppKey;
@@ -24,7 +23,6 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.replicator.ReplicatorImpl;
 import org.nebulostore.timer.MessageGenerator;
 import org.nebulostore.timer.Timer;
 
@@ -43,17 +41,11 @@ public class Peer extends AbstractPeer {
 
   protected AppKey appKey_;
   protected Broker broker_;
-  protected XMLConfiguration config_;
   protected Injector injector_;
   protected CommAddress commAddress_;
   protected Timer peerTimer_;
 
   private CommunicationPeerFactory commPeerFactory_;
-
-  @Inject
-  public void setConfiguration(XMLConfiguration config) {
-    config_ = config;
-  }
 
   @Inject
   public void setDependencies(@Named("DispatcherQueue") BlockingQueue<Message> dispatcherQueue,
@@ -121,10 +113,6 @@ public class Peer extends AbstractPeer {
 
     NetworkContext.getInstance().setCommAddress(commAddress_);
     NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
-
-    // Initialize Replicator.
-    ReplicatorImpl.setConfig(config_);
-    ReplicatorImpl.setAppKey(appKey_);
   }
 
   protected void startPeer() {

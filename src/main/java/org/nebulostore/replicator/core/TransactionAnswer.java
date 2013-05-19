@@ -1,4 +1,4 @@
-package org.nebulostore.replicator;
+package org.nebulostore.replicator.core;
 
 /**
  * Transaction result for storing object.

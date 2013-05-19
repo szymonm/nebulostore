@@ -25,14 +25,24 @@ public class TestingPeer extends Peer {
   protected boolean isTestServer_;
 
   @Inject
-  public void setNTestParticipants(@Named(N_TEST_PARTICIPANTS_CONFIG) int nTestParticipants) {
+  public void setTestParameters(@Named(N_TEST_PARTICIPANTS_CONFIG) int nTestParticipants,
+      @Named(CLASS_LIST_CONFIG) String classList,
+      @Named(IS_SERVER_CONFIG) boolean isServer) {
     nTestParticipants_ = nTestParticipants;
+    if (nTestParticipants_ <= 1) {
+      throw new RuntimeException("Illegal number of test participants! (" +
+          nTestParticipants + ")");
+    }
+    testClasses_ = classList.split(";");
+    if (testClasses_.length == 0) {
+      throw new RuntimeException("Empty test classes list!");
+    }
+    isTestServer_ = isServer;
   }
 
   @Override
   protected void runPeer() {
     logger_.info("Starting testing peer with appKey = " + appKey_);
-    readConfig();
     initPeer();
     runBroker();
     startPeer();
@@ -44,18 +54,6 @@ public class TestingPeer extends Peer {
 
     finishPeer();
     System.exit(0);
-  }
-
-  protected void readConfig() {
-    testClasses_ = config_.getString(CLASS_LIST_CONFIG).split(";");
-    if (testClasses_.length == 0) {
-      throw new RuntimeException("Cannot read test classes list!");
-    }
-    nTestParticipants_ = config_.getInt(N_TEST_PARTICIPANTS_CONFIG, -1);
-    if (nTestParticipants_ == -1) {
-      throw new RuntimeException("Cannot read number of test participants!");
-    }
-    isTestServer_ = config_.getBoolean(IS_SERVER_CONFIG, false);
   }
 
   protected void runTestingServer() {
@@ -90,7 +88,6 @@ public class TestingPeer extends Peer {
 
   private boolean runTest(ConductorServer testServer, String testName) {
     try {
-      testServer.initialize();
       testServer.runThroughDispatcher();
       testServer.getResult();
       return true;

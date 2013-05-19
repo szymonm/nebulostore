@@ -30,7 +30,7 @@ import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.crypto.CryptoException;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.JobInitMessage;
-import org.nebulostore.replicator.TransactionAnswer;
+import org.nebulostore.replicator.core.TransactionAnswer;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.ObjectOutdatedMessage;
 import org.nebulostore.replicator.messages.QueryToStoreObjectMessage;
@@ -145,7 +145,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
             for (CommAddress replicator : group) {
               String remoteJobId = CryptoUtils.getRandomId().toString();
               waitingForTransactionResult_.put(replicator, remoteJobId);
-              networkQueue_.add(new QueryToStoreObjectMessage(remoteJobId , null, replicator,
+              networkQueue_.add(new QueryToStoreObjectMessage(remoteJobId, replicator,
                   address_.getObjectId(), encryptedObject, previousVersionSHAs_, getJobId()));
               logger_.debug("added recipient: " + replicator);
               recipientsSet_.add(replicator);
@@ -271,7 +271,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         // Peers that rejected or withheld transaction should get notification, that their
         // version is outdated.
         for (CommAddress rejecting : rejectingOrWithholdingReplicators_) {
-          networkQueue_.add(new ObjectOutdatedMessage(null, rejecting, address_));
+          networkQueue_.add(new ObjectOutdatedMessage(rejecting, address_));
         }
 
         // TODO(szm): don't like updating version here
@@ -284,8 +284,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
     private void sendTransactionAnswer(TransactionAnswer answer) {
       logger_.debug("sending transaction answer");
       for (Map.Entry<CommAddress, String> entry : waitingForTransactionResult_.entrySet()) {
-        networkQueue_.add(new TransactionResultMessage(entry.getValue(), null, entry.getKey(),
-            answer));
+        networkQueue_.add(new TransactionResultMessage(entry.getValue(), entry.getKey(), answer));
       }
     }
 

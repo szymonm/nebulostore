@@ -10,7 +10,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.replicator.TransactionAnswer;
+import org.nebulostore.replicator.core.TransactionAnswer;
 import org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
 
 /**

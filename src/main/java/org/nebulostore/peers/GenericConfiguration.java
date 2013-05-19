@@ -64,6 +64,8 @@ public abstract class GenericConfiguration extends AbstractModule {
       bindConstant().annotatedWith(Names.named(name)).to(Integer.valueOf(val));
     } else if ("String".equals(type)) {
       bindConstant().annotatedWith(Names.named(name)).to(val);
+    } else if ("Boolean".equals(type)) {
+      bindConstant().annotatedWith(Names.named(name)).to(Boolean.valueOf(val));
     } else {
       throw new IllegalArgumentException("Unsupported type " + type);
     }

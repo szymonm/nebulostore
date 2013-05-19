@@ -19,8 +19,8 @@ import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.dispatcher.JobInitMessage;
-import org.nebulostore.replicator.DeleteObjectException;
 import org.nebulostore.replicator.ReplicatorImpl;
+import org.nebulostore.replicator.core.DeleteObjectException;
 import org.nebulostore.timer.TimeoutMessage;
 import org.nebulostore.timer.Timer;
 

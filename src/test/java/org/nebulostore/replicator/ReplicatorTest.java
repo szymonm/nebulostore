@@ -12,6 +12,7 @@ import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.model.EncryptedObject;
+import org.nebulostore.replicator.core.TransactionAnswer;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
 import org.nebulostore.replicator.messages.QueryToStoreObjectMessage;
@@ -30,10 +31,8 @@ public class ReplicatorTest {
   private final BlockingQueue<Message> inQueue1_ = new LinkedBlockingQueue<Message>();
   private final BlockingQueue<Message> networkQueue_ = new LinkedBlockingQueue<Message>();
   private final BlockingQueue<Message> deadDispatcherQueue_ = new LinkedBlockingQueue<Message>();
-  private final ReplicatorImpl replicator_ =
-      new ReplicatorImpl(null, inQueue_, deadDispatcherQueue_);
-  private final ReplicatorImpl replicator1_ =
-      new ReplicatorImpl(null, inQueue1_, deadDispatcherQueue_);
+  private final ReplicatorImpl replicator_ = null;
+  private final ReplicatorImpl replicator1_ = null;
 
   private Thread replicatorThread_;
 
@@ -51,7 +50,7 @@ public class ReplicatorTest {
     EncryptedObject entity1 = new EncryptedObject(enc);
 
     String[] previousVersion = {"version1"};
-    QueryToStoreObjectMessage storeMessage = new QueryToStoreObjectMessage("job1", null,
+    QueryToStoreObjectMessage storeMessage = new QueryToStoreObjectMessage("job1",
         null, objectId1, entity1, new HashSet<String>(Arrays.asList(previousVersion)), "");
     inQueue_.add(storeMessage);
 
@@ -74,7 +73,7 @@ public class ReplicatorTest {
       return;
     }
 
-    TransactionResultMessage transactionResult = new TransactionResultMessage("job1", null, null,
+    TransactionResultMessage transactionResult = new TransactionResultMessage("job1", null,
         TransactionAnswer.COMMIT);
     inQueue_.add(transactionResult);
 

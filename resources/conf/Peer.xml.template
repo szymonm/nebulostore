@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!-- String is default attribute type -->
 <peer>
     <!-- Application Key, a unique user identifier. -->
     <app-key>
@@ -86,7 +87,7 @@
         </cling-config>
     </communication>
     <systest>
-        <is-server>
+        <is-server type="Boolean">
             @IS_SERVER=false@
         </is-server>
         <num-test-participants type="Integer">

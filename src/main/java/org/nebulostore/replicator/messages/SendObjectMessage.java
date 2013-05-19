@@ -4,42 +4,34 @@ import java.util.Set;
 
 import com.rits.cloning.Cloner;
 
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.CommMessage;
 
 /**
- * @author bolek
  * This is a message containing requested object.
+ * @author Bolek Kulbabinski
  */
-public class SendObjectMessage extends CommMessage {
+public class SendObjectMessage extends ReplicatorMessage {
   private static final long serialVersionUID = 5852937000391705084L;
 
   private final EncryptedObject encryptedEntity_;
 
   private final Set<String> versions_;
 
-  public SendObjectMessage(CommAddress sourceAddress, CommAddress destAddress,
-      EncryptedObject encryptedObject, Set<String> versions) {
-    super(sourceAddress, destAddress);
+  public SendObjectMessage(CommAddress destAddress, EncryptedObject encryptedObject,
+      Set<String> versions) {
+    super(destAddress);
     encryptedEntity_ = encryptedObject;
     Cloner c = new Cloner();
     versions_ = c.deepClone(versions);
   }
 
-  public SendObjectMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress, EncryptedObject encryptedObject, Set<String> versions) {
-    super(jobId, sourceAddress, destAddress);
+  public SendObjectMessage(String jobId, CommAddress destAddress, EncryptedObject encryptedObject,
+      Set<String> versions) {
+    super(jobId, destAddress);
     encryptedEntity_ = encryptedObject;
     Cloner c = new Cloner();
     versions_ = c.deepClone(versions);
-  }
-
-  @Override
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
   }
 
   public EncryptedObject getEncryptedEntity() {

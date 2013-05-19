@@ -1,4 +1,4 @@
-package org.nebulostore.replicator;
+package org.nebulostore.replicator.core;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
 

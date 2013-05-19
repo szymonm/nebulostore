@@ -94,7 +94,7 @@ public class DeleteNebuloObjectModule extends ReturningJobModule<Void> implement
         } else {
           for (CommAddress replicator : group) {
             String remoteJobId = CryptoUtils.getRandomId().toString();
-            networkQueue_.add(new DeleteObjectMessage(remoteJobId , null, replicator,
+            networkQueue_.add(new DeleteObjectMessage(remoteJobId, replicator,
                 address_.getObjectId(), getJobId()));
             recipientsSet_.add(replicator);
           }

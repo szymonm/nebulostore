@@ -13,7 +13,7 @@ import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.replicator.TransactionAnswer;
+import org.nebulostore.replicator.core.TransactionAnswer;
 
 import static org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
 

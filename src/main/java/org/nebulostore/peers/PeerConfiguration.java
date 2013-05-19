@@ -20,6 +20,8 @@ import org.nebulostore.broker.AlwaysAcceptingBroker;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeerConfiguration;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.replicator.ReplicatorImpl;
+import org.nebulostore.replicator.core.Replicator;
 import org.nebulostore.subscription.api.SimpleSubscriptionNotificationHandler;
 import org.nebulostore.subscription.api.SubscriptionNotificationHandler;
 import org.nebulostore.timer.Timer;
@@ -58,6 +60,8 @@ public class PeerConfiguration extends GenericConfiguration {
     bind(SubscriptionNotificationHandler.class).to(SimpleSubscriptionNotificationHandler.class);
 
     bind(Timer.class).to(TimerImpl.class);
+
+    bind(Replicator.class).to(ReplicatorImpl.class);
 
     configureCommunicationPeer();
     configureBroker();

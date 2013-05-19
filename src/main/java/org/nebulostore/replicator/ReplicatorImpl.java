@@ -9,13 +9,12 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.api.GetEncryptedObjectModule;
 import org.nebulostore.appcore.addressing.AppKey;
@@ -24,9 +23,12 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.model.EncryptedObject;
-import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.crypto.CryptoUtils;
+import org.nebulostore.replicator.core.DeleteObjectException;
+import org.nebulostore.replicator.core.OutOfDateFileException;
+import org.nebulostore.replicator.core.Replicator;
+import org.nebulostore.replicator.core.TransactionAnswer;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
 import org.nebulostore.replicator.messages.DeleteObjectMessage;
 import org.nebulostore.replicator.messages.GetObjectMessage;
@@ -49,15 +51,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Replicator - disk interface.
  * @author szymonmatejczyk
  */
-public class ReplicatorImpl extends JobModule {
+public class ReplicatorImpl extends Replicator {
   private static Logger logger_ = Logger.getLogger(ReplicatorImpl.class);
-  private static final String CONFIG_PREFIX = "replicator.";
 
   private static final int UPDATE_TIMEOUT_SEC = 10;
   private static final int LOCK_TIMEOUT_SEC = 10;
   private static final int GET_OBJECT_TIMEOUT_SEC = 10;
 
-  private static XMLConfiguration config_;
   private static String pathPrefix_;
 
   // Hashtable is synchronized.
@@ -70,28 +70,13 @@ public class ReplicatorImpl extends JobModule {
   private static Map<ObjectId, Semaphore> locksMap_ = new Hashtable<ObjectId, Semaphore>();
   private static AppKey appKey_;
 
-  private final MessageVisitor<Void> visitor_;
+  private final MessageVisitor<Void> visitor_ = new ReplicatorVisitor();
 
   @Inject
-  public static void setConfig(XMLConfiguration config) {
-    config_ = config;
-    pathPrefix_ = config_.getString(CONFIG_PREFIX + "storage-path");
-  }
-
-  @Inject
-  public static void setAppKey(AppKey appKey) {
+  public ReplicatorImpl(@Named("replicator.storage-path") String pathPrefix,
+                        AppKey appKey) {
+    pathPrefix_ = pathPrefix;
     appKey_ = appKey;
-  }
-
-  public ReplicatorImpl(String jobId, BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue) {
-    super(jobId);
-    checkNotNull(config_);
-    checkNotNull(pathPrefix_);
-    logger_.debug("Replicator ctor");
-    setInQueue(inQueue);
-    setOutQueue(outQueue);
-    visitor_ = new ReplicatorVisitor();
   }
 
   /**
@@ -115,8 +100,8 @@ public class ReplicatorImpl extends JobModule {
           message.getEncryptedEntity(), message.getPreviousVersionSHAs(), message.getId());
       switch (result) {
         case OK:
-          networkQueue_.add(new ConfirmationMessage(message.getSourceJobId(), message
-              .getDestinationAddress(), message.getSourceAddress()));
+          networkQueue_.add(new ConfirmationMessage(message.getSourceJobId(),
+              message.getSourceAddress()));
           storeWaitingForCommit_ = message;
           try {
             TransactionResultMessage m = (TransactionResultMessage) inQueue_.poll(LOCK_TIMEOUT_SEC,
@@ -139,22 +124,21 @@ public class ReplicatorImpl extends JobModule {
           break;
         case OBJECT_OUT_OF_DATE:
           networkQueue_.add(new UpdateWithholdMessage(message.getSourceJobId(),
-              message.getDestinationAddress(), message.getSourceAddress(),
-              Reason.OBJECT_OUT_OF_DATE));
+              message.getSourceAddress(), Reason.OBJECT_OUT_OF_DATE));
           endJobModule();
           break;
         case INVALID_VERSION:
           networkQueue_.add(new UpdateRejectMessage(message.getSourceJobId(),
-              message.getDestinationAddress(), message.getSourceAddress()));
+              message.getSourceAddress()));
           endJobModule();
           break;
         case SAVE_FAILED:
           networkQueue_.add(new UpdateWithholdMessage(message.getSourceJobId(),
-              message.getDestinationAddress(), message.getSourceAddress(), Reason.SAVE_FAILURE));
+              message.getSourceAddress(), Reason.SAVE_FAILURE));
           break;
         case TIMEOUT:
           networkQueue_.add(new UpdateWithholdMessage(message.getSourceJobId(),
-              message.getDestinationAddress(), message.getSourceAddress(), Reason.TIMEOUT));
+              message.getSourceAddress(), Reason.TIMEOUT));
           endJobModule();
           break;
         default:
@@ -193,8 +177,7 @@ public class ReplicatorImpl extends JobModule {
         versions = previousVersions_.get(message.getObjectId());
       } catch (OutOfDateFileException exception) {
         networkQueue_.add(new ReplicatorErrorMessage(message.getSourceJobId(),
-            message.getDestinationAddress(), message.getDestinationAddress(),
-            "object out of date"));
+            message.getDestinationAddress(), "object out of date"));
         return null;
       }
 
@@ -203,8 +186,7 @@ public class ReplicatorImpl extends JobModule {
             message.getSourceAddress(), "Unable to retrieve object.");
       } else {
         networkQueue_.add(new SendObjectMessage(message.getSourceJobId(),
-            message.getDestinationAddress(), message.getSourceAddress(), enc,
-            versions));
+            message.getSourceAddress(), enc, versions));
       }
       endJobModule();
       return null;
@@ -214,8 +196,8 @@ public class ReplicatorImpl extends JobModule {
       jobId_ = message.getId();
       try {
         deleteObject(message.getObjectId());
-        networkQueue_.add(new ConfirmationMessage(message.getSourceJobId(), message
-            .getDestinationAddress(), message.getSourceAddress()));
+        networkQueue_.add(new ConfirmationMessage(message.getSourceJobId(),
+            message.getSourceAddress()));
       } catch (DeleteObjectException exception) {
         logger_.warn(exception.toString());
         dieWithError(message.getSourceJobId(), message.getDestinationAddress(),
@@ -256,8 +238,7 @@ public class ReplicatorImpl extends JobModule {
 
     private void dieWithError(String jobId, CommAddress sourceAddress,
         CommAddress destinationAddress, String errorMessage) {
-      networkQueue_.add(new ReplicatorErrorMessage(jobId, sourceAddress,
-          destinationAddress, errorMessage));
+      networkQueue_.add(new ReplicatorErrorMessage(jobId, destinationAddress, errorMessage));
       endJobModule();
     }
   }

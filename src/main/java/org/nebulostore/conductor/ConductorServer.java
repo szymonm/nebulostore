@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
@@ -24,8 +24,6 @@ import org.nebulostore.networkmonitor.NetworkContext;
 import org.nebulostore.timer.MessageGenerator;
 import org.nebulostore.timer.TimeoutMessage;
 import org.nebulostore.timer.Timer;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Testing module that acts as a Test Server.
@@ -98,7 +96,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    * set of peers.
    */
   enum TestingState {
-    CollectingPeers, Initializing, Configuring, Running, GatheringStats
+    COLLECTING_PEERS, INITIALIZING, CONFIGURING, RUNNING, GATHERING_STATS
   };
   private TestingState testingState_;
   private final ServerTestingModuleVisitor visitor_;
@@ -119,7 +117,6 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
    */
   private Timer internalCheckTimer_;
   protected CommAddress commAddress_;
-  protected XMLConfiguration config_;
 
   protected ConductorServer(int lastPhase, int timeout, String clientsJobId,
       String testDescription) {
@@ -143,37 +140,21 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   }
 
   @Inject
-  public void setCommAddress(CommAddress commAddress) {
+  public void setDependencies(CommAddress commAddress, Timer timer,
+      @Named(N_PEERS_CONFIG) int nPeers) {
     commAddress_ = commAddress;
-  }
-
-  @Inject
-  public void setConfig(XMLConfiguration config) {
-    config_ = config;
-  }
-
-  @Inject
-  public void setTimer(Timer timer) {
     internalCheckTimer_ = timer;
-  }
-
-  public void initialize() {
     if (peersNeeded_ == 0) {
-      initializeFromConfig();
+      peersNeeded_ = nPeers;
+    }
+    if (peersNeeded_ == 0) {
+      throw new RuntimeException("Incorrect number of test participants (" + peersNeeded_ + ")");
     }
   }
 
   protected void schedulePhaseTimer(int phase) {
     if (phaseTimeout_ > 0) {
       internalCheckTimer_.schedule(jobId_, 1000L * phaseTimeout_, PHASE_TIMEOUT_MSG + phase);
-    }
-  }
-
-  protected void initializeFromConfig() {
-    checkNotNull(config_);
-    peersNeeded_ = config_.getInteger(N_PEERS_CONFIG, 0);
-    if (peersNeeded_ == 0) {
-      throw new RuntimeException("Unable to initilize number of test participants from config!");
     }
   }
 
@@ -253,9 +234,9 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     public Void visit(JobInitMessage message) {
       logger_.debug("Received JobInitMessage.");
       jobId_ = message.getId();
-      testingState_ = TestingState.CollectingPeers;
+      testingState_ = TestingState.COLLECTING_PEERS;
       if (trySetClients()) {
-        testingState_ = TestingState.Initializing;
+        testingState_ = TestingState.INITIALIZING;
         initClients();
         schedulePhaseTimer(phase_);
       } else {
@@ -278,8 +259,8 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     public Void visit(NetworkContextChangedMessage message) {
       logger_.debug("Received NetworkContextChangedMessage (we know " +
           NetworkContext.getInstance().getKnownPeers().size() + " peers).");
-      if (testingState_ == TestingState.CollectingPeers && trySetClients()) {
-        testingState_ = TestingState.Initializing;
+      if (testingState_ == TestingState.COLLECTING_PEERS && trySetClients()) {
+        testingState_ = TestingState.INITIALIZING;
         initClients();
         schedulePhaseTimer(phase_);
       }
@@ -331,19 +312,19 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     }
 
     public Void visit(TimeoutMessage message) {
-      if ((testingState_ == TestingState.Running) &&
+      if ((testingState_ == TestingState.INITIALIZING) &&
           (PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
         logger_.warn("Phase timeout in initializing phase. " + tocs_ + " tocs out of " +
             peersNeeded_ + " received");
         tocs_ = peersNeeded_;
         processTocsChange();
-      } else if ((testingState_ == TestingState.Running) &&
+      } else if ((testingState_ == TestingState.RUNNING) &&
           (PHASE_TIMEOUT_MSG + phase_).equals(message.getMessageContent())) {
         logger_.warn("Phase timeout in phase " + phase_ + ". " + tocs_ + " tocs out of " +
             peersNeeded_ + " received");
         tocs_ = peersNeeded_;
         processTocsChange();
-      } else if ((testingState_ == TestingState.GatheringStats) &&
+      } else if ((testingState_ == TestingState.GATHERING_STATS) &&
           (PHASE_TIMEOUT_MSG + (lastPhase_ + 1)).equals(message.getMessageContent())) {
         logger_.warn("Phase timeout in gathering stats phase. " + tocs_ + " tocs out of " +
             peersNeeded_ + " received");
@@ -368,7 +349,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   }
 
   private void processTocsChange() {
-    if (testingState_ == TestingState.Initializing) {
+    if (testingState_ == TestingState.INITIALIZING) {
       logger_.debug("In state initializing");
       if (tocs_ >= peersNeeded_) {
         clients_ = tocsAddresses_;
@@ -376,9 +357,9 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
         logger_.info("Advancing to phase: " + (phase_ + 1));
         startTime_ = System.currentTimeMillis();
         advancePhase();
-        testingState_ = TestingState.Running;
+        testingState_ = TestingState.RUNNING;
       }
-    } else if (testingState_ == TestingState.Running) {
+    } else if (testingState_ == TestingState.RUNNING) {
       logger_.debug("In state running phase: " + phase_);
       if (tocs_ >= peersNeeded_) {
         if ((phase_ + 1) <= lastPhase_) {
@@ -388,7 +369,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
           ++phase_;
           if (gatherStats_) {
             logger_.info("Advancing to phase: " + phase_ + " (gathering stats)");
-            testingState_ = TestingState.GatheringStats;
+            testingState_ = TestingState.GATHERING_STATS;
             tocs_ = 0;
             sendGatherStats();
           } else {

@@ -1,25 +1,16 @@
 package org.nebulostore.replicator.messages;
 
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.CommMessage;
 
 /**
- * Message send between Replicator and Network modulu to idicate that object was
- * succesfully stored.
+ * Message send between Replicator and Network modules to indicate that object was
+ * successfully stored.
  * @author szymonmatejczyk
  */
-public class ConfirmationMessage extends CommMessage {
-  public ConfirmationMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress) {
-    super(jobId, sourceAddress, destAddress);
-  }
-
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
-  }
-
+public class ConfirmationMessage extends ReplicatorMessage {
   private static final long serialVersionUID = 4963514627405781252L;
 
+  public ConfirmationMessage(String jobId, CommAddress destAddress) {
+    super(jobId, destAddress);
+  }
 }

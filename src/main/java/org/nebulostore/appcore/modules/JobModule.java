@@ -41,6 +41,14 @@ public abstract class JobModule extends Module {
     outQueue_ = dispatcherQueue;
   }
 
+  public void setJobId(String jobId) {
+    jobId_ = jobId;
+  }
+
+  public String getJobId() {
+    return jobId_;
+  }
+
   /**
    * Run this module through a JobInitMessage (with new random ID) sent to Dispatcher.
    */
@@ -61,10 +69,6 @@ public abstract class JobModule extends Module {
    */
   public boolean isQuickNonBlockingTask() {
     return false;
-  }
-
-  public String getJobId() {
-    return jobId_;
   }
 
   /**

@@ -1,21 +1,17 @@
 package org.nebulostore.replicator.messages;
 
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.CommMessage;
 
 /**
  * Send as answer to StoreObjectMessage when object on this replica is not up to date.
  * @author szymonmatejczyk
  *
  */
-public class UpdateWithholdMessage extends CommMessage {
+public class UpdateWithholdMessage extends ReplicatorMessage {
   private static final long serialVersionUID = 2939806231367561120L;
 
-  public UpdateWithholdMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress, Reason reason) {
-    super(jobId, sourceAddress, destAddress);
+  public UpdateWithholdMessage(String jobId, CommAddress destAddress, Reason reason) {
+    super(jobId, destAddress);
     reason_ = reason;
   }
 
@@ -28,10 +24,5 @@ public class UpdateWithholdMessage extends CommMessage {
 
   public Reason getReason() {
     return reason_;
-  }
-
-  @Override
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
   }
 }
