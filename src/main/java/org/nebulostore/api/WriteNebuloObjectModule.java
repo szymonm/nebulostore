@@ -52,8 +52,8 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
   /* number of confirmation messages required from replicas to return success */
   private static final int CONFIRMATIONS_REQUIRED = 2;
 
-  private NebuloAddress address_;
   private NebuloObject object_;
+
   private Set<String> previousVersionSHAs_;
   private final StateMachineVisitor visitor_ = new StateMachineVisitor();
 
@@ -61,9 +61,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
   private int nRecipients_;
 
   @Override
-  public void writeObject(NebuloAddress nebuloAddress, NebuloObject objectToWrite,
-      Set<String> previousVersionSHAs) {
-    address_ = nebuloAddress;
+  public void writeObject(NebuloObject objectToWrite, Set<String> previousVersionSHAs) {
     object_ = objectToWrite;
     previousVersionSHAs_ = previousVersionSHAs;
     runThroughDispatcher();
@@ -108,9 +106,10 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         state_ = STATE.DHT_QUERY;
         jobId_ = message.getId();
 
-        logger_.debug("Adding GetDHT to network queue (" + address_.getAppKey() + ", " +
+        NebuloAddress address = object_.getAddress();
+        logger_.debug("Adding GetDHT to network queue (" + address.getAppKey() + ", " +
             jobId_ + ").");
-        networkQueue_.add(new GetDHTMessage(jobId_, new KeyDHT(address_.getAppKey().getKey())));
+        networkQueue_.add(new GetDHTMessage(jobId_, new KeyDHT(address.getAppKey().getKey())));
       } else {
         incorrectState(state_.name(), message);
       }
@@ -131,7 +130,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
 
         ContractList contractList = metadata.getContractList();
         logger_.debug("ContractList: " + contractList);
-        ReplicationGroup group = contractList.getGroup(address_.getObjectId());
+        ReplicationGroup group = contractList.getGroup(object_.getObjectId());
         logger_.debug("Group: " + group);
         if (group == null) {
           endWithError(new NebuloException("No peers replicating this object."));
@@ -146,11 +145,11 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
               String remoteJobId = CryptoUtils.getRandomId().toString();
               waitingForTransactionResult_.put(replicator, remoteJobId);
               networkQueue_.add(new QueryToStoreObjectMessage(remoteJobId, replicator,
-                  address_.getObjectId(), encryptedObject, previousVersionSHAs_, getJobId()));
+                  object_.getObjectId(), encryptedObject, previousVersionSHAs_, getJobId()));
               logger_.debug("added recipient: " + replicator);
-              recipientsSet_.add(replicator);
-              ++nRecipients_;
             }
+            recipientsSet_.addAll(group.getReplicatorSet());
+            nRecipients_ += group.getSize();
           } catch (CryptoException exception) {
             endWithError(new NebuloException("Unable to encrypt object.", exception));
           }
@@ -242,8 +241,7 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
             logger_.debug("Query phase completed, waiting for result.");
             returnSemiResult(null);
             state_ = STATE.RETURNED_WAITING_FOR_REST;
-          }
-          if (recipientsSet_.isEmpty()) {
+          } else if (recipientsSet_.isEmpty()) {
             logger_.debug("Query phase completed, waiting for result.");
             returnSemiResult(null);
           }
@@ -263,15 +261,15 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
         // Peers that didn't response should get an AM.
         for (CommAddress deadReplicator : recipientsSet_) {
           AsynchronousMessage asynchronousMessage = isSmallFile_ ?
-              new UpdateSmallNebuloObjectMessage(address_, object_) :
-                new UpdateNebuloObjectMessage(address_, null);
+              new UpdateSmallNebuloObjectMessage(object_) :
+                new UpdateNebuloObjectMessage(object_.getAddress(), null);
 
           new SendAsynchronousMessagesForPeerModule(deadReplicator, asynchronousMessage, outQueue_);
         }
         // Peers that rejected or withheld transaction should get notification, that their
         // version is outdated.
         for (CommAddress rejecting : rejectingOrWithholdingReplicators_) {
-          networkQueue_.add(new ObjectOutdatedMessage(rejecting, address_));
+          networkQueue_.add(new ObjectOutdatedMessage(rejecting, object_.getAddress()));
         }
 
         // TODO(szm): don't like updating version here

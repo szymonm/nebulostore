@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 import org.nebulostore.appcore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.crypto.CryptoUtils;
 
 /**
@@ -58,4 +59,9 @@ public class NebuloElement implements Serializable {
   public EncryptedObject getData() {
     return innerObject_;
   }
+
+  public ObjectId getObjectId() {
+    return address_.getObjectId();
+  }
+
 }

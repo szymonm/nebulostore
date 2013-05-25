@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.google.inject.Inject;
-
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.addressing.ObjectId;
@@ -80,7 +79,7 @@ public final class ListsClient extends ConductorClient {
         new ObjectId(new BigInteger((clientId_ + 1) + "000")));
     try {
       for (int i = 0; i < N_CASES; ++i) {
-        BigInteger value = list.getAddress().getObjectId().getKey().add(BigInteger.valueOf(i));
+        BigInteger value = list.getObjectId().getKey().add(BigInteger.valueOf(i));
         list.append(new NebuloElement(CryptoUtils.encryptObject(value)));
         list.sync();
       }
@@ -143,7 +142,7 @@ public final class ListsClient extends ConductorClient {
           ListIterator iterator = list.iterator();
           for (int j = 0; j < N_CASES; ++j) {
             BigInteger elem = (BigInteger) CryptoUtils.decryptObject(iterator.next().getData());
-            BigInteger good = list.getAddress().getObjectId().getKey().add(BigInteger.valueOf(j));
+            BigInteger good = list.getObjectId().getKey().add(BigInteger.valueOf(j));
             if (!good.equals(elem)) {
               unableToFetchList(address, "Content is incorrect (" + elem + " != " + good + ")");
               continue;

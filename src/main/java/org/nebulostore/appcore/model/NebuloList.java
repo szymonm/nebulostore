@@ -144,7 +144,7 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
   protected void runSync() throws NebuloException {
     logger_.info("Running sync on list.");
     ObjectWriter writer = objectWriterProvider_.get();
-    writer.writeObject(address_, this, previousVersions_);
+    writer.writeObject(this, previousVersions_);
 
     try {
       writer.getSemiResult(TIMEOUT_SEC);

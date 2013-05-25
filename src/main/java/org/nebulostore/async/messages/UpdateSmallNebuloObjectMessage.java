@@ -12,16 +12,10 @@ import org.nebulostore.appcore.model.NebuloObject;
 public class UpdateSmallNebuloObjectMessage extends AsynchronousMessage {
   private static final long serialVersionUID = -1099497850800611597L;
 
-  NebuloAddress objectId_;
   NebuloObject object_;
 
-  public UpdateSmallNebuloObjectMessage(NebuloAddress objectId, NebuloObject object) {
-    objectId_ = objectId;
+  public UpdateSmallNebuloObjectMessage(NebuloObject object) {
     object_ = object;
-  }
-
-  public NebuloAddress getObjectId() {
-    return objectId_;
   }
 
   public NebuloObject getFile() {

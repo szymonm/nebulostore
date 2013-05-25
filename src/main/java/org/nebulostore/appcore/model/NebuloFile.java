@@ -35,7 +35,7 @@ public class NebuloFile extends NebuloObject {
     // FileChunk stores (endByte_ - startByte_) bytes from interval [startByte_, endByte_).
     private int startByte_;
     private int endByte_;
-    private NebuloAddress address_;
+    private NebuloAddress chunkAddress_;
 
     // These fields are set to null after deserializaton of NebuloFile.
     private transient FileChunk chunk_;
@@ -46,7 +46,7 @@ public class NebuloFile extends NebuloObject {
     public FileChunkWrapper(int startByte, int endByte, NebuloAddress address, CommAddress sender) {
       startByte_ = startByte;
       endByte_ = endByte;
-      address_ = address;
+      chunkAddress_ = address;
       fileSender_ = sender;
       chunk_ = new FileChunk(address, endByte_ - startByte_);
     }
@@ -56,7 +56,7 @@ public class NebuloFile extends NebuloObject {
         // Use metadata holder for chunk query.
         // TODO(bolek): Retry with full address if unsuccessful.
         ObjectGetter getter = objectGetterProvider_.get();
-        getter.fetchObject(address_, fileSender_);
+        getter.fetchObject(chunkAddress_, fileSender_);
         chunk_ = (FileChunk) getter.awaitResult(TIMEOUT_SEC);
       }
       return chunk_.getData();
@@ -69,14 +69,14 @@ public class NebuloFile extends NebuloObject {
 
     public ObjectDeleter deleteChunk() throws NebuloException {
       ObjectDeleter deleter = objectDeleterProvider_.get();
-      deleter.deleteObject(address_);
+      deleter.deleteObject(chunkAddress_);
       return deleter;
     }
 
     public ObjectWriter sync() {
       if (isChanged_) {
         ObjectWriter writer = objectWriterProvider_.get();
-        writer.writeObject(address_, chunk_, chunk_.getVersions());
+        writer.writeObject(chunk_, chunk_.getVersions());
         return writer;
       } else {
         return null;
@@ -191,7 +191,7 @@ public class NebuloFile extends NebuloObject {
       // Create new chunk at the end.
       // TODO(bolek): Better ID generation!
       ObjectId chunkId = new ObjectId(
-          chunks_.get(chunks_.size() - 1).address_.getObjectId().getKey().add(BigInteger.ONE));
+          chunks_.get(chunks_.size() - 1).chunkAddress_.getObjectId().getKey().add(BigInteger.ONE));
       chunks_.add(new FileChunkWrapper(chunkIdx * chunkSize_, chunkIdx * chunkSize_ + len,
           new NebuloAddress(address_.getAppKey(), chunkId), sender_));
     }
@@ -259,7 +259,7 @@ public class NebuloFile extends NebuloObject {
     }
     // Run sync for NebuloFile (metadata).
     ObjectWriter writer = objectWriterProvider_.get();
-    writer.writeObject(address_, this, previousVersions_);
+    writer.writeObject(this, previousVersions_);
     updateModules.add(writer);
 
     // Wait for all results.

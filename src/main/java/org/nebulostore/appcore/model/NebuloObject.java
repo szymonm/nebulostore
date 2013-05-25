@@ -13,6 +13,7 @@ import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
 import org.nebulostore.appcore.addressing.NebuloAddress;
+import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.communication.address.CommAddress;
@@ -87,6 +88,10 @@ public abstract class NebuloObject implements Serializable {
 
   public void setVersions(Set<String> versions) {
     previousVersions_ = versions;
+  }
+
+  public ObjectId getObjectId() {
+    return address_.getObjectId();
   }
 
   /**

@@ -77,7 +77,7 @@ public class GUIView extends JFrame {
     generateViewComponents();
 
     rootAddressTextField_.setText(root.getAddress().getAppKey().getKey().toString() +
-        " : " + root.getAddress().getObjectId().getKey().toString());
+        " : " + root.getObjectId().getKey().toString());
 
     folderFileChooser_.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     fileFileChooser_.setFileSelectionMode(JFileChooser.FILES_ONLY);

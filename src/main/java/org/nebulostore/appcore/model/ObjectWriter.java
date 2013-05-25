@@ -13,12 +13,10 @@ import org.nebulostore.replicator.core.TransactionAnswer;
 public interface ObjectWriter {
   /**
    * Write the object asynchronously.
-   * @param nebuloAddress
    * @param objectToWrite
    * @param previousVersionSHAs
    */
-  void writeObject(NebuloAddress nebuloAddress, NebuloObject objectToWrite,
-      Set<String> previousVersionSHAs);
+  void writeObject(NebuloObject objectToWrite, Set<String> previousVersionSHAs);
 
   // TODO(bolek): Move this logic into the module, it should not be inside NebuloFile!
   Void getSemiResult(int timeout) throws NebuloException;

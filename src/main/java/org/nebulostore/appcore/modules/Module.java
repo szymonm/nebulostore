@@ -57,10 +57,11 @@ public abstract class Module implements Runnable {
         processMessage(inQueue_.take());
         // If isFinished_ is set now, the thread will die.
       } catch (InterruptedException exception) {
-        logger_.warn("Received InterruptedException from inQueue.");
+        logger_.warn("Received InterruptedException from inQueue.", exception);
         continue;
       } catch (NebuloException exception) {
-        logger_.error("Received NebuloException from processMessage(): " + exception.getMessage());
+        logger_.error("Received NebuloException from processMessage(): " + exception.getMessage(),
+            exception);
         continue;
       }
     }
