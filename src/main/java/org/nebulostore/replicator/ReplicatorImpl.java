@@ -42,8 +42,6 @@ import org.nebulostore.replicator.messages.UpdateWithholdMessage;
 import org.nebulostore.replicator.messages.UpdateWithholdMessage.Reason;
 import org.nebulostore.utils.Pair;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 // TODO(szm): cloning object before send. java cloning library?
 // TODO(bolek, szm): Refactor static methods into non-static?
 
@@ -61,8 +59,6 @@ public class ReplicatorImpl extends Replicator {
   private static String pathPrefix_;
 
   // Hashtable is synchronized.
-  //TODO(szm): filesLocations and previousVersions should be stored on disk!!
-  private static Map<ObjectId, String> filesLocations_ = new Hashtable<ObjectId, String>(256);
   // NOTE: Including current version.
   private static Map<ObjectId, Set<String>> previousVersions_ = new Hashtable<ObjectId,
       Set<String>>();
@@ -75,8 +71,8 @@ public class ReplicatorImpl extends Replicator {
   @Inject
   public ReplicatorImpl(@Named("replicator.storage-path") String pathPrefix,
                         AppKey appKey) {
-    pathPrefix_ = pathPrefix;
-    appKey_ = appKey;
+    ReplicatorImpl.pathPrefix_ = pathPrefix;
+    ReplicatorImpl.appKey_ = appKey;
   }
 
   /**
@@ -262,8 +258,8 @@ public class ReplicatorImpl extends Replicator {
 
     String currentObjectVersion = null;
 
-    String location = filesLocations_.get(objectId);
-    if (location != null) {
+    String location = getObjectLocation(objectId);
+    if (objectExists(location)) {
       /* checking whether local file is up to date */
       try {
         currentObjectVersion = CryptoUtils.sha(getObject(objectId));
@@ -277,7 +273,6 @@ public class ReplicatorImpl extends Replicator {
       }
     } else {
       logger_.debug("storing new file");
-      location = getLocationPrefix() + objectId.toString();
       // TODO(szm, bolek): addtional synchronization for locksMap_?
       if (locksMap_.get(objectId) == null) {
         locksMap_.put(objectId, new Semaphore(1));
@@ -327,27 +322,19 @@ public class ReplicatorImpl extends Replicator {
       String currentVersion, String transactionToken) {
     logger_.debug("Commit storing object " + objectId.toString());
 
-    String location = filesLocations_.get(objectId);
-
-    if (location == null) {
-      logger_.debug("commiting new file");
-      location = getLocationPrefix() + objectId.toString();
-    }
-
+    String location = getObjectLocation(objectId);
+    boolean isNewFile = !objectExists(location);
     File previous = new File(location);
     previous.delete();
-
     File tmp = new File(location + ".tmp." + transactionToken);
-
     tmp.renameTo(previous);
 
-    if (filesLocations_.get(objectId) == null) {
+    if (isNewFile) {
       previousVersions_.put(objectId, new HashSet<String>(previousVersions));
       previousVersions_.get(objectId).addAll(previousVersions);
       previousVersions_.get(objectId).add(currentVersion);
       logger_.debug("putting into freshness map : " + objectId);
       freshnessMap_.put(objectId, true);
-      filesLocations_.put(objectId, location);
     } else {
       previousVersions_.get(objectId).addAll(previousVersions);
       previousVersions_.get(objectId).add(currentVersion);
@@ -359,12 +346,8 @@ public class ReplicatorImpl extends Replicator {
 
   public static void abortUpdateObject(ObjectId objectId, String transactionToken) {
     logger_.debug("Aborting transaction " + objectId.toString());
-    String location = filesLocations_.get(objectId);
-    boolean newObjectTransaction = false;
-    if (location == null) {
-      newObjectTransaction = true;
-      location = getLocationPrefix() + objectId.toString();
-    }
+    String location = getObjectLocation(objectId);
+    boolean newObjectTransaction = objectExists(location);
 
     File file = new File(location + ".tmp." + transactionToken);
     file.delete();
@@ -393,8 +376,8 @@ public class ReplicatorImpl extends Replicator {
    */
   public static EncryptedObject getObject(ObjectId objectId) throws OutOfDateFileException {
     logger_.debug("getObject with objectID = " + objectId);
-    String location = filesLocations_.get(objectId);
-    if (location == null) {
+    String location = getObjectLocation(objectId);
+    if (!objectExists(location)) {
       return null;
     }
 
@@ -429,8 +412,8 @@ public class ReplicatorImpl extends Replicator {
   }
 
   public static void deleteObject(ObjectId objectId) throws DeleteObjectException {
-    String location = filesLocations_.get(objectId);
-    if (location == null) {
+    String location = getObjectLocation(objectId);
+    if (!objectExists(location)) {
       return;
     }
     Semaphore mutex = locksMap_.get(objectId);
@@ -444,7 +427,6 @@ public class ReplicatorImpl extends Replicator {
       throw new DeleteObjectException("Interrupted while waiting for object lock.", e);
     }
 
-    filesLocations_.remove(objectId);
     freshnessMap_.remove(objectId);
     previousVersions_.remove(objectId);
     locksMap_.remove(objectId);
@@ -460,8 +442,16 @@ public class ReplicatorImpl extends Replicator {
     }
   }
 
+  private static boolean objectExists(String location) {
+    File objectFile = new File(location);
+    return objectFile.exists();
+  }
+
+  private static String getObjectLocation(ObjectId objectId) {
+    return getLocationPrefix() + objectId.getKey();
+  }
+
   private static String getLocationPrefix() {
-    checkNotNull(pathPrefix_);
-    return pathPrefix_ + "/" + appKey_.getKey().intValue() + "/";
+    return pathPrefix_ + "/" + appKey_.getKey().intValue() + "_storage/";
   }
 }
