@@ -1,8 +1,5 @@
 package org.nebulostore.async.messages;
 
-import org.nebulostore.appcore.addressing.NebuloAddress;
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.model.NebuloObject;
 
 /**
@@ -20,9 +17,5 @@ public class UpdateSmallNebuloObjectMessage extends AsynchronousMessage {
 
   public NebuloObject getFile() {
     return object_;
-  }
-
-  public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
-    return visitor.visit(this);
   }
 }

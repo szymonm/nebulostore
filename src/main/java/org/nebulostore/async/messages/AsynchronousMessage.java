@@ -1,12 +1,10 @@
 package org.nebulostore.async.messages;
 
-import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
-import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.crypto.CryptoUtils;
 
 /**
- * Asynchrounous message send by peers when one of them is offline.
+ * Asynchronous message send by peers when one of them is offline.
  * @author szymonmatejczyk
  */
 public abstract class AsynchronousMessage extends Message {
@@ -55,7 +53,4 @@ public abstract class AsynchronousMessage extends Message {
     }
     return true;
   }
-
-  @Override
-  public abstract <R> R accept(MessageVisitor<R> visitor) throws NebuloException;
 }
