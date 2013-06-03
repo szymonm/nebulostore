@@ -12,6 +12,11 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
+import com.google.common.io.Files;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
@@ -42,9 +47,6 @@ import org.nebulostore.replicator.messages.UpdateWithholdMessage;
 import org.nebulostore.replicator.messages.UpdateWithholdMessage.Reason;
 import org.nebulostore.utils.Pair;
 
-// TODO(szm): cloning object before send. java cloning library?
-// TODO(bolek, szm): Refactor static methods into non-static?
-
 /**
  * Replicator - disk interface.
  * @author szymonmatejczyk
@@ -56,23 +58,17 @@ public class ReplicatorImpl extends Replicator {
   private static final int LOCK_TIMEOUT_SEC = 10;
   private static final int GET_OBJECT_TIMEOUT_SEC = 10;
 
-  private static String pathPrefix_;
-
-  // Hashtable is synchronized.
-  // NOTE: Including current version.
-  private static Map<ObjectId, Set<String>> previousVersions_ = new Hashtable<ObjectId,
-      Set<String>>();
-  private static Map<ObjectId, Boolean> freshnessMap_ = new Hashtable<ObjectId, Boolean>(256);
   private static Map<ObjectId, Semaphore> locksMap_ = new Hashtable<ObjectId, Semaphore>();
-  private static AppKey appKey_;
 
+  private String pathPrefix_;
+  private AppKey appKey_;
   private final MessageVisitor<Void> visitor_ = new ReplicatorVisitor();
 
   @Inject
   public ReplicatorImpl(@Named("replicator.storage-path") String pathPrefix,
                         AppKey appKey) {
-    ReplicatorImpl.pathPrefix_ = pathPrefix;
-    ReplicatorImpl.appKey_ = appKey;
+    pathPrefix_ = pathPrefix;
+    appKey_ = appKey;
   }
 
   /**
@@ -81,8 +77,7 @@ public class ReplicatorImpl extends Replicator {
   private enum QueryToStoreResult { OK, OBJECT_OUT_OF_DATE, INVALID_VERSION, SAVE_FAILED, TIMEOUT }
 
   /**
-   * Visitor to handle different message types. It calls static methods and returns
-   * results via queues.
+   * Visitor to handle different message types.
    * @author szymonmatejczyk
    */
   protected class ReplicatorVisitor extends MessageVisitor<Void> {
@@ -170,7 +165,7 @@ public class ReplicatorImpl extends Replicator {
       Set<String> versions;
       try {
         enc = getObject(message.getObjectId());
-        versions = previousVersions_.get(message.getObjectId());
+        versions = getPreviousVersions(message.getObjectId());
       } catch (OutOfDateFileException exception) {
         networkQueue_.add(new ReplicatorErrorMessage(message.getSourceJobId(),
             message.getDestinationAddress(), "object out of date"));
@@ -205,7 +200,6 @@ public class ReplicatorImpl extends Replicator {
 
     public Void visit(ObjectOutdatedMessage message) {
       jobId_ = message.getId();
-      freshnessMap_.put(message.getAddress().getObjectId(), false);
       try {
         GetEncryptedObjectModule getModule = new GetEncryptedObjectModule(message.getAddress(),
             outQueue_);
@@ -222,7 +216,6 @@ public class ReplicatorImpl extends Replicator {
         if (query == QueryToStoreResult.OK || query == QueryToStoreResult.OBJECT_OUT_OF_DATE) {
           commitUpdateObject(message.getAddress().getObjectId(), res.getSecond(),
               CryptoUtils.sha(encryptedObject), message.getId());
-          freshnessMap_.put(message.getAddress().getObjectId(), true);
         } else {
           throw new NebuloException("Unable to fetch new version of file.");
         }
@@ -252,7 +245,7 @@ public class ReplicatorImpl extends Replicator {
   /**
    * Begins transaction: tries to store object to temporal location.
    */
-  public static QueryToStoreResult queryToUpdateObject(ObjectId objectId,
+  public QueryToStoreResult queryToUpdateObject(ObjectId objectId,
       EncryptedObject encryptedObject, Set<String> previousVersions, String transactionToken) {
     logger_.debug("Checking store consistency");
 
@@ -318,33 +311,25 @@ public class ReplicatorImpl extends Replicator {
     return QueryToStoreResult.OK;
   }
 
-  public static void commitUpdateObject(ObjectId objectId, Set<String> previousVersions,
+  public void commitUpdateObject(ObjectId objectId, Set<String> previousVersions,
       String currentVersion, String transactionToken) {
     logger_.debug("Commit storing object " + objectId.toString());
 
     String location = getObjectLocation(objectId);
-    boolean isNewFile = !objectExists(location);
     File previous = new File(location);
     previous.delete();
     File tmp = new File(location + ".tmp." + transactionToken);
     tmp.renameTo(previous);
 
-    if (isNewFile) {
-      previousVersions_.put(objectId, new HashSet<String>(previousVersions));
-      previousVersions_.get(objectId).addAll(previousVersions);
-      previousVersions_.get(objectId).add(currentVersion);
-      logger_.debug("putting into freshness map : " + objectId);
-      freshnessMap_.put(objectId, true);
-    } else {
-      previousVersions_.get(objectId).addAll(previousVersions);
-      previousVersions_.get(objectId).add(currentVersion);
-    }
+    Set<String> newVersions = new HashSet<String>(previousVersions);
+    newVersions.add(currentVersion);
+    setPreviousVersions(objectId, newVersions);
 
     locksMap_.get(objectId).release();
     logger_.debug("Commit successful");
   }
 
-  public static void abortUpdateObject(ObjectId objectId, String transactionToken) {
+  public void abortUpdateObject(ObjectId objectId, String transactionToken) {
     logger_.debug("Aborting transaction " + objectId.toString());
     String location = getObjectLocation(objectId);
     boolean newObjectTransaction = objectExists(location);
@@ -362,9 +347,9 @@ public class ReplicatorImpl extends Replicator {
    * Returns true only if all versions of the file stored in this replica belong to the
    * set of versions known by the peer requesting update.
    */
-  private static boolean previousVersionsMatch(ObjectId objectId, String current,
+  private boolean previousVersionsMatch(ObjectId objectId, String current,
       Set<String> previousVersions) {
-    return previousVersions.containsAll(previousVersions_.get(objectId));
+    return previousVersions.containsAll(getPreviousVersions(objectId));
   }
 
   /**
@@ -374,15 +359,11 @@ public class ReplicatorImpl extends Replicator {
    *
    * @throws OutOfDateFileException if object is stored but out of date.
    */
-  public static EncryptedObject getObject(ObjectId objectId) throws OutOfDateFileException {
+  public EncryptedObject getObject(ObjectId objectId) throws OutOfDateFileException {
     logger_.debug("getObject with objectID = " + objectId);
     String location = getObjectLocation(objectId);
     if (!objectExists(location)) {
       return null;
-    }
-
-    if (!freshnessMap_.get(objectId)) {
-      throw new OutOfDateFileException();
     }
 
     File file = new File(location);
@@ -411,7 +392,7 @@ public class ReplicatorImpl extends Replicator {
     }
   }
 
-  public static void deleteObject(ObjectId objectId) throws DeleteObjectException {
+  public void deleteObject(ObjectId objectId) throws DeleteObjectException {
     String location = getObjectLocation(objectId);
     if (!objectExists(location)) {
       return;
@@ -427,8 +408,7 @@ public class ReplicatorImpl extends Replicator {
       throw new DeleteObjectException("Interrupted while waiting for object lock.", e);
     }
 
-    freshnessMap_.remove(objectId);
-    previousVersions_.remove(objectId);
+    // TODO(bolek): Remove all temps and metadata related to this file.
     locksMap_.remove(objectId);
     mutex.release();
 
@@ -442,16 +422,38 @@ public class ReplicatorImpl extends Replicator {
     }
   }
 
-  private static boolean objectExists(String location) {
+  private Set<String> getPreviousVersions(ObjectId objectId) {
+    File file = new File(getObjectLocation(objectId) + ".meta");
+    Splitter splitter = Splitter.on(",");
+    String line;
+    try {
+      line = Files.readFirstLine(file, Charsets.US_ASCII);
+      return line == null ? new HashSet<String>() : Sets.newHashSet(splitter.split(line));
+    } catch (IOException e) {
+      return new HashSet<String>();
+    }
+  }
+
+  private void setPreviousVersions(ObjectId objectId, Set<String> versions) {
+    File file = new File(getObjectLocation(objectId) + ".meta");
+    Joiner joiner = Joiner.on(",");
+    try {
+      Files.write(joiner.join(versions), file, Charsets.US_ASCII);
+    } catch (IOException e) {
+      logger_.warn("IOException in setPreviousVersions. Versions not updated.", e);
+    }
+  }
+
+  private boolean objectExists(String location) {
     File objectFile = new File(location);
     return objectFile.exists();
   }
 
-  private static String getObjectLocation(ObjectId objectId) {
+  private String getObjectLocation(ObjectId objectId) {
     return getLocationPrefix() + objectId.getKey();
   }
 
-  private static String getLocationPrefix() {
+  private String getLocationPrefix() {
     return pathPrefix_ + "/" + appKey_.getKey().intValue() + "_storage/";
   }
 }

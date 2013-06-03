@@ -25,8 +25,8 @@ public class CryptoUtilsTest {
     list.add("One");
     list.add("Two");
 
-    List<?> list2 =
-        (ArrayList<?>) CryptoUtils.deserializeObject(CryptoUtils.serializeObject((ArrayList) list));
+    List<?> list2 = (ArrayList<?>) CryptoUtils.deserializeObject(
+        CryptoUtils.serializeObject((ArrayList<?>) list));
 
     assertTrue(list2.size() == 2);
     assertTrue(list2.get(0).equals("One"));

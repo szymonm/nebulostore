@@ -9,7 +9,6 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -18,8 +17,9 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.model.EncryptedObject;
 
 /**
- * @author bolek
  * Library of cryptographic and serialization functions.
+ *
+ * @author Bolek Kulbabinski
  */
 public final class CryptoUtils {
   private static Logger logger_ = Logger.getLogger(CryptoUtils.class);
@@ -88,6 +88,13 @@ public final class CryptoUtils {
     return o;
   }
 
+  private static String byteArrayToHexString(byte[] array) {
+    StringBuilder sb = new StringBuilder();
+    for (byte b : array)
+       sb.append(String.format("%02x", b & 0xff));
+    return sb.toString();
+  }
+
   public static String sha(EncryptedObject encryptedObject) {
     MessageDigest md = null;
     try {
@@ -96,7 +103,7 @@ public final class CryptoUtils {
       logger_.error(e.getMessage());
     }
     md.update(encryptedObject.getEncryptedData());
-    return new String(md.digest(), Charset.forName("US-ASCII"));
+    return byteArrayToHexString(md.digest());
   }
 
   private static final SecureRandom RANDOM = new SecureRandom();
