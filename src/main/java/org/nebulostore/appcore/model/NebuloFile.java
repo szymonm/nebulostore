@@ -20,7 +20,7 @@ import static org.nebulostore.subscription.model.SubscriptionNotification.Notifi
 
 /**
  * File. Only metadata is stored in this object, real data is represented by FileChunk.
- * Constructors are package-protected. Use NebuloObjectFactory to create objects.
+ * Constructors are package-protected. Use NebuloObjectFactoryImpl to create objects.
  * @author Bolek Kulbabinski
  */
 
@@ -85,6 +85,10 @@ public class NebuloFile extends NebuloObject {
 
     public void setSynced() {
       isChanged_ = false;
+    }
+
+    public boolean isChanged() {
+      return isChanged_;
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

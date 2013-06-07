@@ -13,6 +13,8 @@ import org.nebulostore.api.GetNebuloObjectModule;
 import org.nebulostore.api.WriteNebuloObjectModule;
 import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.messaging.Message;
+import org.nebulostore.appcore.model.NebuloObjectFactory;
+import org.nebulostore.appcore.model.NebuloObjectFactoryImpl;
 import org.nebulostore.appcore.model.ObjectDeleter;
 import org.nebulostore.appcore.model.ObjectGetter;
 import org.nebulostore.appcore.model.ObjectWriter;
@@ -53,6 +55,7 @@ public class PeerConfiguration extends GenericConfiguration {
     bind(new TypeLiteral<BlockingQueue<Message>>() { })
       .annotatedWith(Names.named("CommunicationPeerOutQueue")).toInstance(dispatcherQueue);
 
+    bind(NebuloObjectFactory.class).to(NebuloObjectFactoryImpl.class);
     bind(ObjectGetter.class).to(GetNebuloObjectModule.class);
     bind(ObjectWriter.class).to(WriteNebuloObjectModule.class);
     bind(ObjectDeleter.class).to(DeleteNebuloObjectModule.class);

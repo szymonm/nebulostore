@@ -1,67 +1,23 @@
 package org.nebulostore.appcore.model;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-
-import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.crypto.CryptoUtils;
 
-/**
- * Factory that produces objects for NebuloStore users. Use Peer.getObjectFactory to get one.
- * @author Bolek Kulbabinski
- */
-public final class NebuloObjectFactory {
-  private static final int TIMEOUT_SEC = 60;
+public interface NebuloObjectFactory {
 
-  // Needed to inject dependencies to objects fetched from the network.
-  private Injector injector_;
+  NebuloObject fetchExistingNebuloObject(NebuloAddress address) throws NebuloException;
 
-  @Inject
-  public void setInjector(Injector injector) {
-    injector_ = injector;
-  }
+  NebuloFile createNewNebuloFile();
 
-  public NebuloObject fetchExistingNebuloObject(NebuloAddress address) throws NebuloException {
-    ObjectGetter getter = injector_.getInstance(ObjectGetter.class);
-    getter.fetchObject(address, null);
-    NebuloObject result = getter.awaitResult(TIMEOUT_SEC);
-    injector_.injectMembers(result);
-    return result;
-  }
+  NebuloFile createNewNebuloFile(ObjectId objectId);
 
-  public NebuloFile createNewNebuloFile() {
-    // TODO(bolek): Here should come more sophisticated ID generation method to account for
-    //   (probably) fixed replication groups with ID intervals. (ask Broker? what size?)
-    return createNewNebuloFile(new ObjectId(CryptoUtils.getRandomId()));
-  }
+  NebuloFile createNewNebuloFile(NebuloAddress address);
 
-  public NebuloFile createNewNebuloFile(ObjectId objectId) {
-    NebuloAddress address = new NebuloAddress(injector_.getInstance(AppKey.class), objectId);
-    return createNewNebuloFile(address);
-  }
+  NebuloList createNewNebuloList();
 
-  public NebuloFile createNewNebuloFile(NebuloAddress address) {
-    NebuloFile file = new NebuloFile(address);
-    injector_.injectMembers(file);
-    return file;
-  }
+  NebuloList createNewNebuloList(ObjectId objectId);
 
-  public NebuloList createNewNebuloList() {
-    ObjectId objectId = new ObjectId(CryptoUtils.getRandomId());
-    return createNewNebuloList(objectId);
-  }
+  NebuloList createNewNebuloList(NebuloAddress address);
 
-  public NebuloList createNewNebuloList(ObjectId objectId) {
-    NebuloAddress address = new NebuloAddress(injector_.getInstance(AppKey.class), objectId);
-    return createNewNebuloList(address);
-  }
-
-  public NebuloList createNewNebuloList(NebuloAddress address) {
-    NebuloList list = new NebuloList(address);
-    injector_.injectMembers(list);
-    return list;
-  }
 }
