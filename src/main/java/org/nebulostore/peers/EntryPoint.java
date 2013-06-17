@@ -19,13 +19,11 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  */
 public final class EntryPoint {
   private static Logger logger_ = Logger.getLogger(EntryPoint.class);
-  private static final String LOG4J_CONFIG_PATH = "resources/conf/log4j.xml";
   private static final String CONFIGURATION_PATH = "resources/conf/Peer.xml";
   private static final String DEFAULT_PEER_CLASS = "org.nebulostore.appcore.Peer";
 
   public static void main(String[] args) {
     try {
-      DOMConfigurator.configure(LOG4J_CONFIG_PATH);
       XMLConfiguration config = initConfig();
       setDefaultThreadUncaughtExceptionHandler();
       AbstractPeer peer = createPeer(config);
