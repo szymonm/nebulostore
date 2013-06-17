@@ -83,14 +83,13 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
   protected class StateMachineVisitor extends MessageVisitor<Void> {
     private STATE state_;
     /* Recipients we are waiting answer from. */
-    private final Set<CommAddress> recipientsSet_ = new HashSet<CommAddress>();
+    private final Set<CommAddress> recipientsSet_ = new HashSet<>();
 
     /* Repicators that rejected transaction, when it has been already commited. */
-    private final Set<CommAddress> rejectingOrWithholdingReplicators_ = new HashSet<CommAddress>();
+    private final Set<CommAddress> rejectingOrWithholdingReplicators_ = new HashSet<>();
 
     /* CommAddress -> JobId of peers waiting for transaction result */
-    private final Map<CommAddress, String> waitingForTransactionResult_ =
-        new HashMap<CommAddress, String>();
+    private final Map<CommAddress, String> waitingForTransactionResult_ = new HashMap<>();
 
     private boolean isSmallFile_;
     private int confirmations_;

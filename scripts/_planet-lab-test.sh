@@ -66,7 +66,7 @@ run_clients() {
 
 run_clients &
 echo "  " $BOOTSTRAP_PEER
-ssh -o $SSH_OPTIONS -l $USER $BOOTSTRAP_PEER "cd $REMOTE_DIR; java -jar Nebulostore.jar > logs/stdout.log 2> logs/stderr.log && echo 'OK' > logs/exit_code || echo 'ERROR' > logs/exit_code"
+ssh -o $SSH_OPTIONS -l $USER $BOOTSTRAP_PEER "cd $REMOTE_DIR; $JAVA_EXEC -jar Nebulostore.jar > logs/stdout.log 2> logs/stderr.log && echo 'OK' > logs/exit_code || echo 'ERROR' > logs/exit_code"
 
 
 

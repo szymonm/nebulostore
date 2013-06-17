@@ -1,5 +1,4 @@
 roti.mimuw.edu.pl
-prata.mimuw.edu.pl
 inriarennes2.irisa.fr
 planetlab04.mpi-sws.mpg.de
 planetlab-um10.di.uminho.pt
@@ -73,7 +72,6 @@ planetlab2.tmit.bme.hu
 planetlab2.cs.vu.nl
 planetlab1.di.fct.unl.pt
 host3-plb.loria.fr
-planetlab2.exp-math.uni-essen.de
 planetlab1.upm.ro
 planetlab1.u-strasbg.fr
 stella.planetlab.ntua.gr
@@ -85,11 +83,9 @@ planetlab2.informatik.uni-wuerzburg.de
 merkur.planetlab.haw-hamburg.de
 planetlab1.informatik.uni-wuerzburg.de
 planetlab1.unineuchatel.ch
-planetlab-node-01.ucd.ie
 planet01.hhi.fraunhofer.de
 planetlab1.esprit-tn.com
 salt.planetlab.cs.umd.edu
-planetlab1.rd.tut.fi
 planetlab1.ifi.uio.no
 ple2.cesnet.cz
 planetlab1.informatik.uni-goettingen.de
@@ -110,11 +106,9 @@ whitefall.planetlab.cs.umd.edu
 planetlab4.mini.pw.edu.pl
 pl2.eng.monash.edu.au
 host2.planetlab.informatik.tu-darmstadt.de
-planetlab-1.research.netlab.hut.fi
 planetlab2.pjwstk.edu.pl
 planetlab4.inf.ethz.ch
 miranda.planetlab.cs.umd.edu
-pl2.planetlab.ics.tut.ac.jp
 planetlab1.sics.se
 planetlab1.s3.kth.se
 planet1.elte.hu
@@ -125,3 +119,10 @@ planetlab-1.imag.fr
 planet2.inf.tu-dresden.de
 peeramidion.irisa.fr
 planetlab-2.man.poznan.pl
+prata.mimuw.edu.pl
+pl2.planetlab.ics.tut.ac.jp
+planetlab-1.research.netlab.hut.fi
+onelab6.iet.unipi.it
+planetlab1.rd.tut.fi
+planetlab-node-01.ucd.ie
+planetlab2.exp-math.uni-essen.de
