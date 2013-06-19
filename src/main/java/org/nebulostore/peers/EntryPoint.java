@@ -9,7 +9,6 @@ import com.google.inject.Injector;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.nebulostore.appcore.exceptions.NebuloException;
 
 /**

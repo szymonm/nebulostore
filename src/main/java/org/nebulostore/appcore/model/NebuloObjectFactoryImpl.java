@@ -24,6 +24,7 @@ public class NebuloObjectFactoryImpl implements NebuloObjectFactory {
     injector_ = injector;
   }
 
+  @Override
   public NebuloObject fetchExistingNebuloObject(NebuloAddress address) throws NebuloException {
     ObjectGetter getter = injector_.getInstance(ObjectGetter.class);
     getter.fetchObject(address, null);
@@ -32,33 +33,39 @@ public class NebuloObjectFactoryImpl implements NebuloObjectFactory {
     return result;
   }
 
+  @Override
   public NebuloFile createNewNebuloFile() {
     // TODO(bolek): Here should come more sophisticated ID generation method to account for
     //   (probably) fixed replication groups with ID intervals. (ask Broker? what size?)
     return createNewNebuloFile(new ObjectId(CryptoUtils.getRandomId()));
   }
 
+  @Override
   public NebuloFile createNewNebuloFile(ObjectId objectId) {
     NebuloAddress address = new NebuloAddress(injector_.getInstance(AppKey.class), objectId);
     return createNewNebuloFile(address);
   }
 
+  @Override
   public NebuloFile createNewNebuloFile(NebuloAddress address) {
     NebuloFile file = new NebuloFile(address);
     injector_.injectMembers(file);
     return file;
   }
 
+  @Override
   public NebuloList createNewNebuloList() {
     ObjectId objectId = new ObjectId(CryptoUtils.getRandomId());
     return createNewNebuloList(objectId);
   }
 
+  @Override
   public NebuloList createNewNebuloList(ObjectId objectId) {
     NebuloAddress address = new NebuloAddress(injector_.getInstance(AppKey.class), objectId);
     return createNewNebuloList(address);
   }
 
+  @Override
   public NebuloList createNewNebuloList(NebuloAddress address) {
     NebuloList list = new NebuloList(address);
     injector_.injectMembers(list);
