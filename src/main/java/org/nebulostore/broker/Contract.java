@@ -3,6 +3,7 @@ package org.nebulostore.broker;
 import java.io.Serializable;
 
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.crypto.CryptoUtils;
 
 /**
  * Contract between peers.
@@ -18,12 +19,12 @@ public class Contract implements Serializable {
   private CommAddress remotePeerAddress_;
   private final int sizeKb_;
 
-  public Contract(String contractId, CommAddress localPeerAddress, CommAddress remotePeerAddress,
-      int sizeKb) {
-    contractId_ = contractId;
+  public Contract(CommAddress localPeerAddress, CommAddress remotePeerAddress, int sizeKb) {
     localPeerAddress_ = localPeerAddress;
     remotePeerAddress_ = remotePeerAddress;
     sizeKb_ = sizeKb;
+
+    contractId_ = CryptoUtils.getRandomString();
   }
 
   public Contract toLocalAndRemoteSwapped() {
@@ -74,7 +75,8 @@ public class Contract implements Serializable {
 
   @Override
   public String toString() {
-    return "Contract [contractId=" + contractId_ + ", localPeerId_=" + localPeerAddress_ +
-        ", remotePeerId_=" + remotePeerAddress_ + "]";
+    return "Contract [contractId=" +
+        contractId_ + ", localPeerId_=" + localPeerAddress_ + ", remotePeerId_=" +
+        remotePeerAddress_ + "]";
   }
 }

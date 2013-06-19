@@ -45,21 +45,23 @@ public class AlwaysAcceptingBroker extends Broker {
 
     public Void visit(ContractOfferMessage message) {
       // Accept every offer!
-      logger_.debug("Accepting offer from: " + message.getSourceAddress());
-      //TODO(bolek): Should we accept same offer twice?
-      networkQueue_.add(new OfferReplyMessage(message.getId(), message.getSourceAddress(),
-          message.getContract(), true));
+      logger_.debug("Accepting offer from: " +
+          message.getSourceAddress());
+      // TODO(bolek): Should we accept same offer twice?
+      networkQueue_.add(new OfferReplyMessage(message.getId(), message.getSourceAddress(), message
+          .getContract(), true));
       return null;
     }
 
     public Void visit(OfferReplyMessage message) {
       if (message.getResult()) {
         // Offer was accepted, add new replica to our DHT entry.
-        logger_.debug("Peer " + message.getSourceAddress() + " accepted our offer.");
+        logger_.debug("Peer " +
+            message.getSourceAddress() + " accepted our offer.");
         BrokerContext.getInstance().addContract(message.getContract());
 
-        ReplicationGroup currGroup = new ReplicationGroup(BrokerContext.getInstance().getReplicas(),
-            BigInteger.ZERO, new BigInteger("1000000"));
+        ReplicationGroup currGroup = new ReplicationGroup(
+            BrokerContext.getInstance().getReplicas(), BigInteger.ZERO, new BigInteger("1000000"));
         PutKeyModule module = new PutKeyModule(currGroup, outQueue_);
 
         try {
@@ -68,7 +70,8 @@ public class AlwaysAcceptingBroker extends Broker {
           logger_.warn("Unsuccessful DHT update.");
         }
       } else {
-        logger_.debug("Peer " + message.getSourceAddress() + " rejected our offer.");
+        logger_.debug("Peer " +
+            message.getSourceAddress() + " rejected our offer.");
       }
       return null;
     }
@@ -83,10 +86,10 @@ public class AlwaysAcceptingBroker extends Broker {
           if (BrokerContext.getInstance().getUserContracts(address) == null &&
               !address.equals(myAddress_) && !offerRecipients_.contains(address)) {
             // Send offer to new peer (10MB by default).
-            logger_.debug("Sending offer to " + address);
+            logger_.debug("Sending offer to " +
+                address);
             networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), address,
-                new Contract("contract", myAddress_, address, DEFAULT_OFFER)));
-            offerRecipients_.add(address);
+                new Contract(myAddress_, address, DEFAULT_OFFER)));
             break;
           }
         }
