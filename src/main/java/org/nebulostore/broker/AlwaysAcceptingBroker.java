@@ -86,10 +86,10 @@ public class AlwaysAcceptingBroker extends Broker {
           if (BrokerContext.getInstance().getUserContracts(address) == null &&
               !address.equals(myAddress_) && !offerRecipients_.contains(address)) {
             // Send offer to new peer (10MB by default).
-            logger_.debug("Sending offer to " +
-                address);
+            logger_.debug("Sending offer to " + address);
             networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), address,
                 new Contract(myAddress_, address, DEFAULT_OFFER)));
+            offerRecipients_.add(address);
             break;
           }
         }

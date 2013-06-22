@@ -42,7 +42,7 @@ public class GetEncryptedObjectModule extends GetModule<Pair<EncryptedObject, Se
   /**
    * Visitor.
    */
-  private class GetEncryptedObjectVisitor extends GetModuleVisitor {
+  protected class GetEncryptedObjectVisitor extends GetModuleVisitor {
     @Override
     public Void visit(SendObjectMessage message) {
       if (state_ == STATE.REPLICA_FETCH) {

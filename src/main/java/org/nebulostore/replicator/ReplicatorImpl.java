@@ -237,11 +237,6 @@ public class ReplicatorImpl extends Replicator {
     message.accept(visitor_);
   }
 
-  /*
-   * Static methods.
-   */
-
-
   /**
    * Begins transaction: tries to store object to temporal location.
    */
@@ -273,7 +268,12 @@ public class ReplicatorImpl extends Replicator {
     }
 
     try {
-      if (!locksMap_.get(objectId).tryAcquire(UPDATE_TIMEOUT_SEC, TimeUnit.SECONDS)) {
+      Semaphore lock = locksMap_.get(objectId);
+      if (lock == null) {
+        // TODO(bolek): Better answer here?
+        return QueryToStoreResult.TIMEOUT;
+      }
+      if (!lock.tryAcquire(UPDATE_TIMEOUT_SEC, TimeUnit.SECONDS)) {
         logger_.warn("Object " + objectId.toString() + " lock timeout in queryToUpdateObject().");
         return QueryToStoreResult.TIMEOUT;
       }
@@ -325,7 +325,10 @@ public class ReplicatorImpl extends Replicator {
     newVersions.add(currentVersion);
     setPreviousVersions(objectId, newVersions);
 
-    locksMap_.get(objectId).release();
+    Semaphore lock = locksMap_.get(objectId);
+    if (lock != null) {
+      lock.release();
+    }
     logger_.debug("Commit successful");
   }
 
@@ -336,7 +339,10 @@ public class ReplicatorImpl extends Replicator {
 
     File file = new File(location + ".tmp." + transactionToken);
     file.delete();
-    locksMap_.get(objectId).release();
+    Semaphore lock = locksMap_.get(objectId);
+    if (lock != null) {
+      lock.release();
+    }
     if (newObjectTransaction) {
       // New local object wasn't created.
       locksMap_.remove(objectId);
@@ -394,10 +400,10 @@ public class ReplicatorImpl extends Replicator {
 
   public void deleteObject(ObjectId objectId) throws DeleteObjectException {
     String location = getObjectLocation(objectId);
-    if (!objectExists(location)) {
+    Semaphore mutex = locksMap_.get(objectId);
+    if (!objectExists(location) || mutex == null) {
       return;
     }
-    Semaphore mutex = locksMap_.get(objectId);
     try {
       if (!mutex.tryAcquire(UPDATE_TIMEOUT_SEC, TimeUnit.SECONDS)) {
         logger_.warn("Object " + objectId.toString() + " lock timeout in deleteObject().");
