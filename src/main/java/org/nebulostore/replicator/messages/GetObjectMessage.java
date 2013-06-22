@@ -8,7 +8,7 @@ import org.nebulostore.communication.address.CommAddress;
  * object's replica. Sender waits for a response wrapped into SendObjectMessage.
  * @author Bolek Kulbabinski
  */
-public class GetObjectMessage extends ReplicatorMessage {
+public class GetObjectMessage extends InReplicatorMessage {
   private static final long serialVersionUID = 1660420694986822395L;
 
   private final ObjectId objectId_;

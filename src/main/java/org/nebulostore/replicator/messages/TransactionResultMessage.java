@@ -6,7 +6,7 @@ import org.nebulostore.replicator.core.TransactionAnswer;
 /**
  * Sending transaction result to remote replicator.
  */
-public class TransactionResultMessage extends ReplicatorMessage {
+public class TransactionResultMessage extends InReplicatorMessage {
   private static final long serialVersionUID = 4182392038587696789L;
 
   private final TransactionAnswer result_;

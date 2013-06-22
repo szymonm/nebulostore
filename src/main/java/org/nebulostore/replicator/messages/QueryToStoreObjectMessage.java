@@ -12,7 +12,7 @@ import org.nebulostore.communication.address.CommAddress;
  * @author szymonmatejczyk
  * This is a query to store a particular object.
  */
-public class QueryToStoreObjectMessage extends ReplicatorMessage {
+public class QueryToStoreObjectMessage extends InReplicatorMessage {
   private static final long serialVersionUID = 3283983404037381657L;
 
   ObjectId objectId_;

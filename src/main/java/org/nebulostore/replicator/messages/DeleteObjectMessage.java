@@ -7,7 +7,7 @@ import org.nebulostore.communication.address.CommAddress;
  * Request to delete a particular object from a peer that is replicating it.
  * @author Bolek Kulbabinski
  */
-public class DeleteObjectMessage extends ReplicatorMessage {
+public class DeleteObjectMessage extends InReplicatorMessage {
   private static final long serialVersionUID = -587693375265935213L;
 
   private ObjectId objectId_;

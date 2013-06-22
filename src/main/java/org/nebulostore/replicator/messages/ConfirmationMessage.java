@@ -7,7 +7,7 @@ import org.nebulostore.communication.address.CommAddress;
  * successfully stored.
  * @author szymonmatejczyk
  */
-public class ConfirmationMessage extends ReplicatorMessage {
+public class ConfirmationMessage extends OutReplicatorMessage {
   private static final long serialVersionUID = 4963514627405781252L;
 
   public ConfirmationMessage(String jobId, CommAddress destAddress) {

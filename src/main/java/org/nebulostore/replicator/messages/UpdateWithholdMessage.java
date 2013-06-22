@@ -7,7 +7,7 @@ import org.nebulostore.communication.address.CommAddress;
  * @author szymonmatejczyk
  *
  */
-public class UpdateWithholdMessage extends ReplicatorMessage {
+public class UpdateWithholdMessage extends OutReplicatorMessage {
   private static final long serialVersionUID = 2939806231367561120L;
 
   public UpdateWithholdMessage(String jobId, CommAddress destAddress, Reason reason) {

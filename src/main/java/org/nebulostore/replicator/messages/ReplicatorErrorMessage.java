@@ -7,7 +7,7 @@ import org.nebulostore.communication.address.CommAddress;
  * Replicator encountered an error. The error message is written in message_.
  * @author szymonmatejczyk
  */
-public class ReplicatorErrorMessage extends ReplicatorMessage {
+public class ReplicatorErrorMessage extends OutReplicatorMessage {
   private static final long serialVersionUID = -686759042653122970L;
 
   String message_;

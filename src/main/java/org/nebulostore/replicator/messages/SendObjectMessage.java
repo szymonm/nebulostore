@@ -11,7 +11,7 @@ import org.nebulostore.communication.address.CommAddress;
  * This is a message containing requested object.
  * @author Bolek Kulbabinski
  */
-public class SendObjectMessage extends ReplicatorMessage {
+public class SendObjectMessage extends OutReplicatorMessage {
   private static final long serialVersionUID = 5852937000391705084L;
 
   private final EncryptedObject encryptedEntity_;

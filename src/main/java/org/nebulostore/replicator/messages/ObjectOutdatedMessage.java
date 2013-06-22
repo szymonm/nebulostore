@@ -8,7 +8,7 @@ import org.nebulostore.communication.address.CommAddress;
  *
  * Replicator should download the object again from another replica.
  */
-public class ObjectOutdatedMessage extends ReplicatorMessage {
+public class ObjectOutdatedMessage extends InReplicatorMessage {
   private static final long serialVersionUID = -3210318617364486510L;
 
   private final NebuloAddress address_;
