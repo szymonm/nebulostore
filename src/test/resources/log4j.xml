@@ -5,21 +5,16 @@
   ]>
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
-  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+  <appender name="FA-test" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/unit-tests.log" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="&pattern;" />
     </layout>
   </appender>
 
-
-    <category name="org.nebulostore">
-        <priority value="debug"/>
-    </category>
-
-
   <root>
     <priority value="DEBUG" />
-    <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FA-test" />
   </root>
 
 </log4j:configuration>
