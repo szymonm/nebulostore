@@ -34,7 +34,7 @@ public class MessengerService extends Module {
   private OOSDispatcher oosDispatcher_;
   private ExecutorService service_ = Executors.newCachedThreadPool();
   private AtomicBoolean isEnding_ = new AtomicBoolean(false);
-  private MessageVisitor msgVisitor_;
+  private MessageVisitor<Void> msgVisitor_;
 
   @AssistedInject
   public MessengerService(

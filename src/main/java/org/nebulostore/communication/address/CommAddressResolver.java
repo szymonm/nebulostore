@@ -13,6 +13,12 @@ import org.nebulostore.communication.exceptions.AddressNotPresentException;
 public interface CommAddressResolver {
   InetSocketAddress resolve(CommAddress commAddress)
     throws IOException, AddressNotPresentException;
+  /**
+   * Function called by object using the resolver when given address seems
+   * to be erroneous.
+   *
+   * @param commAddress
+   */
   void reportFailure(CommAddress commAddress);
   //NOTE-GM Assuming persistent CommAddress so no setter
   CommAddress getMyCommAddress();

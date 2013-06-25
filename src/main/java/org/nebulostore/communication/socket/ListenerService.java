@@ -18,6 +18,8 @@ import com.google.inject.name.Named;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.modules.Module;
+import org.nebulostore.appcore.modules.ModuleFailMessage;
+import org.nebulostore.communication.socket.messages.ListenerServiceReadyMessage;
 
 /**
  * Module responsible for receiving CommMessages through TCP.
@@ -96,11 +98,12 @@ public class ListenerService extends Module {
     } catch (IOException e) {
       logger_.error("Could not initialize listening socket on port: " +
               commCliPort_ + ", due to IOException: " + e);
-      /* Throwing runtime exception since run can not throw checked exception */
-      throw new RuntimeException("Could not initialize listening socket " +
-          "due to IOException.", e);
+      outQueue_.add(new ModuleFailMessage(this, e));
+      shutdown();
+      return;
     }
     logger_.info("Created listenerService's socket on port: " + commCliPort_);
+    outQueue_.add(new ListenerServiceReadyMessage());
 
     try {
       serverSocket_.setReuseAddress(true);
@@ -125,7 +128,9 @@ public class ListenerService extends Module {
   public void shutdown() {
     isEnding_.set(true);
     try {
-      serverSocket_.close();
+      if (serverSocket_ != null) {
+        serverSocket_.close();
+      }
     } catch (IOException e) {
       logger_.trace("Error when closing serverSocket: " + e);
     }
