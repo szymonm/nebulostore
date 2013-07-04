@@ -17,12 +17,48 @@ public final class NebuloAddress implements Serializable {
     objectId_ = objectId;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    } else if (obj == null) {
+      return false;
+    } else if (getClass() != obj.getClass()) {
+      return false;
+    }
+    NebuloAddress other = (NebuloAddress) obj;
+    if (appKey_ == null) {
+      if (other.appKey_ != null) {
+        return false;
+      }
+    } else if (!appKey_.equals(other.appKey_)) {
+      return false;
+    }
+    if (objectId_ == null) {
+      if (other.objectId_ != null) {
+        return false;
+      }
+    } else if (!objectId_.equals(other.objectId_)) {
+      return false;
+    }
+    return true;
+  }
+
   public ObjectId getObjectId() {
     return objectId_;
   }
 
   public AppKey getAppKey() {
     return appKey_;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((appKey_ == null) ? 0 : appKey_.hashCode());
+    result = prime * result + ((objectId_ == null) ? 0 : objectId_.hashCode());
+    return result;
   }
 
   @Override
