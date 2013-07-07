@@ -89,7 +89,6 @@ public class MessengerServiceTest {
     recvMsg = outQueue_.take();
     assertTrue(recvMsg instanceof ErrorCommMessage);
     assertTrue(commMsg.equals(((ErrorCommMessage) recvMsg).getMessage()));
-    System.out.println(recvMsg);
   }
 
   /**
