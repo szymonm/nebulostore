@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.replicator.core.TransactionAnswer;
 
 import static org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
@@ -40,14 +39,11 @@ public class NebuloFile extends NebuloObject {
     // These fields are set to null after deserializaton of NebuloFile.
     private transient FileChunk chunk_;
     private transient boolean isChanged_;
-    // Address the whole file was fetched from.
-    private transient CommAddress fileSender_;
 
-    public FileChunkWrapper(int startByte, int endByte, NebuloAddress address, CommAddress sender) {
+    public FileChunkWrapper(int startByte, int endByte, NebuloAddress address) {
       startByte_ = startByte;
       endByte_ = endByte;
       chunkAddress_ = address;
-      fileSender_ = sender;
       chunk_ = new FileChunk(address, endByte_ - startByte_);
     }
 
@@ -56,7 +52,7 @@ public class NebuloFile extends NebuloObject {
         // Use metadata holder for chunk query.
         // TODO(bolek): Retry with full address if unsuccessful.
         ObjectGetter getter = objectGetterProvider_.get();
-        getter.fetchObject(chunkAddress_, fileSender_);
+        getter.fetchObject(chunkAddress_, sender_);
         chunk_ = (FileChunk) getter.awaitResult(TIMEOUT_SEC);
       }
       return chunk_.getData();
@@ -99,7 +95,6 @@ public class NebuloFile extends NebuloObject {
       in.defaultReadObject();
       chunk_ = null;
       isChanged_ = false;
-      fileSender_ = sender_;
     }
   }
 
@@ -197,7 +192,7 @@ public class NebuloFile extends NebuloObject {
       ObjectId chunkId = new ObjectId(
           chunks_.get(chunks_.size() - 1).chunkAddress_.getObjectId().getKey().add(BigInteger.ONE));
       chunks_.add(new FileChunkWrapper(chunkIdx * chunkSize_, chunkIdx * chunkSize_ + len,
-          new NebuloAddress(address_.getAppKey(), chunkId), sender_));
+          new NebuloAddress(address_.getAppKey(), chunkId)));
     }
     FileChunkWrapper chunk = chunks_.get(chunkIdx);
     try {
@@ -248,8 +243,7 @@ public class NebuloFile extends NebuloObject {
     chunks_ = new ArrayList<FileChunkWrapper>();
     // TODO(bolek): How to assign IDs for new chunks?
     ObjectId chunkId = new ObjectId(address_.getObjectId().getKey().add(BigInteger.ONE));
-    chunks_.add(new FileChunkWrapper(0, 0, new NebuloAddress(address_.getAppKey(), chunkId),
-        sender_));
+    chunks_.add(new FileChunkWrapper(0, 0, new NebuloAddress(address_.getAppKey(), chunkId)));
   }
 
   @Override
