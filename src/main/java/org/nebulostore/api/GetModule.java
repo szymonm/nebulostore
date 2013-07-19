@@ -57,7 +57,7 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
   /**
    * States of the state machine.
    */
-  protected enum STATE { INIT, DHT_QUERY, REPLICA_FETCH, FILE_RECEIVED, ADDRESS_GIVEN };
+  protected enum STATE { INIT, DHT_QUERY, REPLICA_FETCH, FILE_RECEIVED };
 
   /**
    * Visitor class that acts as a state machine realizing the procedure of fetching the file.
@@ -73,23 +73,24 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       logger_.debug("Retrieving file " + address_);
-      if (state_ == STATE.INIT) {
-        // State 1 - Send groupId to DHT and wait for reply.
-        state_ = STATE.DHT_QUERY;
-        jobId_ = message.getId();
 
-        logger_.debug("Adding GetDHT to network queue (" + address_.getAppKey() + ", " +
-            jobId_ + ").");
-        networkQueue_.add(new GetDHTMessage(jobId_,
-            new KeyDHT(address_.getAppKey().getKey())));
-      } else if (state_ == STATE.ADDRESS_GIVEN) {
-        state_ = STATE.REPLICA_FETCH;
-        replicationGroupSet_ = new TreeSet<CommAddress>();
-        replicationGroupSet_.add(replicaAddress_);
-        queryNextReplica();
+      if (state_ == STATE.INIT) {
+        if (replicaAddress_ == null) {
+          // State 1 - Send groupId to DHT and wait for reply.
+          state_ = STATE.DHT_QUERY;
+          logger_.debug("Adding GetDHT to network queue (" + address_.getAppKey() + ", " + jobId_ +
+              ").");
+          networkQueue_.add(new GetDHTMessage(jobId_, new KeyDHT(address_.getAppKey().getKey())));
+        } else {
+          state_ = STATE.REPLICA_FETCH;
+          replicationGroupSet_ = new TreeSet<CommAddress>();
+          replicationGroupSet_.add(replicaAddress_);
+          queryNextReplica();
+        }
       } else {
         incorrectState(state_.name(), message);
       }
+
       return null;
     }
 

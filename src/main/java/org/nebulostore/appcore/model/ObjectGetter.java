@@ -12,7 +12,7 @@ public interface ObjectGetter {
   /**
    * Fetch the object from NebuloStore asynchronously.
    * @param address NebuloAddress of object that is going to be fetched.
-   * @param replicaAddress Optionally, CommAddress of first replica to query or null.
+   * @param replicaAddress Optionally, CommAddress of the replica to query or null.
    */
   void fetchObject(NebuloAddress address, CommAddress replicaAddress);
 
