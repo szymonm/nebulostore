@@ -2,6 +2,7 @@ package org.nebulostore.systest.lists;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -16,7 +17,6 @@ import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.NebuloElement;
 import org.nebulostore.appcore.model.NebuloList;
-import org.nebulostore.appcore.model.NebuloList.ListIterator;
 import org.nebulostore.appcore.model.NebuloObjectFactory;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.ConductorClient;
@@ -139,7 +139,7 @@ public final class ListsClient extends ConductorClient {
             unableToFetchList(address, "Got null from pool.");
             continue;
           }
-          ListIterator iterator = list.iterator();
+          Iterator<NebuloElement> iterator = list.iterator();
           for (int j = 0; j < N_CASES; ++j) {
             BigInteger elem = (BigInteger) CryptoUtils.decryptObject(iterator.next().getData());
             BigInteger good = list.getObjectId().getKey().add(BigInteger.valueOf(j));

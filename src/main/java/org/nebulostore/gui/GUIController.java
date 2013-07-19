@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
@@ -29,7 +30,6 @@ import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.appcore.model.NebuloElement;
 import org.nebulostore.appcore.model.NebuloFile;
 import org.nebulostore.appcore.model.NebuloList;
-import org.nebulostore.appcore.model.NebuloList.ListIterator;
 import org.nebulostore.appcore.model.NebuloObject;
 import org.nebulostore.appcore.model.NebuloObjectFactory;
 import org.nebulostore.peers.Peer;
@@ -777,7 +777,7 @@ public class GUIController extends Peer {
   }
 
   private void addExpandedNodeChildren(NebuloList list) throws NebuloException {
-    ListIterator iter = list.iterator();
+    Iterator<NebuloElement> iter = list.iterator();
     while (iter.hasNext()) {
       NebuloElement elem = iter.next();
       boolean isList = elem.isLink() &&

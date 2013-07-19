@@ -173,6 +173,7 @@ public class ReplicatorImpl extends Replicator {
       }
 
       if (enc == null) {
+        logger_.debug("Could not retrieve given object. Dying with error.");
         dieWithError(message.getSourceJobId(), message.getDestinationAddress(),
             message.getSourceAddress(), "Unable to retrieve object.");
       } else {
@@ -369,6 +370,7 @@ public class ReplicatorImpl extends Replicator {
     logger_.debug("getObject with objectID = " + objectId);
     String location = getObjectLocation(objectId);
     if (!objectExists(location)) {
+      logger_.debug("Given object does not exist at location: " + location + ".");
       return null;
     }
 
@@ -460,6 +462,6 @@ public class ReplicatorImpl extends Replicator {
   }
 
   private String getLocationPrefix() {
-    return pathPrefix_ + "/" + appKey_.getKey().intValue() + "_storage/";
+    return pathPrefix_ + "/" + appKey_.getKey().toString() + "_storage/";
   }
 }

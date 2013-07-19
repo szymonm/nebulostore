@@ -13,16 +13,13 @@ import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.addressing.ObjectId;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.replicator.core.TransactionAnswer;
-
-import static org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
-
+import org.nebulostore.subscription.model.SubscriptionNotification.NotificationReason;
 
 /**
  * File. Only metadata is stored in this object, real data is represented by FileChunk.
  * Constructors are package-protected. Use NebuloObjectFactoryImpl to create objects.
  * @author Bolek Kulbabinski
  */
-
 public class NebuloFile extends NebuloObject {
 
   /**
@@ -45,6 +42,7 @@ public class NebuloFile extends NebuloObject {
       endByte_ = endByte;
       chunkAddress_ = address;
       chunk_ = new FileChunk(address, endByte_ - startByte_);
+      isChanged_ = true;
     }
 
     public byte[] getData() throws NebuloException {
@@ -109,11 +107,11 @@ public class NebuloFile extends NebuloObject {
   protected List<FileChunkWrapper> chunks_;
   protected int chunkSize_ = DEFAULT_CHUNK_SIZE_BYTES;
 
-  NebuloFile(NebuloAddress address) {
+  public NebuloFile(NebuloAddress address) {
     this(address, DEFAULT_CHUNK_SIZE_BYTES);
   }
 
-  NebuloFile(NebuloAddress address, int chunkSize) {
+  public NebuloFile(NebuloAddress address, int chunkSize) {
     super(address);
     chunkSize_ = chunkSize;
     initNewFile();
@@ -274,7 +272,9 @@ public class NebuloFile extends NebuloObject {
     if (caughtException != null) {
       // aborting the transaction
       for (ObjectWriter writerModule : updateModules) {
-        writerModule.setAnswer(TransactionAnswer.ABORT);
+        if (writerModule != null) {
+          writerModule.setAnswer(TransactionAnswer.ABORT);
+        }
       }
       throw caughtException;
     } else {

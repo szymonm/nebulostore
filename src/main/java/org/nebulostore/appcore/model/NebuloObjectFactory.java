@@ -10,8 +10,6 @@ import org.nebulostore.appcore.exceptions.NebuloException;
  */
 public interface NebuloObjectFactory {
 
-  NebuloObject fetchExistingNebuloObject(NebuloAddress address) throws NebuloException;
-
   NebuloFile createNewNebuloFile();
 
   NebuloFile createNewNebuloFile(ObjectId objectId);
@@ -23,5 +21,7 @@ public interface NebuloObjectFactory {
   NebuloList createNewNebuloList(ObjectId objectId);
 
   NebuloList createNewNebuloList(NebuloAddress address);
+
+  NebuloObject fetchExistingNebuloObject(NebuloAddress address) throws NebuloException;
 
 }

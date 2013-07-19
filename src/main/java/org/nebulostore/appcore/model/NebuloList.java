@@ -16,7 +16,7 @@ import org.nebulostore.subscription.model.SubscriptionNotification.NotificationR
 /**
  * List of NebuloObjects.
  */
-public final class NebuloList extends NebuloObject implements Iterable<NebuloElement> {
+public class NebuloList extends NebuloObject implements Iterable<NebuloElement> {
   private static Logger logger_ = Logger.getLogger(NebuloList.class);
   private static final long serialVersionUID = 8346982029337955123L;
 
@@ -24,13 +24,23 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
   Set<BigInteger> removedIds_;
 
   /**
+   * Interface tag to symbolize that given iterator is an iterator belonging
+   * to a NebuloList object.
+   *
+   * @author Grzegorz Milka
+   *
+   */
+  public interface ListIterator extends Iterator<NebuloElement> {
+  }
+
+  /**
    * List iterator.
    */
-  public class ListIterator implements Iterator<NebuloElement> {
+  private class ListIteratorImpl implements ListIterator {
     private int currIndex_;
     private final Iterator<NebuloElement> iterator_;
 
-    public ListIterator() {
+    public ListIteratorImpl() {
       currIndex_ = -1;
       iterator_ = elements_.iterator();
     }
@@ -59,7 +69,7 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
     }
   }
 
-  NebuloList(NebuloAddress nebuloAddress) {
+  public NebuloList(NebuloAddress nebuloAddress) {
     super(nebuloAddress);
     elements_ = new ArrayList<NebuloElement>();
     removedIds_ = new TreeSet<BigInteger>();
@@ -67,15 +77,15 @@ public final class NebuloList extends NebuloObject implements Iterable<NebuloEle
 
   @Override
   public ListIterator iterator() {
-    return new ListIterator();
+    return new ListIteratorImpl();
   }
 
-  public void append(NebuloElement element) throws NebuloException {
+  public void append(NebuloElement element) {
     elements_.add(element);
   }
 
-  public void add(ListIterator iterator, NebuloElement element) throws NebuloException {
-    int index = iterator.currIndex_ + 1;
+  public void add(ListIterator iterator, NebuloElement element) {
+    int index = ((ListIteratorImpl) iterator).currIndex_ + 1;
     elements_.add(index, element);
   }
 

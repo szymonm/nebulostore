@@ -258,8 +258,11 @@ public class BdbPeer extends Module {
     }
 
     if (fromNetwork) {
+      logger_.debug("BdBPeer sending message to network. Destination: " +
+        sourceAddress + ", msg: " + outMessage);
       senderInQueue_.add(new BdbMessageWrapper(null, sourceAddress, outMessage));
     } else {
+      logger_.debug("BdbPeer sends message to nebulo. Msg: " + outMessage);
       outQueue_.add(outMessage);
     }
     logger_.debug("GetDHTMessage processing finished");

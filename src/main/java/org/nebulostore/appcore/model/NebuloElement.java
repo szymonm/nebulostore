@@ -35,7 +35,7 @@ public class NebuloElement implements Serializable {
    * @param object  object that this NebuloElement refers to
    */
   public NebuloElement(NebuloObject object) {
-    address_ = object.address_;
+    address_ = object.getAddress();
     elementId_ = CryptoUtils.getRandomId();
   }
 

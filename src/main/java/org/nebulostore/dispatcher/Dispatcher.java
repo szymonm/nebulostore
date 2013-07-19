@@ -107,6 +107,7 @@ public class Dispatcher extends Module {
             } else {
               Thread newThread = new Thread(handler, handler.getClass().getSimpleName() + ":" +
                   jobId.substring(0, Math.min(MAX_LOGGED_JOB_ID_LENGTH, jobId.length())));
+              newThread.setDaemon(true);
               workersQueues_.put(jobId, newInQueue);
               workersThreads_.put(jobId, newThread);
               logger_.debug("Starting new thread with handler of type " +
