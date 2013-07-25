@@ -16,6 +16,7 @@ import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.messages.RandomPeersSampleMessage;
 import org.nebulostore.timer.TimeoutMessage;
@@ -23,24 +24,26 @@ import org.nebulostore.timer.Timer;
 
 /**
  * Gossiping between peers to exchange random peers sample.
+ *
  * @author szymonmatejczyk
  *
  */
 public class RandomPeersGossipingModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(RandomPeersGossipingModule.class);
 
-  private static final long TIMEOUT_MILLIS = 5000L;
-  public static final int RANDOM_PEERS_SAMPLE_SIZE = 3;
-
-  public static final long INTERVAL = 1000L;
+  private static final long TIMEOUT_MILLIS = 2000L;
+  public static final int RANDOM_PEERS_SAMPLE_SIZE = 4;
 
   private final RPGVisitor visitor_ = new RPGVisitor();
   private CommAddress myAddress_;
   private Timer timer_;
 
+  private NetworkMonitor networkMonitor_;
+
   @Inject
-  void setCommAddress(CommAddress myAddress) {
+  void setCommAddress(CommAddress myAddress, NetworkMonitor networkMonitor) {
     myAddress_ = myAddress;
+    networkMonitor_ = networkMonitor;
   }
 
   @Inject
@@ -49,10 +52,11 @@ public class RandomPeersGossipingModule extends JobModule {
   }
 
   /**
-   * Visitor.
+   * Visitor. Implements gossiping a number of random peers protocol.
    */
-  protected class RPGVisitor extends MessageVisitor<Void> {
+  public class RPGVisitor extends MessageVisitor<Void> {
     private boolean activeMode_;
+
     public Void visit(JobInitMessage message) {
       logger_.debug("Gossiping...");
       jobId_ = message.getId();
@@ -71,14 +75,14 @@ public class RandomPeersGossipingModule extends JobModule {
       Integer randomPeerNo = (new Random()).nextInt(view.size());
       int i = 0;
       Iterator<CommAddress> it = view.iterator();
-      while (i <= randomPeerNo) {
+      while (i < randomPeerNo) {
         it.next();
         i++;
       }
       CommAddress remotePeer = it.next();
 
       view.add(myAddress_);
-      networkQueue_.add(new RandomPeersSampleMessage(null, remotePeer, view));
+      networkQueue_.add(new RandomPeersSampleMessage(jobId_, remotePeer, view));
       timer_.schedule(jobId_, TIMEOUT_MILLIS);
       return null;
     }
@@ -88,12 +92,13 @@ public class RandomPeersGossipingModule extends JobModule {
       if (activeMode_) {
         view.addAll(message.getPeersSet());
         view = selectView(view);
-        NetworkContext.getInstance().setRandomPeersSample(view);
+        networkMonitor_.setRandomPeersSample(view);
       } else {
+        jobId_ = message.getId();
         logger_.debug("Received gossiping message.");
         view.add(myAddress_);
-        networkQueue_.add(new RandomPeersSampleMessage(null, message.getSourceAddress(), view));
-        view.remove(myAddress_);
+        networkQueue_.add(new RandomPeersSampleMessage(message.getId(), message.getSourceAddress(),
+            view));
         view.addAll(message.getPeersSet());
         view = selectView(view);
       }
@@ -103,11 +108,16 @@ public class RandomPeersGossipingModule extends JobModule {
       return null;
     }
 
-    public Void visit(TimeoutMessage message) {
-      logger_.warn("Timeout.");
+    public Void visit(ErrorCommMessage message) {
+      logger_.warn("Received ErrorCommMessage ", message.getNetworkException());
       return null;
     }
 
+    public Void visit(TimeoutMessage message) {
+      logger_.warn("Timeout.");
+      endJobModule();
+      return null;
+    }
 
   }
 
@@ -121,30 +131,30 @@ public class RandomPeersGossipingModule extends JobModule {
    */
   public void updateStatistics(Set<CommAddress> peers) {
     for (CommAddress peer : peers) {
-      TestPeersConnectionModule testConnection = new TestPeersConnectionModule(peer);
-      testConnection.setOutQueue(outQueue_);
-      testConnection.runThroughDispatcher();
+      if (!peer.equals(myAddress_)) {
+        new TestPeersConnectionModule(peer, outQueue_);
+      }
     }
   }
 
   /**
-   * Filters elements of view so that result is a representative group of peers not larger
-   * than RANDOM_PEERS_SAMPLE_SIZE.
+   * Filters elements of view so that result is a representative group of peers not larger than
+   * RANDOM_PEERS_SAMPLE_SIZE.
    */
   public Set<CommAddress> selectView(Set<CommAddress> view) {
+    view.remove(myAddress_);
     // For now only taking random peers from view.
     List<CommAddress> v = new ArrayList<CommAddress>(view);
     Collections.shuffle(v);
-    return new TreeSet<CommAddress>(v.subList(0, Math.min(RANDOM_PEERS_SAMPLE_SIZE, v.size() - 1)));
+    return new TreeSet<CommAddress>(v.subList(0, Math.min(RANDOM_PEERS_SAMPLE_SIZE, v.size())));
   }
 
   /**
-   * Returns a clone of random peers TreeSet from NetworkContext.
-   * If no peers are stored in NetworkContext waits for them.
+   * Returns a clone of random peers TreeSet from NetworkContext. If no peers are stored in
+   * NetworkContext waits for them.
    */
   protected Set<CommAddress> getView() {
-    Set<CommAddress> set =
-        new TreeSet<CommAddress>(NetworkContext.getInstance().getRandomPeersSample());
+    Set<CommAddress> set = new TreeSet<CommAddress>(networkMonitor_.getRandomPeersSample());
     return set;
   }
 }

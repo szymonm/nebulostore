@@ -57,6 +57,5 @@ case $N in
            org.nebulostore.systest.readwrite.ReadWriteWithTimeConfiguration\
            org.nebulostore.systest.readwrite.ReadWriteServer\
            ${PEERS[1]} 1 ../../../test.data;;
-
 esac
 

@@ -9,6 +9,7 @@ import com.google.inject.name.Named;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.api.PutKeyModule;
+import org.nebulostore.appcore.RegisterInstanceInDHTModule;
 import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -22,13 +23,14 @@ import org.nebulostore.communication.CommunicationPeerFactory;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.JobInitMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
+import org.nebulostore.networkmonitor.NetworkMonitor;
 import org.nebulostore.timer.MessageGenerator;
 import org.nebulostore.timer.Timer;
 
 /**
- * This is a regular peer with full functionality. It creates, connects and runs all modules.
- * To create a different peer, subclass Peer and set its class name in configuration.
+ * This is a regular peer with full functionality. It creates, connects and runs all modules. To
+ * create a different peer, subclass Peer and set its class name in configuration.
+ *
  * @author Bolek Kulbabinski
  */
 public class Peer extends AbstractPeer {
@@ -44,8 +46,11 @@ public class Peer extends AbstractPeer {
   protected Injector injector_;
   protected CommAddress commAddress_;
   protected Timer peerTimer_;
+  protected NetworkMonitor networkMonitor_;
 
   private CommunicationPeerFactory commPeerFactory_;
+
+  private int registrationTimeout_;
 
   @Inject
   public void setDependencies(@Named("DispatcherQueue") BlockingQueue<Message> dispatcherQueue,
@@ -55,7 +60,9 @@ public class Peer extends AbstractPeer {
                               CommAddress commAddress,
                               CommunicationPeerFactory commPeerFactory,
                               Timer timer,
-                              Injector injector) {
+                              NetworkMonitor networkMonitor,
+                              Injector injector,
+                              @Named("peer.registration-timeout") int registrationTimeout) {
     dispatcherInQueue_ = dispatcherQueue;
     networkInQueue_ = networkQueue;
     broker_ = broker;
@@ -63,7 +70,9 @@ public class Peer extends AbstractPeer {
     commAddress_ = commAddress;
     commPeerFactory_ = commPeerFactory;
     peerTimer_ = timer;
+    networkMonitor_ = networkMonitor;
     injector_ = injector;
+    registrationTimeout_ = registrationTimeout;
   }
 
   @Override
@@ -82,21 +91,37 @@ public class Peer extends AbstractPeer {
 
   protected void runPeer() {
     initPeer();
+    runNetworkMonitor();
     runBroker();
     runAsyncModules();
     startPeer();
-    putKey(appKey_);
+    register(appKey_);
     finishPeer();
   }
 
-  protected void putKey(AppKey appKey) {
-    // TODO(bolek): This should be part of broker.
-    PutKeyModule module = new PutKeyModule(new ReplicationGroup(new CommAddress[]{commAddress_},
-        BigInteger.ZERO, new BigInteger("1000000")), dispatcherInQueue_);
+  /**
+   * Puts replication group under appKey_ in DHT and InstanceMetadata under commAddress_.
+   *
+   * @param appKey
+   */
+  protected void register(AppKey appKey) {
+    // TODO(bolek): This should be part of broker. (szm): or NetworkMonitor
+    PutKeyModule putKeyModule = new PutKeyModule(new ReplicationGroup(
+        new CommAddress[] {commAddress_ }, BigInteger.ZERO, new BigInteger("1000000")),
+        dispatcherInQueue_);
+    RegisterInstanceInDHTModule registerInstanceMetadataModule = new RegisterInstanceInDHTModule();
+    registerInstanceMetadataModule.setDispatcherQueue(dispatcherInQueue_);
+    registerInstanceMetadataModule.runThroughDispatcher();
     try {
-      module.getResult(30);
+      putKeyModule.getResult(registrationTimeout_);
     } catch (NebuloException exception) {
       logger_.error("Unable to execute PutKeyModule!", exception);
+    }
+
+    try {
+      registerInstanceMetadataModule.getResult(registrationTimeout_);
+    } catch (NebuloException exception) {
+      logger_.error("Unable to register InstanceMetadata!", exception);
     }
   }
 
@@ -110,9 +135,6 @@ public class Peer extends AbstractPeer {
 
     commPeer = commPeerFactory_.newCommunicationPeer(networkInQueue_, dispatcherInQueue_);
     networkThread_ = new Thread(commPeer, "CommunicationPeer");
-
-    NetworkContext.getInstance().setCommAddress(commAddress_);
-    NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
   }
 
   protected void startPeer() {
@@ -122,6 +144,10 @@ public class Peer extends AbstractPeer {
 
   protected void runBroker() {
     broker_.runThroughDispatcher();
+  }
+
+  protected void runNetworkMonitor() {
+    networkMonitor_.runThroughDispatcher();
   }
 
   protected void runAsyncModules() {
@@ -136,7 +162,7 @@ public class Peer extends AbstractPeer {
         return new JobInitMessage(new AddSynchroPeerModule());
       }
     };
-    NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
+    networkMonitor_.addContextChangeMessageGenerator(addFoundSynchroPeer);
   }
 
   protected void finishPeer() {

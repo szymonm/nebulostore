@@ -1,11 +1,13 @@
 package org.nebulostore.broker;
 
+import com.google.inject.Inject;
+
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
+import org.nebulostore.networkmonitor.NetworkMonitor;
 
 /**
  * Module handle CommPeerFoundMessage.
@@ -20,6 +22,13 @@ public class PeerFoundHandler extends JobModule {
     message.accept(visitor_);
   }
 
+  private NetworkMonitor networkMonitor_;
+
+  @Inject
+  public void setDependencies(NetworkMonitor networkMonitor) {
+    networkMonitor_ = networkMonitor;
+  }
+
   /**
    * Visitor.
    * @author szymonmatejczyk
@@ -27,8 +36,7 @@ public class PeerFoundHandler extends JobModule {
   protected class PeerFoundHandlerVisitor extends MessageVisitor<Void> {
     public Void visit(CommPeerFoundMessage message) {
       jobId_ = message.getId();
-      NetworkContext context = NetworkContext.getInstance();
-      context.addFoundPeer(message.getSourceAddress());
+      networkMonitor_.addFoundPeer(message.getSourceAddress());
       endJobModule();
       return null;
     }

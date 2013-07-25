@@ -1,5 +1,7 @@
 package org.nebulostore.communication.dht;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Queue;
@@ -10,7 +12,6 @@ import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.google.inject.Inject;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
@@ -42,12 +43,11 @@ import org.nebulostore.communication.dht.messages.PutDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.nebulostore.networkmonitor.NetworkMonitor;
 
 /**
  * Implementation of berkely db based engine for...
+ *
  * @author marcin
  */
 public class BdbPeer extends Module {
@@ -71,27 +71,28 @@ public class BdbPeer extends Module {
   private Queue<Message> messageCache_ = new LinkedBlockingQueue<Message>();
   private MessageVisitor<Void> msgVisitor_;
   private CommAddress commAddress_;
+  private NetworkMonitor networkMonitor_;
 
-  @Inject
   public void setConfig(XMLConfiguration config) {
     config_ = config;
   }
 
-  @Inject
   public void setCommAddress(CommAddress commAddress) {
     commAddress_ = commAddress;
+  }
+
+  public void setNetworkMonitor(NetworkMonitor networkMonitor) {
+    networkMonitor_ = networkMonitor;
   }
 
   /**
    * @param inQueue
    * @param outQueue
-   * @param senderInQueue Queue to module for direct sending of messages to
-   * other peers
+   * @param senderInQueue
+   *          Queue to module for direct sending of messages to other peers
    */
-  public BdbPeer(BlockingQueue<Message> inQueue,
-      BlockingQueue<Message> outQueue,
-      BlockingQueue<Message> senderInQueue,
-      ReconfigureDHTMessage reconfigureRequest) {
+  public BdbPeer(BlockingQueue<Message> inQueue, BlockingQueue<Message> outQueue,
+      BlockingQueue<Message> senderInQueue, ReconfigureDHTMessage reconfigureRequest) {
     super(inQueue, outQueue);
     senderInQueue_ = senderInQueue;
     reconfigureRequest_ = reconfigureRequest;
@@ -125,8 +126,8 @@ public class BdbPeer extends Module {
       database_ = env_.openDatabase(null, storeName_, dbConfig);
 
       advertisementsTimer_ = new Timer(true);
-      advertisementsTimer_.schedule(new SendAdvertisement(),
-          ADVERTISEMENT_INTERVAL, ADVERTISEMENT_INTERVAL);
+      advertisementsTimer_.schedule(new SendAdvertisement(), ADVERTISEMENT_INTERVAL,
+          ADVERTISEMENT_INTERVAL);
 
       if (reconfigureRequest_ != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
@@ -148,9 +149,10 @@ public class BdbPeer extends Module {
    */
   public class SendAdvertisement extends TimerTask {
     private Set<CommAddress> done_ = new TreeSet<CommAddress>();
+
     @Override
     public void run() {
-      for (CommAddress address : NetworkContext.getInstance().getKnownPeers()) {
+      for (CommAddress address : networkMonitor_.getKnownPeers()) {
         if (!done_.contains(address)) {
           logger_.info("Sending holder advertisement to " + address);
           senderInQueue_.add(new HolderAdvertisementMessage(address));
@@ -177,15 +179,13 @@ public class BdbPeer extends Module {
       logger_.debug("Creating directory: " + dir + " for BdbPeer.");
       boolean mkdirResult = dir.mkdirs();
       if (!mkdirResult) {
-        logger_.error("Enviroment directory: " + dir +
-            " could not be created.");
+        logger_.error("Enviroment directory: " + dir + " could not be created.");
         throw new IllegalArgumentException("Enviroment directory: " + dir +
             " could not be created.");
       }
     } else if (dir.exists() && !dir.isDirectory()) {
       logger_.error("Enviroment path: " + dir + " is not a directory.");
-      throw new IllegalArgumentException("Enviroment path: " + dir +
-          " is not a directory.");
+      throw new IllegalArgumentException("Enviroment path: " + dir + " is not a directory.");
     }
 
     EnvironmentConfig config = new EnvironmentConfig();
@@ -198,8 +198,7 @@ public class BdbPeer extends Module {
     return new Environment(dir, config);
   }
 
-  private void put(PutDHTMessage putMsg, boolean fromNetwork,
-      CommAddress sourceAddress) {
+  private void put(PutDHTMessage putMsg, boolean fromNetwork, CommAddress sourceAddress) {
     String srcAddr = sourceAddress == null ? "null" : sourceAddress.toString();
     logger_.info("PutDHTMessage (" + putMsg.getId() + ") in holder with " +
         putMsg.getKey().toString() + " : " + putMsg.getValue().toString() +
@@ -213,14 +212,11 @@ public class BdbPeer extends Module {
 
     DatabaseEntry data = new DatabaseEntry();
     OperationStatus operationStatus = database_.get(t,
-            new DatabaseEntry(key.toString().getBytes(Charset.forName(UTF8))),
-            data,
-            LockMode.DEFAULT);
+        new DatabaseEntry(key.toString().getBytes(Charset.forName(UTF8))), data, LockMode.DEFAULT);
 
     if (operationStatus == OperationStatus.SUCCESS) {
       logger_.info("Performing merge on object from DHT");
-      ValueDHT oldValue = ValueDHT.build(new String(data.getData(),
-            Charset.forName(UTF8)));
+      ValueDHT oldValue = ValueDHT.build(new String(data.getData(), Charset.forName(UTF8)));
       valueDHT = new ValueDHT(valueDHT.getValue().merge(oldValue.getValue()));
     }
 
@@ -230,8 +226,7 @@ public class BdbPeer extends Module {
 
     t.commit();
     if (fromNetwork) {
-      senderInQueue_.add(new BdbMessageWrapper(null, sourceAddress,
-          new OkDHTMessage(putMsg)));
+      senderInQueue_.add(new BdbMessageWrapper(null, sourceAddress, new OkDHTMessage(putMsg)));
     } else {
       outQueue_.add(new OkDHTMessage(putMsg));
     }
@@ -242,14 +237,12 @@ public class BdbPeer extends Module {
     logger_.debug("GetDHTMessage in holder");
     KeyDHT key = getMsg.getKey();
     DatabaseEntry data = new DatabaseEntry();
-    OperationStatus operationStatus = database_.get(null,
-        new DatabaseEntry(key.toString().getBytes(Charset.forName(UTF8))),
-        data, LockMode.DEFAULT);
+    OperationStatus operationStatus = database_.get(null, new DatabaseEntry(key.toString()
+        .getBytes(Charset.forName(UTF8))), data, LockMode.DEFAULT);
 
     OutDHTMessage outMessage;
     if (operationStatus == OperationStatus.SUCCESS) {
-      ValueDHT value = ValueDHT.build(new String(data.getData(),
-            Charset.forName(UTF8)));
+      ValueDHT value = ValueDHT.build(new String(data.getData(), Charset.forName(UTF8)));
       outMessage = new ValueDHTMessage(getMsg, key, value);
     } else {
       logger_.debug("Unable to read from database. Sending ErrorDHTMessage.");
@@ -258,11 +251,8 @@ public class BdbPeer extends Module {
     }
 
     if (fromNetwork) {
-      logger_.debug("BdBPeer sending message to network. Destination: " +
-        sourceAddress + ", msg: " + outMessage);
       senderInQueue_.add(new BdbMessageWrapper(null, sourceAddress, outMessage));
     } else {
-      logger_.debug("BdbPeer sends message to nebulo. Msg: " + outMessage);
       outQueue_.add(outMessage);
     }
     logger_.debug("GetDHTMessage processing finished");
@@ -300,10 +290,8 @@ public class BdbPeer extends Module {
       }
 
       logger_.debug("Message accepted. " + msg);
-      logger_.debug("Putting message to be sent to holder (taskId = " +
-          msg.getId() + ")");
-      senderInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_,
-          (DHTMessage) msg));
+      logger_.debug("Putting message to be sent to holder (taskId = " + msg.getId() + ")");
+      senderInQueue_.add(new BdbMessageWrapper(null, holderCommAddress_, msg));
       return null;
     }
 

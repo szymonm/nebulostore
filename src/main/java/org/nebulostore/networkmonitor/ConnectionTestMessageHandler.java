@@ -1,33 +1,10 @@
 package org.nebulostore.networkmonitor;
 
-import org.nebulostore.appcore.exceptions.NebuloException;
-import org.nebulostore.appcore.messaging.Message;
-import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
-import org.nebulostore.networkmonitor.messages.ConnectionTestMessage;
-import org.nebulostore.networkmonitor.messages.ConnectionTestResponseMessage;
 
 
 /**
  * Responses for ConnectionTestMessage.
  */
-public class ConnectionTestMessageHandler extends JobModule {
-  private final CTMVisitor visitor_ = new CTMVisitor();
-
-  /**
-   * Visitor.
-   */
-  protected class CTMVisitor extends MessageVisitor<Void> {
-    public Void visit(ConnectionTestMessage message) {
-      networkQueue_.add(new ConnectionTestResponseMessage(message.getId(), null,
-          message.getSourceAddress()));
-      return null;
-    }
-  }
-
-  @Override
-  protected void processMessage(Message message) throws NebuloException {
-    message.accept(visitor_);
-  }
-
+public abstract class ConnectionTestMessageHandler extends JobModule {
 }

@@ -64,9 +64,11 @@ public final class TextInterface extends Peer {
   protected void runPeer() {
     System.out.print("Starting NebuloStore ...\n");
     initPeer();
+    register(appKey_);
+    runNetworkMonitor();
     runBroker();
+    runAsyncModules();
     startPeer();
-    putKey(appKey_);
     try {
       inputLoop();
     } catch (IOException e) {
@@ -128,11 +130,12 @@ public final class TextInterface extends Peer {
       tokens = new String[2];
       tokens[1] = DEFAULT_APPKEY;
     }
-    super.putKey(new AppKey(new BigInteger(tokens[1])));
+    super.register(new AppKey(new BigInteger(tokens[1])));
   }
 
   /**
-   * read (appkey) (objectId) (destination_path).
+   * = read (appkey) (objectId) (destination_path).
+   *
    * @throws IOException
    */
   private void read(String[] input) throws IOException {
@@ -185,14 +188,12 @@ public final class TextInterface extends Peer {
     }
     NebuloFile file;
     try {
-      file = (NebuloFile) objectFactory_.fetchExistingNebuloObject(
-          new NebuloAddress(new AppKey(new BigInteger(tokens[1])),
-              new ObjectId(new BigInteger(tokens[2]))));
+      file = (NebuloFile) objectFactory_.fetchExistingNebuloObject(new NebuloAddress(new AppKey(
+          new BigInteger(tokens[1])), new ObjectId(new BigInteger(tokens[2]))));
       System.out.println("Successfully fetched existing file");
     } catch (NebuloException exception) {
-      file = objectFactory_.createNewNebuloFile(new NebuloAddress(
-          new AppKey(new BigInteger(tokens[1])),
-          new ObjectId(new BigInteger(tokens[2]))));
+      file = objectFactory_.createNewNebuloFile(new NebuloAddress(new AppKey(new BigInteger(
+          tokens[1])), new ObjectId(new BigInteger(tokens[2]))));
       System.out.println("Successfully created new file.");
     }
     try {
@@ -206,7 +207,7 @@ public final class TextInterface extends Peer {
           exception.getMessage());
       return;
     }
-    //file.sync(); // This is currently done automatically in write().
+    // file.sync(); // This is currently done automatically in write().
   }
 
   /**
@@ -267,8 +268,8 @@ public final class TextInterface extends Peer {
     try {
       AppKey appKey = new AppKey(new BigInteger(appKeyString));
       ObjectId objectId = new ObjectId(new BigInteger(objectIdString));
-      return (NebuloFile) objectFactory_.fetchExistingNebuloObject(
-          new NebuloAddress(appKey, objectId));
+      return (NebuloFile) objectFactory_.fetchExistingNebuloObject(new NebuloAddress(appKey,
+          objectId));
     } catch (NebuloException exception) {
       System.out.println("Got exception from 'fromAddress()': " + exception.getMessage());
       return null;

@@ -22,6 +22,10 @@ import org.nebulostore.broker.AlwaysAcceptingBroker;
 import org.nebulostore.broker.Broker;
 import org.nebulostore.communication.CommunicationPeerConfiguration;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.networkmonitor.ConnectionTestMessageHandler;
+import org.nebulostore.networkmonitor.DefaultConnectionTestMessageHandler;
+import org.nebulostore.networkmonitor.NetworkMonitor;
+import org.nebulostore.networkmonitor.NetworkMonitorImpl;
 import org.nebulostore.replicator.ReplicatorImpl;
 import org.nebulostore.replicator.core.Replicator;
 import org.nebulostore.subscription.api.SimpleSubscriptionNotificationHandler;
@@ -31,6 +35,7 @@ import org.nebulostore.timer.TimerImpl;
 
 /**
  * Configuration (all dependencies and constants) of a regular Nebulostore peer.
+ *
  * @author Bolek Kulbabinski
  */
 public class PeerConfiguration extends GenericConfiguration {
@@ -46,14 +51,14 @@ public class PeerConfiguration extends GenericConfiguration {
     BlockingQueue<Message> networkQueue = new LinkedBlockingQueue<Message>();
     BlockingQueue<Message> dispatcherQueue = new LinkedBlockingQueue<Message>();
 
-    bind(new TypeLiteral<BlockingQueue<Message>>() { })
-      .annotatedWith(Names.named("NetworkQueue")).toInstance(networkQueue);
-    bind(new TypeLiteral<BlockingQueue<Message>>() { })
-      .annotatedWith(Names.named("CommunicationPeerInQueue")).toInstance(networkQueue);
-    bind(new TypeLiteral<BlockingQueue<Message>>() { })
-      .annotatedWith(Names.named("DispatcherQueue")).toInstance(dispatcherQueue);
-    bind(new TypeLiteral<BlockingQueue<Message>>() { })
-      .annotatedWith(Names.named("CommunicationPeerOutQueue")).toInstance(dispatcherQueue);
+    bind(new TypeLiteral<BlockingQueue<Message>>() { }).
+      annotatedWith(Names.named("NetworkQueue")).toInstance(networkQueue);
+    bind(new TypeLiteral<BlockingQueue<Message>>() { }).
+      annotatedWith(Names.named("CommunicationPeerInQueue")).toInstance(networkQueue);
+    bind(new TypeLiteral<BlockingQueue<Message>>() { }).
+      annotatedWith(Names.named("DispatcherQueue")).toInstance(dispatcherQueue);
+    bind(new TypeLiteral<BlockingQueue<Message>>() { }).
+      annotatedWith(Names.named("CommunicationPeerOutQueue")).toInstance(dispatcherQueue);
 
     bind(NebuloObjectFactory.class).to(NebuloObjectFactoryImpl.class);
     bind(ObjectGetter.class).to(GetNebuloObjectModule.class);
@@ -68,7 +73,9 @@ public class PeerConfiguration extends GenericConfiguration {
 
     configureAdditional();
     configureCommunicationPeer();
+    configureNetworkMonitor();
     configureBroker();
+    configureCommunicationPeer();
     configurePeer();
   }
 
@@ -87,5 +94,10 @@ public class PeerConfiguration extends GenericConfiguration {
 
   protected void configureBroker() {
     bind(Broker.class).to(AlwaysAcceptingBroker.class).in(Scopes.SINGLETON);
+  }
+
+  protected void configureNetworkMonitor() {
+    bind(NetworkMonitor.class).to(NetworkMonitorImpl.class).in(Scopes.SINGLETON);
+    bind(ConnectionTestMessageHandler.class).to(DefaultConnectionTestMessageHandler.class);
   }
 }
