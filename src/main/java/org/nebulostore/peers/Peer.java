@@ -9,6 +9,7 @@ import com.google.inject.name.Named;
 
 import org.apache.log4j.Logger;
 import org.nebulostore.api.PutKeyModule;
+import org.nebulostore.appcore.RegisterInstanceInDHTModule;
 import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
@@ -21,15 +22,20 @@ import org.nebulostore.communication.CommunicationPeerFactory;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.Dispatcher;
 import org.nebulostore.dispatcher.JobInitMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
+import org.nebulostore.networkmonitor.NetworkMonitor;
 import org.nebulostore.timer.MessageGenerator;
 import org.nebulostore.timer.Timer;
 
 /**
+<<<<<<< HEAD
  * This is a regular peer with full functionality. It creates, connects and runs all modules.
  * To create a different peer, subclass Peer and set its class name in configuration.
  *
  * To customize the Peer, please override initializeModules(), runActively() and cleanModules().
+=======
+ * This is a regular peer with full functionality. It creates, connects and runs all modules. To
+ * create a different peer, subclass Peer and set its class name in configuration.
+>>>>>>> New broker
  *
  * @author Bolek Kulbabinski
  */
@@ -46,8 +52,11 @@ public class Peer extends AbstractPeer {
   protected Injector injector_;
   protected CommAddress commAddress_;
   protected Timer peerTimer_;
+  protected NetworkMonitor networkMonitor_;
 
   private CommunicationPeerFactory commPeerFactory_;
+
+  private int registrationTimeout_;
 
   @Inject
   public void setDependencies(@Named("DispatcherQueue") BlockingQueue<Message> dispatcherQueue,
@@ -57,7 +66,9 @@ public class Peer extends AbstractPeer {
                               CommAddress commAddress,
                               CommunicationPeerFactory commPeerFactory,
                               Timer timer,
-                              Injector injector) {
+                              NetworkMonitor networkMonitor,
+                              Injector injector,
+                              @Named("peer.registration-timeout") int registrationTimeout) {
     dispatcherInQueue_ = dispatcherQueue;
     networkInQueue_ = networkQueue;
     broker_ = broker;
@@ -65,7 +76,9 @@ public class Peer extends AbstractPeer {
     commAddress_ = commAddress;
     commPeerFactory_ = commPeerFactory;
     peerTimer_ = timer;
+    networkMonitor_ = networkMonitor;
     injector_ = injector;
+    registrationTimeout_ = registrationTimeout;
 
     // Create core threads.
     Runnable dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
@@ -97,6 +110,32 @@ public class Peer extends AbstractPeer {
   }
 
   /**
+   * Puts replication group under appKey_ in DHT and InstanceMetadata under commAddress_.
+   *
+   * @param appKey
+   */
+  protected void register(AppKey appKey) {
+    // TODO(bolek): This should be part of broker. (szm): or NetworkMonitor
+    PutKeyModule putKeyModule = new PutKeyModule(new ReplicationGroup(
+        new CommAddress[] {commAddress_ }, BigInteger.ZERO, new BigInteger("1000000")),
+        dispatcherInQueue_);
+    RegisterInstanceInDHTModule registerInstanceMetadataModule = new RegisterInstanceInDHTModule();
+    registerInstanceMetadataModule.setDispatcherQueue(dispatcherInQueue_);
+    registerInstanceMetadataModule.runThroughDispatcher();
+    try {
+      putKeyModule.getResult(registrationTimeout_);
+    } catch (NebuloException exception) {
+      logger_.error("Unable to execute PutKeyModule!", exception);
+    }
+
+    try {
+      registerInstanceMetadataModule.getResult(registrationTimeout_);
+    } catch (NebuloException exception) {
+      logger_.error("Unable to register InstanceMetadata!", exception);
+    }
+  }
+
+  /**
    * Initialize all optional modules and schedule them for execution by dispatcher.
    * Override this method to run modules selectively.
    */
@@ -111,8 +150,8 @@ public class Peer extends AbstractPeer {
    * Override this method when operations on active application are necessary.
    */
   protected void runActively() {
-    // TODO: Move putkey to separate module or at least make it non-blocking.
-    putKey(appKey_);
+    // TODO: Move register to separate module or at least make it non-blocking.
+    register(appKey_);
   }
 
   /**
@@ -124,8 +163,7 @@ public class Peer extends AbstractPeer {
   }
 
   protected void runNetworkMonitor() {
-    NetworkContext.getInstance().setCommAddress(commAddress_);
-    NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
+    networkMonitor_.runThroughDispatcher();
   }
 
   protected void runBroker() {
@@ -144,18 +182,7 @@ public class Peer extends AbstractPeer {
         return new JobInitMessage(new AddSynchroPeerModule());
       }
     };
-    NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
-  }
-
-  protected void putKey(AppKey appKey) {
-    // TODO(bolek): This should be part of broker.
-    PutKeyModule module = new PutKeyModule(new ReplicationGroup(new CommAddress[]{commAddress_},
-        BigInteger.ZERO, new BigInteger("1000000")), dispatcherInQueue_);
-    try {
-      module.getResult(30);
-    } catch (NebuloException exception) {
-      logger_.error("Unable to execute PutKeyModule!", exception);
-    }
+    networkMonitor_.addContextChangeMessageGenerator(addFoundSynchroPeer);
   }
 
   protected void startCoreThreads() {

@@ -143,6 +143,10 @@ public class BdbPeer extends Module {
     logger_.info("fully initialized");
   }
 
+  /**
+   * Module that sends holder advertisements.
+   */
+
   private void shutdown() {
     logger_.info("Ending bdb peer");
     if (!isProxy_) {
@@ -294,6 +298,7 @@ public class BdbPeer extends Module {
       shutdown();
       return null;
     }
+
   }
 
   /**

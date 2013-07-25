@@ -1,5 +1,7 @@
 package org.nebulostore.async;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
@@ -8,7 +10,7 @@ import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
-import org.nebulostore.broker.BrokerContext;
+
 
 /**
  * Response for GetAsynchronousMessagesMessage.
@@ -17,10 +19,10 @@ import org.nebulostore.broker.BrokerContext;
 public class ResponseWithAsynchronousMessagesModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(ResponseWithAsynchronousMessagesModule.class);
 
-  private final BrokerContext context_;
+  private AsyncMessagesContext context_;
 
-  public ResponseWithAsynchronousMessagesModule(BrokerContext context) {
-    super();
+  @Inject
+  public void setDependencies(AsyncMessagesContext context) {
     context_ = context;
   }
 

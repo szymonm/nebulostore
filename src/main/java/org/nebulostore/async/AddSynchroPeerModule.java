@@ -1,7 +1,5 @@
 package org.nebulostore.async;
 
-import java.util.List;
-
 import com.google.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -10,7 +8,6 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
-import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.core.ValueDHT;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
@@ -19,8 +16,7 @@ import org.nebulostore.communication.dht.messages.OkDHTMessage;
 import org.nebulostore.communication.dht.messages.PutDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.dispatcher.JobInitMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
-
+import org.nebulostore.networkmonitor.NetworkMonitor;
 
 /**
  * Module that adds to DHT new SynchroPeer - synchroPeer_.
@@ -39,9 +35,16 @@ public class AddSynchroPeerModule extends JobModule {
   private CommAddress synchroPeer_;
   private CommAddress myAddress_;
 
+  private NetworkMonitor networkMonitor_;
+  private AsyncMessagesContext context_;
+
   @Inject
-  private void setPeerAddress(CommAddress address) {
+  private void setDependencies(CommAddress address,
+                               NetworkMonitor networkMonitor,
+                               AsyncMessagesContext context) {
     myAddress_ = address;
+    networkMonitor_ = networkMonitor;
+    context_ = context;
   }
 
   public AddSynchroPeerModule() {
@@ -59,15 +62,14 @@ public class AddSynchroPeerModule extends JobModule {
   /**
    * Visitor.
    */
-  protected class Visitor extends MessageVisitor<Void> {
-    BrokerContext context_ = BrokerContext.getInstance();
+  public class Visitor extends MessageVisitor<Void> {
 
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
       // If synchroPeer_ is not set we use the last one found by the NetworkContext.
       if (synchroPeer_ == null) {
-        List<CommAddress> synchroPeers = NetworkContext.getInstance().getKnownPeers();
-        synchroPeer_ = synchroPeers.get(synchroPeers.size() - 1);
+        int lastSynchroPeerIndex = networkMonitor_.getKnownPeers().size() - 1;
+        synchroPeer_ = networkMonitor_.getKnownPeers().get(lastSynchroPeerIndex);
       }
       if (synchroPeer_ == null) {
         logger_.warn("Empy synchro peer got as the last from NetworkContext.");

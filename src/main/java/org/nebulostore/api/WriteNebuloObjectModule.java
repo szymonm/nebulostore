@@ -231,7 +231,8 @@ public class WriteNebuloObjectModule extends TwoStepReturningJobModule<Void, Voi
       if (recipientsSet_.isEmpty() &&
           confirmations_ < Math.min(CONFIRMATIONS_REQUIRED, nRecipients_)) {
         sendTransactionAnswer(TransactionAnswer.ABORT);
-        endWithError(new NebuloException("Not enough replicas responding to update file."));
+        endWithError(new NebuloException("Not enough replicas responding to update file (" +
+          confirmations_ + "/" + Math.min(CONFIRMATIONS_REQUIRED, nRecipients_) + ")."));
       } else {
         if (!isSmallFile_) {
           /* big file - requires only CONFIRMATIONS_REQUIERED ConfirmationMessages,

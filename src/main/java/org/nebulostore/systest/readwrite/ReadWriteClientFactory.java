@@ -10,5 +10,4 @@ import org.nebulostore.communication.address.CommAddress;
 public interface ReadWriteClientFactory {
   ReadWriteClient createReadWriteClient(String serverJobId, CommAddress serverAddress,
                                         int numPhases, List<CommAddress> clients, int clientId);
-
 }

@@ -71,7 +71,6 @@ public final class ListsClient extends ConductorClient {
           myList_.getAddress(), INITIAL_SLEEP_MILLIS, ADDRESS_EXCHANGE_TIMEOUT_MILLIS);
       visitors_[2] = new ReadFilesVisitor();
       visitors_[3] = new DeleteFileVisitor();
-      visitors_[4] = new IgnoreNewPhaseVisitor();
       visitors_[4] = new LastPhaseVisitor(stats_);
     } catch (CryptoException e) {
       endWithError("Exception while encrypting object: " + e.getMessage());

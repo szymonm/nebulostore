@@ -106,6 +106,10 @@ public final class CryptoUtils {
     return byteArrayToHexString(md.digest());
   }
 
+  public static double nextDouble() {
+    return RANDOM.nextDouble();
+  }
+
   private static final SecureRandom RANDOM = new SecureRandom();
 
   private CryptoUtils() { }

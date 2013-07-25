@@ -74,3 +74,17 @@ function compressDistributionDir() {
     tar czf $3.tar.gz $2
     cd ${EXEC_DIR}
 }
+
+function concatIfNotEmpty() {
+    if [ -z $1 ]
+    then
+        echo ""
+        return 0
+    fi
+    if [ -z $2 ]
+    then
+        echo ""
+        return 0
+    fi
+    echo "$1 $2"
+}

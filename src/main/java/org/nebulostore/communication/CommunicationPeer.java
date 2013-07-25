@@ -40,13 +40,14 @@ import org.nebulostore.communication.socket.ListenerService;
 import org.nebulostore.communication.socket.MessengerService;
 import org.nebulostore.communication.socket.MessengerServiceFactory;
 import org.nebulostore.communication.socket.messages.ListenerServiceReadyMessage;
+import org.nebulostore.networkmonitor.NetworkMonitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Main module for communication with outside world.
  *
  * So far it only handles BDB.
+ *
  * @author Marcin Walas
  * @author Grzegorz Milka
  */
@@ -56,6 +57,7 @@ public final class CommunicationPeer extends Module {
   private XMLConfiguration config_;
   private MessageVisitor<Void> msgVisitor_;
   private CommAddress commAddress_;
+  private NetworkMonitor networkMonitor_;
 
   /**
    * Module for handling bootstraping peer to network.
@@ -68,8 +70,8 @@ public final class CommunicationPeer extends Module {
   /**
    * DHT module available to higher layers.
    *
-   * Note that it was implemented by Marcin and I(grzegorzmilka) left it mostly
-   * as is. Only BDB works.
+   * Note that it was implemented by Marcin and I(grzegorzmilka) left it mostly as is. Only BDB
+   * works.
    */
   private Module dhtPeer_;
   private BlockingQueue<Message> dhtPeerInQueue_;
@@ -103,16 +105,12 @@ public final class CommunicationPeer extends Module {
   private AtomicBoolean isEnding_ = new AtomicBoolean(false);
 
   @AssistedInject
-  public CommunicationPeer(
-          @Assisted("CommunicationPeerInQueue") BlockingQueue<Message> inQueue,
-          @Assisted("CommunicationPeerOutQueue") BlockingQueue<Message> outQueue,
-          XMLConfiguration config,
-          @Named("LocalCommAddress") CommAddress commAddress,
-          BootstrapService bootstrapService,
-          @Named("IsServer") boolean isServer,
-          GossipServiceFactory gossipServiceFactory,
-          ListenerService listenerService,
-          MessengerServiceFactory messengerServiceFactory) {
+  public CommunicationPeer(@Assisted("CommunicationPeerInQueue") BlockingQueue<Message> inQueue,
+      @Assisted("CommunicationPeerOutQueue") BlockingQueue<Message> outQueue,
+      XMLConfiguration config, @Named("LocalCommAddress") CommAddress commAddress,
+      BootstrapService bootstrapService, @Named("IsServer") boolean isServer,
+      GossipServiceFactory gossipServiceFactory, ListenerService listenerService,
+      MessengerServiceFactory messengerServiceFactory, NetworkMonitor networkMonitor) {
     super(inQueue, outQueue);
     config_ = config;
     commAddress_ = commAddress;
@@ -124,6 +122,7 @@ public final class CommunicationPeer extends Module {
     messengerServiceInQueue_ = new LinkedBlockingQueue<Message>();
     messengerServiceFactory_ = messengerServiceFactory;
     msgVisitor_ = new CommPeerMsgVisitor();
+    networkMonitor_ = networkMonitor;
 
     dhtPeerInQueue_ = new LinkedBlockingQueue<Message>();
   }
@@ -151,8 +150,7 @@ public final class CommunicationPeer extends Module {
       try {
         bootstrapService_.startUpService();
       } catch (IOException e) {
-        logger_.error("IOException: " + e +
-            " caught when starting up BootstrapServer.");
+        logger_.error("IOException: " + e + " caught when starting up BootstrapServer.");
         throw new NebuloException("IOException at bootstrap", e);
       }
       Thread bootstrap = new Thread((BootstrapServer) bootstrapService_,
@@ -178,22 +176,21 @@ public final class CommunicationPeer extends Module {
   }
 
   private void readClingConfig(String clingConfPath) {
-    /* Turn off cling's logging by turning off JUL - java.util.logging*/
+    /* Turn off cling's logging by turning off JUL - java.util.logging */
     FileInputStream fileIS = null;
     try {
       LogManager logManager = LogManager.getLogManager();
       fileIS = new FileInputStream(clingConfPath);
       logManager.readConfiguration(fileIS);
     } catch (IOException e) {
-      logger_.warn("IOException: " + e + " was thrown when trying to read " +
-          "cling configuration");
+      logger_
+          .warn("IOException: " + e + " was thrown when trying to read " + "cling configuration");
     } finally {
       if (fileIS != null) {
         try {
           fileIS.close();
         } catch (IOException e) {
-          logger_.warn("IOException: " + e +
-              " was thrown when trying to close fileIS");
+          logger_.warn("IOException: " + e + " was thrown when trying to close fileIS");
         } finally {
           fileIS = null;
         }
@@ -209,8 +206,8 @@ public final class CommunicationPeer extends Module {
   /**
    * Kills this peer with its submodules.
    *
-   * During the shutting down any messages sent to this peer will generate warn
-   * log message. Remember to call interrupt when after call to endModule.
+   * During the shutting down any messages sent to this peer will generate warn log message.
+   * Remember to call interrupt when after call to endModule.
    *
    * @author Grzegorz Milka
    */
@@ -326,8 +323,7 @@ public final class CommunicationPeer extends Module {
     public Void visit(ReconfigureDHTMessage msg) {
       try {
         logger_.info("Got reconfigure request with jobId: " + msg.getId());
-        reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
-            (ReconfigureDHTMessage) msg);
+        reconfigureDHT(msg.getProvider(), msg);
       } catch (NebuloException e) {
         logger_.warn(e);
       }
@@ -358,7 +354,7 @@ public final class CommunicationPeer extends Module {
 
     public Void visit(BdbMessageWrapper msg) {
       logger_.debug("BDB DHT message received");
-      BdbMessageWrapper casted = (BdbMessageWrapper) msg;
+      BdbMessageWrapper casted = msg;
       if (casted.getWrapped() instanceof InDHTMessage) {
         logger_.debug("BDB DHT message forwarded to DHT");
         dhtPeerInQueue_.add(casted);
@@ -392,7 +388,7 @@ public final class CommunicationPeer extends Module {
 
     public Void visit(PeerGossipMessage msg) {
       if (((CommMessage) msg).getDestinationAddress().equals(
-            bootstrapService_.getResolver().getMyCommAddress())) {
+          bootstrapService_.getResolver().getMyCommAddress())) {
         gossipServiceInQueue_.add(msg);
       } else {
         messengerServiceInQueue_.add(msg);
@@ -401,14 +397,14 @@ public final class CommunicationPeer extends Module {
     }
 
     public Void visit(CommMessage msg) {
-      if (((CommMessage) msg).getSourceAddress() == null) {
-        ((CommMessage) msg).setSourceAddress(commAddress_);
+      if (msg.getSourceAddress() == null) {
+        msg.setSourceAddress(commAddress_);
       }
 
-      if (((CommMessage) msg).getDestinationAddress() == null) {
+      if (msg.getDestinationAddress() == null) {
         logger_.warn("Null destination address set for " + msg + ". Dropping the message.");
-      } else if (((CommMessage) msg).getDestinationAddress().equals(
-            bootstrapService_.getResolver().getMyCommAddress())) {
+      } else if (msg.getDestinationAddress().equals(
+          bootstrapService_.getResolver().getMyCommAddress())) {
         logger_.debug("message forwarded to Dispatcher");
         outQueue_.add(msg);
       } else {
@@ -425,8 +421,8 @@ public final class CommunicationPeer extends Module {
    * @author Marcin Walas
    * @author Grzegorz Milka
    */
-  private void reconfigureDHT(String dhtProvider,
-      ReconfigureDHTMessage reconfigureRequest) throws NebuloException {
+  private void reconfigureDHT(String dhtProvider, ReconfigureDHTMessage reconfigureRequest)
+    throws NebuloException {
 
     if (dhtProvider.equals("bdb") && (dhtPeer_ instanceof BdbPeer)) {
       if (reconfigureRequest != null && ((BdbPeer) dhtPeer_).getHolderAddress() != null) {
@@ -438,16 +434,15 @@ public final class CommunicationPeer extends Module {
         try {
           dhtPeerThread_.join();
         } catch (InterruptedException e) {
-          logger_.info("Caught InterruptedException when joining dhtPeer " +
-              "Thread.");
+          logger_.info("Caught InterruptedException when joining dhtPeer " + "Thread.");
           /* set interrupted flag for this thread */
           Thread.currentThread().interrupt();
         }
       }
 
       if (dhtProvider.equals("bdb")) {
-        BdbPeer bdbPeer = new BdbPeer(dhtPeerInQueue_, outQueue_,
-            messengerServiceInQueue_, reconfigureRequest);
+        BdbPeer bdbPeer = new BdbPeer(dhtPeerInQueue_, outQueue_, messengerServiceInQueue_,
+            reconfigureRequest);
         bdbPeer.setConfig(config_);
         bdbPeer.setCommAddress(commAddress_);
         dhtPeer_ = bdbPeer;

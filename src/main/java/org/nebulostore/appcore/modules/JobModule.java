@@ -11,6 +11,8 @@ import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.JobEndedMessage;
 import org.nebulostore.dispatcher.JobInitMessage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Base class for all job handlers - modules that are managed by dispatcher.
  * Message queues outQueue_ and inQueue_ are always connected to dispatcher.
@@ -53,11 +55,12 @@ public abstract class JobModule extends Module {
    * Run this module through a JobInitMessage (with new random ID) sent to Dispatcher.
    */
   public synchronized void runThroughDispatcher() {
+    checkNotNull(jobId_);
     if (isStarted_) {
       logger_.error("Module already ran.");
       return;
     }
-
+    
     isStarted_ = true;
     outQueue_.add(new JobInitMessage(this));
   }
@@ -80,7 +83,7 @@ public abstract class JobModule extends Module {
 
     // Inform dispatcher that we are going to die.
     if (!isQuickNonBlockingTask()) {
-      outQueue_.add(new JobEndedMessage(jobId_));
+      outQueue_.add(new JobEndedMessage(checkNotNull(jobId_)));
     }
   }
 }

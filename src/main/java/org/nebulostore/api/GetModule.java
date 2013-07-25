@@ -96,13 +96,13 @@ public abstract class GetModule<V> extends ReturningJobModule<V> {
 
     public Void visit(ValueDHTMessage message) {
       if (state_ == STATE.DHT_QUERY) {
-        logger_.debug("Received ValueDHTMessage");
 
         // State 2 - Receive reply from DHT and iterate over logical path segments asking
         // for consecutive parts.
         state_ = STATE.REPLICA_FETCH;
         // TODO(bolek): How to avoid casting here? Make ValueDHTMessage generic?
         Metadata metadata = (Metadata) message.getValue().getValue();
+        logger_.debug("Received ValueDHTMessage: " + metadata.toString());
         ContractList contractList = metadata.getContractList();
         ReplicationGroup replicationGroup = contractList.getGroup(address_.getObjectId());
         if (replicationGroup == null) {

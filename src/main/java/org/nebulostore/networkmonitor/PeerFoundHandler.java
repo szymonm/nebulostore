@@ -1,4 +1,5 @@
 package org.nebulostore.networkmonitor;
+import com.google.inject.Inject;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
@@ -19,6 +20,13 @@ public class PeerFoundHandler extends JobModule {
     message.accept(visitor_);
   }
 
+  private NetworkMonitor networkMonitor_;
+
+  @Inject
+  public void setDependencies(NetworkMonitor networkMonitor) {
+    networkMonitor_ = networkMonitor;
+  }
+
   /**
    * Visitor.
    * @author szymonmatejczyk
@@ -26,8 +34,7 @@ public class PeerFoundHandler extends JobModule {
   protected class PeerFoundHandlerVisitor extends MessageVisitor<Void> {
     public Void visit(CommPeerFoundMessage message) {
       jobId_ = message.getId();
-      NetworkContext context = NetworkContext.getInstance();
-      context.addFoundPeer(message.getSourceAddress());
+      networkMonitor_.addFoundPeer(message.getSourceAddress());
       endJobModule();
       return null;
     }

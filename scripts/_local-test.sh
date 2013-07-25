@@ -7,6 +7,8 @@
 
 # Assuming we are in scripts directory.
 
+source ./_utils.sh
+
 PEERNAME="org.nebulostore.systest.TestingPeer"
 PEERCONF="org.nebulostore.systest.TestingPeerConfiguration"
 TESTNAME="org.nebulostore.systest.pingpong.PingPongServer"
@@ -15,6 +17,7 @@ TEST_ITER=3
 BOOTSTRAP_DELAY=3
 LOG_DIR=logs
 DATA_FILE=test.data
+CONFIG_UPDATE=""
 
 if [ $1 ]; then
   PEERNAME=$1
@@ -22,7 +25,8 @@ if [ $1 ]; then
   TESTNAME=$3
   PEER_NUM=$4
   TEST_ITER=$5
-  DATA_FILE=${6-''}
+  DATA_FILE=${6-'test.data'}
+  CONFIG_UPDATE=$7
 fi
 
 # Build peers.
@@ -31,7 +35,8 @@ echo "BUILDING ..."
 
 # Generate and copy config files.
 ./_generate-config-files.sh -p $PEERNAME -c $PEERCONF -t $TESTNAME -n $PEER_NUM\
-    -m $((PEER_NUM-1)) -i $TEST_ITER -b localhost -d $DATA_FILE
+    -m $((PEER_NUM-1)) -i $TEST_ITER -b localhost `concatIfNotEmpty -d $DATA_FILE`\
+    `concatIfNotEmpty -f $CONFIG_UPDATE`
 
 for ((i=1; i<=$PEER_NUM; i++))
 do

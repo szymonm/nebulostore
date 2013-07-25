@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# Generate config files for test peers. First peer is bootstrap server.
+# Generate config files for test peers.
+# Uses config template from ./resources/conf/Peer.xml.template updated
+# with parameters from CONFIG_TEMPLATE_PATCH XML file (if set) and
+# parameters from the command line.
+#
+# First peer is bootstrap server.
 # Last peer is testing peer.
 # Optionally, the following parameters might be provided:
 #   -p peer_class_name
@@ -13,11 +18,12 @@
 #   -h host_list
 #   -v comm_module_version
 #   -d [data_file]
+#   -f [config_patch_file]
 
 EXEC_DIR=$(pwd)
 cd $(dirname $0)
 
-while getopts ":p:c:t:n:m:i:b:d:h:v:" OPTION
+while getopts ":p:c:t:n:m:i:b:d:h:v:f:" OPTION
 do
   case $OPTION in
     p) PEERNAME=$OPTARG;;
@@ -31,6 +37,7 @@ do
     d) DATA_FILE=$OPTARG;;
     h) HOST_LIST=$OPTARG;;
     v) COMM_MODULE=$OPTARG;;
+    f) CONFIG_TEMPLATE_PATCH=$OPTARG;;
     # DEFAULT
     *)
        ARG=$(($OPTIND-1));
@@ -57,6 +64,7 @@ done
 : ${COMMON_ARGS="--bootstrap-port=10001 --bootstrap-server-tomp2p-port=12001"}
 : ${COMM_MODULE="newcommunication"}
 : ${DATA_FILE=test.data}
+: ${CONFIG_TEMPLATE_PATCH=""}
 
 # Generate test list.
 for ((i=1; i<=$TEST_ITER; i++))
@@ -75,6 +83,12 @@ if [[ -n $HOST_LIST ]]; then
         CLIENT_HOSTS[$i]=$host
         if [ $i -eq $PEER_NUM ]; then break; else ((i++)); fi
     done
+fi
+
+if [ $CONFIG_TEMPLATE_PATCH ]; then
+  ./_update-xml.sh ../resources/conf/Peer.xml.template $CONFIG_TEMPLATE_PATCH > Peer.xml.base
+else
+  cp ../resources/conf/Peer.xml.template Peer.xml.base
 fi
 
 # Configure peers.
@@ -120,7 +134,7 @@ do
          --systest/is-server=$IS_SERVER\
          --num-test-participants=$TEST_CLIENTS_NUM\
          --systest/data-file=$DATA_FILE \
-         --bdb-peer/holder-comm-address=00000000-0000-0000-0001-000000000000 < ../resources/conf/Peer.xml.template > ../Peer.xml.$i
+         --bdb-peer/holder-comm-address=00000000-0000-0000-0001-000000000000 < Peer.xml.base > ../Peer.xml.$i
 done
 
 cd ${EXEC_DIR}

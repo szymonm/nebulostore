@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.socket.EndTestMessage;
+import org.nebulostore.communication.socket.ManualResolver;
 import org.nebulostore.communication.messages.CommMessage;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.socket.messages.ListenerServiceReadyMessage;

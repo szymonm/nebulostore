@@ -23,7 +23,6 @@ import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.appcore.modules.Module;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.messages.DHTMessage;
-import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
 import org.nebulostore.communication.dht.messages.InDHTMessage;
 import org.nebulostore.communication.dht.messages.OutDHTMessage;
 import org.nebulostore.communication.messages.CommMessage;
@@ -176,11 +175,6 @@ public class CommunicationFacadeAdapter extends Module {
       LOGGER.warn("Got reconfigure request with jobId: " + msg.getId());
       /*reconfigureDHT(((ReconfigureDHTMessage) msg).getProvider(),
           (ReconfigureDHTMessage) msg);*/
-      return null;
-    }
-
-    public Void visit(HolderAdvertisementMessage msg) {
-      LOGGER.error("Received BDB Holder advertisement message");
       return null;
     }
 

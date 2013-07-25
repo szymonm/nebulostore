@@ -2,12 +2,10 @@ package org.nebulostore.broker;
 
 import com.google.inject.Inject;
 
-import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
-import org.nebulostore.timer.MessageGenerator;
+import org.nebulostore.networkmonitor.NetworkMonitor;
+
 
 /**
  * Broker is always a singleton job. See BrokerMessageForwarder.
@@ -16,22 +14,13 @@ import org.nebulostore.timer.MessageGenerator;
 public abstract class Broker extends JobModule {
   protected CommAddress myAddress_;
 
+  protected NetworkMonitor networkMonitor_;
+  protected BrokerContext context_ = new BrokerContext();
+
   @Inject
-  void setCommAddress(CommAddress myAddress) {
+  private void setDependencies(CommAddress myAddress, NetworkMonitor networkMonitor) {
     myAddress_ = myAddress;
+    networkMonitor_ = networkMonitor;
   }
 
-  @Override
-  protected void initModule() {
-    subscribeForCommPeerFoundEvents();
-  }
-
-  protected void subscribeForCommPeerFoundEvents() {
-    NetworkContext.getInstance().addContextChangeMessageGenerator(new MessageGenerator() {
-      @Override
-      public Message generate() {
-        return new CommPeerFoundMessage(jobId_, null, null);
-      }
-    });
-  }
 }

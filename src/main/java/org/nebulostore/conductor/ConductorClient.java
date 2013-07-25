@@ -28,16 +28,17 @@ import org.nebulostore.timer.Timer;
 
 /**
  * Base class for all TestingModules(test cases run on peers).
+ *
  * @author szymonmatejczyk
  *
  * Writing tests:
- *     1. Remember to set visitors for each phase.
- *     2. Don't forget to put phaseFinished in every visitor.
- *     3. By default you should define visitor for each phase. However, you can
- *        override getVisitor() method to use visitors differently(ex. more
- *        than once).
- *     4. Don't forget to write server(ServerTestingModule) that will initialize
- *        TestingModules on peers side and will be gathering results.
+ *
+ *   1. Remember to set visitors for each phase.
+ *   2. Don't forget to put phaseFinished in every visitor
+ *   3. By default you should define visitor for each phase. However, you can override
+ *      getVisitor() method to use visitors differently(ex. more than once).
+ *   4. Don't forget to write server(ServerTestingModule) that will initialize
+ *      TestingModules on peers side and will be gathering results.
  */
 public abstract class ConductorClient extends JobModule implements Serializable {
   private static final long serialVersionUID = -1686614265302231592L;
@@ -86,8 +87,8 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   protected transient TestingModuleVisitor[] visitors_;
 
   /**
-   * Get visitor for current phase. Null if bad phase (including one after the last, meaning
-   * the test has ended for that peer).
+   * Get visitor for current phase. Null if bad phase (including one after the last, meaning the
+   * test has ended for that peer).
    */
   private TestingModuleVisitor getVisitor() {
     if (visitors_ == null) {
@@ -129,6 +130,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
   /**
    * Visitor handling Tic and FinishTest messages.
+   *
    * @author szymonmatejczyk
    */
   protected abstract class TestingModuleVisitor extends MessageVisitor<Void> {
@@ -173,10 +175,12 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
   /**
    * Empty visitor for phase 0.
+   *
    * @author szymonmatejczyk
    */
   protected class EmptyInitializationVisitor extends TestingModuleVisitor {
-    public EmptyInitializationVisitor() { }
+    public EmptyInitializationVisitor() {
+    }
 
     public Void visit(InitMessage message) {
       jobId_ = message.getId();
@@ -185,17 +189,47 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       return null;
     }
 
+    @Override
     public Void visit(NewPhaseMessage message) {
       return null;
     }
   }
 
   /**
+   * Visotor that waits @param timeout_ to finish phase.
+   */
+  public class DelayingVisitor extends TestingModuleVisitor {
+    protected final long timeout_;
+    protected final Timer timer_;
+
+    public DelayingVisitor(long timeout, Timer timer) {
+      timeout_ = timeout;
+      timer_ = timer;
+    }
+
+    @Override
+    public Void visit(NewPhaseMessage message) {
+      logger_.debug("Phase delaying started... (" + timeout_ + " ms)");
+      timer_.schedule(jobId_, timeout_);
+      return null;
+    }
+
+    @Override
+    public Void visit(TimeoutMessage message) {
+      logger_.debug("Phase delaying finished.");
+      phaseFinished();
+      return null;
+    }
+  }
+
+  /**
    * Visitor that ignores NewPhaseMessage.
+   *
    * @author szymonmatejczyk
    */
   protected class IgnoreNewPhaseVisitor extends TestingModuleVisitor {
-    public IgnoreNewPhaseVisitor() { }
+    public IgnoreNewPhaseVisitor() {
+    }
 
     @Override
     public Void visit(NewPhaseMessage message) {
@@ -205,6 +239,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
 
   /**
    * Default visitor for last phase. Handles GatherStatsMessage (and FinishMessage).
+   *
    * @author Bolek Kulbabinski
    */
   protected class LastPhaseVisitor extends TestingModuleVisitor {
@@ -220,6 +255,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       return null;
     }
 
+    @Override
     public Void visit(NewPhaseMessage message) {
       logger_.debug("Received NewPhaseMessage in GatherStats state.");
       return null;
@@ -229,6 +265,7 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   /**
    * Send my object's address to everyone and receive their information (used as a first phase
    * visitor in some test scenarios).
+   *
    * @author Bolek Kulbabinski
    */
   protected final class AddressExchangeVisitor extends TestingModuleVisitor {

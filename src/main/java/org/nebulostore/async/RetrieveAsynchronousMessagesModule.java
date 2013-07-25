@@ -13,7 +13,6 @@ import org.nebulostore.async.messages.AsynchronousMessage;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.DeleteNebuloObjectMessage;
 import org.nebulostore.async.messages.UpdateNebuloObjectMessage;
-import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
@@ -36,15 +35,14 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
 
   private CommAddress myAddress_;
   private Timer timer_;
+  private AsyncMessagesContext context_;
 
   @Inject
-  public void setPeerAddress(CommAddress address) {
-    myAddress_ = address;
-  }
-
-  @Inject
-  public void setTimer(Timer timer) {
+  public void setDependencies(CommAddress address, Timer timer,
+      AsyncMessagesContext context) {
     timer_ = timer;
+    myAddress_ = address;
+    context_ = context;
   }
 
   @Override
@@ -58,8 +56,6 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
    * @author szymonmatejczyk
    */
   protected class RAMVisitor extends MessageVisitor<Void> {
-    BrokerContext context_ = BrokerContext.getInstance();
-
     /** Start of download of AM. Requests for Metadata containing inboxHolders. */
     public Void visit(JobInitMessage message) {
       logger_.debug("Started asynchronous-messages retrieval.");
@@ -84,7 +80,7 @@ public class RetrieveAsynchronousMessagesModule extends JobModule {
         //TODO(szm): timeouts
         for (CommAddress inboxHolder : context_.getMyInboxHolders()) {
           GetAsynchronousMessagesModule messagesModule =
-              new GetAsynchronousMessagesModule(networkQueue_, inQueue_, context_, inboxHolder);
+              new GetAsynchronousMessagesModule(networkQueue_, inQueue_, inboxHolder);
           JobInitMessage initializingMessage = new JobInitMessage(messagesModule);
           context_.getWaitingForMessages().add(initializingMessage.getId());
         }

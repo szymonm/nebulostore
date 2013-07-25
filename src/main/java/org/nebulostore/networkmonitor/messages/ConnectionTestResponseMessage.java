@@ -11,9 +11,8 @@ import org.nebulostore.communication.messages.CommMessage;
 public class ConnectionTestResponseMessage extends CommMessage {
   private static final long serialVersionUID = 1003452365644646925L;
 
-  public ConnectionTestResponseMessage(String jobId, CommAddress sourceAddress,
-      CommAddress destAddress) {
-    super(jobId, sourceAddress, destAddress);
+  public ConnectionTestResponseMessage(String jobId, CommAddress destAddress) {
+    super(jobId, null, destAddress);
   }
 
   @Override

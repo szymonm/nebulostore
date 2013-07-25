@@ -24,6 +24,8 @@
     If some flags are missing, default values from Peer.xml.template are used.
 
     Other flags:
+        peer:
+            --registration-timeout=(\d+)\
         communication.pingpong test variables:
             --pingpong-test-function=(server|client)\
             --pingpong/peer-net-address=(address)\

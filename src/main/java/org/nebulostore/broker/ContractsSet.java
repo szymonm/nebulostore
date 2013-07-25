@@ -3,6 +3,8 @@ package org.nebulostore.broker;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.google.common.base.Predicate;
+
 /**
  * Set of contracts.
  */
@@ -21,8 +23,8 @@ public class ContractsSet extends HashSet<Contract> implements Cloneable {
     add(contract);
   }
 
-  public int realSize() {
-    int size = 0;
+  public long realSize() {
+    long size = 0;
     Iterator<Contract> it = iterator();
     while (it.hasNext()) {
       size += it.next().getSize();
@@ -34,5 +36,14 @@ public class ContractsSet extends HashSet<Contract> implements Cloneable {
   public ContractsSet clone() {
     return (ContractsSet) super.clone();
   }
-
+  
+  public static Predicate<Contract> containsPredicate(ContractsSet set) {
+	final ContractsSet set_ = set;
+	return new Predicate<Contract>() {
+      @Override
+      public boolean apply(Contract contract) {
+        return set_.contains(contract);
+      }
+    };
+  }
 }

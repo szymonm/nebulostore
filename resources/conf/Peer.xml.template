@@ -14,11 +14,56 @@
     <configuration-class-name>
         org.nebulostore.peers.PeerConfiguration
     </configuration-class-name>
+    <peer>
+      <registration-timeout>
+        30
+      </registration-timeout>
+    </peer>
     <replicator>
         <storage-path>
             storage
         </storage-path>
+        <replication-group-update-timeout>
+            5
+        </replication-group-update-timeout>
+      <storage-path>
+        storage
+      </storage-path>
     </replicator>
+    <broker>
+      <default-contract-size-kb>
+        1024
+      </default-contract-size-kb>
+      <space-contributed-kb>
+        30720
+      </space-contributed-kb>
+      <contracts-evaluator>
+        default
+      </contracts-evaluator>
+      <contracts-selection-algorithm>
+        greedy
+      </contracts-selection-algorithm>
+      <contracts-improvement-period-sec>
+        1
+      </contracts-improvement-period-sec>
+      <contracts-improvement-delay-sec>
+        3
+      </contracts-improvement-delay-sec>
+      <max-contracts-multiplicity>
+        1
+      </max-contracts-multiplicity>
+    </broker>
+    <networkmonitor>
+      <get-stats-timeout-secs>
+        2
+      </get-stats-timeout-secs>
+      <random-peers-sample-size>
+        3
+      </random-peers-sample-size>
+      <statistics-update-interval-millis>
+        1500
+      </statistics-update-interval-millis>
+    </networkmonitor>
     <communication>
         <!-- Which version of communication module to use.
              Use communication or newcommunication -->
@@ -126,6 +171,11 @@
         <testing-peer-class-list>
             org.nebulostore.conductor.pingpong.PingPongServer;org.nebulostore.conductor.readwrite.ReadWriteServer
         </testing-peer-class-list>
+        <networkmonitor>
+          <response-frequency>
+            1.0
+          </response-frequency>
+        </networkmonitor>
         <communication>
             <messageexchange>
                 <mode>
