@@ -21,6 +21,8 @@
     If some flags are missing, default values from Peer.xml.template are used.
 
     Other flags:
+        peer:
+            --REGISTRATION_TIMEOUT=(\d+)\
         communication.pingpong test variables:
             --PINGPONG_TEST_FUNCTION=(server|client)\
             --PEER_NET_ADDRESS=(address)\
@@ -31,7 +33,16 @@
             --MAX_PEERS_SIZE=(\d+)\
             --HEALING_FACTOR=(\d+)\
             --SWAPPING_FACTOR=(\d+)\
-            --COHESIVENESS_TEST_INTERVAL=(\d+[(,(\d+))]*)
+            --COHESIVENESS_TEST_INTERVAL=(\d+[(,(\d+))]*)\
+        broker options:
+            --DEFAUL_CONTRACT_SIZE=(\d+)\
+            --SIZE_CONTRIBUTED_KB=(\d+)\
+            --CONTRACTS_EVALUATOR=(default)\
+            --CONTRACTS_SELECTION_ALGORITHM=(greedy)\
+        network monitor options:
+            --GET_STATS_TIMEOUT_SECS=5\
+        systest network monitor 
+            --RESPONSE_FREQUENCY=(1.0)\
 """
 
 import sys

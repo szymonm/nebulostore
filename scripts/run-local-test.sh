@@ -1,8 +1,8 @@
 #!/bin/bash
 
 SCRIPT_NAME=./scripts/_local-test.sh
-N_TESTS=6
-declare -a PEERS=(3 6 6 8 14 6)
+N_TESTS=7
+declare -a PEERS=(3 6 6 8 14 6 3)
 declare -a TITLES=(\
     'ping-pong test'\
     'read-write test'\
@@ -10,6 +10,7 @@ declare -a TITLES=(\
     'performance lists test'\
     'performance lists test'\
     'read-write time measure test'\
+    'network monitor test'\
     )
 
 
@@ -57,6 +58,10 @@ case $N in
            org.nebulostore.systest.readwrite.ReadWriteWithTimeConfiguration\
            org.nebulostore.systest.readwrite.ReadWriteServer\
            ${PEERS[1]} 1 ../../../test.data;;
-
+    7) $SCRIPT_NAME\
+           org.nebulostore.systest.TestingPeer\
+           org.nebulostore.systest.TestingPeerConfiguration\
+           org.nebulostore.systest.networkmonitor.NetworkMonitorTestServer\
+           ${PEERS[6]} 1;;
 esac
 

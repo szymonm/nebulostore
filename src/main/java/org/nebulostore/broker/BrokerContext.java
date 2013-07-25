@@ -36,6 +36,8 @@ public final class BrokerContext {
   private final Lock readLock_ = readWriteLock_.readLock();
   private final Lock writeLock_ = readWriteLock_.writeLock();
 
+  private final BrokerConfiguration brokerConfiguration_ = new BrokerConfiguration();
+
   /**
    * Available space for contract.
    */
@@ -60,7 +62,7 @@ public final class BrokerContext {
       new HashMap<CommAddress, List<AsynchronousMessage>>();
 
   /**
-   * InstanceId's of peers, that retrieved AM, but haven't sent response yet.
+   * CommAddresses of peers, that retrieved AM, but haven't sent response yet.
    */
   private Set<CommAddress> waitingForAck_ = new HashSet<CommAddress>();
 
@@ -169,5 +171,9 @@ public final class BrokerContext {
   }
 
   private BrokerContext() {
+  }
+
+  public BrokerConfiguration getConfiguration() {
+    return brokerConfiguration_;
   }
 }

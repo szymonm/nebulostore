@@ -14,11 +14,41 @@
     <configuration-class-name>
         @CONFIGURATION_CLASS_NAME=org.nebulostore.peers.PeerConfiguration@
     </configuration-class-name>
+    <peer>
+      <registration-timeout>
+        @REGISTRATION_TIMEOUT=30@
+      </registration-timeout>
+    </peer>
     <replicator>
         <storage-path>
             @REPLICATOR_PATH=storage@
         </storage-path>
     </replicator>
+    <broker>
+      <default-contract-size-kb>
+        @DEFAUL_CONTRACT_SIZE=1024@
+      </default-contract-size-kb>
+      <size-contributed-kb>
+        @SIZE_CONTRIBUTED_KB=30720@
+      </size-contributed-kb>
+      <contracts-evaluator>
+        @CONTRACTS_EVALUATOR=default@
+      </contracts-evaluator>
+      <contracts-selection-algorithm>
+        @CONTRACTS_SELECTION_ALGORITHM=greedy@
+      </contracts-selection-algorithm>
+  	</broker>
+    <networkmonitor>
+      <get-stats-timeout-secs>
+        @GET_STATS_TIMEOUT_SECS=2@
+      </get-stats-timeout-secs>
+      <random-peers-sample-size>
+        @RANDOM_PEERS_SAMPLE_SIZE=3@
+      </random-peers-sample-size>
+      <statistics-update-interval-millis>
+        @STATISTICS_UPDATE_INTERVAL_MILLIS=100@
+      </statistics-update-interval-millis>
+    </networkmonitor>
     <communication>
         <!-- Sets CommAddress to comm-address iff not empty, otherwise
              CommAddress is a random UUID. comm-address can be an integer or an
@@ -100,6 +130,11 @@
         <testing-peer-class-list>
             @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer;org.nebulostore.conductor.readwrite.ReadWriteServer@
         </testing-peer-class-list>
+        <networkmonitor>
+          <response-frequency>
+            @RESPONSE_FREQUENCY=1.0@
+          </response-frequency>
+        </networkmonitor>
         <communication>
             <pingpong>
                 <!-- The server/client function in RunPingPong test. Only one

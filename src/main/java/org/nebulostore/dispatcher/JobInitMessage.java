@@ -17,7 +17,6 @@ public class JobInitMessage extends Message {
     jobModule_ = jobModule;
   }
 
-  @Deprecated
   public JobInitMessage(String jobId, JobModule jobModule) {
     super(jobId);
     jobModule_ = jobModule;

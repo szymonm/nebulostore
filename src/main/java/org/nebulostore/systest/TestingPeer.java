@@ -9,8 +9,8 @@ import org.nebulostore.conductor.ConductorServer;
 import org.nebulostore.peers.Peer;
 
 /**
- * Class that runs test server. If "systest.is-server" option is set to false
- * it behaves like standard Peer.
+ * Class that runs test server. If "systest.is-server" option is set to false it behaves like
+ * standard Peer.
  *
  * @author Bolek Kulbabinski
  */
@@ -26,8 +26,7 @@ public class TestingPeer extends Peer {
 
   @Inject
   public void setTestParameters(@Named(N_TEST_PARTICIPANTS_CONFIG) int nTestParticipants,
-      @Named(CLASS_LIST_CONFIG) String classList,
-      @Named(IS_SERVER_CONFIG) boolean isServer) {
+      @Named(CLASS_LIST_CONFIG) String classList, @Named(IS_SERVER_CONFIG) boolean isServer) {
     nTestParticipants_ = nTestParticipants;
     if (nTestParticipants_ <= 1) {
       throw new RuntimeException("Illegal number of test participants! (" +
@@ -44,9 +43,10 @@ public class TestingPeer extends Peer {
   protected void runPeer() {
     logger_.info("Starting testing peer with appKey = " + appKey_);
     initPeer();
+    runNetworkMonitor();
     runBroker();
     startPeer();
-    putKey(appKey_);
+    register(appKey_);
 
     if (isTestServer_) {
       runTestingServer();

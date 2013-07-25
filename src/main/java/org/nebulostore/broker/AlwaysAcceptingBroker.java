@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.nebulostore.api.PutKeyModule;
 import org.nebulostore.appcore.addressing.ReplicationGroup;
@@ -18,7 +20,8 @@ import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.JobInitMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
+import org.nebulostore.networkmonitor.NetworkMonitor;
+
 
 /**
  * Broker is always a singleton job. See BrokerMessageForwarder.
@@ -33,6 +36,12 @@ public class AlwaysAcceptingBroker extends Broker {
   private static final int DEFAULT_OFFER = 10 * 1024;
   private final BrokerVisitor visitor_ = new BrokerVisitor();
   private Set<CommAddress> offerRecipients_ = new TreeSet<CommAddress>();
+  private NetworkMonitor networkMonitor_;
+
+  @Inject
+  public void setDependencies(NetworkMonitor networkMonitor) {
+    networkMonitor_ = networkMonitor;
+  }
 
   /**
    * Visitor.
@@ -79,17 +88,17 @@ public class AlwaysAcceptingBroker extends Broker {
     public Void visit(CommPeerFoundMessage message) {
       logger_.debug("Found new peer.");
       if (BrokerContext.getInstance().getReplicas().length < MAX_CONTRACTS) {
-        List<CommAddress> knownPeers = NetworkContext.getInstance().getKnownPeers();
+        List<CommAddress> knownPeers = networkMonitor_.getKnownPeers();
         Iterator<CommAddress> iterator = knownPeers.iterator();
         while (iterator.hasNext()) {
           CommAddress address = iterator.next();
           if (BrokerContext.getInstance().getUserContracts(address) == null &&
               !address.equals(myAddress_) && !offerRecipients_.contains(address)) {
             // Send offer to new peer (10MB by default).
-            logger_.debug("Sending offer to " + address);
+            logger_.debug("Sending offer to " +
+                address);
             networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), address,
                 new Contract(myAddress_, address, DEFAULT_OFFER)));
-            offerRecipients_.add(address);
             break;
           }
         }
