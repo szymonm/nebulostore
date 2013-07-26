@@ -32,7 +32,7 @@ import org.nebulostore.timer.Timer;
  */
 public class TestPeersConnectionModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(TestPeersConnectionModule.class);
-  private static final long TIMEOUT_MILLIS = 2000L;
+  private static final long TIMEOUT_MILLIS = 3000L;
 
   private final CommAddress peerAddress_;
   private TPCVisitor visitor_ = new TPCVisitor();
@@ -62,6 +62,7 @@ public class TestPeersConnectionModule extends JobModule {
 
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();
+      logger_.debug("Testing connection to: " + peerAddress_.toString());
       networkQueue_.add(new GetDHTMessage(message.getId(), peerAddress_.toKeyDHT()));
       sendTime_ = System.currentTimeMillis();
       networkQueue_.add(new ConnectionTestMessage(jobId_, peerAddress_));
@@ -76,6 +77,7 @@ public class TestPeersConnectionModule extends JobModule {
     }
 
     public Void visit(ConnectionTestResponseMessage message) {
+      logger_.debug("Succesfully tested connection to: " + peerAddress_.toString());
       // TODO(szm): other statistics
       // TODO(szm): bandwidth??
       stats_.add(new PeerConnectionSurvey(myAddress_, System.currentTimeMillis(),
@@ -99,12 +101,13 @@ public class TestPeersConnectionModule extends JobModule {
     }
 
     public Void visit(TimeoutMessage message) {
-      logger_.warn("Timeout.");
       if (valueDHTMessage_ != null) {
+        logger_.warn("Timeout in ping.");
         stats_.add(new PeerConnectionSurvey(myAddress_, System.currentTimeMillis(),
             ConnectionAttribute.AVAILABILITY, 0.0));
         appendStatisticsAndFinish(stats_, valueDHTMessage_);
       } else {
+        logger_.warn("Timeout in DHT retrival.");
         endJobModule();
       }
       return null;

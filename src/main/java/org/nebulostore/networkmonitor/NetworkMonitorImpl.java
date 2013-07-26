@@ -1,5 +1,6 @@
 package org.nebulostore.networkmonitor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -99,8 +100,8 @@ public class NetworkMonitorImpl extends NetworkMonitor {
   }
 
   @Override
-  public Vector<CommAddress> getKnownPeers() {
-    return new Vector<CommAddress>(knownPeersVector_);
+  public List<CommAddress> getKnownPeers() {
+    return new ArrayList<CommAddress>(knownPeersVector_);
   }
 
   @Override

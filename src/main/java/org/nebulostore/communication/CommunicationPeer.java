@@ -20,6 +20,7 @@ import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.appcore.modules.Module;
+import org.nebulostore.appcore.modules.ModuleFailMessage;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.bootstrap.BootstrapServer;
 import org.nebulostore.communication.bootstrap.BootstrapService;
@@ -41,6 +42,7 @@ import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.communication.socket.ListenerService;
 import org.nebulostore.communication.socket.MessengerService;
 import org.nebulostore.communication.socket.MessengerServiceFactory;
+import org.nebulostore.communication.socket.messages.ListenerServiceReadyMessage;
 import org.nebulostore.networkmonitor.NetworkMonitor;
 
 /**
@@ -160,23 +162,10 @@ public final class CommunicationPeer extends Module {
       logger_.info("Created BootstrapServer.");
     }
 
-    /* Add current resolver to context */
-    MessengerService messengerService = messengerServiceFactory_.newMessengerService(
-        messengerServiceInQueue_, inQueue_, bootstrapService_.getResolver());
-
-    GossipService gossipService = gossipServiceFactory_.newGossipService(gossipServiceInQueue_,
-        inQueue_, bootstrapService_.getBootstrapCommAddress());
-
     /* Start submodule's threads */
-    listenerThread_ = new Thread(listenerService_, "Nebulostore.Communication.ListenerService");
-    listenerThread_.setDaemon(true);
-    listenerThread_.start();
-    gossipThread_ = new Thread(gossipService, "Nebulostore.Communication.GossipService");
-    gossipThread_.setDaemon(true);
-    gossipThread_.start();
-    messengerThread_ = new Thread(messengerService, "Nebulostore.Communication.MessengerService");
-    messengerThread_.setDaemon(true);
-    messengerThread_.start();
+    startListenerService();
+    startGossipService();
+    startMessengerService();
 
     logger_.info("Created and started auxiliary services.");
 
@@ -211,6 +200,11 @@ public final class CommunicationPeer extends Module {
     }
   }
 
+  private void restartListenerService() throws InterruptedException {
+    stopListenerService();
+    startListenerService();
+  }
+
   /**
    * Kills this peer with its submodules.
    *
@@ -237,35 +231,13 @@ public final class CommunicationPeer extends Module {
       Thread.currentThread().interrupt();
     }
 
-    /* End messengerService */
-    messengerServiceInQueue_.add(new EndModuleMessage());
+    /* End services */
     try {
-      messengerThread_.join();
-      logger_.info("Messenger thread ended.");
+      stopMessengerService();
+      stopListenerService();
+      stopGossipService();
     } catch (InterruptedException e) {
-      logger_.info("Caught InterruptedException when joining messenger thread.");
-      /* set interrupted flag for this thread */
-      Thread.currentThread().interrupt();
-    }
-
-    /* End listenerService */
-    listenerService_.shutdown();
-    try {
-      listenerThread_.join();
-      logger_.info("Listener thread ended.");
-    } catch (InterruptedException e) {
-      logger_.info("Caught InterruptedException when joining listener.");
-      /* set interrupted flag for this thread */
-      Thread.currentThread().interrupt();
-    }
-
-    /* End gossipService */
-    gossipServiceInQueue_.add(new EndModuleMessage());
-    try {
-      gossipThread_.join();
-      logger_.info("Gossip thread ended.");
-    } catch (InterruptedException e) {
-      logger_.warn("Caught InterruptedException when joining gossiper.");
+      logger_.info("Caught InterruptedException when joining services.");
       /* set interrupted flag for this thread */
       Thread.currentThread().interrupt();
     }
@@ -273,6 +245,49 @@ public final class CommunicationPeer extends Module {
     bootstrapService_.shutdownService();
     logger_.info("BootstrapService shutdown.");
     endModule();
+  }
+
+  private void startGossipService() {
+    GossipService gossipService = gossipServiceFactory_.newGossipService(
+        gossipServiceInQueue_, inQueue_,
+        bootstrapService_.getBootstrapCommAddress());
+    gossipThread_ = new Thread(gossipService, "Nebulostore.Communication.GossipService");
+    gossipThread_.setDaemon(true);
+    gossipThread_.start();
+  }
+
+  private void startListenerService() {
+    listenerThread_ = new Thread(
+        listenerService_, "Nebulostore.Communication.ListenerService");
+    listenerThread_.setDaemon(true);
+    listenerThread_.start();
+  }
+
+  private void startMessengerService() {
+    MessengerService messengerService =
+        messengerServiceFactory_.newMessengerService(messengerServiceInQueue_,
+            inQueue_, bootstrapService_.getResolver());
+    messengerThread_ = new Thread(messengerService, "Nebulostore.Communication.MessengerService");
+    messengerThread_.setDaemon(true);
+    messengerThread_.start();
+  }
+
+  private void stopGossipService() throws InterruptedException {
+    gossipServiceInQueue_.add(new EndModuleMessage());
+    gossipThread_.join();
+    logger_.info("Gossip thread ended.");
+  }
+
+  private void stopListenerService() throws InterruptedException {
+    listenerService_.shutdown();
+    listenerThread_.join();
+    logger_.info("Listener thread ended.");
+  }
+
+  private void stopMessengerService() throws InterruptedException {
+    messengerServiceInQueue_.add(new EndModuleMessage());
+    messengerThread_.join();
+    logger_.info("Messenger thread ended.");
   }
 
   @Override
@@ -357,7 +372,25 @@ public final class CommunicationPeer extends Module {
         logger_.warn("Unrecognized BdbMessageWrapper: " + msg);
       }
       return null;
+    }
 
+    public Void visit(ListenerServiceReadyMessage msg) {
+      logger_.debug("ListenerServiceReadyMessage received");
+      return null;
+    }
+
+    public Void visit(ModuleFailMessage msg) {
+      logger_.debug("Module fail message received");
+      if (msg.getModule() == listenerService_) {
+        try {
+          restartListenerService();
+        } catch (InterruptedException e) {
+          logger_.warn("Received interrupt during restart of listener service.");
+        }
+      } else {
+        logger_.warn("Unhandled module fail message: " + msg);
+      }
+      return null;
     }
 
     public Void visit(PeerGossipMessage msg) {
