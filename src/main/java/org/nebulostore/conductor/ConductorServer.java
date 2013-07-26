@@ -335,6 +335,7 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
     public Void visit(ErrorMessage message) {
       logger_.warn("Received ErrorMessage, test failed: " + message.getMessage());
       successful_ = false;
+      finishTest();
       return null;
     }
   }

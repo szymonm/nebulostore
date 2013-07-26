@@ -58,7 +58,6 @@ public class RandomPeersGossipingModule extends JobModule {
     private boolean activeMode_;
 
     public Void visit(JobInitMessage message) {
-      logger_.debug("Gossiping...");
       jobId_ = message.getId();
       // starting in active mode
       activeMode_ = true;
@@ -69,7 +68,7 @@ public class RandomPeersGossipingModule extends JobModule {
         return null;
       }
 
-      logger_.debug("Gossiping started...");
+      logger_.debug("Gossiping (actively) started...");
 
       // sample peer other than this instance
       Integer randomPeerNo = (new Random()).nextInt(view.size());
@@ -93,6 +92,7 @@ public class RandomPeersGossipingModule extends JobModule {
         view.addAll(message.getPeersSet());
         view = selectView(view);
         networkMonitor_.setRandomPeersSample(view);
+        logger_.debug("Gossiping finished.");
       } else {
         jobId_ = message.getId();
         logger_.debug("Received gossiping message.");

@@ -125,16 +125,18 @@ public class NetworkMonitorTestClient extends ConductorClient {
 
     public Void visit(GatherStatsMessage message) {
       logger_.debug("Gathering statistics...");
-      gatherNetworkMonitorStatistics();
-      logger_.debug(serverJobId_);
-      logger_.debug(server_);
-      networkQueue_.add(new StatsMessage(serverJobId_, null, server_, stats_));
+      if (gatherNetworkMonitorStatistics()) {
+        networkQueue_.add(new StatsMessage(serverJobId_, null, server_, stats_));
+      }
       return null;
     }
 
   }
 
-  private void gatherNetworkMonitorStatistics() {
+   /**
+   * Tries to gather statistics for known clients. Return true iff it succeeds.
+   */
+  private boolean gatherNetworkMonitorStatistics() {
     double availability;
     for (CommAddress client : clients_) {
       if (!client.equals(myAddress_)) {
@@ -157,8 +159,10 @@ public class NetworkMonitorTestClient extends ConductorClient {
           logger_.debug("Retrived + " + client.toString() + " statistics.");
         } catch (NebuloException e) {
           endWithError("Unable to retrieve peer: " + client + " statistics.");
+          return false;
         }
       }
     }
+    return true;
   }
 }

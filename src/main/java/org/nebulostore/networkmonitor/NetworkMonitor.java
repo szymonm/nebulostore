@@ -1,7 +1,7 @@
 package org.nebulostore.networkmonitor;
 
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import com.google.inject.Inject;
 
@@ -21,7 +21,7 @@ public abstract class NetworkMonitor extends JobModule {
 
   public abstract void removeContextChangeMessageGenerator(MessageGenerator generator);
 
-  public abstract Vector<CommAddress> getKnownPeers();
+  public abstract List<CommAddress> getKnownPeers();
 
   public abstract void addFoundPeer(CommAddress address);
 

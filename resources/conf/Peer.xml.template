@@ -40,13 +40,13 @@
   	</broker>
     <networkmonitor>
       <get-stats-timeout-secs>
-        @GET_STATS_TIMEOUT_SECS=2@
+        @GET_STATS_TIMEOUT_SECS=3@
       </get-stats-timeout-secs>
       <random-peers-sample-size>
         @RANDOM_PEERS_SAMPLE_SIZE=3@
       </random-peers-sample-size>
       <statistics-update-interval-millis>
-        @STATISTICS_UPDATE_INTERVAL_MILLIS=100@
+        @STATISTICS_UPDATE_INTERVAL_MILLIS=500@
       </statistics-update-interval-millis>
     </networkmonitor>
     <communication>

@@ -67,7 +67,8 @@ public class AddSynchroPeerModule extends JobModule {
       jobId_ = message.getId();
       // If synchroPeer_ is not set we use the last one found by the NetworkContext.
       if (synchroPeer_ == null) {
-        synchroPeer_ = networkMonitor_.getKnownPeers().lastElement();
+        int lastSynchroPeerIndex = networkMonitor_.getKnownPeers().size() - 1;
+        synchroPeer_ = networkMonitor_.getKnownPeers().get(lastSynchroPeerIndex);
       }
       if (synchroPeer_ == null) {
         logger_.warn("Empy synchro peer got as the last from NetworkContext.");
