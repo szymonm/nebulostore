@@ -1,0 +1,24 @@
+#binaries
+*.class
+
+# intellij idea project files
+*.iml
+*.ipr
+*.iws
+.idea
+
+#packages
+*.jar
+
+#maven build directory
+/target
+
+#eclipse project files
+.classpath
+.project
+.settings/
+
+#nebulo dirs created by tests
+build
+logs
+strage
