@@ -66,9 +66,13 @@ public class PeerConfiguration extends GenericConfiguration {
 
     bind(Replicator.class).to(ReplicatorImpl.class);
 
+    configureAdditional();
     configureCommunicationPeer();
     configureBroker();
     configurePeer();
+  }
+
+  protected void configureAdditional() {
   }
 
   protected void configurePeer() {

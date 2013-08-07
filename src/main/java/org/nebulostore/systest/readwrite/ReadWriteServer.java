@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.communication.address.CommAddress;
@@ -23,10 +24,17 @@ public final class ReadWriteServer extends ConductorServer {
   private static final int INITIAL_SLEEP = 5000;
   private static final int TIMEOUT_SEC = 200;
 
+  private ReadWriteClientFactory readWriteClientFactory_;
+
   public ReadWriteServer() {
     super(NUM_PHASES, TIMEOUT_SEC, "ReadWriteClient_" + CryptoUtils.getRandomString(),
         "ReadWrite server");
     gatherStats_ = true;
+  }
+
+  @Inject
+  public void injectReadWriteClientFactory(ReadWriteClientFactory readWriteClientFactory) {
+    this.readWriteClientFactory_ = readWriteClientFactory;
   }
 
   @Override
@@ -39,7 +47,8 @@ public final class ReadWriteServer extends ConductorServer {
     }
     for (int i = 0; i < peersNeeded_; ++i) {
       networkQueue_.add(new InitMessage(clientsJobId_, null, clients.get(i),
-          new ReadWriteClient(jobId_, commAddress_, NUM_PHASES, clients, i)));
+          readWriteClientFactory_.createReadWriteClient(
+              jobId_, commAddress_, NUM_PHASES, clients, i)));
     }
   }
 

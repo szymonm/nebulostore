@@ -6,6 +6,7 @@
         ./generate_config.py\
             --APP_KEY=123\
             --CLASS_NAME=org.nebulostore.appcore.Peer\
+            --CONFIGURATION_CLASS_NAME=org.nebulostore.appcore.PeerConfiguration\
             --BOOTSTRAP_MODE=(client|server)\
             --BOOTSTRAP_ADDRESS=(address)\
             --CLI_PORT=(cli_port)\
@@ -14,7 +15,8 @@
             --BOOTSTRAP_TOMP2P_PORT=(port)\
             --BDB_TYPE=(storage-holder|proxy)\
             --COMM_ADDRESS=(|\d+|UUID)\
-            --GOSSIP_PERIOD=(\d+)
+            --GOSSIP_PERIOD=(\d+)\
+            --DATA_FILE=test.data
 
     If some flags are missing, default values from Peer.xml.template are used.
 

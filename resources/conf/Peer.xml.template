@@ -11,6 +11,9 @@
     <class-name>
         @CLASS_NAME=org.nebulostore.peers.Peer@
     </class-name>
+    <configuration-class-name>
+        @CONFIGURATION_CLASS_NAME=org.nebulostore.peers.PeerConfiguration@
+    </configuration-class-name>
     <replicator>
         <storage-path>
             @REPLICATOR_PATH=storage@
@@ -136,5 +139,8 @@
                 </cohesiveness-test-intervals>
             </gossip>
         </communication>
+        <data-file>
+            @DATA_FILE=test.data@
+        </data-file>
     </systest>
 </peer>

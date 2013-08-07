@@ -24,21 +24,21 @@ import org.nebulostore.conductor.messages.NewPhaseMessage;
  *
  * @author Bolek Kulbabinski
  */
-public final class ReadWriteClient extends ConductorClient {
+public class ReadWriteClient extends ConductorClient {
   private static final long serialVersionUID = -7238750658102427676L;
   private static Logger logger_ = Logger.getLogger(ReadWriteClient.class);
-  private static final int MAX_ITER = 10;
+  protected static final int MAX_ITER = 10;
   private static final int INITIAL_SLEEP = 5000;
   private static final int ADDRESS_EXCHANGE_TIMEOUT_MILLIS = 60 * 1000;
-  private static final int ITER_SLEEP = 500;
+  protected static final int ITER_SLEEP = 500;
 
   private List<CommAddress> clients_;
-  private List<NebuloAddress> files_;
-  private AppKey myAppKey_;
-  private int clientId_;
-  private NebuloFile myFile_;
-  private transient NebuloObjectFactory objectFactory_;
-  private final ReadWriteStats stats_;
+  protected List<NebuloAddress> files_;
+  protected AppKey myAppKey_;
+  protected int clientId_;
+  protected NebuloFile myFile_;
+  protected transient NebuloObjectFactory objectFactory_;
+  protected final ReadWriteStats stats_;
 
   public ReadWriteClient(String serverJobId, CommAddress serverAddress, int numPhases,
       List<CommAddress> clients, int clientId) {
@@ -64,11 +64,19 @@ public final class ReadWriteClient extends ConductorClient {
     visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
     myFile_ = createFile();
-    visitors_[1] = new AddressExchangeVisitor(clients_, files_, clientId_, myFile_.getAddress(),
-        INITIAL_SLEEP, ADDRESS_EXCHANGE_TIMEOUT_MILLIS);
+    visitors_[1] = buildAddressExchangeVisitor();
     visitors_[2] = new ReadFilesVisitor();
     visitors_[3] = new DeleteFileVisitor();
-    visitors_[4] = new LastPhaseVisitor(stats_);
+    visitors_[4] = buildLastPhaseVisitor();
+  }
+
+  protected LastPhaseVisitor buildLastPhaseVisitor() {
+    return new LastPhaseVisitor(stats_);
+  }
+
+  protected AddressExchangeVisitor buildAddressExchangeVisitor() {
+    return new AddressExchangeVisitor(clients_, files_, clientId_, myFile_.getAddress(),
+        INITIAL_SLEEP, ADDRESS_EXCHANGE_TIMEOUT_MILLIS);
   }
 
   private NebuloFile createFile() {

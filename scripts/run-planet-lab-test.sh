@@ -21,41 +21,49 @@ fi
 case $N in
     1) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
+           org.nebulostore.systest.TestingPeerConfiguration\
            org.nebulostore.systest.pingpong.PingPongServer\
            3 2 1\
            $HOSTS_FILE;;
     2) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
+           org.nebulostore.systest.TestingPeerConfiguration\
            org.nebulostore.systest.readwrite.ReadWriteServer\
            7 5 1\
            $HOSTS_FILE;;
     3) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\
+           org.nebulostore.systest.TestingPeerConfiguration\
            org.nebulostore.systest.lists.ListsServer\
            7 5 1\
            $HOSTS_FILE;;
     4) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
+           org.nebulostore.systest.performance.PerfTestingPeerConfiguration\
            org.nebulostore.systest.lists.ListsServer\
            11 8 1\
            $HOSTS_FILE;;
     5) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
+           org.nebulostore.systest.performance.PerfTestingPeerConfiguration\
            org.nebulostore.systest.lists.ListsServer\
            30 25 1\
            $HOSTS_FILE;;
     6) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
+           org.nebulostore.systest.performance.PerfTestingPeerConfiguration\
            org.nebulostore.systest.lists.ListsServer\
            60 50 1\
            $HOSTS_FILE;;
     7) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
+           org.nebulostore.systest.performance.PerfTestingPeerConfiguration\
            org.nebulostore.systest.lists.ListsServer\
            95 80 1\
            $HOSTS_FILE;;
     8) $SCRIPT_NAME\
            org.nebulostore.systest.performance.PerfTestingPeer\
+           org.nebulostore.systest.performance.PerfTestingPeerConfiguration\
            org.nebulostore.systest.lists.ListsServer\
            120 100 1\
            $HOSTS_FILE;;

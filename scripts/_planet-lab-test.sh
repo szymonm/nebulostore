@@ -6,12 +6,14 @@
 # Make sure that you have uploaded necessary libraries to the host
 # Use scripts/upload-libs-to-planet-lab.sh for that purpose.
 #
-# Optional parameters: peer_class_name test_server_class_name number_of_peers number_of_test_clients number_of_iterations host_list
+# Optional parameters: peer_class_name peer_configuration_class_name
+#   test_server_class_name number_of_peers number_of_test_clients number_of_iterations host_list
 # Prints "SUCCESS" or "FAILURE"
 
 . scripts/_constants.sh
 
 PEERNAME="org.nebulostore.systest.TestingPeer"
+PEERCONF="org.nebulostore.systest.TestingPeerConfiguration"
 TESTNAME="org.nebulostore.systest.pingpong.PingPongServer"
 PEER_NUM=3
 TEST_CLIENTS_NUM=2
@@ -25,11 +27,12 @@ MAX_THREADS=15
 
 if [ $1 ]; then
   PEERNAME=$1
-  TESTNAME=$2
-  PEER_NUM=$3
-  TEST_CLIENTS_NUM=$4
-  TEST_ITER=$5
-  HOST_LIST=$6
+  PEERCONF=$2
+  TESTNAME=$3
+  PEER_NUM=$4
+  TEST_CLIENTS_NUM=$5
+  TEST_ITER=$6
+  HOST_LIST=$7
 fi
 
 BOOTSTRAP_PEER=`cat $HOST_LIST | head -n 1`
@@ -38,7 +41,7 @@ BOOTSTRAP_PEER=`cat $HOST_LIST | head -n 1`
 
 echo "["`date +"%T"`"] BUILDING ..."
 ./scripts/_build-and-deploy.sh 1 peer > /dev/null
-./scripts/_generate-config-files.sh $PEERNAME $TESTNAME $PEER_NUM $TEST_CLIENTS_NUM $TEST_ITER $BOOTSTRAP_PEER
+./scripts/_generate-config-files.sh $PEERNAME $PEERCONF $TESTNAME $PEER_NUM $TEST_CLIENTS_NUM $TEST_ITER $BOOTSTRAP_PEER
 
 
 
