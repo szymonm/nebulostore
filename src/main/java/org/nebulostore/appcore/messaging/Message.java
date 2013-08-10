@@ -27,6 +27,36 @@ public abstract class Message implements Serializable {
     return jobId_;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Message message = (Message) o;
+
+    if (jobId_ != null ? !jobId_.equals(message.jobId_) : message.jobId_ != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return jobId_ != null ? jobId_.hashCode() : 0;
+  }
+
+  @Override
+  public String toString() {
+    return "Message{" +
+        "jobId_='" + jobId_ + '\'' +
+        "} " + super.toString();
+  }
+
   /**
    * Accept method required by the visitor pattern.
    */

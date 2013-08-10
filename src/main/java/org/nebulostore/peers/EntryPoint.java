@@ -30,9 +30,9 @@ public final class EntryPoint {
       peerThread.start();
       peerThread.join();
     } catch (NebuloException exception) {
-      logger_.fatal("Unable to start NebuloStore! (" + exception.getMessage() + ")");
+      logger_.fatal("Unable to start NebuloStore! (" + exception.getMessage() + ")", exception);
     } catch (InterruptedException e) {
-      logger_.fatal("InterruptedException while waiting for peer thread!");
+      logger_.fatal("InterruptedException while waiting for peer thread!", e);
     }
   }
 
@@ -57,8 +57,7 @@ public final class EntryPoint {
       Thread.setDefaultUncaughtExceptionHandler(
           new NebuloUncaughtExceptionHandler());
     } catch (SecurityException e) {
-      logger_.warn("Caught security exception: " + e +
-          " when setting exception handler.");
+      logger_.warn("Caught security exception when setting exception handler.", e);
     }
   }
 

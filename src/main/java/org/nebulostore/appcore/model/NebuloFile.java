@@ -85,6 +85,10 @@ public class NebuloFile extends NebuloObject {
       return isChanged_;
     }
 
+    public FileChunk getFileChunk() {
+      return chunk_;
+    }
+
     private void writeObject(ObjectOutputStream out) throws IOException {
       out.defaultWriteObject();
     }

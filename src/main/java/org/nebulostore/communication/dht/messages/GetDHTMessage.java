@@ -26,6 +26,29 @@ public class GetDHTMessage extends InDHTMessage {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof GetDHTMessage)) {
+      return false;
+    }
+
+    GetDHTMessage that = (GetDHTMessage) o;
+
+    if (key_ != null ? !key_.equals(that.key_) : that.key_ != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return key_ != null ? key_.hashCode() : 0;
+  }
+
+  @Override
   public String toString() {
     return "GetDHTMessage for key: " + getKey();
   }
