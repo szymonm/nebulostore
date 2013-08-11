@@ -39,4 +39,46 @@ public abstract class CommMessage extends Message {
   public void setDestinationAddress(CommAddress destAddress) {
     commDestAddress_ = destAddress;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    CommMessage that = (CommMessage) o;
+
+    if (commDestAddress_ != null ?
+        !commDestAddress_.equals(that.commDestAddress_) : that.commDestAddress_ != null) {
+      return false;
+    }
+    if (commSourceAddress_ != null ?
+        !commSourceAddress_.equals(that.commSourceAddress_) : that.commSourceAddress_ != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (commSourceAddress_ != null ? commSourceAddress_.hashCode() : 0);
+    result = 31 * result + (commDestAddress_ != null ? commDestAddress_.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "CommMessage{" +
+        "commSourceAddress_=" + commSourceAddress_ +
+        ", commDestAddress_=" + commDestAddress_ +
+        "} " + super.toString();
+  }
 }

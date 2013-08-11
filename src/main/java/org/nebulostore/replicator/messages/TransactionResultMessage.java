@@ -19,4 +19,39 @@ public class TransactionResultMessage extends InReplicatorMessage {
   public TransactionAnswer getResult() {
     return result_;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof TransactionResultMessage)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    TransactionResultMessage that = (TransactionResultMessage) o;
+
+    if (result_ != that.result_) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (result_ != null ? result_.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "TransactionResultMessage{" +
+        "result_=" + result_ +
+        "} " + super.toString();
+  }
 }

@@ -37,6 +37,14 @@ public class ErrorCommMessage extends Message {
   }
 
   @Override
+  public String toString() {
+    return "ErrorCommMessage{" +
+        "message_=" + message_ +
+        ", networkException_=" + networkException_ +
+        "} " + super.toString();
+  }
+
+  @Override
   public <R> R accept(MessageVisitor<R> visitor) throws NebuloException {
     return visitor.visit(this);
   }
