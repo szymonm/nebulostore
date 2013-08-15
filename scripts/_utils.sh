@@ -9,7 +9,7 @@ function _createDistributionDirectory() {
 }
 
 function _copyLibraries() {
-    cp -r target/lib $1/lib
+    cp -r ../target/lib $1/lib
 }
 
 function _linkLibraries() {
@@ -21,26 +21,29 @@ function _copyNebuloJar() {
 }
 
 function _copyConfig {
-    rsync -r --exclude=.svn resources $1
+    rsync -r --exclude=.svn ../resources $1
     rm -rf $1/resources/checkstyle
     rm $1/resources/conf/Peer.xml.template
     rm $1/resources/conf/generate_config.py
 }
 
 function generateConfigFile() {
-    ./resources/conf/generate_config.py $1 < resources/conf/Peer.xml.template > $2/Peer.xml
+    ../resources/conf/generate_config.py $1 < ../resources/conf/Peer.xml.template > $2/Peer.xml
 }
 
 function buildNebulostore() {
+    EXEC_DIR=$(pwd)
+    cd ../
     mvn clean install -P$1
+    cd $EXEC_DIR
 }
 
 function generateReadMe() {
-    cp README $1/README
+    cp ../README $1/README
 }
 
-function addLicenceFile() {
-    cp LICENSE $1/LICENSE
+function addLicenseFile() {
+    cp ../LICENSE $1/LICENSE
 }
 
 #param1 path to destination directory
@@ -52,7 +55,7 @@ function createNebuloProductionArtifact() {
     _copyNebuloJar $1 $2 $3
     _copyConfig $1
     generateReadMe $1
-    addLicenceFile $1
+    addLicenseFile $1
 }
 
 #param1 path to destination directory
@@ -62,12 +65,12 @@ function createNebuloLocalArtifact() {
     _copyNebuloJar $1 $2 $3
     _copyConfig $1
     generateReadMe $1
-    addLicenceFile $1
+    addLicenseFile $1
 }
 
 function compressDistributionDir() {
-    CURR_PATH= pwd
+    EXEC_DIR=$(pwd)
     cd $1
     tar czf $3.tar.gz $2
-    cd $CURR_PATH
+    cd ${EXEC_DIR}
 }

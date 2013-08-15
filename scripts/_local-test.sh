@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # Automatic local N-peer test.
-# Please run from trunk level (./scripts/local-ping-ping-test.sh)
 # Optional parameters: peer_class_name peer_configuration_class_name
 #   test_server_class_name number_of_peers number_of_iterations data_file
 # Prints "SUCCESS" or "FAILURE"
+
+# Assuming we are in scripts directory.
 
 PEERNAME="org.nebulostore.systest.TestingPeer"
 PEERCONF="org.nebulostore.systest.TestingPeerConfiguration"
@@ -26,18 +27,20 @@ fi
 
 # Build peers.
 echo "BUILDING ..."
-./scripts/_build-and-deploy.sh $PEER_NUM peer > /dev/null
+./_build-and-deploy.sh -p $PEER_NUM -m peer > /dev/null
 
 # Generate and copy config files.
-./scripts/_generate-config-files.sh $PEERNAME $PEERCONF $TESTNAME $PEER_NUM $((PEER_NUM-1)) $TEST_ITER localhost $DATA_FILE
+./_generate-config-files.sh -p $PEERNAME -c $PEERCONF -t $TESTNAME -n $PEER_NUM\
+    -m $((PEER_NUM-1)) -i $TEST_ITER -b localhost -d $DATA_FILE
+
 for ((i=1; i<=$PEER_NUM; i++))
 do
-    mv Peer.xml.$i ./build/jar/$i/resources/conf/Peer.xml
+    mv ../Peer.xml.$i ../build/jar/$i/resources/conf/Peer.xml
 done
 
 # Run server normally and clients in background.
 echo "RUNNING ..."
-cd build/jar
+cd ../build/jar
 
 run_clients() {
     sleep $BOOTSTRAP_DELAY
@@ -75,4 +78,6 @@ then
 else
     echo "FAILURE"
 fi
+
+cd scripts
 exit $EXIT_CODE

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_NAME=./scripts/_local-test.sh
+SCRIPT_NAME=./_local-test.sh
 N_TESTS=6
 declare -a PEERS=(3 6 6 8 14 6)
 declare -a TITLES=(\
@@ -11,6 +11,9 @@ declare -a TITLES=(\
     'performance lists test'\
     'read-write time measure test'\
     )
+
+EXEC_DIR=$(pwd)
+cd $(dirname $0)
 
 
 if [ $1 ]; then
@@ -60,3 +63,4 @@ case $N in
 
 esac
 
+cd ${EXEC_DIR}

@@ -1,29 +1,32 @@
 #!/bin/bash
 
 # Build and copy PEERS_NUM peers with resources to JAR_DIR/i/.
-# Optional parameters: number_of_peers maven_profile_name
+# Optional parameters: -p number_of_peers -m maven_profile_name
 
-source scripts/_jar-properties.sh
-source scripts/_utils.sh
+source _jar-properties.sh
+source _utils.sh
 
-PEERS_NUM=4
-MAVEN_JAR="target/$JAR_NAME"
-MAVEN_LIB="target/lib"
-MAVEN_TARGET="peer"
-BUILD_DIR="build"
-JAR_DIR="build/jar"
+while getopts ":p:m:" OPTION
+do
+  case $OPTION in
+    p) PEERS_NUM=$OPTARG;;
+    m) MAVEN_TARGET=$OPTARG;;
+   # DEFAULT
+   *)
+       ARG=$(($OPTIND-1)); echo "Unknown option option chosen: ${!ARG}.";
+  esac
+done
+
+: ${PEERS_NUM=4}
+MAVEN_JAR="../target/$JAR_NAME"
+MAVEN_LIB="../target/lib"
+: ${MAVEN_TARGET="peer"}
+BUILD_DIR="../build"
+JAR_DIR="../build/jar"
 JAR="Nebulostore.jar"
 
-if [ $1 ]; then
-  PEERS_NUM=$1
-fi
-
-if [ $2 ]; then
-  MAVEN_TARGET=$2
-fi
-
 rm -rf $BUILD_DIR
-buildNebulostore  $MAVEN_TARGET
+buildNebulostore $MAVEN_TARGET
 
 echo "Building done. Copying..."
 
@@ -33,7 +36,6 @@ rsync -r $MAVEN_LIB $JAR_DIR/
 for ((i=1; i<=$PEERS_NUM; i++))
 do
     echo $i
-    CURR_PATH="./$JAR_DIR/$i"
+    CURR_PATH="$JAR_DIR/$i"
     createNebuloLocalArtifact $CURR_PATH $MAVEN_JAR $JAR
 done
-

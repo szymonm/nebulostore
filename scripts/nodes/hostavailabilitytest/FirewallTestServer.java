@@ -22,9 +22,16 @@ class FirewallTestServer {
       }
     }
 
+    DatagramSocket serverDataSocket = null;
+    ServerSocket tcpServerSocket = null;
     try {
-      DatagramSocket serverSocket = new DatagramSocket(serverPort);
+      serverDataSocket = new DatagramSocket(serverPort);
+    } catch (SocketException e) {
+      System.out.println("UDP Socket at port: " + serverPort + " could not be opened: " + e);
+      System.exit(1);
+    }
 
+    try {
       byte[] receiveData = new byte[MAX_DATA_LEN];
       byte[] sendData  = new byte[MAX_DATA_LEN];
 
@@ -34,32 +41,34 @@ class FirewallTestServer {
         new DatagramPacket(receiveData, receiveData.length);
 
       System.out.println("Waiting for datagram packet");
-      serverSocket.receive(receivePacket);
+      serverDataSocket.receive(receivePacket);
 
       String sentence = new String(receivePacket.getData());
 
       InetAddress IPAddress = receivePacket.getAddress();
       int port = receivePacket.getPort();
 
-      System.out.println ("From: " + IPAddress + ":" + port);
-      System.out.println ("Message: " + sentence);
+      System.out.println("From: " + IPAddress + ":" + port);
+      System.out.println("Message: " + sentence);
 
       DatagramPacket sendPacket =
         new DatagramPacket(receivePacket.getData(),
             receivePacket.getData().length, IPAddress, port);
 
-      ServerSocket tcpServerSocket =  setUpTCPListener(serverPort);
+      tcpServerSocket = setUpTCPListener(serverPort);
 
-      serverSocket.send(sendPacket);
+      serverDataSocket.send(sendPacket);
 
       listenOnTCP(tcpServerSocket);
-
     } catch (SocketException ex) {
-      System.out.println("UDP Port 9876 is occupied.");
+      System.out.println("Exception: " + ex);
       System.exit(1);
+    } finally {
+      if (tcpServerSocket != null) {
+        tcpServerSocket.close();
+      }
+      serverDataSocket.close();
     }
-
-
   }
 
   static ServerSocket setUpTCPListener(int serverPort) throws Exception {
@@ -68,7 +77,7 @@ class FirewallTestServer {
     try {
       serverSocket = new ServerSocket(serverPort);
     } catch (IOException e) {
-      System.err.println("Could not listen on port: " + serverPort + ". Due to: " + e); 
+      System.err.println("Could not listen on TCP port: " + serverPort + ". Due to: " + e); 
       System.exit(1);
     }
 
@@ -86,27 +95,28 @@ class FirewallTestServer {
       System.exit(1);
     }
 
-    System.out.println ("Connection successful");
-    System.out.println ("Waiting for input.....");
+    try {
+      System.out.println ("Connection successful");
+      System.out.println ("Waiting for input.....");
 
-    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
-        true);
-    BufferedReader in = new BufferedReader(
-        new InputStreamReader(clientSocket.getInputStream()));
+      PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
+          true);
+      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-    String inputLine = in.readLine();
-    if (inputLine == null) {
-      System.err.println("Received null inputline");
-      System.exit(1);
+      String inputLine = in.readLine();
+      if (inputLine == null) {
+        System.err.println("Received null inputline");
+        System.exit(1);
+      }
+
+      System.out.println ("Server: " + inputLine);
+      out.println(inputLine);
+
+      in.close();
+      out.close();
+    } finally {
+      clientSocket.close();
     }
-
-    System.out.println ("Server: " + inputLine);
-    out.println(inputLine);
-
-    out.close();
-    in.close();
-    clientSocket.close();
-    serverSocket.close();
   }
 }
 

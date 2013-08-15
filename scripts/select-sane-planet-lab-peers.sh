@@ -11,4 +11,9 @@ then
     ADD_ARG="-l $1"
 fi
 
-bash -- $(dirname $0)/hostavailabilitytest/test_host_availability.sh $ADD_ARG -i
+EXEC_DIR=$(pwd)
+cd $(dirname $0)
+
+bash -- ./nodes/hostavailabilitytest/test_host_availability.sh $ADD_ARG -i
+
+cd ${EXEC_DIR}

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+EXEC_DIR=$(pwd)
+cd $(dirname $0)
+
 if [ -z "$1" ]; then
   echo "You have to provide param --  x for appKey=xx"
   exit 1	
@@ -15,4 +18,6 @@ BOOTSTRAP_PORT=10201
 
 export COMMON_ARGS="--CLASS_NAME=org.nebulostore.gui.GUIController --BOOTSTRAP_ADDRESS=$BOOTSTRAP_ADDRESS --BOOTSTRAP_TOMP2P_PORT=$BOOTSTRAP_TOMP2P_PORT --BOOTSTRAP_PORT=$BOOTSTRAP_PORT --APP_KEY=$APP_KEY --BOOTSTRAP_MODE=client --CLI_PORT=$CLI_PORT --TOMP2P_PORT=$TOMP2P_PORT --BDB_TYPE=proxy"
 
-./scripts/_build-production.sh
+./_build-production.sh
+
+cd ${EXEC_DIR}

@@ -1,7 +1,10 @@
 #!/bin/bash
 
-SCRIPT_NAME=./scripts/_planet-lab-test.sh
-HOSTS_FILE=scripts/hosts.txt
+SCRIPT_NAME=./_planet-lab-test.sh
+HOSTS_FILE=nodes/hosts.txt
+
+EXEC_DIR=$(pwd)
+cd $(dirname $0)
 
 if [ $1 ]; then
     N=$1
@@ -69,3 +72,4 @@ case $N in
            $HOSTS_FILE;;
 esac
 
+cd ${EXEC_DIR}

@@ -1,2 +1,0 @@
-bolek:/Users/bolek/code/nebulostore/trunk/build/jar
-grzesiek:/home/grzesiek/Documents/Job/Nebulostore/repo/nebulostore/trunk

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+EXEC_DIR=$(pwd)
+cd $(dirname $0)
+
 APP_KEY=11
 CLI_PORT=10101
 TOMP2P_PORT=10301
@@ -10,4 +13,6 @@ BOOTSTRAP_PORT=10201
 
 export COMMON_ARGS="--CLASS_NAME=org.nebulostore.systest.textinterface.TextInterface --BOOTSTRAP_ADDRESS=$BOOTSTRAP_ADDRESS --BOOTSTRAP_TOMP2P_PORT=$BOOTSTRAP_TOMP2P_PORT --BOOTSTRAP_PORT=$BOOTSTRAP_PORT --APP_KEY=$APP_KEY --BOOTSTRAP_MODE=server --CLI_PORT=$CLI_PORT --TOMP2P_PORT=$TOMP2P_PORT --BDB_TYPE=storage-holder"
 
-./scripts/_build-production.sh
+./_build-production.sh
+
+cd ${EXEC_DIR}

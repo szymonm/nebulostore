@@ -1,6 +1,6 @@
 Please run all scripts from trunk level (./scripts/script-name.sh).
 
-Tests available:
+Scripts available:
     1. Local tests:
         ./scripts/run-local-test.sh
 
@@ -13,18 +13,26 @@ Tests available:
             scripts/upload-libs-to-planet.sh
 
         If you want to re-generate the list of working peers use
-            bash scripts/select-sane-planet-lab-peers.sh > scripts/hosts.txt
+            bash scripts/select-sane-planet-lab-peers.sh > scripts/nodes/hosts.txt
 
     3. Interactive terminal
         ./scripts/console-test.sh
 
+    4. Selection of working planet-lab peers:
+        Run ./scripts/select-sane-planet-lab-peers [GOOD-PEER-LIMIT]
 
-How to run Network ping-pong test (this should change soon):
+Files and directories:
 
-1. Run communication/perform-test.sh DELAY where DELAY is the number of seconds
-the test will be run.
-2. Hosts on planetlab will now perform a pingpong test for at most DELAY number
-of seconds.
-3. Download 'testing.log' file from any of the hosts you used, (e.g. planetlab1.montefiore.ulg.ac.be):
-      scp mimuw_nebulostore@planetlab1.montefiore.ulg.ac.be:~/grzesiek/testing.log .
-4. Check if the file contains 'Found new peer' and 'Received msg' messages and no errors.
+nodes/ - directory with list of planetlab nodes and scripts testing their
+    working conditions.
+
+--------------------------------------------------------------------------------
+DEVELOPING GUIDELINES
+    Please adhere to following rules and assumptions when writing scripts:
+        1. Scripts know that they are placed in folder scripts in the main
+            directory.
+        2. Scripts know relative position of other files in scripts/ directory
+        3. Scripts that are used by other scripts and are not be called from
+            bash shell begin with an underscore.
+        4. Main level scripts are agnostic of the directory they are being
+            called from and should preserve it on exit.

@@ -9,13 +9,16 @@
 #       java -jar Nebulostore.jar
 # 3. Wait 40 sec (!) for all peers to find each other.
 
-source scripts/_utils.sh
+EXEC_DIR=$(pwd)
+cd $(dirname $0)
 
-JAR_DIR="build/jar"
+source _utils.sh
+
+JAR_DIR="../build/jar"
 PEERS_NUM=4
 COMMON_ARGS="--class-name=org.nebulostore.gui.GUIController --bootstrap/address=localhost --bootstrap-server-tomp2p-port=10301 --bootstrap-port=10201"
 
-./scripts/_build-and-deploy.sh $PEERS_NUM
+./_build-and-deploy.sh -p $PEERS_NUM
 
 
 for ((i=1; i<=$PEERS_NUM; i++))
@@ -26,3 +29,5 @@ done
 
 PARAMS="$COMMON_ARGS --app-key=11 --bootstrap/mode=server --comm-cli-port=10101 --tomp2p-port=10301 --bdb-peer/type=storage-holder"
 generateConfigFile "$PARAMS" $JAR_DIR/1/resources/conf
+
+cd ${EXEC_DIR}
