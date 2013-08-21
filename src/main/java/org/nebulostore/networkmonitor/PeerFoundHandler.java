@@ -1,4 +1,4 @@
-package org.nebulostore.broker;
+package org.nebulostore.networkmonitor;
 
 import com.google.inject.Inject;
 

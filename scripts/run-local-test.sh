@@ -1,15 +1,28 @@
 #!/bin/bash
 
 SCRIPT_NAME=./scripts/_local-test.sh
-N_TESTS=6
-declare -a PEERS=(3 6 6 8 14 6)
+<<<<<<< HEAD
+declare -a PEERS=(3 6 6 8 14 6 3 3)
+=======
+N_TESTS=7
+declare -a PEERS=(3 6 6 8 14 6 3)
+>>>>>>> c62a757... mine NetworkManager
 declare -a TITLES=(\
     'ping-pong test'\
     'read-write test'\
     'lists test'\
     'performance lists test'\
     'performance lists test'\
+<<<<<<< HEAD
     'read-write time measure test'\
+<<<<<<< HEAD
+=======
+    'network monitor test'\
+    'broker test'\
+>>>>>>> 7d8c6b3... New broker
+=======
+    'network monitor test'\
+>>>>>>> c62a757... mine NetworkManager
     )
 
 
@@ -57,5 +70,15 @@ case $N in
            org.nebulostore.systest.readwrite.ReadWriteWithTimeConfiguration\
            org.nebulostore.systest.readwrite.ReadWriteServer\
            ${PEERS[1]} 1 ../../../test.data;;
+    7) $SCRIPT_NAME\
+           org.nebulostore.systest.TestingPeer\
+           org.nebulostore.systest.TestingPeerConfiguration\
+           org.nebulostore.systest.networkmonitor.NetworkMonitorTestServer\
+           ${PEERS[6]} 1;; 
+    8) $SCRIPT_NAME\
+           org.nebulostore.systest.TestingPeer\
+           org.nebulostore.systest.TestingPeerConfiguration\
+           org.nebulostore.systest.broker.BrokerTestServer\
+           ${PEERS[7]} 1;;
 esac
 

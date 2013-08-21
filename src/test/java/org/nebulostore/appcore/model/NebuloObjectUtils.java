@@ -2,11 +2,12 @@ package org.nebulostore.appcore.model;
 
 import java.math.BigInteger;
 
-import com.google.inject.Provider;
 import org.mockito.Mockito;
 import org.nebulostore.appcore.addressing.AppKey;
 import org.nebulostore.appcore.addressing.NebuloAddress;
 import org.nebulostore.appcore.addressing.ObjectId;
+
+import com.google.inject.Provider;
 
 /**
  * @author Bolek Kulbabinski

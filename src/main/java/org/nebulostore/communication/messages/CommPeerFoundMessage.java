@@ -3,8 +3,8 @@ package org.nebulostore.communication.messages;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
-import org.nebulostore.broker.PeerFoundHandler;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.networkmonitor.PeerFoundHandler;
 
 /**
  * Notifies about found peers in the network.

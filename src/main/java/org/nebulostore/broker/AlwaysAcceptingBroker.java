@@ -21,6 +21,7 @@ import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkMonitor;
+import org.nebulostore.timer.MessageGenerator;
 
 
 /**
@@ -41,6 +42,20 @@ public class AlwaysAcceptingBroker extends Broker {
   @Inject
   public void setDependencies(NetworkMonitor networkMonitor) {
     networkMonitor_ = networkMonitor;
+  }
+
+  @Override
+  protected void initModule() {
+    subscribeForCommPeerFoundEvents();
+  }
+
+  protected void subscribeForCommPeerFoundEvents() {
+    networkMonitor_.addContextChangeMessageGenerator(new MessageGenerator() {
+      @Override
+      public Message generate() {
+        return new CommPeerFoundMessage(jobId_, null, null);
+      }
+    });
   }
 
   /**

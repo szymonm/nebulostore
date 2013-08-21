@@ -25,17 +25,4 @@ public abstract class Broker extends JobModule {
     networkMonitor_ = networkMonitor;
   }
 
-  @Override
-  protected void initModule() {
-    subscribeForCommPeerFoundEvents();
-  }
-
-  protected void subscribeForCommPeerFoundEvents() {
-    networkMonitor_.addContextChangeMessageGenerator(new MessageGenerator() {
-      @Override
-      public Message generate() {
-        return new CommPeerFoundMessage(jobId_, null, null);
-      }
-    });
-  }
 }

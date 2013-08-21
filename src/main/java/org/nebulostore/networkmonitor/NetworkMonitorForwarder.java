@@ -1,5 +1,4 @@
 package org.nebulostore.networkmonitor;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.inject.Inject;
 
@@ -8,6 +7,7 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.modules.JobModule;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Forwards messages to NetworkMonitor.
  * @author szymon

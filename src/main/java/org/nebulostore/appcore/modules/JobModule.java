@@ -80,6 +80,9 @@ public abstract class JobModule extends Module {
 
     // Inform dispatcher that we are going to die.
     if (!isQuickNonBlockingTask()) {
+      if (jobId_ == null) {
+        logger_.error("Field jobId_ not set.");
+      }
       outQueue_.add(new JobEndedMessage(jobId_));
     }
   }
