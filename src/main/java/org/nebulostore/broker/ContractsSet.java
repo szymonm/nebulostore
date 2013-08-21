@@ -21,8 +21,8 @@ public class ContractsSet extends HashSet<Contract> implements Cloneable {
     add(contract);
   }
 
-  public int realSize() {
-    int size = 0;
+  public long realSize() {
+    long size = 0;
     Iterator<Contract> it = iterator();
     while (it.hasNext()) {
       size += it.next().getSize();

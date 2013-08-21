@@ -39,9 +39,10 @@
             --SIZE_CONTRIBUTED_KB=(\d+)\
             --CONTRACTS_EVALUATOR=(default)\
             --CONTRACTS_SELECTION_ALGORITHM=(greedy)\
+            --REPLICATION_GROUP_UPDATE_TIMEOUT=5\
         network monitor options:
             --GET_STATS_TIMEOUT_SECS=5\
-        systest network monitor 
+        systest network monitor
             --RESPONSE_FREQUENCY=(1.0)\
 """
 

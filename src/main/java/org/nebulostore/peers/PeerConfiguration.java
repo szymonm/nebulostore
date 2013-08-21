@@ -18,8 +18,12 @@ import org.nebulostore.appcore.model.NebuloObjectFactoryImpl;
 import org.nebulostore.appcore.model.ObjectDeleter;
 import org.nebulostore.appcore.model.ObjectGetter;
 import org.nebulostore.appcore.model.ObjectWriter;
-import org.nebulostore.broker.AlwaysAcceptingBroker;
 import org.nebulostore.broker.Broker;
+import org.nebulostore.broker.ContractsEvaluator;
+import org.nebulostore.broker.ContractsSelectionAlgorithm;
+import org.nebulostore.broker.GreedyContractsSelection;
+import org.nebulostore.broker.OnlySizeContractsEvaluator;
+import org.nebulostore.broker.ValuationBasedBroker;
 import org.nebulostore.communication.CommunicationPeerConfiguration;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.networkmonitor.ConnectionTestMessageHandler;
@@ -93,7 +97,9 @@ public class PeerConfiguration extends GenericConfiguration {
   }
 
   protected void configureBroker() {
-    bind(Broker.class).to(AlwaysAcceptingBroker.class).in(Scopes.SINGLETON);
+    bind(Broker.class).to(ValuationBasedBroker.class).in(Scopes.SINGLETON);
+    bind(ContractsSelectionAlgorithm.class).to(GreedyContractsSelection.class);
+    bind(ContractsEvaluator.class).to(OnlySizeContractsEvaluator.class);
   }
 
   protected void configureNetworkMonitor() {

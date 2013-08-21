@@ -48,12 +48,8 @@ public final class BrokerContext {
    */
   private Map<CommAddress, Contract> contractOffers_ = new HashMap<CommAddress, Contract>();
 
-  /**
-   * Peers already discovered by this instance.
-   */
-  private Set<CommAddress> knownPeers_ = new HashSet<CommAddress>();
-
   /* Asynchronous messages */
+  // todo(szm): move to asynchronous messages module
 
   /**
    * Messages waiting to be retrieved by peers.

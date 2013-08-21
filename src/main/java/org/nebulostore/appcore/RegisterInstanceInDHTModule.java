@@ -19,8 +19,6 @@ import org.nebulostore.communication.dht.messages.PutDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.dispatcher.JobInitMessage;
 
-//TODO(szm): Maybe it should be a ReturningJobModule??
-
 /**
  * Module checks if InstaceMetadata is already in DHT. If not tries to load it from disk(todo) and
  * if it's not there, puts empty InstanceMetadata in DHT.
