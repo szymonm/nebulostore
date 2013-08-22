@@ -32,7 +32,7 @@ public class CommunicationPeerConfiguration extends GenericConfiguration {
     configureMessengerService();
 
     install(new FactoryModuleBuilder().implement(CommunicationPeer.class,
-          CommunicationPeer.class).build(CommunicationPeerFactory.class));
+        CommunicationPeer.class).build(CommunicationPeerFactory.class));
   }
 
   protected void configureBootstrap() {

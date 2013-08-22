@@ -79,7 +79,6 @@ public class PeerConfiguration extends GenericConfiguration {
     configureCommunicationPeer();
     configureNetworkMonitor();
     configureBroker();
-    configureCommunicationPeer();
     configurePeer();
   }
 
