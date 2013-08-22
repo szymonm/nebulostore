@@ -20,12 +20,12 @@
       </registration-timeout>
     </peer>
     <replicator>
-        <storage-path>
-            @REPLICATOR_PATH=storage@
-        </storage-path>
-        <replication-group-update-timeout>
-            @REPLICATION_GROUP_UPDATE_TIMEOUT=5@
-        </replication-group-update-timeout>
+      <storage-path>
+        @REPLICATOR_PATH=storage@
+      </storage-path>
+      <replication-group-update-timeout>
+        @REPLICATION_GROUP_UPDATE_TIMEOUT=5@
+      </replication-group-update-timeout>
     </replicator>
     <broker>
       <default-contract-size-kb>
@@ -47,10 +47,6 @@
         @CONTRACTS_IMPROVEMENT_DELAY_SEC=3@
       </contracts-improvement-delay-sec>
     </broker>
-    <networkmonitor>
-      <get-stats-timeout-secs>
-        @GET_STATS_TIMEOUT_SECS=3@
-  	</broker>
     <networkmonitor>
       <get-stats-timeout-secs>
         @GET_STATS_TIMEOUT_SECS=3@
