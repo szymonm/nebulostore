@@ -3,7 +3,6 @@
 SCRIPT_NAME=./scripts/_local-test.sh
 declare -a PEERS=(3 6 6 8 14 6 3 3)
 N_TESTS=7
-declare -a PEERS=(3 6 6 8 14 6 3)
 declare -a TITLES=(\
     'ping-pong test'\
     'read-write test'\
