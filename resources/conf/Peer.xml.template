@@ -49,7 +49,7 @@
     </broker>
     <networkmonitor>
       <get-stats-timeout-secs>
-        @GET_STATS_TIMEOUT_SECS=3@
+        @GET_STATS_TIMEOUT_SECS=4@
       </get-stats-timeout-secs>
       <random-peers-sample-size>
         @RANDOM_PEERS_SAMPLE_SIZE=3@

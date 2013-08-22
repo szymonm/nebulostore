@@ -29,9 +29,9 @@ public class NetworkMonitorTestClient extends ConductorClient {
   private static final long serialVersionUID = -7209499692156491320L;
   private static Logger logger_ = Logger.getLogger(NetworkMonitorTestClient.class);
 
-  private static final int MONITORING_TIME = 25000;
+  private static final int MONITORING_TIME = 35000;
 
-  private static final int GET_STATISTICS_TIMEOUT_SECS = 3;
+  private static final int GET_STATISTICS_TIMEOUT_SECS = 4;
 
   private static final int INITIAL_SLEEP = 4000;
 
