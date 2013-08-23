@@ -31,7 +31,7 @@ import org.nebulostore.timer.Timer;
 public class RandomPeersGossipingModule extends JobModule {
   private static Logger logger_ = Logger.getLogger(RandomPeersGossipingModule.class);
 
-  private static final long TIMEOUT_MILLIS = 2000L;
+  private static final long TIMEOUT_MILLIS = 3000L;
   public static final int RANDOM_PEERS_SAMPLE_SIZE = 4;
 
   private final RPGVisitor visitor_ = new RPGVisitor();
@@ -39,6 +39,8 @@ public class RandomPeersGossipingModule extends JobModule {
   private Timer timer_;
 
   private NetworkMonitor networkMonitor_;
+
+  CommAddress remotePeer_;
 
   @Inject
   void setCommAddress(CommAddress myAddress, NetworkMonitor networkMonitor) {
@@ -78,10 +80,10 @@ public class RandomPeersGossipingModule extends JobModule {
         it.next();
         i++;
       }
-      CommAddress remotePeer = it.next();
+      remotePeer_ = it.next();
 
       view.add(myAddress_);
-      networkQueue_.add(new RandomPeersSampleMessage(jobId_, remotePeer, view));
+      networkQueue_.add(new RandomPeersSampleMessage(jobId_, remotePeer_, view));
       timer_.schedule(jobId_, TIMEOUT_MILLIS);
       return null;
     }
@@ -110,11 +112,14 @@ public class RandomPeersGossipingModule extends JobModule {
 
     public Void visit(ErrorCommMessage message) {
       logger_.warn("Received ErrorCommMessage ", message.getNetworkException());
+      timer_.cancelTimer();
+      endJobModule();
       return null;
     }
 
     public Void visit(TimeoutMessage message) {
-      logger_.warn("Timeout.");
+      logger_.warn("Timeout - Random peer: " + remotePeer_ + " not responding...");
+      timer_.cancelTimer();
       endJobModule();
       return null;
     }
