@@ -61,7 +61,6 @@ public class TestPeersConnectionModule extends JobModule {
   public class TPCVisitor extends MessageVisitor<Void> {
 
     public Void visit(JobInitMessage message) {
-      jobId_ = message.getId();
       logger_.debug("Testing connection to: " + peerAddress_.toString());
       networkQueue_.add(new GetDHTMessage(message.getId(), peerAddress_.toKeyDHT()));
       sendTime_ = System.currentTimeMillis();
@@ -71,7 +70,8 @@ public class TestPeersConnectionModule extends JobModule {
     }
 
     public Void visit(ErrorDHTMessage message) {
-      logger_.debug("Unable to retrive statistics from DHT: " + message.getException());
+      logger_.warn("Unable to retrive statistics from DHT: " + message.getException());
+      timer_.cancelTimer();
       endJobModule();
       return null;
     }
@@ -102,7 +102,7 @@ public class TestPeersConnectionModule extends JobModule {
 
     public Void visit(TimeoutMessage message) {
       if (valueDHTMessage_ != null) {
-        logger_.warn("Timeout in ping.");
+        logger_.debug("Timeout in ping.");
         stats_.add(new PeerConnectionSurvey(myAddress_, System.currentTimeMillis(),
             ConnectionAttribute.AVAILABILITY, 0.0));
         appendStatisticsAndFinish(stats_, valueDHTMessage_);
@@ -128,6 +128,7 @@ public class TestPeersConnectionModule extends JobModule {
 
   private void appendStatisticsAndFinish(List<PeerConnectionSurvey> stats, ValueDHTMessage message)
   {
+    timer_.cancelTimer();
     InstanceMetadata metadata = (InstanceMetadata) message.getValue().getValue();
     for (PeerConnectionSurvey pcs : stats) {
       logger_.debug("Adding to DHT: " + pcs.toString());
@@ -136,7 +137,6 @@ public class TestPeersConnectionModule extends JobModule {
     // DHT synchronization is ensured by merge operation in InstanceMetadata
     networkQueue_
         .add(new PutDHTMessage(getJobId(), peerAddress_.toKeyDHT(), new ValueDHT(metadata)));
-    timer_.cancelTimer();
     endJobModule();
   }
 
