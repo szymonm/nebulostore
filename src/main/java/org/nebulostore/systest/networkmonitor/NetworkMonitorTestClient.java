@@ -33,7 +33,7 @@ public class NetworkMonitorTestClient extends ConductorClient {
 
   private static final int GET_STATISTICS_TIMEOUT_SECS = 4;
 
-  private static final int INITIAL_SLEEP = 15000;
+  private static final int INITIAL_SLEEP = 1000;
 
   private long testStartTime_;
 
