@@ -30,8 +30,8 @@ public class NetworkMonitorTestServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(NetworkMonitorTestServer.class);
 
   private static final int NUM_PHASES = 1;
-  private static final int TIMEOUT_SEC = 100;
-  private static final int INITIAL_SLEEP = 15000;
+  private static final int TIMEOUT_SEC = 150;
+  private static final int INITIAL_SLEEP = 5000;
 
   private static final double ESTIMATION_PRECISION = 0.15;
 
@@ -71,13 +71,16 @@ public class NetworkMonitorTestServer extends ConductorServer {
   public void feedStats(CommAddress sender, CaseStatistics statistics) {
     NetworkMonitorStatistics stats = (NetworkMonitorStatistics) statistics;
     for (Pair<CommAddress, Double> record : stats.getEstimatedAvailabilities()) {
-      logger_.info(sender.toString() + " estimates " + record.getFirst().toString() +
-          " availability to: " + record.getSecond());
       double expectedAvailability = clientsAvailabilities_.get(record.getFirst());
       if (Math.abs(record.getSecond() - expectedAvailability) > ESTIMATION_PRECISION) {
         endWithError(new NebuloException("Availability estimation not correct... " +
             String.format("Is %,2f, expected %,2f", record.getSecond(),
                 expectedAvailability)));
+      } else {
+        logger_
+            .info(sender.toString() + " estimates " + record.getFirst().toString() +
+                " availability to: " + record.getSecond() + " (expected: " + expectedAvailability
+                + ")");
       }
 
     }

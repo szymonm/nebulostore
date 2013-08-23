@@ -29,11 +29,11 @@ public class NetworkMonitorTestClient extends ConductorClient {
   private static final long serialVersionUID = -7209499692156491320L;
   private static Logger logger_ = Logger.getLogger(NetworkMonitorTestClient.class);
 
-  private static final int MONITORING_TIME = 60000;
+  private static final int MONITORING_TIME_SECS = 60;
 
   private static final int GET_STATISTICS_TIMEOUT_SECS = 4;
 
-  private static final int INITIAL_SLEEP = 15000;
+  private static final int INITIAL_SLEEP = 5000;
 
   private long testStartTime_;
 
@@ -83,7 +83,7 @@ public class NetworkMonitorTestClient extends ConductorClient {
     sleep(INITIAL_SLEEP);
     visitors_ = new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
-    visitors_[1] = new DelayingVisitor(MONITORING_TIME);
+    visitors_[1] = new DelayingVisitor(1000L * MONITORING_TIME_SECS);
     visitors_[2] = new NetworkMonitorLastPhaseVisitor();
   }
 
@@ -91,9 +91,9 @@ public class NetworkMonitorTestClient extends ConductorClient {
    * Visotors that waits @param timeout_ to finish phase.
    */
   protected class DelayingVisitor extends TestingModuleVisitor {
-    protected int timeout_;
+    protected long timeout_;
 
-    public DelayingVisitor(int timeout) {
+    public DelayingVisitor(long timeout) {
       timeout_ = timeout;
     }
 
