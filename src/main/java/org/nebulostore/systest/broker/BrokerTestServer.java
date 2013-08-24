@@ -25,7 +25,7 @@ public class BrokerTestServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(BrokerTestServer.class);
 
   private static final int NUM_PHASES = 1;
-  private static final int TIMEOUT_SEC = 100;
+  private static final int TIMEOUT_SEC = 200;
   private static final int INITIAL_SLEEP = 1000;
 
 
@@ -76,5 +76,4 @@ public class BrokerTestServer extends ConductorServer {
   protected String getAdditionalStats() {
     return null;
   }
-
 }

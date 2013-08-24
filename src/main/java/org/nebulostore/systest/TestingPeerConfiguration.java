@@ -43,6 +43,4 @@ public class TestingPeerConfiguration extends PeerConfiguration {
     bind(ContractsSelectionAlgorithm.class).to(GreedyContractsSelection.class);
     bind(ContractsEvaluator.class).to(OnlySizeContractsEvaluator.class);
   }
-
-
 }

@@ -39,8 +39,9 @@ public class BrokerTestClient extends ConductorClient {
   private double availability_;
 
   @Inject
-  public void setDependencies(Timer timer) {
+  public void setDependencies(Timer timer, Broker broker) {
     timer_ = timer;
+    broker_ = broker;
   }
 
   public BrokerTestClient(String serverJobId, int numPhases, CommAddress serverCommAddress,
@@ -64,13 +65,13 @@ public class BrokerTestClient extends ConductorClient {
     visitors_ = new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
     visitors_[1] = new DelayingVisitor(1000L * MONITORING_TIME_SEC, timer_);
-    visitors_[2] = new NetworkMonitorLastPhaseVisitor();
+    visitors_[2] = new BrokerLastPhaseVisitor();
   }
 
   /**
    * Sends statistics gathered from DHT to server.
    */
-  protected class NetworkMonitorLastPhaseVisitor extends TestingModuleVisitor {
+  protected class BrokerLastPhaseVisitor extends TestingModuleVisitor {
     @Override
     public Void visit(NewPhaseMessage message) {
       logger_.debug("Received NewPhaseMessage in GatherStats state.");
