@@ -31,7 +31,7 @@ public class NetworkMonitorTestServer extends ConductorServer {
 
   private static final int NUM_PHASES = 1;
   private static final int TIMEOUT_SEC = 150;
-  private static final int INITIAL_SLEEP = 5000;
+  private static final int INITIAL_SLEEP = 10000;
 
   private static final double ESTIMATION_PRECISION = 0.15;
 

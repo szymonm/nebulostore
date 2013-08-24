@@ -193,6 +193,33 @@ public abstract class ConductorClient extends JobModule implements Serializable 
   }
 
   /**
+   * Visotor that waits @param timeout_ to finish phase.
+   */
+  public class DelayingVisitor extends TestingModuleVisitor {
+    protected final long timeout_;
+    protected final Timer timer_;
+
+    public DelayingVisitor(long timeout, Timer timer) {
+      timeout_ = timeout;
+      timer_ = timer;
+    }
+
+    @Override
+    public Void visit(NewPhaseMessage message) {
+      logger_.debug("Phase delaying started... (" + timeout_ + " ms)");
+      timer_.schedule(jobId_, timeout_);
+      return null;
+    }
+
+    @Override
+    public Void visit(TimeoutMessage message) {
+      logger_.debug("Phase delaying finished.");
+      phaseFinished();
+      return null;
+    }
+  }
+
+  /**
    * Visitor that ignores NewPhaseMessage.
    *
    * @author szymonmatejczyk

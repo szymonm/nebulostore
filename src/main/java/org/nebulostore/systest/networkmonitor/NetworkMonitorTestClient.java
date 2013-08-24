@@ -29,11 +29,11 @@ public class NetworkMonitorTestClient extends ConductorClient {
   private static final long serialVersionUID = -7209499692156491320L;
   private static Logger logger_ = Logger.getLogger(NetworkMonitorTestClient.class);
 
-  private static final int MONITORING_TIME_SECS = 60;
+  private static final int MONITORING_TIME_SECS = 75;
 
   private static final int GET_STATISTICS_TIMEOUT_SECS = 4;
 
-  private static final int INITIAL_SLEEP = 5000;
+  private static final int INITIAL_SLEEP = 1000;
 
   private long testStartTime_;
 
@@ -83,34 +83,8 @@ public class NetworkMonitorTestClient extends ConductorClient {
     sleep(INITIAL_SLEEP);
     visitors_ = new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
-    visitors_[1] = new DelayingVisitor(1000L * MONITORING_TIME_SECS);
+    visitors_[1] = new DelayingVisitor(1000L * MONITORING_TIME_SECS, timer_);
     visitors_[2] = new NetworkMonitorLastPhaseVisitor();
-  }
-
-  /**
-   * Visotors that waits @param timeout_ to finish phase.
-   */
-  protected class DelayingVisitor extends TestingModuleVisitor {
-    protected long timeout_;
-
-    public DelayingVisitor(long timeout) {
-      timeout_ = timeout;
-    }
-
-    @Override
-    public Void visit(NewPhaseMessage message) {
-      logger_.debug("Phase delaying started...");
-      testStartTime_ = System.currentTimeMillis();
-      timer_.schedule(jobId_, timeout_);
-      return null;
-    }
-
-    @Override
-    public Void visit(TimeoutMessage message) {
-      logger_.debug("Phase delaying finished.");
-      phaseFinished();
-      return null;
-    }
   }
 
   /**

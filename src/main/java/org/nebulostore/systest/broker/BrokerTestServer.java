@@ -5,16 +5,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
-import org.nebulostore.appcore.exceptions.NebuloException;
+import org.nebulostore.broker.Contract;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.conductor.CaseStatistics;
 import org.nebulostore.conductor.ConductorServer;
 import org.nebulostore.conductor.messages.InitMessage;
 import org.nebulostore.crypto.CryptoUtils;
-import org.nebulostore.utils.Pair;
 
 /**
  * Starts 2 peers and runs NetworkMonitor module.
@@ -36,7 +34,6 @@ public class BrokerTestServer extends ConductorServer {
    */
   private final Map<CommAddress, Double> clientsAvailabilities_;
 
-  private final Random random_ = new Random();
 
   public BrokerTestServer() {
     super(NUM_PHASES, TIMEOUT_SEC, "BrokerClient_" + CryptoUtils.getRandomString(),
@@ -61,12 +58,18 @@ public class BrokerTestServer extends ConductorServer {
           availability));
       clientsAvailabilities_.put(clients.get(i), availability);
       networkQueue_.add(new InitMessage(clientsJobId_, null, clients.get(i),
-          new BrokerTestClient(jobId_, NUM_PHASES, commAddress_, clients, availability)));
+          new BrokerTestClient(jobId_, NUM_PHASES, commAddress_, availability)));
     }
   }
 
   @Override
   public void feedStats(CommAddress sender, CaseStatistics statistics) {
+    logger_.info("Received stats from " + sender);
+    BrokerTestStatistics stats = (BrokerTestStatistics) statistics;
+    for (Contract contract : stats.getContracts()) {
+      logger_.info(contract.toString());
+    }
+    endWithSuccess(true);
   }
 
   @Override
