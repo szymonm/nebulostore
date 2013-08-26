@@ -19,7 +19,8 @@ public class TestingPeerConfiguration extends PeerConfiguration {
 
   @Override
   protected void configureAdditional() {
-    bind(ReadWriteClientFactory.class).to(ReadWriteClientFactoryDefaultImpl.class).in(Singleton.class);
+    bind(ReadWriteClientFactory.class).to(ReadWriteClientFactoryDefaultImpl.class).in(
+        Singleton.class);
   }
 
 
