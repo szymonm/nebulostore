@@ -1,8 +1,6 @@
 package org.nebulostore.systest.performance;
 
-import com.google.inject.Inject;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.TypeLiteral;
 
 import org.nebulostore.communication.CommunicationPeerConfiguration;
 import org.nebulostore.communication.gossip.GossipService;

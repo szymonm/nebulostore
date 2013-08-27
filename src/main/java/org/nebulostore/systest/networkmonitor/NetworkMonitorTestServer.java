@@ -79,8 +79,8 @@ public class NetworkMonitorTestServer extends ConductorServer {
       } else {
         logger_
             .info(sender.toString() + " estimates " + record.getFirst().toString() +
-                " availability to: " + record.getSecond() + " (expected: " + expectedAvailability
-                + ")");
+          " availability to: " + record.getSecond() + " (expected: " + expectedAvailability +
+          ")");
       }
 
     }

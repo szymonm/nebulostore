@@ -71,7 +71,8 @@ public final class EntryPoint {
 
   private static AbstractPeer createPeer(XMLConfiguration xmlConfig) throws NebuloException {
     String className = xmlConfig.getString("class-name", DEFAULT_PEER_CLASS);
-    String confClassName = xmlConfig.getString("configuration-class-name", className + "Configuration");
+    String confClassName = xmlConfig.getString("configuration-class-name", className +
+        "Configuration");
     Class<?> configurationClass = loadConfigurationClass(confClassName, className);
     try {
       GenericConfiguration genericConfig = null;

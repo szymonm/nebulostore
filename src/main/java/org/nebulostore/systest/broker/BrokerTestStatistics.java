@@ -8,7 +8,7 @@ import org.nebulostore.conductor.CaseStatistics;
 
 /**
  * Statistics gathered by the test - list of peer's contracts.
- * 
+ *
  * @author szymonmatejczyk
  */
 public class BrokerTestStatistics extends CaseStatistics {

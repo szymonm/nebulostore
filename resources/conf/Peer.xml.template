@@ -24,7 +24,7 @@
         @REPLICATOR_PATH=storage@
       </storage-path>
       <replication-group-update-timeout>
-        @REPLICATION_GROUP_UPDATE_TIMEOUT=5@
+        @REPLICATION_GROUP_UPDATE_TIMEOUT=10@
       </replication-group-update-timeout>
     </replicator>
     <broker>
@@ -41,11 +41,14 @@
         @CONTRACTS_SELECTION_ALGORITHM=greedy@
       </contracts-selection-algorithm>
       <contracts-improvement-period-sec>
-        @CONTRACTS_IMPROVEMENT_PERIOD_SEC=3@
+        @CONTRACTS_IMPROVEMENT_PERIOD_SEC=1@
       </contracts-improvement-period-sec>
       <contracts-improvement-delay-sec>
         @CONTRACTS_IMPROVEMENT_DELAY_SEC=3@
       </contracts-improvement-delay-sec>
+      <max-contracts-multiplicity>
+        1
+      </max-contracts-multiplicity>
     </broker>
     <networkmonitor>
       <get-stats-timeout-secs>

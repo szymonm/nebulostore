@@ -1,7 +1,10 @@
 package org.nebulostore.broker;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.google.inject.Inject;
@@ -85,7 +88,10 @@ public class GreedyContractsSelection implements ContractsSelectionAlgorithm {
   @Override
   public Contract chooseContractToOffer(Set<Contract> possibleContracts,
       ContractsSet currentContracts) {
-    Iterator<Contract> it = possibleContracts.iterator();
+    List<Contract> shuffledContractList = new ArrayList<Contract>(possibleContracts);
+    Collections.shuffle(shuffledContractList);
+
+    Iterator<Contract> it = shuffledContractList.iterator();
     double bestValue = Double.MIN_VALUE;
     Contract bestContract = null;
 

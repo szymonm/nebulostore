@@ -7,7 +7,6 @@ import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.networkmonitor.NetworkMonitor;
 
 /**
  * Module handle CommPeerFoundMessage.

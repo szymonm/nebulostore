@@ -1,7 +1,7 @@
 package org.nebulostore.systest;
 
-import com.google.inject.Singleton;
 import com.google.inject.Scopes;
+import com.google.inject.Singleton;
 
 import org.nebulostore.broker.Broker;
 import org.nebulostore.broker.ContractsEvaluator;
@@ -30,7 +30,8 @@ public class TestingPeerConfiguration extends PeerConfiguration {
 
   @Override
   protected void configureAdditional() {
-    bind(ReadWriteClientFactory.class).to(ReadWriteClientFactoryDefaultImpl.class).in(Singleton.class);
+    bind(ReadWriteClientFactory.class).to(ReadWriteClientFactoryDefaultImpl.class).in(
+        Singleton.class);
   }
 
   protected void configureNetworkMonitor() {

@@ -17,7 +17,6 @@ import org.nebulostore.networkmonitor.ConnectionTestMessageHandler;
 import org.nebulostore.networkmonitor.GetPeersConnectionAverageStatisticModule;
 import org.nebulostore.networkmonitor.PeerConnectionSurvey;
 import org.nebulostore.systest.messages.ChangeTestMessageHandlerMessage;
-import org.nebulostore.timer.TimeoutMessage;
 import org.nebulostore.timer.Timer;
 import org.nebulostore.utils.Filter;
 

@@ -33,7 +33,7 @@ public final class ListsClient extends ConductorClient {
   private static final long serialVersionUID = -7238750658102427676L;
   private static Logger logger_ = Logger.getLogger(ListsClient.class);
   private static final int MAX_ITER = 2;
-  private static final int INITIAL_SLEEP_MILLIS = 8000;
+  private static final int INITIAL_SLEEP_MILLIS = 12000;
   private static final int ADDRESS_EXCHANGE_TIMEOUT_MILLIS = 60 * 1000;
   private static final int ITER_SLEEP = 2000;
   private static final int N_CASES = 3;
@@ -71,7 +71,6 @@ public final class ListsClient extends ConductorClient {
           myList_.getAddress(), INITIAL_SLEEP_MILLIS, ADDRESS_EXCHANGE_TIMEOUT_MILLIS);
       visitors_[2] = new ReadFilesVisitor();
       visitors_[3] = new DeleteFileVisitor();
-      visitors_[4] = new IgnoreNewPhaseVisitor();
       visitors_[4] = new LastPhaseVisitor(stats_);
     } catch (CryptoException e) {
       endWithError("Exception while encrypting object: " + e.getMessage());

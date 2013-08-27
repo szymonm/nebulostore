@@ -8,10 +8,19 @@ import org.nebulostore.broker.ValuationBasedBroker;
 import org.nebulostore.systest.broker.messages.BrokerContextMessage;
 import org.nebulostore.systest.broker.messages.GetBrokerContextMessage;
 
+/**
+ * Valuation based broker that allows to retrieve its context by sending
+ * GetBrokerContextMessage.
+ * @author szymon
+ *
+ */
 public class ValuationBasedBrokerWithContextOpened extends ValuationBasedBroker {
   private static Logger logger_ = Logger.getLogger(ValuationBasedBrokerWithContextOpened.class);
   public final BrokerVisitor visitor_ = new ThisVisitor();
-  
+
+  /**
+   * Visitor.
+   */
   public class ThisVisitor extends BrokerVisitor {
     public Void visit(GetBrokerContextMessage message) {
       logger_.debug("Got GetBrokerContextMessage.");

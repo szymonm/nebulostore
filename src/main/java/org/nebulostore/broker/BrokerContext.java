@@ -134,6 +134,15 @@ public final class BrokerContext {
     }
   }
 
+  public int getNumberOfContractsWith(CommAddress id) {
+    List<Contract> contracts = contractMap_.get(id);
+    if (contracts == null) {
+      return 0;
+    } else {
+      return contracts.size();
+    }
+  }
+
   public CommAddress[] getReplicas() {
     readLock_.lock();
     try {

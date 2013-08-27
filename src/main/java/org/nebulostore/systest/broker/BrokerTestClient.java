@@ -56,7 +56,7 @@ public class BrokerTestClient extends ConductorClient {
     Provider<ConnectionTestMessageHandler> providerOfFaultyHandler =
         new Provider<ConnectionTestMessageHandler>() {
         @Override
-          public ConnectionTestMessageHandler get() {
+        public ConnectionTestMessageHandler get() {
           return new FaultyConnectionTestMessageHandler(availability_);
         }
       };
@@ -88,13 +88,13 @@ public class BrokerTestClient extends ConductorClient {
       logger_.debug("Got broker context.");
       BrokerTestStatistics stats = new BrokerTestStatistics();
       BrokerContext brokerContext = message.getBrokerContext();
-      
+
       ContractsSet contracts = brokerContext.acquireReadAccessToContracts();
       for (Contract contract : contracts) {
         stats.addContract(contract);
       }
       brokerContext.disposeReadAccessToContracts();
-      
+
       networkQueue_.add(new StatsMessage(serverJobId_, null, server_, stats));
       return null;
     }

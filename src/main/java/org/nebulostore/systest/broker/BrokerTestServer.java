@@ -41,8 +41,8 @@ public class BrokerTestServer extends ConductorServer {
     gatherStats_ = true;
     clientsAvailabilities_ = new HashMap<CommAddress, Double>();
   }
-  
-  private static final double[] availabilities = { 0.9, 0.6, 0.5, 0.4, 0.3, 0.1 };
+
+  private static final double[] AVAILABILITIES = {0.9, 0.6, 0.5, 0.4, 0.3, 0.1};
 
   @Override
   public void initClients() {
@@ -53,7 +53,7 @@ public class BrokerTestServer extends ConductorServer {
       clients.add(it.next());
     double availability;
     for (int i = 0; i < peersNeeded_; ++i) {
-      availability = availabilities[i];
+      availability = AVAILABILITIES[i];
       logger_.info(String.format("Peer %s availability: %.2f", clients.get(i).toString(),
           availability));
       clientsAvailabilities_.put(clients.get(i), availability);

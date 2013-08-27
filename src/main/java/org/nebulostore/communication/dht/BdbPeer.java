@@ -1,7 +1,5 @@
 package org.nebulostore.communication.dht;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Queue;
@@ -44,6 +42,8 @@ import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
 import org.nebulostore.networkmonitor.NetworkMonitor;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Implementation of berkely db based engine for...
@@ -245,7 +245,8 @@ public class BdbPeer extends Module {
       ValueDHT value = ValueDHT.build(new String(data.getData(), Charset.forName(UTF8)));
       outMessage = new ValueDHTMessage(getMsg, key, value);
     } else {
-      logger_.debug("Unable to read from database. Sending ErrorDHTMessage.");
+      logger_.debug("Unable to read from database. Sending ErrorDHTMessage. (Key: " +
+        getMsg.getKey().toString() + ")");
       outMessage = new ErrorDHTMessage(getMsg, new NebuloException(
           "Unable to read from bdb database. Operation status: " + operationStatus));
     }

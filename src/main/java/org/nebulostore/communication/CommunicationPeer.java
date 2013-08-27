@@ -1,7 +1,5 @@
 package org.nebulostore.communication;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -45,6 +43,7 @@ import org.nebulostore.communication.socket.MessengerServiceFactory;
 import org.nebulostore.communication.socket.messages.ListenerServiceReadyMessage;
 import org.nebulostore.networkmonitor.NetworkMonitor;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Main module for communication with outside world.
  *

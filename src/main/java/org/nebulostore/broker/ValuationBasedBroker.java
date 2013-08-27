@@ -8,19 +8,18 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import org.apache.log4j.Logger;
-
 import org.nebulostore.api.PutKeyModule;
 import org.nebulostore.appcore.addressing.ReplicationGroup;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
-import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.broker.ContractsSelectionAlgorithm.OfferResponse;
 import org.nebulostore.broker.messages.BreakContractMessage;
 import org.nebulostore.broker.messages.ContractOfferMessage;
 import org.nebulostore.broker.messages.ImproveContractsMessage;
 import org.nebulostore.broker.messages.OfferReplyMessage;
 import org.nebulostore.communication.address.CommAddress;
+import org.nebulostore.communication.messages.ErrorCommMessage;
 import org.nebulostore.dispatcher.JobInitMessage;
 import org.nebulostore.networkmonitor.NetworkMonitor;
 import org.nebulostore.timer.MessageGenerator;
@@ -28,7 +27,7 @@ import org.nebulostore.timer.Timer;
 
 /**
  * Module that initializes Broker and provides methods shared by modules in broker package.
- * 
+ *
  * @author bolek, szymonmatejczyk
  */
 public class ValuationBasedBroker extends Broker {
@@ -54,6 +53,7 @@ public class ValuationBasedBroker extends Broker {
       int contractImprovementDelay,
       @Named("broker.default-contract-size-kb") int defaultContractSizeKb,
       ContractsSelectionAlgorithm contractsSelectionAlgorithm,
+      @Named("broker.max-contracts-multiplicity") int maxContractsMultiplicity,
       Timer timer) {
     replicationGroupUpdateTimeout_ = replicationGroupUpdateTimeout;
     networkMonitor_ = networkMonitor;
@@ -61,6 +61,7 @@ public class ValuationBasedBroker extends Broker {
     contractImprovementDelay_ = contractImprovementDelay;
     defaultContractSizeKb_ = defaultContractSizeKb;
     contractsSelectionAlgorithm_ = contractsSelectionAlgorithm;
+    maxContractsMultiplicity_ = maxContractsMultiplicity;
     timer_ = timer;
   }
 
@@ -69,6 +70,7 @@ public class ValuationBasedBroker extends Broker {
   private static int contractImprovementPeriod_;
   private static int contractImprovementDelay_;
   private static int defaultContractSizeKb_;
+  private static int maxContractsMultiplicity_;
 
   private Timer timer_;
   private ContractsSelectionAlgorithm contractsSelectionAlgorithm_;
@@ -127,8 +129,10 @@ public class ValuationBasedBroker extends Broker {
       // todo(szm): temporarily using gossiped random peers sample
       // todo(szm): choosing peers to offer contracts should be somewhere different
       for (CommAddress commAddress : randomPeersSample) {
-        possibleContracts.add(new Contract(myAddress_,
-            commAddress, defaultContractSizeKb_));
+        if (BrokerContext.getInstance().getNumberOfContractsWith(commAddress) <
+            maxContractsMultiplicity_) {
+          possibleContracts.add(new Contract(myAddress_, commAddress, defaultContractSizeKb_));
+        }
       }
 
       try {
@@ -151,8 +155,9 @@ public class ValuationBasedBroker extends Broker {
 
     public Void visit(OfferReplyMessage message) {
       if (message.getResult()) {
-        logger_.debug("Contract concluded: " + message.getContract().toString());
-        BrokerContext.getInstance().addContract(message.getContract().toLocalAndRemoteSwapped());
+        logger_.debug("Contract concluded: " +
+          message.getContract().toLocalAndRemoteSwapped().toString());
+        BrokerContext.getInstance().addContract(message.getContract());
 
         // todo(szm): przydzielanie przestrzeni adresowej do kontraktow
         // todo(szm): z czasem coraz rzadziej polepszam kontrakty
@@ -174,7 +179,6 @@ public class ValuationBasedBroker extends Broker {
     }
 
     public Void visit(ContractOfferMessage message) {
-      jobId_ = message.getId();
       ContractsSet contracts = BrokerContext.getInstance().acquireReadAccessToContracts();
       OfferResponse response;
       try {
@@ -197,6 +201,11 @@ public class ValuationBasedBroker extends Broker {
         networkQueue_.add(new OfferReplyMessage(getJobId(), message.getSourceAddress(),
             message.getContract(), false));
       }
+      return null;
+    }
+
+    public Void visit(ErrorCommMessage message) {
+      logger_.debug("Received: " + message);
       return null;
     }
 

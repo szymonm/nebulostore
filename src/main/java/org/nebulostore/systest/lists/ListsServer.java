@@ -22,7 +22,7 @@ public final class ListsServer extends ConductorServer {
 
   private static final int NUM_PHASES = 3;
   private static final int TIMEOUT_SEC = 430;
-  private static final int INITIAL_SLEEP = 8000;
+  private static final int INITIAL_SLEEP = 12000;
   private static final int PHASE_TIMEOUT = 80;
 
   public ListsServer() {
