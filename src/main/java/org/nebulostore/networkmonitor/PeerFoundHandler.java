@@ -1,11 +1,10 @@
-package org.nebulostore.broker;
+package org.nebulostore.networkmonitor;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.communication.messages.CommPeerFoundMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
 
 /**
  * Module handle CommPeerFoundMessage.
