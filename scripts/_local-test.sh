@@ -14,6 +14,7 @@ TEST_ITER=3
 BOOTSTRAP_DELAY=3
 LOG_DIR=logs
 DATA_FILE=test.data
+CONFIG_UPDATE=""
 
 if [ $1 ]; then
   PEERNAME=$1
@@ -22,6 +23,7 @@ if [ $1 ]; then
   PEER_NUM=$4
   TEST_ITER=$5
   DATA_FILE=${6-''}
+  CONFIG_UPDATE=$7
 fi
 
 # Build peers.
@@ -29,7 +31,8 @@ echo "BUILDING ..."
 ./scripts/_build-and-deploy.sh $PEER_NUM peer > /dev/null
 
 # Generate and copy config files.
-./scripts/_generate-config-files.sh $PEERNAME $PEERCONF $TESTNAME $PEER_NUM $((PEER_NUM-1)) $TEST_ITER localhost $DATA_FILE
+./scripts/_generate-config-files.sh $PEERNAME $PEERCONF $TESTNAME $PEER_NUM $((PEER_NUM-1)) $TEST_ITER localhost $DATA_FILE $CONFIG_UPDATE
+mv Peer.xml.base ./build/Peer.xml.base
 for ((i=1; i<=$PEER_NUM; i++))
 do
     mv Peer.xml.$i ./build/jar/$i/resources/conf/Peer.xml

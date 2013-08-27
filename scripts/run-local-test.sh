@@ -68,6 +68,6 @@ case $N in
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.TestingPeerConfiguration\
            org.nebulostore.systest.broker.BrokerTestServer\
-           ${PEERS[7]} 1;;
+           ${PEERS[7]} 1 alsdj ../../scripts/configuration_templates/broker-test-1.xml;;
 esac
 
