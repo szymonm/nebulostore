@@ -1,5 +1,4 @@
 package org.nebulostore.networkmonitor;
-
 import com.google.inject.Inject;
 
 import org.nebulostore.appcore.exceptions.NebuloException;
