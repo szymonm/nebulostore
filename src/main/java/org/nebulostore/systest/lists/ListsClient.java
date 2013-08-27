@@ -62,35 +62,33 @@ public final class ListsClient extends ConductorClient {
 
   @Override
   protected void initVisitors() {
-    visitors_ =  new TestingModuleVisitor[numPhases_ + 2];
+    visitors_ = new TestingModuleVisitor[numPhases_ + 2];
     sleep(INITIAL_SLEEP_MILLIS);
     visitors_[0] = new EmptyInitializationVisitor();
-    myList_ = createList();
-    visitors_[1] = new AddressExchangeVisitor(clients_, addresses_, clientId_, myList_.getAddress(),
-        INITIAL_SLEEP_MILLIS, ADDRESS_EXCHANGE_TIMEOUT_MILLIS);
-    visitors_[2] = new ReadFilesVisitor();
-    visitors_[3] = new DeleteFileVisitor();
-    visitors_[4] = new IgnoreNewPhaseVisitor();
-    visitors_[4] = new LastPhaseVisitor(stats_);
-  }
-
-  private NebuloList createList() {
-    NebuloList list = objectFactory_.createNewNebuloList(
-        new ObjectId(new BigInteger((clientId_ + 1) + "000")));
     try {
-      for (int i = 0; i < N_CASES; ++i) {
-        BigInteger value = list.getObjectId().getKey().add(BigInteger.valueOf(i));
-        list.append(new NebuloElement(CryptoUtils.encryptObject(value)));
-        list.sync();
-      }
-      return list;
+      myList_ = createList();
+      visitors_[1] = new AddressExchangeVisitor(clients_, addresses_, clientId_,
+          myList_.getAddress(), INITIAL_SLEEP_MILLIS, ADDRESS_EXCHANGE_TIMEOUT_MILLIS);
+      visitors_[2] = new ReadFilesVisitor();
+      visitors_[3] = new DeleteFileVisitor();
+      visitors_[4] = new IgnoreNewPhaseVisitor();
+      visitors_[4] = new LastPhaseVisitor(stats_);
     } catch (CryptoException e) {
       endWithError("Exception while encrypting object: " + e.getMessage());
-      return null;
     } catch (NebuloException e) {
       endWithError("Exception in list append: " + e.getMessage());
-      return null;
     }
+  }
+
+  private NebuloList createList() throws NebuloException {
+    NebuloList list = objectFactory_.createNewNebuloList(new ObjectId(new BigInteger(
+        (clientId_ + 1) + "000")));
+    for (int i = 0; i < N_CASES; ++i) {
+      BigInteger value = list.getObjectId().getKey().add(BigInteger.valueOf(i));
+      list.append(new NebuloElement(CryptoUtils.encryptObject(value)));
+      list.sync();
+    }
+    return list;
   }
 
   /**
