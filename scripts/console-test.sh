@@ -22,15 +22,16 @@ source scripts/_utils.sh
 
 JAR_DIR="build/jar"
 PEERS_NUM=4
-COMMON_ARGS="--CLASS_NAME=org.nebulostore.systest.textinterface.TextInterface --BOOTSTRAP_ADDRESS=localhost --BOOTSTRAP_TOMP2P_PORT=10301 --BOOTSTRAP_PORT=10201"
+COMMON_ARGS="--class-name=org.nebulostore.systest.textinterface.TextInterface --bootstrap/address=localhost --bootstrap-server-tomp2p-port=10301 --bootstrap-port=10201"
 
 ./scripts/_build-and-deploy.sh $PEERS_NUM
 
 for ((i=1; i<=$PEERS_NUM; i++))
 do
-    PARAMS="$COMMON_ARGS --APP_KEY=$i$i --BOOTSTRAP_MODE=client --CLI_PORT=1010$i --TOMP2P_PORT=1030$i --BDB_TYPE=proxy"
+    PARAMS="$COMMON_ARGS --app-key=$i$i --bootstrap/mode=client --comm-cli-port=1010$i\
+      --tomp2p-port=1030$i --bdb-peer/type=proxy"
     generateConfigFile "$PARAMS" $JAR_DIR/$i/resources/conf
 done
 
-PARAMS="$COMMON_ARGS --APP_KEY=11 --BOOTSTRAP_MODE=server --CLI_PORT=10101 --TOMP2P_PORT=10301 --BDB_TYPE=storage-holder"
+PARAMS="$COMMON_ARGS --app-key=11 --bootstrap/mode=server --comm-cli-port=10101 --tomp2p-port=10301 --bdb-peer/type=storage-holder"
 generateConfigFile "$PARAMS" $JAR_DIR/1/resources/conf

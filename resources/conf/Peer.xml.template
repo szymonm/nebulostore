@@ -3,48 +3,48 @@
 <peer>
     <!-- Application Key, a unique user identifier. -->
     <app-key>
-        @APP_KEY=11@
+        11
     </app-key>
     <!-- Main class that is created and executed when Nebulostore starts,
          'org.nebulostore.peers.Peer' is the full, standard instance,
          'org.nebulostore.conductor.TestingPeer' is the test execution environment. -->
     <class-name>
-        @CLASS_NAME=org.nebulostore.peers.Peer@
+        org.nebulostore.peers.Peer
     </class-name>
     <configuration-class-name>
-        @CONFIGURATION_CLASS_NAME=org.nebulostore.peers.PeerConfiguration@
+        org.nebulostore.peers.PeerConfiguration
     </configuration-class-name>
     <peer>
       <registration-timeout>
-        @REGISTRATION_TIMEOUT=30@
+        30
       </registration-timeout>
     </peer>
     <replicator>
-      <storage-path>
-        @REPLICATOR_PATH=storage@
-      </storage-path>
       <replication-group-update-timeout>
-        @REPLICATION_GROUP_UPDATE_TIMEOUT=10@
+        10
       </replication-group-update-timeout>
+      <storage-path>
+        storage
+      </storage-path>
     </replicator>
     <broker>
       <default-contract-size-kb>
-        @DEFAUL_CONTRACT_SIZE=1024@
+        1024
       </default-contract-size-kb>
       <space-contributed-kb>
-        @SIZE_CONTRIBUTED_KB=30720@
+        30720
       </space-contributed-kb>
       <contracts-evaluator>
-        @CONTRACTS_EVALUATOR=default@
+        default
       </contracts-evaluator>
       <contracts-selection-algorithm>
-        @CONTRACTS_SELECTION_ALGORITHM=greedy@
+        greedy
       </contracts-selection-algorithm>
       <contracts-improvement-period-sec>
-        @CONTRACTS_IMPROVEMENT_PERIOD_SEC=1@
+        1
       </contracts-improvement-period-sec>
       <contracts-improvement-delay-sec>
-        @CONTRACTS_IMPROVEMENT_DELAY_SEC=3@
+        3
       </contracts-improvement-delay-sec>
       <max-contracts-multiplicity>
         1
@@ -52,13 +52,13 @@
     </broker>
     <networkmonitor>
       <get-stats-timeout-secs>
-        @GET_STATS_TIMEOUT_SECS=4@
+        4
       </get-stats-timeout-secs>
       <random-peers-sample-size>
-        @RANDOM_PEERS_SAMPLE_SIZE=3@
+        3
       </random-peers-sample-size>
       <statistics-update-interval-millis>
-        @STATISTICS_UPDATE_INTERVAL_MILLIS=500@
+        500
       </statistics-update-interval-millis>
     </networkmonitor>
     <communication>
@@ -71,49 +71,48 @@
                                           6*<hexOctet>
                  hexOctet               = <hexDigit><hexDigit> -->
         <comm-address>
-            @COMM_ADDRESS=@
         </comm-address>
         <!-- Time in miliseconds inidicating interval between sent gossips-->
         <gossip-period type="Integer">
-            @GOSSIP_PERIOD=20000@
+            20000
         </gossip-period>
         <one-time-uniform-gossip-n-replicators type="Integer">
-            @N_REPLICATORS=3@
+            3
         </one-time-uniform-gossip-n-replicators>
         <ports>
             <!-- Main port used by local instance for communication. -->
             <comm-cli-port type="Integer">
-                @CLI_PORT=10101@
+                10101
             </comm-cli-port>
             <!-- Port used by bootstrap server for listening to welcome messages. -->
             <bootstrap-port type="Integer">
-                @BOOTSTRAP_PORT=10201@
+                10201
             </bootstrap-port>
             <!--Port used by local instance for listening to tomP2P communication. -->
             <tomp2p-port type="Integer">
-                @TOMP2P_PORT=10301@
+                10301
             </tomp2p-port>
             <!--Information which port is used by bootstrap server for tomP22 communication.
                 Should be equal to tomp2p-port for bootstrap server. -->
             <bootstrap-server-tomp2p-port type="Integer">
-                @BOOTSTRAP_TOMP2P_PORT=10301@
+                10301
             </bootstrap-server-tomp2p-port>
         </ports>
         <dht>
             <provider>
-                @DHT_PROVIDER=bdb@
+                bdb
             </provider>
             <bdb-peer>
                 <!-- 'storage-holder' or 'proxy' -->
                 <type>
-                    @BDB_TYPE=storage-holder@
+                    storage-holder
                 </type>
                 <sleepycat>
                     <storage-path>
-                        @SLEEPYCAT_PATH=storage/bdb@
+                        storage/bdb
                     </storage-path>
                     <storage-name>
-                        @SLEEPYCAT_STORAGE_NAME=bdb-dht@
+                        bdb-dht
                     </storage-name>
                 </sleepycat>
             </bdb-peer>
@@ -121,30 +120,30 @@
         <bootstrap>
             <!-- 'client' or 'server' -->
             <mode>
-                @BOOTSTRAP_MODE=client@
+                client
             </mode>
             <address>
-                @BOOTSTRAP_ADDRESS=localhost@
+                localhost
             </address>
         </bootstrap>
         <cling-config>
-            @CLING_CONFIG=resources/conf/cling.logging@
+            resources/conf/cling.logging
         </cling-config>
     </communication>
     <systest>
         <is-server type="Boolean">
-            @IS_SERVER=false@
+            false
         </is-server>
         <num-test-participants type="Integer">
-            @NUM_TEST_PARTICIPANTS=3@
+            3
         </num-test-participants>
         <!-- TestingPeer executes the following list of test cases. -->
         <testing-peer-class-list>
-            @TEST_LIST=org.nebulostore.conductor.pingpong.PingPongServer;org.nebulostore.conductor.readwrite.ReadWriteServer@
+            org.nebulostore.conductor.pingpong.PingPongServer;org.nebulostore.conductor.readwrite.ReadWriteServer
         </testing-peer-class-list>
         <networkmonitor>
           <response-frequency>
-            @RESPONSE_FREQUENCY=1.0@
+            1.0
           </response-frequency>
         </networkmonitor>
         <communication>
@@ -152,42 +151,42 @@
                 <!-- The server/client function in RunPingPong test. Only one
                      host can be a server -->
                 <pingpong-test-function>
-                    @PINGPONG_TEST_FUNCTION=server@
+                    server
                 </pingpong-test-function>
                 <!-- Network visible address of the host running on the computer
                      with this file -->
                 <peer-net-address>
-                    @PEER_NET_ADDRESS=localhost@
+                    localhost
                 </peer-net-address>
                 <!-- Network visible address of RunPingPong's server -->
                 <server-net-address>
-                    @SERVER_NET_ADDRESS=localhost@
+                    localhost
                 </server-net-address>
                 <!-- PeerID used for identifying hosts in the set -->
                 <peer-id type="Integer">
-                    @PEER_ID=1@
+                    1
                 </peer-id>
             </pingpong>
             <gossip>
                 <num-gossipers type="Integer">
-                    @NUM_GOSSIPERS=10@
+                    10
                 </num-gossipers>
                 <max-peers-size type="Integer">
-                    @MAX_PEERS_SIZE=20@
+                    20
                 </max-peers-size>
                 <healing-factor type="Integer">
-                    @HEALING_FACTOR=1@
+                    1
                 </healing-factor>
                 <swapping-factor type="Integer">
-                    @SWAPPING_FACTOR=1@
+                    1
                 </swapping-factor>
                 <cohesiveness-test-intervals>
-                    @COHESIVENESS_TEST_INTERVALS=8000;16000;24000@
+                    8000;16000;24000
                 </cohesiveness-test-intervals>
             </gossip>
         </communication>
         <data-file>
-            @DATA_FILE=test.data@
+            test.data
         </data-file>
     </systest>
 </peer>
