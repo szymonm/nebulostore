@@ -15,6 +15,7 @@ public abstract class Broker extends JobModule {
   protected CommAddress myAddress_;
 
   protected NetworkMonitor networkMonitor_;
+  protected BrokerContext context_ = new BrokerContext();
 
   @Inject
   private void setDependencies(CommAddress myAddress, NetworkMonitor networkMonitor) {

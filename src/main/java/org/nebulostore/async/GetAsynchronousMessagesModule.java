@@ -12,7 +12,6 @@ import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.async.messages.AsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GetAsynchronousMessagesMessage;
 import org.nebulostore.async.messages.GotAsynchronousMessagesMessage;
-import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.JobInitMessage;
 
@@ -35,7 +34,7 @@ public class GetAsynchronousMessagesModule extends JobModule {
   private CommAddress myAddress_;
 
   public GetAsynchronousMessagesModule(BlockingQueue<Message> networkQueue,
-      BlockingQueue<Message> resultQueue, BrokerContext context, CommAddress synchroPeer) {
+      BlockingQueue<Message> resultQueue, CommAddress synchroPeer) {
     setNetworkQueue(networkQueue);
     resultQueue_ = resultQueue;
     synchroPeer_ = synchroPeer;

@@ -24,7 +24,7 @@ import org.nebulostore.crypto.CryptoUtils;
 public class BrokerTestServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(BrokerTestServer.class);
 
-  private static final int NUM_PHASES = 1;
+  private static final int NUM_PHASES = 2;
   private static final int TIMEOUT_SEC = 200;
   private static final int INITIAL_SLEEP = 1000;
 
@@ -69,7 +69,6 @@ public class BrokerTestServer extends ConductorServer {
     for (Contract contract : stats.getContracts()) {
       logger_.info(contract.toString());
     }
-    endWithSuccess(true);
   }
 
   @Override

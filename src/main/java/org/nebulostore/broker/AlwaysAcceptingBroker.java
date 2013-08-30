@@ -82,10 +82,10 @@ public class AlwaysAcceptingBroker extends Broker {
         // Offer was accepted, add new replica to our DHT entry.
         logger_.debug("Peer " +
             message.getSourceAddress() + " accepted our offer.");
-        BrokerContext.getInstance().addContract(message.getContract());
+        context_.addContract(message.getContract());
 
         ReplicationGroup currGroup = new ReplicationGroup(
-            BrokerContext.getInstance().getReplicas(), BigInteger.ZERO, new BigInteger("1000000"));
+          context_.getReplicas(), BigInteger.ZERO, new BigInteger("1000000"));
         PutKeyModule module = new PutKeyModule(currGroup, outQueue_);
 
         try {
@@ -102,12 +102,12 @@ public class AlwaysAcceptingBroker extends Broker {
 
     public Void visit(CommPeerFoundMessage message) {
       logger_.debug("Found new peer.");
-      if (BrokerContext.getInstance().getReplicas().length < MAX_CONTRACTS) {
+      if (context_.getReplicas().length < MAX_CONTRACTS) {
         List<CommAddress> knownPeers = networkMonitor_.getKnownPeers();
         Iterator<CommAddress> iterator = knownPeers.iterator();
         while (iterator.hasNext()) {
           CommAddress address = iterator.next();
-          if (BrokerContext.getInstance().getUserContracts(address) == null &&
+          if (context_.getUserContracts(address) == null &&
               !address.equals(myAddress_) && !offerRecipients_.contains(address)) {
             // Send offer to new peer (10MB by default).
             logger_.debug("Sending offer to " +

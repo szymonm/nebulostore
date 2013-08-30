@@ -4,7 +4,6 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
 import org.nebulostore.async.ResponseWithAsynchronousMessagesModule;
-import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.messages.CommMessage;
 
@@ -28,7 +27,7 @@ public class GetAsynchronousMessagesMessage extends CommMessage {
 
   @Override
   public JobModule getHandler() {
-    return new ResponseWithAsynchronousMessagesModule(BrokerContext.getInstance());
+    return new ResponseWithAsynchronousMessagesModule();
   }
 
   @Override

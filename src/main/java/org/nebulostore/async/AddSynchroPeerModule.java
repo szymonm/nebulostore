@@ -8,7 +8,6 @@ import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;
 import org.nebulostore.appcore.modules.JobModule;
-import org.nebulostore.broker.BrokerContext;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.communication.dht.core.ValueDHT;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
@@ -37,12 +36,15 @@ public class AddSynchroPeerModule extends JobModule {
   private CommAddress myAddress_;
 
   private NetworkMonitor networkMonitor_;
+  private AsyncMessagesContext context_;
 
   @Inject
   private void setDependencies(CommAddress address,
-                               NetworkMonitor networkMonitor) {
+                               NetworkMonitor networkMonitor,
+                               AsyncMessagesContext context) {
     myAddress_ = address;
     networkMonitor_ = networkMonitor;
+    context_ = context;
   }
 
   public AddSynchroPeerModule() {
@@ -61,7 +63,6 @@ public class AddSynchroPeerModule extends JobModule {
    * Visitor.
    */
   public class Visitor extends MessageVisitor<Void> {
-    BrokerContext context_ = BrokerContext.getInstance();
 
     public Void visit(JobInitMessage message) {
       jobId_ = message.getId();

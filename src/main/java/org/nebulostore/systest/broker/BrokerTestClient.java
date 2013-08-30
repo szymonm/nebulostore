@@ -18,6 +18,7 @@ import org.nebulostore.systest.broker.messages.BrokerContextMessage;
 import org.nebulostore.systest.broker.messages.GetBrokerContextMessage;
 import org.nebulostore.systest.messages.ChangeTestMessageHandlerMessage;
 import org.nebulostore.systest.networkmonitor.FaultyConnectionTestMessageHandler;
+import org.nebulostore.timer.TimeoutMessage;
 import org.nebulostore.timer.Timer;
 
 /**
@@ -28,7 +29,8 @@ public class BrokerTestClient extends ConductorClient {
   private static final long serialVersionUID = -7209499692156491320L;
   private static Logger logger_ = Logger.getLogger(BrokerTestClient.class);
 
-  private static final int MONITORING_TIME_SEC = 60;
+  private static final int FIRST_PHASE_TIME_SEC = 15;
+  private static final int SECOND_PHASE_TIME_SEC = 45;
 
 
   private static final int INITIAL_SLEEP = 4000;
@@ -64,8 +66,32 @@ public class BrokerTestClient extends ConductorClient {
     sleep(INITIAL_SLEEP);
     visitors_ = new TestingModuleVisitor[numPhases_ + 2];
     visitors_[0] = new EmptyInitializationVisitor();
-    visitors_[1] = new DelayingVisitor(1000L * MONITORING_TIME_SEC, timer_);
-    visitors_[2] = new BrokerLastPhaseVisitor();
+    visitors_[1] = new SimpleContractsConclusionCheckVisitor(1000L * FIRST_PHASE_TIME_SEC, timer_);
+    visitors_[2] = new DelayingVisitor(1000L * SECOND_PHASE_TIME_SEC, timer_);
+    visitors_[3] = new BrokerLastPhaseVisitor();
+  }
+
+  /**
+   * Visitor.
+   */
+  protected class SimpleContractsConclusionCheckVisitor extends DelayingVisitor {
+    public SimpleContractsConclusionCheckVisitor(long delayTime, Timer timer) {
+      super(delayTime, timer);
+    }
+
+    @Override
+    public Void visit(TimeoutMessage message) {
+      logger_.debug("Phase delaying finished.");
+      broker_.getInQueue().add(new GetBrokerContextMessage(jobId_));
+      return null;
+    }
+
+    public Void visit(BrokerContextMessage message) {
+      assertTrue(message.getBrokerContext().getReplicas().length > 0,
+          "No contracts concluded in the first phase");
+      phaseFinished();
+      return null;
+    }
   }
 
   /**

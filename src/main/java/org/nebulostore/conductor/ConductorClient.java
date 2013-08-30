@@ -31,11 +31,14 @@ import org.nebulostore.timer.Timer;
  *
  * @author szymonmatejczyk
  *
- *         Writing tests: 1. Remember to set visitors for each phase. 2. Don't forget to put
- *         phaseFinished in every visitor. 3. By default you should define visitor for each phase.
- *         However, you can override getVisitor() method to use visitors differently(ex. more than
- *         once). 4. Don't forget to write server(ServerTestingModule) that will initialize
- *         TestingModules on peers side and will be gathering results.
+ * Writing tests:
+ *
+ *   1. Remember to set visitors for each phase.
+ *   2. Don't forget to put phaseFinished in every visitor
+ *   3. By default you should define visitor for each phase. However, you can override
+ *      getVisitor() method to use visitors differently(ex. more than once).
+ *   4. Don't forget to write server(ServerTestingModule) that will initialize
+ *      TestingModules on peers side and will be gathering results.
  */
 public abstract class ConductorClient extends JobModule implements Serializable {
   private static final long serialVersionUID = -1686614265302231592L;

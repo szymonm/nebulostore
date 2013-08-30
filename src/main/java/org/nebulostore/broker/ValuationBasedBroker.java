@@ -54,6 +54,7 @@ public class ValuationBasedBroker extends Broker {
       @Named("broker.default-contract-size-kb") int defaultContractSizeKb,
       ContractsSelectionAlgorithm contractsSelectionAlgorithm,
       @Named("broker.max-contracts-multiplicity") int maxContractsMultiplicity,
+      @Named("broker.space-contributed-kb") int spaceContributedKb,
       Timer timer) {
     replicationGroupUpdateTimeout_ = replicationGroupUpdateTimeout;
     networkMonitor_ = networkMonitor;
@@ -62,6 +63,7 @@ public class ValuationBasedBroker extends Broker {
     defaultContractSizeKb_ = defaultContractSizeKb;
     contractsSelectionAlgorithm_ = contractsSelectionAlgorithm;
     maxContractsMultiplicity_ = maxContractsMultiplicity;
+    spaceContributedKb_ = spaceContributedKb;
     timer_ = timer;
   }
 
@@ -71,13 +73,14 @@ public class ValuationBasedBroker extends Broker {
   private static int contractImprovementDelay_;
   private static int defaultContractSizeKb_;
   private static int maxContractsMultiplicity_;
+  private static int spaceContributedKb_;
 
   private Timer timer_;
   private ContractsSelectionAlgorithm contractsSelectionAlgorithm_;
 
   public void updateReplicationGroups() {
     // todo(szm): one group for now
-    ReplicationGroup currGroup = new ReplicationGroup(BrokerContext.getInstance().getReplicas(),
+    ReplicationGroup currGroup = new ReplicationGroup(context_.getReplicas(),
         new BigInteger("0"), new BigInteger("1000000"));
     PutKeyModule module = new PutKeyModule(currGroup, outQueue_);
 
@@ -115,13 +118,12 @@ public class ValuationBasedBroker extends Broker {
 
     public Void visit(BreakContractMessage message) {
       logger_.debug("Broken: " + message.getContract().toString());
-      BrokerContext.getInstance().remove(message.getContract());
+      context_.remove(message.getContract());
       return null;
     }
 
     public Void visit(ImproveContractsMessage message) {
       logger_.debug("Improving contracts...");
-      jobId_ = message.getId();
 
       Set<Contract> possibleContracts = new HashSet<Contract>();
       Set<CommAddress> randomPeersSample = networkMonitor_.getRandomPeersSample();
@@ -129,18 +131,17 @@ public class ValuationBasedBroker extends Broker {
       // todo(szm): temporarily using gossiped random peers sample
       // todo(szm): choosing peers to offer contracts should be somewhere different
       for (CommAddress commAddress : randomPeersSample) {
-        if (BrokerContext.getInstance().getNumberOfContractsWith(commAddress) <
+        if (context_.getNumberOfContractsWith(commAddress) <
             maxContractsMultiplicity_) {
           possibleContracts.add(new Contract(myAddress_, commAddress, defaultContractSizeKb_));
         }
       }
 
       try {
-        ContractsSet currentContracts = BrokerContext.getInstance().acquireReadAccessToContracts();
+        ContractsSet currentContracts = context_.acquireReadAccessToContracts();
 
         if (possibleContracts.isEmpty()) {
           logger_.debug("No possible new contracts.");
-          endJobModule();
         } else {
           Contract toOffer = contractsSelectionAlgorithm_
               .chooseContractToOffer(possibleContracts, currentContracts);
@@ -148,21 +149,21 @@ public class ValuationBasedBroker extends Broker {
           // TODO(szm): timeout
         }
       } finally {
-        BrokerContext.getInstance().disposeReadAccessToContracts();
+        context_.disposeReadAccessToContracts();
       }
       return null;
     }
 
     public Void visit(OfferReplyMessage message) {
+      message.getContract().toLocalAndRemoteSwapped();
       if (message.getResult()) {
-        logger_.debug("Contract concluded: " +
-          message.getContract().toLocalAndRemoteSwapped().toString());
-        BrokerContext.getInstance().addContract(message.getContract());
+        logger_.debug("Contract concluded: " + message.getContract().toString());
+        context_.addContract(message.getContract());
 
         // todo(szm): przydzielanie przestrzeni adresowej do kontraktow
         // todo(szm): z czasem coraz rzadziej polepszam kontrakty
         ReplicationGroup currGroup = new ReplicationGroup(
-            BrokerContext.getInstance().getReplicas(), new BigInteger("0"), new BigInteger(
+            context_.getReplicas(), new BigInteger("0"), new BigInteger(
                 "1000000"));
         PutKeyModule module = new PutKeyModule(currGroup, outQueue_);
 
@@ -179,23 +180,28 @@ public class ValuationBasedBroker extends Broker {
     }
 
     public Void visit(ContractOfferMessage message) {
-      ContractsSet contracts = BrokerContext.getInstance().acquireReadAccessToContracts();
+      ContractsSet contracts = context_.acquireReadAccessToContracts();
       OfferResponse response;
+      message.getContract().toLocalAndRemoteSwapped();
+      if (context_.getNumberOfContractsWith(message.getContract().getPeer()) >=
+          maxContractsMultiplicity_) {
+        networkQueue_.add(new OfferReplyMessage(getJobId(), message.getSourceAddress(), message
+            .getContract(), false));
+        return null;
+      }
       try {
-        response = contractsSelectionAlgorithm_.responseToOffer(
-            message.getContract(), contracts);
+        response = contractsSelectionAlgorithm_.responseToOffer(message.getContract(), contracts);
       } finally {
-        BrokerContext.getInstance().disposeReadAccessToContracts();
+        context_.disposeReadAccessToContracts();
       }
       if (response.responseAnswer_) {
         logger_.debug("Concluding contract: " + message.getContract().toString());
-        BrokerContext.getInstance().addContract(message.getContract().toLocalAndRemoteSwapped());
+        context_.addContract(message.getContract());
         networkQueue_.add(new OfferReplyMessage(getJobId(), message.getSourceAddress(),
             message.getContract(), true));
         for (Contract contract : response.contractsToBreak_) {
           sendBreakContractMessage(contract);
         }
-
         updateReplicationGroups();
       } else {
         networkQueue_.add(new OfferReplyMessage(getJobId(), message.getSourceAddress(),
