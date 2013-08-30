@@ -1,15 +1,14 @@
 package org.nebulostore.systest.readwrite;
 
-import org.nebulostore.communication.address.CommAddress;
-
 import java.util.List;
+
+import org.nebulostore.communication.address.CommAddress;
 
 /**
  * @author hryciukrafal
  */
 public interface ReadWriteClientFactory {
-
-  ReadWriteClient createReadWriteClient(String serverJobId, CommAddress serverAddress, int numPhases,
-                                        List<CommAddress> clients, int clientId);
+  ReadWriteClient createReadWriteClient(String serverJobId, CommAddress serverAddress,
+                                        int numPhases, List<CommAddress> clients, int clientId);
 
 }
