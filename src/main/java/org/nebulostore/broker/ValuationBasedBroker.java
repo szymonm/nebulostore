@@ -128,6 +128,11 @@ public class ValuationBasedBroker extends Broker {
       Set<Contract> possibleContracts = new HashSet<Contract>();
       Set<CommAddress> randomPeersSample = networkMonitor_.getRandomPeersSample();
 
+      if (context_.getContractsRealSize() > spaceContributedKb_) {
+        logger_.debug("Contributed size fully utilized.");
+        return null;
+      }
+
       // todo(szm): temporarily using gossiped random peers sample
       // todo(szm): choosing peers to offer contracts should be somewhere different
       for (CommAddress commAddress : randomPeersSample) {
@@ -183,7 +188,8 @@ public class ValuationBasedBroker extends Broker {
       ContractsSet contracts = context_.acquireReadAccessToContracts();
       OfferResponse response;
       message.getContract().toLocalAndRemoteSwapped();
-      if (context_.getNumberOfContractsWith(message.getContract().getPeer()) >=
+      if (context_.getContractsRealSize() > spaceContributedKb_ ||
+          context_.getNumberOfContractsWith(message.getContract().getPeer()) >=
           maxContractsMultiplicity_) {
         networkQueue_.add(new OfferReplyMessage(getJobId(), message.getSourceAddress(), message
             .getContract(), false));
