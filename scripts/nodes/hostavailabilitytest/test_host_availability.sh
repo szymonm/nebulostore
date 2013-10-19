@@ -44,12 +44,12 @@ declare -a BACKGROUND_JOBS=()
 
 export USER=mimuw_nebulostore
 
-export BACKGROUND_JOBS_SERVERFILE=$(mktemp)
+export BACKGROUND_JOBS_SERVERFILE=$(mktemp -t nebuloXXXXX)
 
 export VERBOSE_OUTPUT=false
 
 export USE_GOOD_PEER_LIMIT=false
-export PEER_LIMIT_FILE=$(mktemp)
+export PEER_LIMIT_FILE=$(mktemp -t nebuloXXXXX)
 
 export LISTENING_PORT=9877
 export CL_TIMEOUT=5
@@ -88,11 +88,11 @@ function exit_cleanup() {
     echo "Killing background jobs" >&3 2>&1
     # Kill all background jobs doing something with Firewall excluding the
     # script itself and the commands below
-    ps c --no-headers | grep -Ev 'ps|grep|cut|sed|xargs' | grep 'Firewall' |\
+    ps c | tail -n +2 | grep -Ev 'ps|grep|cut|sed|xargs' | grep 'Firewall' |\
         sed 's/^ *//' | cut -d' ' -f1 | grep -v "^$$$" |\
         xargs -n 1 kill >/dev/null 2>&1
     cat $BACKGROUND_JOBS_SERVERFILE |\
-        xargs -P 15 -n 1 -i bash -c 'cleanup_host "$1"' _ {}
+        xargs -P 15 -n 1 -I{} bash -c 'cleanup_host "$1"' _ {}
     ssh $SSH_OPTIONS ${USER}@${TESTING_SERVER}\
         "ps ax | grep FirewallTest | sed 's/^ *//' | cut -d' ' -f1 | xargs kill 2> /dev/null; rm FirewallTestClient.class" >/dev/null 2>&1
     return 0
@@ -226,7 +226,7 @@ do
 done
 
 #Run concurrently TEST_HOST for each host in ALL_HOSTS
-echo "$ALL_HOSTS" | xargs -P 15 -n 1 -i bash -c 'TEST_HOST "$1"' _ {} &>/dev/null
+echo "$ALL_HOSTS" | xargs -P 15 -n 1 -I{} bash -c 'TEST_HOST "$1"' _ {} &>/dev/null
 
 exit_cleanup
 cd ${EXEC_DIR}
