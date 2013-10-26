@@ -52,9 +52,9 @@ export USE_GOOD_PEER_LIMIT=false
 export PEER_LIMIT_FILE=$(mktemp -t nebuloXXXXX)
 
 export LISTENING_PORT=9877
-export CL_TIMEOUT=5
+export CL_TIMEOUT=4
 
-export SSH_OPTIONS="-o ConnectTimeout=$CL_TIMEOUT -o StrictHostKeyChecking=no"
+export SSH_OPTIONS="-o ConnectTimeout=$CL_TIMEOUT -o StrictHostKeyChecking=no -o PasswordAuthentication=no"
 
 function is_over_peer_limit() {
     if ! $USE_GOOD_PEER_LIMIT
@@ -106,7 +106,7 @@ function prepare_javaclass_for_host() {
     if ! [[ -e ${JAVA_FILE}.class ]]
     then
         scp $SSH_OPTIONS ${JAVA_FILE}.java ${USER}@${HOST}: >&3 2>&1
-        ssh $SSH_OPTIONS ${USER}@${HOST}: "javac ${JAVA_FILE}.java" >/dev/null 2>&1
+        ssh $SSH_OPTIONS ${USER}@${HOST} "javac ${JAVA_FILE}.java" >/dev/null 2>&1
         EXIT_CODE=$?
     else
         scp $SSH_OPTIONS ${JAVA_FILE}.class ${USER}@${HOST}: >&3 2>&1
@@ -178,7 +178,7 @@ trap 'SIGINT_handler' 2 # traps
 #prepare TESTING SERVER
 echo "Preparing FirewallTestClient for $TESTING_SERVER" >&3
 prepare_javaclass_for_host FirewallTestClient ${TESTING_SERVER}
-echo "Prepartion done" >&3
+echo "Preparation done" >&3
 
 
 function TEST_HOST() {
@@ -194,7 +194,7 @@ function TEST_HOST() {
     prepare_javaclass_for_host FirewallTestServer ${HOST}
 
     ssh $SSH_OPTIONS ${USER}@${HOST} \
-        "java FirewallTestServer ${LISTENING_PORT}" >/dev/null 2>&1  &
+        "java FirewallTestServer ${LISTENING_PORT}" >/dev/null 2>&1 &
     sleep $CL_TIMEOUT
     if ssh $SSH_OPTIONS ${USER}@${TESTING_SERVER} \
         "java FirewallTestClient ${HOST} ${LISTENING_PORT}" >/dev/null 2>&1
