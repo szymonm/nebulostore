@@ -20,6 +20,18 @@
         </storage-path>
     </replicator>
     <communication>
+        <!-- Which version of communication module to use.
+             Use communication or newcommunication -->
+        <comm-module>
+            communication
+        </comm-module>
+        <address-map-check-interval>
+            60000
+        </address-map-check-interval>
+        <local-net-address>
+        </local-net-address>
+        <bootstrap-net-address>
+        </bootstrap-net-address>
         <!-- Sets CommAddress to comm-address iff not empty, otherwise
              CommAddress is a random UUID. comm-address can be an integer or an
              UUID formatted string, where UUID syntax is defined as
@@ -30,6 +42,8 @@
                  hexOctet               = <hexDigit><hexDigit> -->
         <comm-address>
         </comm-address>
+        <bootstrap-comm-address>
+        </bootstrap-comm-address>
         <!-- Time in miliseconds inidicating interval between sent gossips-->
         <gossip-period type="Integer">
             20000
@@ -86,6 +100,17 @@
                 localhost
             </address>
         </bootstrap>
+        <remotemap>
+            <mode>
+                server
+            </mode>
+            <local-port>
+            </local-port>
+            <server-net-address>
+            </server-net-address>
+            <server-port>
+            </server-port>
+        </remotemap>
         <cling-config>
             resources/conf/cling.logging
         </cling-config>
@@ -102,43 +127,28 @@
             org.nebulostore.conductor.pingpong.PingPongServer;org.nebulostore.conductor.readwrite.ReadWriteServer
         </testing-peer-class-list>
         <communication>
-            <pingpong>
-                <!-- The server/client function in RunPingPong test. Only one
-                     host can be a server -->
-                <pingpong-test-function>
+            <messageexchange>
+                <mode>
                     server
-                </pingpong-test-function>
-                <!-- Network visible address of the host running on the computer
-                     with this file -->
-                <peer-net-address>
-                    localhost
-                </peer-net-address>
-                <!-- Network visible address of RunPingPong's server -->
-                <server-net-address>
-                    localhost
-                </server-net-address>
-                <!-- PeerID used for identifying hosts in the set -->
-                <peer-id type="Integer">
-                    1
-                </peer-id>
-            </pingpong>
-            <gossip>
-                <num-gossipers type="Integer">
-                    10
-                </num-gossipers>
-                <max-peers-size type="Integer">
-                    20
-                </max-peers-size>
-                <healing-factor type="Integer">
-                    1
-                </healing-factor>
-                <swapping-factor type="Integer">
-                    1
-                </swapping-factor>
-                <cohesiveness-test-intervals>
-                    8000;16000;24000
-                </cohesiveness-test-intervals>
-            </gossip>
+                </mode>
+                <server>
+                    <client-count>
+                    </client-count>
+                    <client-timeout>
+                        60000
+                    </client-timeout>
+                    <answer-timeout>
+                        60000
+                    </answer-timeout>
+                </server>
+                <client>
+                    <server-net-address>
+                    </server-net-address>
+                    <contact-timeout>
+                        20000
+                    </contact-timeout>
+                </client>
+            </messageexchange>
         </communication>
         <data-file>
             test.data

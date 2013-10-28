@@ -17,7 +17,6 @@ import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.async.AddSynchroPeerModule;
 import org.nebulostore.async.RetrieveAsynchronousMessagesModule;
 import org.nebulostore.broker.Broker;
-import org.nebulostore.communication.CommunicationPeer;
 import org.nebulostore.communication.CommunicationPeerFactory;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.dispatcher.Dispatcher;
@@ -104,7 +103,7 @@ public class Peer extends AbstractPeer {
    * Method that creates, connects and runs Dispatcher and Communication modules.
    */
   protected void initPeer() {
-    CommunicationPeer commPeer;
+    Runnable commPeer;
     Dispatcher dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
     dispatcherThread_ = new Thread(dispatcher, "Dispatcher");
 

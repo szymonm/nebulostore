@@ -43,7 +43,7 @@ BOOTSTRAP_PEER=`cat $HOST_LIST | head -n 1`
 echo "["`date +"%T"`"] BUILDING ..."
 ./_build-and-deploy.sh -p 1 -m peer > /dev/null
 ./_generate-config-files.sh -p $PEERNAME -c $PEERCONF -t $TESTNAME -n $PEER_NUM\
-    -m $TEST_CLIENTS_NUM -i $TEST_ITER -b $BOOTSTRAP_PEER
+    -m $TEST_CLIENTS_NUM -i $TEST_ITER -b $BOOTSTRAP_PEER -h $HOST_LIST
 
 
 echo "["`date +"%T"`"] COPYING ..."

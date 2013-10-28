@@ -1,19 +1,12 @@
 package org.nebulostore.communication.nat;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-
-import net.tomp2p.natpmp.Gateway;
-import net.tomp2p.natpmp.MapRequestMessage;
-import net.tomp2p.natpmp.NatPmpDevice;
-import net.tomp2p.natpmp.NatPmpException;
-import net.tomp2p.natpmp.ResultCode;
 
 /** Class containing basic utilities for nat traversal and port forwarding.
  * @author Grzegorz Milka
@@ -42,6 +35,8 @@ public final class NATUtils {
   }
 
   public static boolean mapPMP(int internalPortTCP, int externalPortTCP) {
+    return false;
+    /*
     try {
       InetAddress gateway = Gateway.getIP();
       NatPmpDevice pmpDevice = new NatPmpDevice(gateway);
@@ -53,11 +48,15 @@ public final class NATUtils {
     } catch (NatPmpException e) {
       return false;
     }
+    */
   }
 
   public static boolean mapUPNP(String internalHost, int internalPortTCP, int
       externalPortTCP) throws IOException {
+    return false;
+    /*
     return (new net.tomp2p.connection.NATUtils()).mapUPNP(internalHost, -1,
         internalPortTCP, -1, externalPortTCP);
+    */
   }
 }
