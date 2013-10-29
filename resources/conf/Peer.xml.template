@@ -65,6 +65,8 @@
                 <type>
                     storage-holder
                 </type>
+                <holder-comm-address>
+                </holder-comm-address>
                 <sleepycat>
                     <storage-path>
                         storage/bdb
