@@ -138,7 +138,12 @@ public class BdbPeer extends Module {
 
       msgVisitor_ = new BDBProxyMessageVisitor();
       isProxy_ = true;
-      holderCommAddress_ = null;
+      if (!config_.getString(CONFIG_PREFIX + "holder-comm-address", "").isEmpty()) {
+        holderCommAddress_ = new CommAddress(config_.getString(CONFIG_PREFIX +
+            "holder-comm-address"));
+      } else {
+        holderCommAddress_ = null;
+      }
     }
     logger_.info("fully initialized");
   }

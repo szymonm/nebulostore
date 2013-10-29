@@ -81,7 +81,8 @@ do
          --bootstrap/address=$BOOTSTRAP_ADDRESS --systest/is-server=$IS_SERVER\
          --num-test-participants=$TEST_CLIENTS_NUM\
          --systest/data-file=$DATA_FILE\
-         --comm-address=00000000-0000-0000-0$PADDED-000000000000 < ../resources/conf/Peer.xml.template > ../Peer.xml.$i
+         --comm-address=00000000-0000-0000-0$PADDED-000000000000\
+         --bdb-peer/holder-comm-address=00000000-0000-0000-0001-000000000000 < ../resources/conf/Peer.xml.template > ../Peer.xml.$i
 done
 
 cd ${EXEC_DIR}
