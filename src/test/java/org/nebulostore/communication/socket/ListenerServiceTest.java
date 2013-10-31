@@ -11,8 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
 import org.nebulostore.communication.messages.CommMessage;
+import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.socket.messages.ListenerServiceReadyMessage;
 
 import static org.junit.Assert.assertFalse;
@@ -57,7 +57,7 @@ public class ListenerServiceTest {
     Socket socket = new Socket(Inet4Address.getLocalHost(), LISTENING_PORT);
     CommAddress src = new CommAddress(0, 0);
     CommAddress dest = new CommAddress(0, 1);
-    CommMessage commMsg = new HolderAdvertisementMessage(src, dest);
+    CommMessage commMsg = new CommPeerFoundMessage(src, dest);
 
     try {
       ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
@@ -68,9 +68,9 @@ public class ListenerServiceTest {
     }
 
     Message msg = inQueue_.take();
-    assertTrue(msg instanceof HolderAdvertisementMessage);
-    HolderAdvertisementMessage ham = (HolderAdvertisementMessage) msg;
-    assertTrue(ham.getDestinationAddress().equals(dest));
-    assertTrue(ham.getSourceAddress().equals(src));
+    assertTrue(msg instanceof CommPeerFoundMessage);
+    CommPeerFoundMessage cPFM = (CommPeerFoundMessage) msg;
+    assertTrue(cPFM.getDestinationAddress().equals(dest));
+    assertTrue(cPFM.getSourceAddress().equals(src));
   }
 }

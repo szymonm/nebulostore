@@ -26,7 +26,6 @@ import org.nebulostore.communication.dht.BdbPeer;
 import org.nebulostore.communication.dht.KademliaPeer;
 import org.nebulostore.communication.dht.messages.BdbMessageWrapper;
 import org.nebulostore.communication.dht.messages.DHTMessage;
-import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
 import org.nebulostore.communication.dht.messages.InDHTMessage;
 import org.nebulostore.communication.dht.messages.OutDHTMessage;
 import org.nebulostore.communication.gossip.GossipService;
@@ -333,11 +332,6 @@ public final class CommunicationPeer extends Module {
         logger_.warn(e);
       }
 
-      return null;
-    }
-
-    public Void visit(HolderAdvertisementMessage msg) {
-      dhtPeerInQueue_.add(msg);
       return null;
     }
 

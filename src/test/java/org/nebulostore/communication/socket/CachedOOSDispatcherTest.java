@@ -18,8 +18,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
 import org.nebulostore.communication.messages.CommMessage;
+import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.socket.messages.ListenerServiceReadyMessage;
 
 import static org.junit.Assert.assertTrue;
@@ -184,7 +184,7 @@ public class CachedOOSDispatcherTest {
           Thread.currentThread().interrupt();
           return;
         }
-        if ((recvMsg instanceof HolderAdvertisementMessage) &&
+        if ((recvMsg instanceof CommPeerFoundMessage) &&
             ((CommMessage) recvMsg).getDestinationAddress().equals(myCA_)) {
           count_ += 1;
         } else if (!((recvMsg instanceof EndTestMessage) ||
@@ -218,7 +218,7 @@ public class CachedOOSDispatcherTest {
 
     public void run() {
       for (CommAddress recipient: recipients_) {
-        CommMessage commMsg = new HolderAdvertisementMessage(MY_COMM_ADDRESS, recipient);
+        CommMessage commMsg = new CommPeerFoundMessage(MY_COMM_ADDRESS, recipient);
         ObjectOutputStream oos = null;
         try {
           oos = coos_.get(recipient);

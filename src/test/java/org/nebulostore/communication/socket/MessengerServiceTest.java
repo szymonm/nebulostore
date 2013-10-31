@@ -19,8 +19,8 @@ import org.junit.Test;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.modules.EndModuleMessage;
 import org.nebulostore.communication.address.CommAddress;
-import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
 import org.nebulostore.communication.messages.CommMessage;
+import org.nebulostore.communication.messages.CommPeerFoundMessage;
 import org.nebulostore.communication.messages.ErrorCommMessage;
 
 import static org.junit.Assert.assertFalse;
@@ -82,7 +82,7 @@ public class MessengerServiceTest {
   @Test
   public void testSendMessageToNonexistentHost()
     throws IOException, InterruptedException {
-    CommMessage commMsg = new HolderAdvertisementMessage(MY_COMM_ADDRESS, DEST_COMM_ADDRESS);
+    CommMessage commMsg = new CommPeerFoundMessage(MY_COMM_ADDRESS, DEST_COMM_ADDRESS);
     Message recvMsg;
 
     inQueue_.add(commMsg);
@@ -111,7 +111,7 @@ public class MessengerServiceTest {
   private void testSendMessage(CommAddress destCA, int destPort)
     throws IOException, InterruptedException {
     /* Throwing IOException to from function to get cleaner code */
-    CommMessage commMsg = new HolderAdvertisementMessage(MY_COMM_ADDRESS, destCA);
+    CommMessage commMsg = new CommPeerFoundMessage(MY_COMM_ADDRESS, destCA);
     Exchanger<Message> exchanger = new Exchanger<>();
     Message recvMsg;
     try (ServerSocket server = new ServerSocket(destPort)) {

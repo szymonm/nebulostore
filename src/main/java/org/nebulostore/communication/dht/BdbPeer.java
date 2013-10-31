@@ -35,7 +35,6 @@ import org.nebulostore.communication.dht.messages.BdbMessageWrapper;
 import org.nebulostore.communication.dht.messages.DHTMessage;
 import org.nebulostore.communication.dht.messages.ErrorDHTMessage;
 import org.nebulostore.communication.dht.messages.GetDHTMessage;
-import org.nebulostore.communication.dht.messages.HolderAdvertisementMessage;
 import org.nebulostore.communication.dht.messages.OkDHTMessage;
 import org.nebulostore.communication.dht.messages.OutDHTMessage;
 import org.nebulostore.communication.dht.messages.PutDHTMessage;
@@ -124,10 +123,6 @@ public class BdbPeer extends Module {
 
       database_ = env_.openDatabase(null, storeName_, dbConfig);
 
-      advertisementsTimer_ = new Timer(true);
-      advertisementsTimer_.schedule(new SendAdvertisement(),
-          ADVERTISEMENT_INTERVAL, ADVERTISEMENT_INTERVAL);
-
       if (reconfigureRequest_ != null) {
         outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
       }
@@ -146,23 +141,6 @@ public class BdbPeer extends Module {
       }
     }
     logger_.info("fully initialized");
-  }
-
-  /**
-   * Module that sends holder advertisements.
-   */
-  public class SendAdvertisement extends TimerTask {
-    private Set<CommAddress> done_ = new TreeSet<CommAddress>();
-    @Override
-    public void run() {
-      for (CommAddress address : NetworkContext.getInstance().getKnownPeers()) {
-        if (!done_.contains(address)) {
-          logger_.info("Sending holder advertisement to " + address);
-          senderInQueue_.add(new HolderAdvertisementMessage(address));
-          done_.add(address);
-        }
-      }
-    }
   }
 
   private void shutdown() {
@@ -316,19 +294,6 @@ public class BdbPeer extends Module {
       shutdown();
       return null;
     }
-
-    public Void visit(HolderAdvertisementMessage msg) throws NebuloException {
-      logger_.info("Message accepted: " + msg);
-
-      if (holderCommAddress_ == null && reconfigureRequest_ != null) {
-        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
-      }
-
-      holderCommAddress_ = msg.getSourceAddress();
-      logger_.info("Holder detected at " + holderCommAddress_);
-      cleanCache();
-      return null;
-    }
   }
 
   /**
@@ -354,19 +319,6 @@ public class BdbPeer extends Module {
       } else {
         message.accept(msgVisitor_);
       }
-      return null;
-    }
-
-    public Void visit(HolderAdvertisementMessage msg) throws NebuloException {
-      logger_.info("Message accepted: " + msg);
-
-      if (holderCommAddress_ == null && reconfigureRequest_ != null) {
-        outQueue_.add(new ReconfigureDHTAckMessage(reconfigureRequest_));
-      }
-
-      holderCommAddress_ = msg.getSourceAddress();
-      logger_.info("Holder detected at " + holderCommAddress_);
-      cleanCache();
       return null;
     }
 
