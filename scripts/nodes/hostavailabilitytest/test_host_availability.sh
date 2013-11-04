@@ -35,6 +35,9 @@ USAGE="$(basename $0) [-v] [-t TESTING_SERVER] [-l GOOD_PEER_LIMIT] \
 [-p LISTENING_PORT] [-s TIMEOUT] {-i [INPUT_FILE]|HOSTNAME...}"
 export TESTING_SERVER="prata.mimuw.edu.pl"
 
+# location of java executables on planetlab hosts
+export JAVA_HOME="/home/mimuw_nebulostore/jdk1.7.0_21/bin/"
+
 USE_INPUT_FILE=false
 INPUT_FILE="../hosts-all.txt"
 
@@ -79,7 +82,11 @@ export -f dec_peer_limit
 function cleanup_host() {
     SERVER=$1
     echo "Cleaning up at ${SERVER}" >&3
-    ssh $SSH_OPTIONS ${USER}@${SERVER} "ps ax | grep FirewallTest | sed 's/^ *//g' | cut -d' ' -f1 | xargs kill 2> /dev/null; rm -f FirewallTestServer.class" >/dev/null 2>&1
+    ssh $SSH_OPTIONS ${USER}@${SERVER} /bin/bash << EOF
+ps ax | grep FirewallTest | sed 's/^ *//g' | cut -d' ' -f1 | xargs kill 2> /dev/null
+rm -f FirewallTestServer.* FirewallTestClient.*
+EOF
+> /dev/null 2>&1
 }
 
 export -f cleanup_host
@@ -93,8 +100,11 @@ function exit_cleanup() {
         xargs -n 1 kill >/dev/null 2>&1
     cat $BACKGROUND_JOBS_SERVERFILE |\
         xargs -P 15 -n 1 -I{} bash -c 'cleanup_host "$1"' _ {}
-    ssh $SSH_OPTIONS ${USER}@${TESTING_SERVER}\
-        "ps ax | grep FirewallTest | sed 's/^ *//' | cut -d' ' -f1 | xargs kill 2> /dev/null; rm FirewallTestClient.class" >/dev/null 2>&1
+    ssh $SSH_OPTIONS ${USER}@${TESTING_SERVER} /bin/bash << EOF
+ps ax | grep FirewallTest | sed 's/^ *//' | cut -d' ' -f1 | xargs kill 2> /dev/null
+rm -f FirewallTestClient.*
+EOF
+>/dev/null 2>&1
     return 0
 }
 
@@ -106,7 +116,7 @@ function prepare_javaclass_for_host() {
     if ! [[ -e ${JAVA_FILE}.class ]]
     then
         scp $SSH_OPTIONS ${JAVA_FILE}.java ${USER}@${HOST}: >&3 2>&1
-        ssh $SSH_OPTIONS ${USER}@${HOST} "javac ${JAVA_FILE}.java" >/dev/null 2>&1
+        ssh $SSH_OPTIONS ${USER}@${HOST} "${JAVA_HOME}javac ${JAVA_FILE}.java" >/dev/null 2>&1
         EXIT_CODE=$?
     else
         scp $SSH_OPTIONS ${JAVA_FILE}.class ${USER}@${HOST}: >&3 2>&1
@@ -194,10 +204,10 @@ function TEST_HOST() {
     prepare_javaclass_for_host FirewallTestServer ${HOST}
 
     ssh $SSH_OPTIONS ${USER}@${HOST} \
-        "java FirewallTestServer ${LISTENING_PORT}" >/dev/null 2>&1 &
+        "${JAVA_HOME}java FirewallTestServer ${LISTENING_PORT}" >/dev/null 2>&1  &
     sleep $CL_TIMEOUT
     if ssh $SSH_OPTIONS ${USER}@${TESTING_SERVER} \
-        "java FirewallTestClient ${HOST} ${LISTENING_PORT}" >/dev/null 2>&1
+        "${JAVA_HOME}java FirewallTestClient ${HOST} ${LISTENING_PORT}" >/dev/null 2>&1
     then
         if $VERBOSE_OUTPUT
         then

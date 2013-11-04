@@ -1,16 +1,18 @@
 import java.io.*;
 import java.net.*;
 
+
 /**
  * Usage: FirewallTestServer [LISTENING_PORT]
  *
  * Listens for incoming UDP connection and responds. After accepting a UDP
  * message and before responding it sets up TCP server for incoming connection
- * and responds to that to. After that it repeats the process.
+ * and responds to that to. Then it tests the bandwidth by echoing received data.
  */
 class FirewallTestServer {
   private static int LISTENING_PORT = 9876;
   private static int MAX_DATA_LEN = 1024;
+  private static int BANDWIDTH_CHUNK_LEN = 50 * 1024;
 
   public static void main(String args[]) throws Exception {
     int serverPort = LISTENING_PORT;
@@ -60,6 +62,8 @@ class FirewallTestServer {
       serverDataSocket.send(sendPacket);
 
       listenOnTCP(tcpServerSocket);
+
+      bandwidthCheckListener(tcpServerSocket);
     } catch (SocketException ex) {
       System.out.println("Exception: " + ex);
       System.exit(1);
@@ -77,7 +81,7 @@ class FirewallTestServer {
     try {
       serverSocket = new ServerSocket(serverPort);
     } catch (IOException e) {
-      System.err.println("Could not listen on TCP port: " + serverPort + ". Due to: " + e); 
+      System.err.println("Could not listen on TCP port: " + serverPort + ". Due to: " + e);
       System.exit(1);
     }
 
@@ -86,7 +90,7 @@ class FirewallTestServer {
 
   static void listenOnTCP(ServerSocket serverSocket)  throws Exception {
     Socket clientSocket = null;
-    System.out.println ("Waiting for connection.....");
+    System.out.println("Waiting for connection.....");
 
     try {
       clientSocket = serverSocket.accept();
@@ -96,8 +100,8 @@ class FirewallTestServer {
     }
 
     try {
-      System.out.println ("Connection successful");
-      System.out.println ("Waiting for input.....");
+      System.out.println("Connection successful");
+      System.out.println("Waiting for input.....");
 
       PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
           true);
@@ -109,7 +113,7 @@ class FirewallTestServer {
         System.exit(1);
       }
 
-      System.out.println ("Server: " + inputLine);
+      System.out.println("Server: " + inputLine);
       out.println(inputLine);
 
       in.close();
@@ -118,5 +122,40 @@ class FirewallTestServer {
       clientSocket.close();
     }
   }
+
+  static void bandwidthCheckListener(ServerSocket serverSocket) throws Exception {
+    Socket clientSocket = null;
+    System.out.println("Waiting for connection.....");
+
+    try {
+      clientSocket = serverSocket.accept();
+    } catch (IOException e) {
+      System.err.println("Accept failed.");
+      System.exit(1);
+    }
+
+    try {
+      System.out.println("Connection successful");
+      System.out.println("Waiting for input.....");
+
+      InputStream in = new BufferedInputStream(clientSocket.getInputStream());
+      OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream());
+      byte[] buffer = new byte[BANDWIDTH_CHUNK_LEN];
+      int lenRead = 0;
+
+      while (lenRead != -1) {
+        lenRead = in.read(buffer);
+        if (lenRead > 0) {
+          out.write(buffer, 0, lenRead);
+        }
+        out.flush();
+      }
+      in.close();
+      out.close();
+    } finally {
+      clientSocket.close();
+    }
+  }
+
 }
 
