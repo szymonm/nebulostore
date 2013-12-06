@@ -56,7 +56,7 @@
 
   <appender name="FA-comm" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/comm.log" />
-    <param name="Threshold" value="DEBUG" />
+    <param name="Threshold" value="TRACE" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="&pattern;" />
     </layout>
@@ -80,7 +80,7 @@
 
   <appender name="FA-testing" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/testing.log" />
-    <param name="Threshold" value="DEBUG" />
+    <param name="Threshold" value="TRACE" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="&pattern;" />
     </layout>
@@ -118,6 +118,14 @@
     </layout>
   </appender>
 
+  <appender name="FA-replicaresolver" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/replicaresolver.log" />
+    <param name="Threshold" value="TRACE" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="&pattern;" />
+    </layout>
+  </appender>
+
   <appender name="FA-replicator" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/replicator.log" />
     <param name="Threshold" value="DEBUG" />
@@ -128,6 +136,14 @@
 
   <appender name="FA-timer" class="org.apache.log4j.FileAppender">
     <param name="File" value="logs/timer.log" />
+    <param name="Threshold" value="DEBUG" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="&pattern;" />
+    </layout>
+  </appender>
+
+  <appender name="FA-utils" class="org.apache.log4j.FileAppender">
+    <param name="File" value="logs/utils.log" />
     <param name="Threshold" value="DEBUG" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="&pattern;" />
@@ -161,6 +177,11 @@
     <appender-ref ref="FA-comm"/>
   </logger>
 
+  <logger name="org.nebulostore.newcommunication">
+    <level value="TRACE"/>
+    <appender-ref ref="FA-comm"/>
+  </logger>
+
   <logger name="org.nebulostore.communication.dht">
     <level value="DEBUG"/>
     <appender-ref ref="FA-dht"/>
@@ -177,7 +198,7 @@
   </logger>
 
   <logger name="org.nebulostore.systest">
-    <level value="DEBUG" />
+    <level value="TRACE" />
     <appender-ref ref="FA-testing"/>
   </logger>
 
@@ -206,9 +227,19 @@
     <appender-ref ref="FA-replicator"/>
   </logger>
 
+  <logger name="org.nebulostore.replicaresolver">
+    <level value="DEBUG" />
+    <appender-ref ref="FA-replicaresolver"/>
+  </logger>
+
   <logger name="org.nebulostore.timer">
     <level value="DEBUG" />
     <appender-ref ref="FA-timer"/>
+  </logger>
+
+  <logger name="org.nebulostore.utils">
+    <level value="DEBUG" />
+    <appender-ref ref="FA-utils"/>
   </logger>
 
   <root>

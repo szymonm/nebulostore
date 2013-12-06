@@ -6,6 +6,7 @@ import org.nebulostore.communication.CommunicationPeerConfiguration;
 import org.nebulostore.communication.gossip.GossipService;
 import org.nebulostore.communication.gossip.GossipServiceFactory;
 import org.nebulostore.communication.gossip.OneTimeUniformGossipService;
+import org.nebulostore.newcommunication.CommunicationFacadeAdapterConfiguration;
 import org.nebulostore.peers.AbstractPeer;
 import org.nebulostore.peers.GenericConfiguration;
 import org.nebulostore.systest.TestingPeerConfiguration;
@@ -22,7 +23,12 @@ public class PerfTestingPeerConfiguration extends TestingPeerConfiguration {
 
   @Override
   protected void configureCommunicationPeer() {
-    GenericConfiguration genConf = new PerfTestingCommunicationPeerConfiguration();
+    GenericConfiguration genConf;
+    if (config_.getString("communication.comm-module", "").equals("communication")) {
+      genConf = new PerfTestingCommunicationPeerConfiguration();
+    } else {
+      genConf = new CommunicationFacadeAdapterConfiguration();
+    }
     genConf.setXMLConfig(config_);
     install(genConf);
   }

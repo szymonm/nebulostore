@@ -31,7 +31,7 @@ public class CommunicationPeerConfiguration extends GenericConfiguration {
     configureListenerService();
     configureMessengerService();
 
-    install(new FactoryModuleBuilder().implement(CommunicationPeer.class,
+    install(new FactoryModuleBuilder().implement(Runnable.class,
           CommunicationPeer.class).build(CommunicationPeerFactory.class));
   }
 

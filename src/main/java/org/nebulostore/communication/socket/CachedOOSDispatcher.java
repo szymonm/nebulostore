@@ -78,6 +78,7 @@ public class CachedOOSDispatcher implements OOSDispatcher {
    * Lock for operations on *Sockets_ maps.
    */
   private final Lock socketsLock_ = new ReentrantLock();
+
   /**
    * Locks associated with given CommAddress.
    *

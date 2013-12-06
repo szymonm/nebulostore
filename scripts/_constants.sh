@@ -1,7 +1,7 @@
-USER=mimuw_nebulostore
-REMOTE_DIR="nebulostore_autodeploy/"`whoami`
-SSH_OPTIONS="StrictHostKeyChecking=no"
+export USER=mimuw_nebulostore
+export REMOTE_DIR="nebulostore_autodeploy/"`whoami`
+export SSH_OPTIONS="StrictHostKeyChecking=no"
 
-LOG_DIR="../logs"
+export LOG_DIR="../logs"
 
-JAVA_EXEC="~/jdk1.7.0_21/bin/java"
+export JAVA_EXEC="~/jdk1.7.0_21/bin/java"

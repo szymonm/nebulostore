@@ -12,7 +12,7 @@ import org.nebulostore.appcore.messaging.Message;
  * @author Grzegorz Milka
  */
 public interface CommunicationPeerFactory {
-  CommunicationPeer newCommunicationPeer(
+  Runnable newCommunicationPeer(
       @Assisted("CommunicationPeerInQueue") BlockingQueue<Message> inQueue,
       @Assisted("CommunicationPeerOutQueue") BlockingQueue<Message> outQueue);
 }
