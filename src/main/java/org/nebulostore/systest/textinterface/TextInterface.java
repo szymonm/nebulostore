@@ -61,47 +61,47 @@ public final class TextInterface extends Peer {
   }
 
   @Override
-  protected void runPeer() {
+  protected void initializeModules() {
     System.out.print("Starting NebuloStore ...\n");
-    initPeer();
+    runNetworkMonitor();
     runBroker();
-    startPeer();
-    putKey(appKey_);
-    try {
-      inputLoop();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    finishPeer();
   }
 
-  protected void inputLoop() throws IOException {
-    Scanner in = new Scanner(System.in, "UTF-8");
-    while (true) {
-      System.out.print("$ ");
-      String line = in.nextLine();
-      String[] tokens = line.split(" ");
+  @Override
+  protected void runActively() {
+    putKey(appKey_);
+    inputLoop();
+  }
 
-      if (tokens[0].equals("end")) {
-        quitNebuloStore();
-        break;
-      } else if ("putkey".equals(tokens[0])) {
-        putKey(tokens);
-      } else if ("write".equals(tokens[0])) {
-        write(tokens);
-      } else if ("read".equals(tokens[0])) {
-        read(tokens);
-      } else if ("delete".equals(tokens[0])) {
-        delete(tokens);
-      } else if ("subscribe".equals(tokens[0])) {
-        subscribe(tokens);
-      } else if ("rmsub".equals(tokens[0])) {
-        removeSubscription(tokens);
-      } else if (tokens[0].equals("")) {
-        continue;
-      } else {
-        System.out.println("Unknown command (type \"end\" to exit)");
+  protected void inputLoop() {
+    try (Scanner in = new Scanner(System.in, "UTF-8")) {
+      while (true) {
+        System.out.print("$ ");
+        String line = in.nextLine();
+        String[] tokens = line.split(" ");
+        if (tokens[0].equals("end")) {
+          quitNebuloStore();
+          break;
+        } else if ("putkey".equals(tokens[0])) {
+          putKey(tokens);
+        } else if ("write".equals(tokens[0])) {
+          write(tokens);
+        } else if ("read".equals(tokens[0])) {
+          read(tokens);
+        } else if ("delete".equals(tokens[0])) {
+          delete(tokens);
+        } else if ("subscribe".equals(tokens[0])) {
+          subscribe(tokens);
+        } else if ("rmsub".equals(tokens[0])) {
+          removeSubscription(tokens);
+        } else if (tokens[0].equals("")) {
+          continue;
+        } else {
+          System.out.println("Unknown command (type \"end\" to exit)");
+        }
       }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 

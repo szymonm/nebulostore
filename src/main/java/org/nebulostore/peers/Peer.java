@@ -28,6 +28,9 @@ import org.nebulostore.timer.Timer;
 /**
  * This is a regular peer with full functionality. It creates, connects and runs all modules.
  * To create a different peer, subclass Peer and set its class name in configuration.
+ *
+ * To customize the Peer, please override initializeModules(), runActively() and cleanModules().
+ *
  * @author Bolek Kulbabinski
  */
 public class Peer extends AbstractPeer {
@@ -63,11 +66,12 @@ public class Peer extends AbstractPeer {
     commPeerFactory_ = commPeerFactory;
     peerTimer_ = timer;
     injector_ = injector;
-  }
 
-  @Override
-  public final void run() {
-    runPeer();
+    // Create core threads.
+    Runnable dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
+    dispatcherThread_ = new Thread(dispatcher, "Dispatcher");
+    Runnable commPeer = commPeerFactory_.newCommunicationPeer(networkInQueue_, dispatcherInQueue_);
+    networkThread_ = new Thread(commPeer, "CommunicationPeer");
   }
 
   public void quitNebuloStore() {
@@ -79,51 +83,56 @@ public class Peer extends AbstractPeer {
     }
   }
 
-  protected void runPeer() {
-    initPeer();
-    runBroker();
-    runAsyncModules();
-    startPeer();
-    putKey(appKey_);
-    finishPeer();
+  @Override
+  public final void run() {
+    runPeer();
   }
 
-  protected void putKey(AppKey appKey) {
-    // TODO(bolek): This should be part of broker.
-    PutKeyModule module = new PutKeyModule(new ReplicationGroup(new CommAddress[]{commAddress_},
-        BigInteger.ZERO, new BigInteger("1000000")), dispatcherInQueue_);
-    try {
-      module.getResult(30);
-    } catch (NebuloException exception) {
-      logger_.error("Unable to execute PutKeyModule!", exception);
-    }
+  private void runPeer() {
+    initializeModules();
+    startCoreThreads();
+    runActively();
+    joinCoreThreads();
+    cleanModules();
   }
 
   /**
-   * Method that creates, connects and runs Dispatcher and Communication modules.
+   * Initialize all optional modules and schedule them for execution by dispatcher.
+   * Override this method to run modules selectively.
    */
-  protected void initPeer() {
-    Runnable commPeer;
-    Dispatcher dispatcher = new Dispatcher(dispatcherInQueue_, networkInQueue_, injector_);
-    dispatcherThread_ = new Thread(dispatcher, "Dispatcher");
-
-    commPeer = commPeerFactory_.newCommunicationPeer(networkInQueue_, dispatcherInQueue_);
-    networkThread_ = new Thread(commPeer, "CommunicationPeer");
-
-    NetworkContext.getInstance().setCommAddress(commAddress_);
-    NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
+  protected void initializeModules() {
+    runNetworkMonitor();
+    runBroker();
+    runAsyncMessaging();
   }
 
-  protected void startPeer() {
-    networkThread_.start();
-    dispatcherThread_.start();
+  /**
+   * Logic to be executed when the application is already running.
+   * Override this method when operations on active application are necessary.
+   */
+  protected void runActively() {
+    // TODO: Move putkey to separate module or at least make it non-blocking.
+    putKey(appKey_);
+  }
+
+  /**
+   * Actions performed on exit.
+   * Override this method when special clean-up is required.
+   */
+  protected void cleanModules() {
+    // Empty by default.
+  }
+
+  protected void runNetworkMonitor() {
+    NetworkContext.getInstance().setCommAddress(commAddress_);
+    NetworkContext.getInstance().setDispatcherQueue(dispatcherInQueue_);
   }
 
   protected void runBroker() {
     broker_.runThroughDispatcher();
   }
 
-  protected void runAsyncModules() {
+  protected void runAsyncMessaging() {
     // Periodically checking asynchronous messages starting from now.
     peerTimer_.scheduleRepeatedJob(injector_.getProvider(RetrieveAsynchronousMessagesModule.class),
         0L, RetrieveAsynchronousMessagesModule.EXECUTION_PERIOD);
@@ -138,7 +147,23 @@ public class Peer extends AbstractPeer {
     NetworkContext.getInstance().addContextChangeMessageGenerator(addFoundSynchroPeer);
   }
 
-  protected void finishPeer() {
+  protected void putKey(AppKey appKey) {
+    // TODO(bolek): This should be part of broker.
+    PutKeyModule module = new PutKeyModule(new ReplicationGroup(new CommAddress[]{commAddress_},
+        BigInteger.ZERO, new BigInteger("1000000")), dispatcherInQueue_);
+    try {
+      module.getResult(30);
+    } catch (NebuloException exception) {
+      logger_.error("Unable to execute PutKeyModule!", exception);
+    }
+  }
+
+  protected void startCoreThreads() {
+    networkThread_.start();
+    dispatcherThread_.start();
+  }
+
+  protected void joinCoreThreads() {
     // Wait for threads to finish execution.
     try {
       networkThread_.join();

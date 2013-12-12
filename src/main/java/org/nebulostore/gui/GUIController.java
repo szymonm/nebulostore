@@ -64,23 +64,25 @@ public class GUIController extends Peer {
     objectFactory_ = objectFactory;
   }
 
-  protected void runPeer() {
-    initPeer();
+  @Override
+  protected void initializeModules() {
+    runNetworkMonitor();
     runBroker();
-    startPeer();
-    putKey(appKey_);
+  }
 
+  @Override
+  protected void runActively() {
+    // TODO: Move putkey to separate module or at least make it non-blocking.
+    putKey(appKey_);
     try {
       initializeRootAddress();
       if (appKey_.equals(rootAddress_.getAppKey())) {
         createInitialList();
       }
-
       EventQueue.invokeLater(new Runnable() {
+        @Override
         public void run() {
-
           view_ = new GUIView(new NebuloElement(rootAddress_), appKey_);
-
           view_.addNodeSelectionListener(new NodeSelectionListener());
           view_.addNodeExpansionListener(new NodeExpansionListener());
           view_.addSaveFileButtonListener(new SaveFileButtonListener());
@@ -92,11 +94,8 @@ public class GUIController extends Peer {
           view_.addBrowseFolderButtonListener(new BrowseFolderButtonListener());
           view_.addNewViewButtonListener(new NewViewButtonListener());
           view_.addWindowListener(new CloseListener());
-
           view_.expandRoot();
-
           view_.setVisible(true);
-
         }
       });
     } catch (UnsupportedEncodingException exception) {
@@ -104,13 +103,12 @@ public class GUIController extends Peer {
     } catch (NebuloException exception) {
       printExceptionAndFinish(exception);
     }
-
   }
 
   private void printExceptionAndFinish(Exception exception) {
     logger_.error("Got exception while setting up GUI.", exception);
     quitNebuloStore();
-    finishPeer();
+    joinCoreThreads();
   }
 
   private void initializeRootAddress() {
@@ -565,7 +563,7 @@ public class GUIController extends Peer {
     public void windowClosing(WindowEvent event) {
       view_.dispose();
       quitNebuloStore();
-      finishPeer();
+      joinCoreThreads();
     }
 
     @Override

@@ -41,18 +41,23 @@ public class TestingPeer extends Peer {
   }
 
   @Override
-  protected void runPeer() {
+  protected void initializeModules() {
     logger_.info("Starting testing peer with appKey = " + appKey_);
-    initPeer();
+    runNetworkMonitor();
     runBroker();
-    startPeer();
-    putKey(appKey_);
+  }
 
+  @Override
+  protected void runActively() {
+    // TODO: Move putkey to separate module or at least make it non-blocking.
+    putKey(appKey_);
     if (isTestServer_) {
       runTestingServer();
     }
+  }
 
-    finishPeer();
+  @Override
+  protected void cleanModules() {
     System.exit(0);
   }
 
