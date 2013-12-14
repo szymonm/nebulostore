@@ -31,7 +31,6 @@ import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.crypto.CryptoUtils;
 import org.nebulostore.replicator.core.DeleteObjectException;
-import org.nebulostore.replicator.core.OutOfDateFileException;
 import org.nebulostore.replicator.core.Replicator;
 import org.nebulostore.replicator.core.TransactionAnswer;
 import org.nebulostore.replicator.messages.ConfirmationMessage;
@@ -161,16 +160,8 @@ public class ReplicatorImpl extends Replicator {
     public Void visit(GetObjectMessage message) {
       logger_.debug("GetObjectMessage with objectID = " + message.getObjectId());
       jobId_ = message.getId();
-      EncryptedObject enc;
-      Set<String> versions;
-      try {
-        enc = getObject(message.getObjectId());
-        versions = getPreviousVersions(message.getObjectId());
-      } catch (OutOfDateFileException exception) {
-        networkQueue_.add(new ReplicatorErrorMessage(message.getSourceJobId(),
-            message.getDestinationAddress(), "object out of date"));
-        return null;
-      }
+      EncryptedObject enc = getObject(message.getObjectId());
+      Set<String> versions = getPreviousVersions(message.getObjectId());
 
       if (enc == null) {
         logger_.debug("Could not retrieve given object. Dying with error.");
@@ -214,7 +205,8 @@ public class ReplicatorImpl extends Replicator {
 
         QueryToStoreResult query = queryToUpdateObject(message.getAddress().getObjectId(),
             encryptedObject, res.getSecond(), message.getId());
-        if (query == QueryToStoreResult.OK || query == QueryToStoreResult.OBJECT_OUT_OF_DATE) {
+        if (query == QueryToStoreResult.OK || query == QueryToStoreResult.OBJECT_OUT_OF_DATE ||
+            query == QueryToStoreResult.INVALID_VERSION) {
           commitUpdateObject(message.getAddress().getObjectId(), res.getSecond(),
               CryptoUtils.sha(encryptedObject), message.getId());
         } else {
@@ -245,21 +237,21 @@ public class ReplicatorImpl extends Replicator {
       EncryptedObject encryptedObject, Set<String> previousVersions, String transactionToken) {
     logger_.debug("Checking store consistency");
 
-    String currentObjectVersion = null;
-
     String location = getObjectLocation(objectId);
     if (objectExists(location)) {
+
+      Set<String> localPreviousVersions = getPreviousVersions(objectId);
+
+      /* checking whether remote file is up to date (update is not concurrent) */
+      if (!previousVersions.containsAll(localPreviousVersions)) {
+        return QueryToStoreResult.INVALID_VERSION;
+      }
+
       /* checking whether local file is up to date */
-      try {
-        currentObjectVersion = CryptoUtils.sha(getObject(objectId));
-      } catch (OutOfDateFileException exception) {
+      if (!localPreviousVersions.containsAll(previousVersions)) {
         return QueryToStoreResult.OBJECT_OUT_OF_DATE;
       }
 
-      /* checking remote file's previous versions */
-      if (!previousVersionsMatch(objectId, currentObjectVersion, previousVersions)) {
-        return QueryToStoreResult.INVALID_VERSION;
-      }
     } else {
       logger_.debug("storing new file");
       // TODO(szm, bolek): addtional synchronization for locksMap_?
@@ -351,22 +343,11 @@ public class ReplicatorImpl extends Replicator {
   }
 
   /**
-   * Returns true only if all versions of the file stored in this replica belong to the
-   * set of versions known by the peer requesting update.
-   */
-  private boolean previousVersionsMatch(ObjectId objectId, String current,
-      Set<String> previousVersions) {
-    return previousVersions.containsAll(getPreviousVersions(objectId));
-  }
-
-  /**
    * Retrieves object from disk.
    * @return Encrypted object or null if and only if object can't be read from disk(either because
    * it wasn't stored or there was a problem reading file).
-   *
-   * @throws OutOfDateFileException if object is stored but out of date.
    */
-  public EncryptedObject getObject(ObjectId objectId) throws OutOfDateFileException {
+  public EncryptedObject getObject(ObjectId objectId) {
     logger_.debug("getObject with objectID = " + objectId);
     String location = getObjectLocation(objectId);
     if (!objectExists(location)) {
