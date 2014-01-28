@@ -48,8 +48,8 @@ import org.nebulostore.newcommunication.routing.Router;
  */
 public class CommunicationFacadeConfiguration extends AbstractModule {
   private static final int N_SERVICES = 4;
-  private final XMLConfiguration xmlConfig_;
-  private final ExecutorService serviceExecutor_ = Executors.newFixedThreadPool(N_SERVICES);
+  protected final XMLConfiguration xmlConfig_;
+  protected final ExecutorService serviceExecutor_ = Executors.newFixedThreadPool(N_SERVICES);
 
   public CommunicationFacadeConfiguration(
       XMLConfiguration xmlConfig) {
@@ -113,7 +113,7 @@ public class CommunicationFacadeConfiguration extends AbstractModule {
         toInstance(Executors.newScheduledThreadPool(1));
   }
 
-  private void configurePeerDiscovery() {
+  protected void configurePeerDiscovery() {
     ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1);
 
     bind(ExecutorService.class).annotatedWith(Names.named(

@@ -24,7 +24,7 @@ public class CommunicationFacadeAdapterConfiguration extends GenericConfiguratio
   protected final void configureAll() {
     configureLocalCommAddress();
 
-    AbstractModule commModule = new CommunicationFacadeConfiguration(config_);
+    AbstractModule commModule = createCommunicationFacadeConfiguration();
 
     install(commModule);
 
@@ -50,5 +50,8 @@ public class CommunicationFacadeAdapterConfiguration extends GenericConfiguratio
     return Executors.newCachedThreadPool();
   }
 
+  protected CommunicationFacadeConfiguration createCommunicationFacadeConfiguration() {
+    return new CommunicationFacadeConfiguration(config_);
+  }
 
 }
