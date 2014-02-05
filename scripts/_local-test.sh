@@ -43,6 +43,7 @@ do
     mv ../Peer.xml.$i ../build/jar/$i/resources/conf/Peer.xml
 done
 
+
 # Run server normally and clients in background.
 echo "RUNNING ..."
 cd ../build/jar

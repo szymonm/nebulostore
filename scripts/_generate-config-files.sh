@@ -86,9 +86,9 @@ if [[ -n $HOST_LIST ]]; then
 fi
 
 if [ $CONFIG_TEMPLATE_PATCH ]; then
-  ./_update-xml.sh ../resources/conf/Peer.xml.template $CONFIG_TEMPLATE_PATCH > Peer.xml.base
+  ./_update-xml.sh ../resources/conf/Peer.xml.template $CONFIG_TEMPLATE_PATCH > ../Peer.xml.base
 else
-  cp ../resources/conf/Peer.xml.template Peer.xml.base
+  cp ../resources/conf/Peer.xml.template ../Peer.xml.base
 fi
 
 # Configure peers.
@@ -134,7 +134,9 @@ do
          --systest/is-server=$IS_SERVER\
          --num-test-participants=$TEST_CLIENTS_NUM\
          --systest/data-file=$DATA_FILE \
-         --bdb-peer/holder-comm-address=00000000-0000-0000-0001-000000000000 < Peer.xml.base > ../Peer.xml.$i
+         --bdb-peer/holder-comm-address=00000000-0000-0000-0001-000000000000 < ../Peer.xml.base > ../Peer.xml.$i
 done
+
+mv ../Peer.xml.base ../build/Peer.xml.base
 
 cd ${EXEC_DIR}

@@ -60,7 +60,7 @@ public abstract class JobModule extends Module {
       logger_.error("Module already ran.");
       return;
     }
-    
+
     isStarted_ = true;
     outQueue_.add(new JobInitMessage(this));
   }

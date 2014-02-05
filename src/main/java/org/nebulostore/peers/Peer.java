@@ -27,15 +27,10 @@ import org.nebulostore.timer.MessageGenerator;
 import org.nebulostore.timer.Timer;
 
 /**
-<<<<<<< HEAD
  * This is a regular peer with full functionality. It creates, connects and runs all modules.
  * To create a different peer, subclass Peer and set its class name in configuration.
  *
  * To customize the Peer, please override initializeModules(), runActively() and cleanModules().
-=======
- * This is a regular peer with full functionality. It creates, connects and runs all modules. To
- * create a different peer, subclass Peer and set its class name in configuration.
->>>>>>> New broker
  *
  * @author Bolek Kulbabinski
  */
