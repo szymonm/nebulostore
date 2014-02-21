@@ -2,6 +2,8 @@ package org.nebulostore.broker;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.nebulostore.communication.address.CommAddress;
 import org.nebulostore.crypto.CryptoUtils;
 
@@ -9,6 +11,7 @@ import org.nebulostore.crypto.CryptoUtils;
  * Contract between peers.
  * @author szymonmatejczyk
  */
+@XmlRootElement
 public class Contract implements Serializable {
   private static final long serialVersionUID = 8104248584725231818L;
 
