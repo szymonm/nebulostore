@@ -672,12 +672,12 @@ public class GUIController extends Peer {
   }
 
   private NebuloFile writeNebuloFileWithString(NebuloAddress address, String content)
-    throws UnsupportedEncodingException, NebuloException {
+      throws UnsupportedEncodingException, NebuloException {
     return writeNebuloFileWithByteArray(address, content.getBytes("UTF-8"));
   }
 
   private NebuloFile writeNebuloFileWithByteArray(NebuloAddress address, byte[] content)
-    throws NebuloException {
+      throws NebuloException {
     NebuloFile file = fetchOrCreateNebuloFile(address);
 
     int bytesWritten = file.write(content, 0);

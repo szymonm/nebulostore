@@ -75,7 +75,7 @@ public final class PeerSamplingGossipService extends GossipService {
    * true argument stands for running as a deamon thread
    */
   private final Timer gossipSender_ = new Timer(true);
-  private final MessageVisitor msgVisitor_ = new GossipMsgVisitor();
+  private final GossipMsgVisitor msgVisitor_ = new GossipMsgVisitor();
 
   @AssistedInject
   public PeerSamplingGossipService(

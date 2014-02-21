@@ -48,7 +48,7 @@ public class CachedCommAddressResolver implements CommAddressResolver {
 
   @Override
   public InetSocketAddress resolve(CommAddress commAddress)
-    throws IOException, AddressNotPresentException {
+      throws IOException, AddressNotPresentException {
     LOGGER.trace(String.format("resolve(%s)", commAddress));
 
     if (hasStarted_.compareAndSet(false, true)) {

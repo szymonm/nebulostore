@@ -187,7 +187,7 @@ public class NebuloFile extends NebuloObject {
   }
 
   private void writeSingleChunk(int chunkIdx, byte[] buffer, int bufPos, int chunkPos, int len)
-    throws NebuloException {
+      throws NebuloException {
     if (chunkIdx >= chunks_.size()) {
       // Create new chunk at the end.
       // TODO(bolek): Better ID generation!

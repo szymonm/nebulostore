@@ -1,7 +1,5 @@
 package org.nebulostore.systest.networkmonitor;
 
-import java.util.Random;
-
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
 import org.nebulostore.appcore.messaging.MessageVisitor;

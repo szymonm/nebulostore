@@ -22,7 +22,7 @@ public interface PersistentAddressingPeer {
   InetSocketAddress getCurrentInetSocketAddress() throws IOException;
   void uploadCurrentInetSocketAddress() throws IOException;
   void uploadCurrentInetSocketAddress(InetSocketAddress address)
-    throws IOException;
+      throws IOException;
 }
 
 

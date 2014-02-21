@@ -91,7 +91,7 @@ public class MessageExchangeTestClient implements Callable<TestResult> {
   }
 
   private void aggregateSendConfirmations(Collection<CommAddress> otherClients)
-    throws InterruptedException {
+      throws InterruptedException {
     Collection<CommAddress> sentPings = new LinkedList<>();
     for (int i = 0; i < otherClients.size(); ++i) {
       Future<CommMessage> future = msgSendComplServiceReader_.take();

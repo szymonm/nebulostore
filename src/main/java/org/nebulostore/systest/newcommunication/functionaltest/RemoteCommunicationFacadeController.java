@@ -14,7 +14,7 @@ import org.nebulostore.communication.messages.CommMessage;
  */
 public interface RemoteCommunicationFacadeController extends Remote {
   void registerRemoteCommunicationFacade(RemoteCommunicationFacadeAdapter commFacade)
-    throws RemoteException;
+      throws RemoteException;
   void notifyAboutMessage(CommMessage message) throws RemoteException;
   void notifyAboutPeerFound(CommAddress source, CommAddress newPeer) throws RemoteException;
 }

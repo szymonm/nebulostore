@@ -54,7 +54,7 @@ public class InMemoryMap implements RemoteMap {
 
   @Override
   public void performTransaction(int type, Serializable key, Transaction transaction)
-    throws IOException {
+      throws IOException {
     LOGGER.trace(String.format("performTransaction(%d, %s, %s)", type, key, transaction));
     writeLock_.lock();
     try {

@@ -108,7 +108,7 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
   }
 
   public ObjectOutputStream get(CommAddress commAddress)
-    throws IOException, InterruptedException {
+      throws IOException, InterruptedException {
 
     SocketOOSPair pair = null;
     Semaphore sem = null;
@@ -154,7 +154,7 @@ public class SimpleOOSDispatcher implements OOSDispatcher {
   }
 
   private Socket createSocket(CommAddress commAddress)
-    throws IOException {
+      throws IOException {
     /* Create socket */
     Socket socket = null;
     try {

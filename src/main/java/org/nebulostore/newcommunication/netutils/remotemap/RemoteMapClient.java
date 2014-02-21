@@ -35,7 +35,7 @@ public class RemoteMapClient implements RemoteMap {
 
   @Override
   public void performTransaction(int type, Serializable key, Transaction transaction)
-    throws IOException {
+      throws IOException {
     LOGGER.debug(String.format("performTransaction(%d,%s, %s)", type, key, transaction));
     try (Socket socket = new Socket(serverAddress_.getAddress(), serverAddress_.getPort())) {
       ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());

@@ -64,7 +64,7 @@ public class BootstrapServer extends BootstrapService implements Runnable {
       @Named("communication.ports.bootstrap-port") int bootstrapPort,
       @Named("communication.ports.tomp2p-port") int tomP2PPort,
       @Named("LocalCommAddress") CommAddress commAddress)
-    throws NebuloException {
+      throws NebuloException {
     super(commCliPort, bootstrapPort, tomP2PPort, tomP2PPort);
     myInetSocketAddress_ = new InetSocketAddress(bootstrapServerAddress, commCliPort_);
     bootstrapPort_ = bootstrapPort;

@@ -271,7 +271,7 @@ public class CachedOOSDispatcher implements OOSDispatcher {
    * Creates socket to host pointed by commAddress.
    */
   private Socket createSocket(CommAddress commAddress)
-    throws IOException {
+      throws IOException {
     /* Create socket */
     Socket socket = null;
     try {

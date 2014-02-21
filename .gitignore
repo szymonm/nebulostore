@@ -11,7 +11,7 @@
 *.jar
 
 #maven build directory
-/target
+target
 
 #eclipse project files
 .classpath
@@ -21,4 +21,4 @@
 #nebulo dirs created by tests
 build
 logs
-strage
+storage

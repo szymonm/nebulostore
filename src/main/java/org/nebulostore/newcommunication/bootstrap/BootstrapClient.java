@@ -47,7 +47,7 @@ public class BootstrapClient implements BootstrapService {
   }
 
   private BootstrapInformation connectAndGetInformation(InetSocketAddress bootstrapNetAddress)
-    throws IOException {
+      throws IOException {
     BootstrapInformation bootInfo;
     try (Socket socket = new Socket(
         bootstrapNetAddress.getAddress(), bootstrapNetAddress.getPort())) {

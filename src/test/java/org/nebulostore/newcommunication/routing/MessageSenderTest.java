@@ -67,7 +67,7 @@ public final class MessageSenderTest {
 
   @Test
   public void shouldAddErrorSendResultToQueueWhenMessageSendStreamThrowsException()
-    throws Exception {
+      throws Exception {
     OutputStream os = mock(OutputStream.class);
     ObjectOutputStream oos = new ObjectOutputStream(os);
     InetSocketAddress destAddress = new InetSocketAddress(0);

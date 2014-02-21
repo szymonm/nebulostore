@@ -81,7 +81,7 @@ public class MessengerServiceTest {
    */
   @Test
   public void testSendMessageToNonexistentHost()
-    throws IOException, InterruptedException {
+      throws IOException, InterruptedException {
     CommMessage commMsg = new CommPeerFoundMessage(MY_COMM_ADDRESS, DEST_COMM_ADDRESS);
     Message recvMsg;
 
@@ -109,7 +109,7 @@ public class MessengerServiceTest {
    * it on given destPort port number.
    */
   private void testSendMessage(CommAddress destCA, int destPort)
-    throws IOException, InterruptedException {
+      throws IOException, InterruptedException {
     /* Throwing IOException to from function to get cleaner code */
     CommMessage commMsg = new CommPeerFoundMessage(MY_COMM_ADDRESS, destCA);
     Exchanger<Message> exchanger = new Exchanger<>();

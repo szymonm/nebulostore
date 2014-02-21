@@ -3,10 +3,7 @@ package org.nebulostore.communication.dht;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Queue;
-import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -41,7 +38,6 @@ import org.nebulostore.communication.dht.messages.PutDHTMessage;
 import org.nebulostore.communication.dht.messages.ValueDHTMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTAckMessage;
 import org.nebulostore.communication.messages.ReconfigureDHTMessage;
-import org.nebulostore.networkmonitor.NetworkContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

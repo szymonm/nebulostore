@@ -10,7 +10,8 @@ import com.google.common.base.Predicate;
 public class OnlySizeContractsEvaluator extends ContractsEvaluatorWithDefault {
   /* Naive - only space sum */
   @Override
-  public double evaluate(ContractsSet contracts, Predicate<Contract> predicate, ContractsSet added) {
+  public double evaluate(ContractsSet contracts, Predicate<Contract> predicate,
+      ContractsSet added) {
     ContractsSet filtered = new ContractsSet();
     for (Contract c : contracts) {
       if (predicate.apply(c)) {

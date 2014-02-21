@@ -100,7 +100,7 @@ public abstract class TomP2PPeer implements PersistentAddressingPeer {
 
   @Override
   public void uploadCurrentInetSocketAddress(InetSocketAddress address)
-    throws IOException {
+      throws IOException {
     checkSetUp();
     Number160 addressKey = KeyDHT.combine(
         KeyDHT.COMMUNICATION_KEY,

@@ -31,7 +31,7 @@ class HashAddressResolver implements CommAddressResolver {
   }
 
   public InetSocketAddress resolve(CommAddress commAddress)
-    throws IOException, AddressNotPresentException {
+      throws IOException, AddressNotPresentException {
     FutureDHT futureDHT = null;
     try {
       logger_.trace("About to resolve: " + commAddress + ".");

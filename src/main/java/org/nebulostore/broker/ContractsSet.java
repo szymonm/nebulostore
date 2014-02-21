@@ -36,13 +36,12 @@ public class ContractsSet extends HashSet<Contract> implements Cloneable {
   public ContractsSet clone() {
     return (ContractsSet) super.clone();
   }
-  
-  public static Predicate<Contract> containsPredicate(ContractsSet set) {
-	final ContractsSet set_ = set;
-	return new Predicate<Contract>() {
+
+  public static Predicate<Contract> containsPredicate(final ContractsSet set) {
+    return new Predicate<Contract>() {
       @Override
       public boolean apply(Contract contract) {
-        return set_.contains(contract);
+        return set.contains(contract);
       }
     };
   }

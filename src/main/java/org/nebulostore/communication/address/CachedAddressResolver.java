@@ -30,7 +30,7 @@ class CachedAddressResolver implements CommAddressResolver {
 
   @Override
   public InetSocketAddress resolve(CommAddress commAddress)
-    throws IOException, AddressNotPresentException {
+      throws IOException, AddressNotPresentException {
     InetSocketAddress inetSocketAddress = cache_.get(commAddress);
     if (inetSocketAddress == null) {
       logger_.trace("CommAddress: " + commAddress +

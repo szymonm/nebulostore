@@ -422,7 +422,7 @@ public final class CommunicationPeer extends Module {
    * @author Grzegorz Milka
    */
   private void reconfigureDHT(String dhtProvider, ReconfigureDHTMessage reconfigureRequest)
-    throws NebuloException {
+      throws NebuloException {
 
     if (dhtProvider.equals("bdb") && (dhtPeer_ instanceof BdbPeer)) {
       if (reconfigureRequest != null && ((BdbPeer) dhtPeer_).getHolderAddress() != null) {
