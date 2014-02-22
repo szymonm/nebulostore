@@ -4,11 +4,15 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.junit.Test;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.EncryptedObject;
 import org.nebulostore.appcore.model.NebuloFile;
 import org.nebulostore.appcore.model.NebuloObjectUtils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -51,5 +55,31 @@ public class CryptoUtilsTest {
     String res1 = CryptoUtils.sha(new EncryptedObject(seq));
     String res2 = CryptoUtils.sha(new EncryptedObject(seq));
     assertTrue(res1.equals(res2));
+  }
+
+  @XmlRootElement
+  public static class TestBean {
+    private int attribute_ = 7;
+    public int getAttribute() {
+      return attribute_;
+    }
+    public void setAttribute(int attribute) {
+      attribute_ = attribute;
+    }
+  }
+
+  private static final String SERIALIZED = "<?xml version=\"1.0\" encoding=\"UTF-8\"" +
+      " standalone=\"yes\"?><testBean><attribute>7</attribute></testBean>";
+
+  @Test
+  public void testXMLSerialization() throws NebuloException {
+    TestBean obj = new TestBean();
+    assertEquals(SERIALIZED, CryptoUtils.objectToXml(obj, false, TestBean.class));
+  }
+
+  @Test
+  public void testXMLDeserialization() throws NebuloException {
+    TestBean obj = CryptoUtils.xmlToObject(SERIALIZED, TestBean.class);
+    assertEquals(7, obj.getAttribute());
   }
 }

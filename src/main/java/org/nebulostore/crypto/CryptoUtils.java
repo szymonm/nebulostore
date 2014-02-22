@@ -13,7 +13,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
+import com.google.common.base.Charsets;
+
 import org.apache.log4j.Logger;
+import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.model.EncryptedObject;
 
 /**
@@ -108,6 +116,30 @@ public final class CryptoUtils {
 
   public static double nextDouble() {
     return RANDOM.nextDouble();
+  }
+
+  public static String objectToXml(Object object, boolean pretty, Class<?>... context)
+      throws NebuloException {
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(context);
+      Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+      jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, pretty);
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      jaxbMarshaller.marshal(object, stream);
+      return stream.toString();
+    } catch (JAXBException e) {
+      throw new NebuloException("Unable to serialize", e);
+    }
+  }
+
+  public static <T> T xmlToObject(String xml, Class<T> clazz) throws NebuloException {
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
+      Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+      return (T) jaxbUnmarshaller.unmarshal(new ByteArrayInputStream(xml.getBytes(Charsets.UTF_8)));
+    } catch (JAXBException e) {
+      throw new NebuloException("Unable to deserialize", e);
+    }
   }
 
   private static final SecureRandom RANDOM = new SecureRandom();
