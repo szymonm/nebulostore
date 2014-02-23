@@ -126,7 +126,7 @@ public final class CryptoUtils {
       jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, pretty);
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
       jaxbMarshaller.marshal(object, stream);
-      return stream.toString();
+      return new String(stream.toByteArray(), Charsets.UTF_8);
     } catch (JAXBException e) {
       throw new NebuloException("Unable to serialize", e);
     }

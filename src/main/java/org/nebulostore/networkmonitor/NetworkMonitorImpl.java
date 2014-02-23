@@ -49,7 +49,7 @@ public class NetworkMonitorImpl extends NetworkMonitor {
 
   protected Provider<ConnectionTestMessageHandler> connectionTestMessageHandlerProvider_;
 
-  private static long statisticsUpdateIntervalMillis_;
+  private long statisticsUpdateIntervalMillis_;
 
   protected MessageVisitor<Void> visitor_;
 

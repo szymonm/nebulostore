@@ -153,7 +153,7 @@ public final class MessageExchangeTestMain {
       LOGGER.info(String.format("%d hosts have failed.", failedCount));
       return 1;
     } else {
-      LOGGER.info(String.format("Test was successful.", failedCount));
+      LOGGER.info(String.format("Test was successful."));
       return 0;
     }
   }

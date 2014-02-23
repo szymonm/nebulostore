@@ -88,12 +88,13 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-checkstyle-plugin</artifactId>
-                        <version>2.9.1</version>
+                        <version>2.11</version>
                         <configuration>
-                            <violationSeverity>warning</violationSeverity>
+                            <violationSeverity>error</violationSeverity>
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <configLocation>resources/checkstyle/checks.xml</configLocation>
+                            <configLocation>resources/checkstyle/checks_maven.xml</configLocation>
+                            <failsOnError>true</failsOnError>
                         </configuration>
                         <executions>
                             <execution>
@@ -112,9 +113,8 @@
                         <version>2.5.2</version>
                         <configuration>
                             <effort>Max</effort>
-                            <threshold>Low</threshold>
-                            <xmlOutput>true</xmlOutput>
-                            <failOnError>false</failOnError>
+                            <threshold>High</threshold>
+                            <failOnError>true</failOnError>
                         </configuration>
                         <executions>
                             <execution>
@@ -158,6 +158,21 @@
                                     <packages>org.nebulostore.timer*:org.nebulostore.utils*</packages>
                                 </group>
                             </groups>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>2.4</version>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <classpathPrefix>lib</classpathPrefix>
+                                    <mainClass>org.nebulostore.peers.EntryPoint</mainClass>
+                                </manifest>
+                            </archive>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -397,6 +412,9 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                    <compilerArgument>-Xlint:all</compilerArgument>
                 </configuration>
             </plugin>
             <plugin>

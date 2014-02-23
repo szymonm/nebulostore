@@ -68,12 +68,12 @@ public class ValuationBasedBroker extends Broker {
   }
 
   // Injected constants.
-  private static int replicationGroupUpdateTimeout_;
-  private static int contractImprovementPeriod_;
-  private static int contractImprovementDelay_;
-  private static int defaultContractSizeKb_;
-  private static int maxContractsMultiplicity_;
-  private static int spaceContributedKb_;
+  private int replicationGroupUpdateTimeout_;
+  private int contractImprovementPeriod_;
+  private int contractImprovementDelay_;
+  private int defaultContractSizeKb_;
+  private int maxContractsMultiplicity_;
+  private int spaceContributedKb_;
 
   private Timer timer_;
   private ContractsSelectionAlgorithm contractsSelectionAlgorithm_;
