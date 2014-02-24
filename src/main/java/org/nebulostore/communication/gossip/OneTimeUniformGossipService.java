@@ -11,7 +11,6 @@ import com.google.inject.assistedinject.AssistedInject;
 import com.google.inject.name.Named;
 
 import org.apache.commons.configuration.XMLConfiguration;
-
 import org.apache.log4j.Logger;
 import org.nebulostore.appcore.exceptions.NebuloException;
 import org.nebulostore.appcore.messaging.Message;
@@ -61,7 +60,7 @@ public class OneTimeUniformGossipService extends GossipService {
         int nReplicators = Math.min(nReplicators_, nPeers_ - 1);
         for (int i = 0; i < nPeers_; i++) {
           List<PeerDescriptor> group = new ArrayList<PeerDescriptor>();
-          for (int j = 1; j < nReplicators; j++) {
+          for (int j = 1; j <= nReplicators; j++) {
             group.add(new PeerDescriptor(received_.get((i + j) % nPeers_)));
           }
           outQueue_.add(new PeerGossipMessage(null, received_.get(i),
