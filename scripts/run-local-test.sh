@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_NAME=./_local-test.sh
-declare -a PEERS=(3 6 6 8 14 6 3 3)
+declare -a PEERS=(8 6 6 8 14 6 3 3)
 N_TESTS=8
 declare -a TITLES=(\
     'ping-pong test'\

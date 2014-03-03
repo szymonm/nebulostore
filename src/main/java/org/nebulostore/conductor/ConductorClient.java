@@ -194,9 +194,26 @@ public abstract class ConductorClient extends JobModule implements Serializable 
       return null;
     }
   }
+  
+  /**
+   * Empty visitor
+   *
+   * @author lukaszsiczek
+   */
+  protected class EmptyVisitor extends TestingModuleVisitor {
+    public EmptyVisitor() {
+    }
+
+    @Override
+    public Void visit(NewPhaseMessage message) {
+      logger_.debug("Ignore Phase no: "+phase_);
+      phaseFinished();
+      return null;
+    }
+  }
 
   /**
-   * Visotor that waits @param timeout_ to finish phase.
+   * Visitor that waits @param timeout_ to finish phase.
    */
   public class DelayingVisitor extends TestingModuleVisitor {
     protected final long timeout_;
