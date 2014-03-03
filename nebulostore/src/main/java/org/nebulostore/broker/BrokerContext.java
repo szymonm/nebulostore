@@ -35,7 +35,7 @@ public final class BrokerContext {
   private Map<Contract, Integer> freeSpaceMap_ = new HashMap<Contract, Integer>();
 
   /**
-   * Contract offers send to peers, waiting for response.
+   * Contract offers sent to peers, waiting for response.
    */
   private Map<CommAddress, Contract> contractOffers_ = new HashMap<CommAddress, Contract>();
 
@@ -70,6 +70,22 @@ public final class BrokerContext {
     } finally {
       writeLock_.unlock();
     }
+  }
+
+  public void addContractOffer(CommAddress recipient, Contract offer) {
+    contractOffers_.put(recipient, offer);
+  }
+
+  public void removeOffer(CommAddress recipient) {
+    contractOffers_.remove(recipient);
+  }
+
+  public boolean containsOffer(CommAddress recipient) {
+    return contractOffers_.containsKey(recipient);
+  }
+
+  public int getNumberOfOffers() {
+    return contractOffers_.size();
   }
 
   public ContractsSet acquireReadAccessToContracts() {

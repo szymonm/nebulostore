@@ -3,8 +3,6 @@ package org.nebulostore.broker;
 import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.google.inject.Inject;
 
@@ -32,11 +30,10 @@ public class AlwaysAcceptingBroker extends Broker {
   private static Logger logger_ = Logger.getLogger(AlwaysAcceptingBroker.class);
 
   private static final int TIMEOUT_SEC = 10;
-  private static final int MAX_CONTRACTS = 3;
+  private static final int MAX_CONTRACTS = 10;
   /* Default offer of 10 MB */
   private static final int DEFAULT_OFFER = 10 * 1024;
   private final BrokerVisitor visitor_ = new BrokerVisitor();
-  private Set<CommAddress> offerRecipients_ = new TreeSet<CommAddress>();
   private NetworkMonitor networkMonitor_;
 
   @Inject
@@ -97,23 +94,26 @@ public class AlwaysAcceptingBroker extends Broker {
         logger_.debug("Peer " +
             message.getSourceAddress() + " rejected our offer.");
       }
+      context_.removeOffer(message.getSourceAddress());
       return null;
     }
 
     public Void visit(CommPeerFoundMessage message) {
       logger_.debug("Found new peer.");
-      if (context_.getReplicas().length < MAX_CONTRACTS) {
+      if (context_.getReplicas().length + context_.getNumberOfOffers() < MAX_CONTRACTS) {
         List<CommAddress> knownPeers = networkMonitor_.getKnownPeers();
         Iterator<CommAddress> iterator = knownPeers.iterator();
         while (iterator.hasNext()) {
           CommAddress address = iterator.next();
-          if (context_.getUserContracts(address) == null &&
-              !address.equals(myAddress_) && !offerRecipients_.contains(address)) {
+          if (!address.equals(myAddress_) &&
+              context_.getUserContracts(address) == null && !context_.containsOffer(address)) {
             // Send offer to new peer (10MB by default).
             logger_.debug("Sending offer to " +
                 address);
-            networkQueue_.add(new ContractOfferMessage(CryptoUtils.getRandomString(), address,
-                new Contract(myAddress_, address, DEFAULT_OFFER)));
+            Contract offer = new Contract(myAddress_, address, DEFAULT_OFFER);
+            networkQueue_.
+                add(new ContractOfferMessage(CryptoUtils.getRandomString(), address, offer));
+            context_.addContractOffer(address, offer);
             break;
           }
         }
