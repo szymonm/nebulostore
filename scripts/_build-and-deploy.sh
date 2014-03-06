@@ -18,8 +18,8 @@ do
 done
 
 : ${PEERS_NUM=4}
-MAVEN_JAR="../target/$JAR_NAME"
-MAVEN_LIB="../target/lib"
+MAVEN_JAR="../nebulostore-systest/target/$SYSTEST_JAR_NAME"
+MAVEN_LIB="../nebulostore-systest/target/lib"
 : ${MAVEN_TARGET="peer"}
 BUILD_DIR="../build"
 JAR_DIR="../build/jar"
