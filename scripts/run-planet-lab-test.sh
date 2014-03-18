@@ -10,7 +10,7 @@ if [ $1 ]; then
     N=$1
 else
     echo "Please select PlanetLab test to run (or provide the number as a parameter):"
-    echo "    1) ping-pong test (3 peers / 2 test clients)"
+    echo "    1) ping-pong test (16 peers / 15 test clients)"
     echo "    2) read-write test (7 peers / 5 test clients)"
     echo "    3) lists test (7 peers / 5 test clients)"
     echo "    4) performance lists test (11 peers / 8 test clients)"
@@ -26,7 +26,7 @@ case $N in
            org.nebulostore.systest.TestingPeer\
            org.nebulostore.systest.TestingPeerConfiguration\
            org.nebulostore.systest.pingpong.PingPongServer\
-           3 2 1\
+           16 15 1\
            $HOSTS_FILE;;
     2) $SCRIPT_NAME\
            org.nebulostore.systest.TestingPeer\

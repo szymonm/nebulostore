@@ -40,27 +40,32 @@ public final class PingPongClient extends ConductorClient {
     visitors_[0] = new EmptyInitializationVisitor();
     if (id_ == 0) {
         visitors_[1] = new VisitorSendPing();
-        for (int i = 2; i <= 7; ++i) 
+        for (int i = 2; i <= 5; ++i) 
         	visitors_[i] = new EmptyVisitor();
-        visitors_[8] = new VisitorReceivedPong();
+        visitors_[6] = new VisitorReceivedPong();
     } else if (id_ >= 1 && id_ <= 2) {
-    	visitors_[1] = new EmptyVisitor();
+    	visitors_[1] = new VisitorReceivedPing();
+    	visitors_[2] = new VisitorSendPing();
+        for (int i = 3; i <= 4; ++i) 
+        	visitors_[i] = new EmptyVisitor();
+    	visitors_[5] = new VisitorReceivedPong();
+    	visitors_[6] = new VisitorSendPong();
+    } else if (id_ >= 3 && id_ <= 6) {
+	    visitors_[1] = new EmptyVisitor();
     	visitors_[2] = new VisitorReceivedPing();
     	visitors_[3] = new VisitorSendPing();
-        for (int i = 4; i <= 5; ++i) 
-        	visitors_[i] = new EmptyVisitor();
-    	visitors_[6] = new VisitorReceivedPong();
-    	visitors_[7] = new VisitorSendPong();
-    	visitors_[8] = new EmptyVisitor();
-    } else if (id_ >= 3 && id_ <= 6) {
-        for (int i = 1; i <= 3; ++i) 
-        	visitors_[i] = new EmptyVisitor();
-    	visitors_[4] = new VisitorReceivedPing();
+    	visitors_[4] = new VisitorReceivedPong();
     	visitors_[5] = new VisitorSendPong();
-        for (int i = 6; i <= 8; ++i) 
+	    visitors_[6] = new EmptyVisitor();
+    } else if (id_ >= 7 && id_ <= 14) {
+        for (int i = 1; i <= 2; ++i) 
+        	visitors_[i] = new EmptyVisitor();
+    	visitors_[3] = new VisitorReceivedPing();
+    	visitors_[4] = new VisitorSendPong();
+        for (int i = 5; i <= 6; ++i) 
         	visitors_[i] = new EmptyVisitor();
     }
-    visitors_[9] = new IgnoreNewPhaseVisitor();
+    visitors_[7] = new IgnoreNewPhaseVisitor();
   }
 
   /**
@@ -75,8 +80,9 @@ public final class PingPongClient extends ConductorClient {
 	public Void visit(NewPhaseMessage message) {
 		logger_.debug("ID("+id_+"); Phase("+phase_+")");
 		for (CommAddress address : childrenPongAddress_) {
-			logger_.debug("Send PingMessage to "+address.toString());
-	        networkQueue_.add(new UserCommMessage(jobId_, address, magicNumber_.add(BigInteger.ONE), phase_));
+	        if (sendMessage(new UserCommMessage(jobId_, address, magicNumber_.add(BigInteger.ONE), phase_))) {
+				logger_.debug("Send PingMessage to "+address.toString());
+	        }
 		}
 		phaseFinished();
 		return null;
@@ -108,7 +114,7 @@ public final class PingPongClient extends ConductorClient {
 	public Void visit(NewPhaseMessage message) {
 		logger_.debug("ID("+id_+"); Phase("+phase_+")");
 		logger_.debug("Send PongMessage to parent: "+parentPongAddress_.toString());
-        networkQueue_.add(new UserCommMessage(jobId_, parentPongAddress_, magicNumber_, phase_));
+		sendMessage(new UserCommMessage(jobId_, parentPongAddress_, magicNumber_, phase_));
 	    phaseFinished();
 	    return null;
 	}

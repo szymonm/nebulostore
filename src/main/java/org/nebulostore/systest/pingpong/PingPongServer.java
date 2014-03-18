@@ -16,10 +16,10 @@ import org.nebulostore.crypto.CryptoUtils;
  */
 public final class PingPongServer extends ConductorServer {
   private static Logger logger_ = Logger.getLogger(PingPongServer.class);
-  private static final int NUM_PHASES = 8;
-  private static final int NUM_CLIENTS = 7;
+  private static final int NUM_PHASES = 6;
+  private static final int NUM_CLIENTS = 15;
   private static final int INITIAL_SLEEP = 2000;
-  private static final int TIMEOUT_SEC = 60;
+  private static final int TIMEOUT_SEC = 150;
 
   public PingPongServer() {
     super(NUM_PHASES, NUM_CLIENTS, TIMEOUT_SEC, "PingPongClient_" + CryptoUtils.getRandomString(),

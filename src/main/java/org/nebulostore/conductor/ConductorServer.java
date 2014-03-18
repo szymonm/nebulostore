@@ -401,6 +401,11 @@ public abstract class ConductorServer extends ReturningJobModule<Boolean> {
   }
 
   public Boolean getResult() throws NebuloException {
-    return getResult(timeout_);
+	logger_.debug("Waiting for result");
+	try {
+		return getResult(timeout_);
+	} finally {
+		logger_.debug("Get result");
+	}
   }
 }
