@@ -160,7 +160,7 @@
                     <violationSeverity>error</violationSeverity>
                     <consoleOutput>true</consoleOutput>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <configLocation>../resources/checkstyle/checks_maven.xml</configLocation>
+                    <configLocation>resources/checkstyle/checks_maven.xml</configLocation>
                     <failsOnError>true</failsOnError>
                 </configuration>
                 <executions>
