@@ -1,6 +1,7 @@
 package org.nebulostore.systest.performance;
 
 import org.nebulostore.communication.CommunicationFacadeAdapterConfiguration;
+
 import org.nebulostore.peers.AbstractPeer;
 import org.nebulostore.peers.GenericConfiguration;
 import org.nebulostore.systest.TestingPeerConfiguration;
@@ -22,4 +23,5 @@ public class PerfTestingPeerConfiguration extends TestingPeerConfiguration {
     genConf.setXMLConfig(config_);
     install(genConf);
   }
+
 }
